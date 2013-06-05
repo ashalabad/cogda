@@ -34,10 +34,6 @@ class Registration {
     String country
     Boolean newCompany
 
-    static mapping = {
-
-    }
-
     static constraints = {
         firstName(nullable:false, blank:false)
         lastName(nullable:false, blank:false)
