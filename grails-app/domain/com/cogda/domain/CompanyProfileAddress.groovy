@@ -32,4 +32,29 @@ class CompanyProfileAddress {
         published(nullable:true)
         primaryAddress(nullable:true)
     }
+
+    /**
+     * Returns a
+     * city state country combination in string format.
+     * or
+     * city and state
+     * or
+     * state and country
+     * @return
+     */
+    String getCityStateCountryString(){
+        def city = this.address.city?.trim()
+        def state = this.address.state?.trim()
+        def country = this.address.country?.toUpperCase()
+        if(city && state && country){
+            return "$city, $state $country"
+        }
+        if(city && state){
+            return "$city, $state"
+        }
+        if(state && country){
+            return "$state $country"
+        }
+        return ""
+    }
 }

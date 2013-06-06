@@ -1,6 +1,8 @@
 package com.cogda.multitenant
 
 import com.cogda.domain.CompanyProfile
+import com.cogda.domain.CompanyProfileAddress
+import com.cogda.domain.admin.CompanyType
 import grails.plugin.multitenant.core.annotation.MultiTenant
 
 /**
@@ -21,7 +23,11 @@ class Company {
 
     String name
 
-    String companyURLExtension
+    String doingBusinessAs
+
+    Integer level
+
+    CompanyType companyType
 
     CompanyProfile companyProfile
 
@@ -34,8 +40,10 @@ class Company {
     static constraints = {
         parentCompany(nullable:true)
         name(nullable:false)  // TODO: Add a validator that checks for the company name if this has a ParentCompany - the name should be unique within the company
-        companyURLExtension(unique:true)
         companyProfile(nullable:true)
+        doingBusinessAs(nullable:true)
+        level(nullable:true, size:0..100)
+        companyType(nullable:false)
     }
 
     /*
@@ -44,5 +52,23 @@ class Company {
     @Override
     public String toString() {
         return "${name}";
+    }
+
+    /**
+     * Returns a pretty version of the Company Name for display
+     * purposes.
+     * @return String
+     */
+    public String prettyCompanyString(){
+        String retString = this.name.trim()
+
+        CompanyProfileAddress companyProfileAddress = this?.companyProfile?.getPrimaryAddress()
+        if(companyProfileAddress){
+            String location = companyProfileAddress.getCityStateCountryString()
+            if(location){
+                retString += "(" + companyProfileAddress.getCityStateCountryString() + ")"
+            }
+        }
+        return retString
     }
 }

@@ -12,4 +12,8 @@ class RegisterService {
     def save(Registration registration) {
         registration.save()
     }
+
+    def list(params){
+        Registration.list(params)
+    }
 }

@@ -29,7 +29,7 @@ class CompanyProfile {
 	Date	lastUpdated
 
 	static belongsTo = [company:Company]	// tells GORM to cascade commands: e.g., delete this object if the "parent" is deleted.
-    static hasMany = [companyProfileAddresses:CompanyProfile,
+    static hasMany = [companyProfileAddresses:CompanyProfileAddress,
                       companyProfileEmailAddresses:CompanyProfileEmailAddress,
                       companyProfilePhoneNumbers:CompanyProfilePhoneNumber]
 
@@ -43,6 +43,16 @@ class CompanyProfile {
         yearFounded(nullable:true)
         amBestNumber(nullable:true)
         published(nullable:true)
+    }
 
+    /**
+     * Retrieves the CompanyProfileAddress associated with this CompanyProfile that has its
+     * primaryAddress set to true.
+     * @return CompanyProfileAddress
+     */
+    CompanyProfileAddress getPrimaryAddress(){
+        List companyProfileAddresses = CompanyProfileAddress.executeQuery("from CompanyProfileAddress cpa where cpa.primaryAddress = :primaryAddress " +
+                " and cpa.companyProfile = :companyProfile", [primaryAddress:true, companyProfile:this])
+        return companyProfileAddresses?.first()
     }
 }

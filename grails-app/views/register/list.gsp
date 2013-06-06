@@ -25,8 +25,6 @@
 			
 				<g:sortableColumn property="emailAddress" title="${message(code: 'registration.emailAddress.label', default: 'Email Address')}" />
 			
-				<g:sortableColumn property="password" title="${message(code: 'registration.password.label', default: 'Password')}" />
-			
 				<g:sortableColumn property="companyName" title="${message(code: 'registration.companyName.label', default: 'Company Name')}" />
 			
 			</tr>
@@ -42,8 +40,6 @@
 				<td>${fieldValue(bean: registrationInstance, field: "username")}</td>
 			
 				<td>${fieldValue(bean: registrationInstance, field: "emailAddress")}</td>
-			
-				<td>${fieldValue(bean: registrationInstance, field: "password")}</td>
 			
 				<td>${fieldValue(bean: registrationInstance, field: "companyName")}</td>
 			

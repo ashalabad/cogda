@@ -6,9 +6,18 @@ package cogda
  */
 class DomainFilters {
 
+
     def filters = {
-        registerFilter(controller:'register', action:'index', invert: true) {
+
+        registerFilter(controller:'register', action:'index', invert: true, controllerExclude:'company') {
             before = {
+
+                // Exclusions made to this filter for the purposes of registration:
+                if(controllerName.equals("company") && actionName.equals("typeahead")){
+                    return
+                }
+
+
                 if(request.customerAccount == -1) {
                     redirect(controller:"register",action:"index")
                 }

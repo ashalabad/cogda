@@ -21,7 +21,7 @@
 
 <div id="MenuRow" class="row">
     <div class="span12">
-
+          &nbsp;
     </div>
 </div>
 
@@ -63,7 +63,6 @@
                 <div class="controls">
                     <g:textField name="username" required="" value="${registrationInstance?.username}"/>
                     <span class="help-inline">
-                        This username is available script.
                         ${hasErrors(bean: registrationInstance, field: 'username', 'error')}
                     </span>
                 </div>
@@ -84,7 +83,6 @@
                 <div class="controls">
                     <g:passwordField name="password" required="" value="${registrationInstance?.password}"/>
                     <span class="help-inline">
-                        Password must be between 6 to 20 characters in length.
                         ${hasErrors(bean: registrationInstance, field: 'password', 'error')}
                     </span>
                 </div>
@@ -97,7 +95,6 @@
                 <div class="controls">
                     <g:passwordField name="passwordTwo" required="" value="${registrationInstance?.passwordTwo}"/>
                     <span class="help-inline">
-                        Password does not match.
                         ${hasErrors(bean: registrationInstance, field: 'passwordTwo', 'error')}
                     </span>
                 </div>
@@ -109,7 +106,8 @@
                     <span class="required-indicator">*</span>
                 </label>
                 <div class="controls">
-                    <g:textField name="companyName" required="" value="${registrationInstance?.companyName}"/>
+                    <g:textField name="companyName" required="" value="${registrationInstance?.companyName}" class='ajax-typeahead' data-link='${g.createLink(controller:'company', action:'typeahead')}' />
+                    <g:hiddenField name="existingCompanyId"></g:hiddenField>
                     <span class="help-inline">${hasErrors(bean: registrationInstance, field: 'companyName', 'error')}</span>
                 </div>
             </div>
@@ -122,7 +120,7 @@
                 </div>
             </div>
 
-            <div class="accordion" id="accordion2">
+            <div class="accordion" id="newCompanyAccordion">
                 <div class="accordion-group">
                     <div class="accordion-heading">
                         <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
@@ -237,6 +235,21 @@
 
 <g:javascript>
     $(document).ready(function(){
+
+        $('.ajax-typeahead').typeahead({
+            source: function(query, process) {
+                return $.ajax({
+                    url: $(this)[0].$element.data('link'),
+                    type: 'get',
+                    data: {query: query},
+                    dataType: 'json',
+                    success: function(json) {
+                        return typeof json.options == 'undefined' ? false : process(json.options);
+                    }
+                });
+            }
+        });
+
         $("#registerForm").validate({
             rules: {
                 firstName: {
@@ -267,12 +280,15 @@
             success: function(element) {
                 element.text('OK!').addClass('valid')
                         .closest('.control-group').removeClass('error').addClass('success');
+            },
+            submitHandler: function(form){
+
             }
         });
 
-        var registrationHandler = function(data, textStatus) {
+        function registrationHandler(data, textStatus) {
             if(data.success){
-                for(var i=0; i<data.messages.length; i++){
+                for(var i=0; i< data.messages.length; i++){
                     $.pnotify({
                         title: 'Save Successful',
                         text: data.messages[i],
@@ -281,7 +297,6 @@
                         delay: 10000
                     });
                 }
-
             }else{
                 for(i in data.errors){
                     $.pnotify({

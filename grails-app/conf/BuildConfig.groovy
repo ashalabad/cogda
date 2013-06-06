@@ -72,5 +72,7 @@ grails.project.dependency.resolution = {
         compile ":platform-core:1.0.RC5"
 
         compile ":multi-tenant-single-db:0.8.3"
+
+        compile ":jquery-datatables:1.7.5"
     }
 }

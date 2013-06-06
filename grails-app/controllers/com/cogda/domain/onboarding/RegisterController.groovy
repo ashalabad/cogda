@@ -4,10 +4,12 @@ import com.cogda.common.web.AjaxResponseDto
 import com.cogda.domain.admin.CompanyType
 import com.cogda.domain.admin.SupportedCountryCode
 import com.cogda.multitenant.Company
+import com.cogda.multitenant.CompanyService
 import com.cogda.security.UserService
 import com.cogda.util.ErrorMessageResolverService
 import grails.converters.JSON
 import grails.plugins.springsecurity.Secured
+import grails.plugins.springsecurity.SpringSecurityService
 
 /**
  * RegisterController
@@ -21,58 +23,113 @@ class RegisterController {
      */
     RegisterService registerService
     ErrorMessageResolverService errorMessageResolverService
-
+    SpringSecurityService springSecurityService
 
     static defaultAction = "index"
 
-    def index(){
-        if(CompanyType.list()){
-            println "found "
+    /**
+     * Generates JSON needed for a DataTables table.
+     */
+    def dataTablesSource(){
+
+        def propertiesToRender = ['lastName', 'firstName', 'emailAddress', 'companyName', 'companyType.code']
+
+        def filters = []
+        propertiesToRender.each { prop ->
+            filters << "p.${prop} like :filter"
         }
-        else {
-            println "not found"
+        def filter = filters.join(" OR ")
+
+        def dataToRender = [:]
+        dataToRender.sEcho = params.sEcho
+        dataToRender.aaData = []                // Array of registrations.
+
+        dataToRender.iTotalRecords = Registration.count(true)
+        dataToRender.iTotalDisplayRecords = dataToRender.iTotalRecords
+
+        def query = new StringBuilder("from Registration as r where ")
+        if (params.sSearch) {
+            query.append(" and (${filter})")
         }
-        println CompanyType.list()
-         CompanyType.list().each {
-             println it.intCode + " " + it.code
-         }
+        def sortDir = params.sSortDir_0?.equalsIgnoreCase('asc') ? 'asc' : 'desc'
+        def sortProperty = propertiesToRender[params.iSortCol_0 as int]
+        query.append(" order by p.${sortProperty} ${sortDir}")
+
+        def registrations = []
+        if (params.sSearch) {
+            // Revise the number of total display records after applying the filter
+            def countQuery = new StringBuilder("select count(*) from Registration as r where ")
+            if (params.sSearch) {
+                countQuery.append(" and (${filter})")
+            }
+            def result = Registration.executeQuery(countQuery.toString(),
+                    [filter: "%${params.sSearch}%"])
+            if (result) {
+                dataToRender.iTotalDisplayRecords = result[0]
+            }
+            registrations = Registration.findAll(query.toString(),
+                    [filter: "%${params.sSearch}%"],
+                    [max: params.iDisplayLength as int, offset: params.iDisplayStart as int])
+        } else {
+            registrations = Registration.findAll(query.toString(),
+                    [max: params.iDisplayLength as int, offset: params.iDisplayStart as int])
+        }
+
+        registrations?.each { prod ->
+            dataToRender.aaData << [prod.itemNumber,
+                    prod.title,
+                    prod.price,
+                    prod.link,
+                    prod.manufacturer?.name ?: 'Unknown']
+        }
+
+        render dataToRender as JSON
+    }
+
+
+    def list() {
+        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+
+    }
+
+    def index() {
     }
 
     /**
      * Handles AjaxRequest posts
      * @param registerCommand
      */
-    def save(RegisterCommand registerCommand){
+    def save(RegisterCommand registerCommand) {
         AjaxResponseDto ajaxResponseDto = new AjaxResponseDto()
 
-        if(registerCommand.hasErrors()){
+        if (registerCommand.hasErrors()) {
             ajaxResponseDto.success = Boolean.FALSE
             ajaxResponseDto.errors = errorMessageResolverService.retrieveErrorStrings(registerCommand)
             render ajaxResponseDto as JSON
             return  // someone is most likely fooling around with the request headers
-        }else{
+        } else {
             Registration registration = registerCommand.getRegistrationObject()
             registerService.save(registration)
-            if(registration.hasErrors()){
+            if (registration.hasErrors()) {
                 ajaxResponseDto.success = Boolean.FALSE
                 ajaxResponseDto.errors = errorMessageResolverService.retrieveErrorStrings(registration)
                 render ajaxResponseDto as JSON
                 return  // someone is most likely fooling around with the request headers
-            }else{
+            } else {
                 ajaxResponseDto.success = true
                 // Add a success message for this section type
                 ajaxResponseDto.addMessage(message(code: "registration.successful", args: [section.sectionTitle]))
-                ajaxResponseDto.modelObject = [emailAddress:registerCommand.emailAddress]
+                ajaxResponseDto.modelObject = [emailAddress: registerCommand.emailAddress]
                 render ajaxResponseDto as JSON
                 return
             }
         }
     }
 
-    def availableUsername(AvailableUsernameCommand availableUsernameCommand){
+    def availableUsername(AvailableUsernameCommand availableUsernameCommand) {
         println params
         boolean valid = Boolean.FALSE
-        if(!availableUsernameCommand.hasErrors()){
+        if (!availableUsernameCommand.hasErrors()) {
             valid = Boolean.TRUE
         }
         render valid as JSON
@@ -86,7 +143,7 @@ class AvailableUsernameCommand {
 
     static constraints = {
         username(validator: { val, obj ->
-            if(!obj.userService.availableUsername(val)){
+            if (!obj.userService.availableUsername(val)) {
                 return ['validation.username.notavailable']
             }
         })
@@ -98,7 +155,8 @@ class AvailableUsernameCommand {
  * COGDA user.                                       a
  */
 class RegisterCommand {
-
+    SpringSecurityService springSecurityService
+    CompanyService companyService
     static final String companyTypeQuery = "select ct.intCode from CompanyType ct"
 
     String firstName
@@ -107,6 +165,7 @@ class RegisterCommand {
     String password
     String passwordTwo
     Company existingCompany
+    Long existingCompanyId
     Boolean newCompany
     String companyName
     Integer companyType
@@ -125,12 +184,28 @@ class RegisterCommand {
      * RegisterCommand
      * @return Registration
      */
-    public Registration getRegistrationObject(){
+    public Registration getRegistrationObject() {
+
         Registration registration = new Registration()
-        registration.properties = this.properties["firstName", "lastName", "emailAddress", "password", "newCompany",
-                "companyName", "phoneNumber", "streetAddressOne", "streetAddressTwo", "zipcode", "city", "state",
-                "county", "country"]
+        registration.firstName = this.firstName
+        registration.lastName = this.lastName
+        registration.emailAddress = this.emailAddress
+        registration.password = springSecurityService.encodePassword(this.password)
         registration.companyType = CompanyType.findByIntCode(this.companyType)
+        registration.phoneNumber = this.phoneNumber
+        registration.newCompany = this.newCompany
+
+        if (registration.newCompany) {
+            registration.streetAddressOne = this.streetAddressOne
+            registration.streetAddressTwo = this.streetAddressTwo
+            registration.zipcode = this.zipcode
+            registration.city = this.city
+            registration.state = this.state
+            registration.county = this.county
+            registration.country = this.country
+        } else {
+//            registration.existingCompany =
+        }
         return registration
     }
 
@@ -138,41 +213,41 @@ class RegisterCommand {
         importFrom Registration, include: ["firstName", "lastName", "emailAddress", "newCompany",
                 "companyName", "companyTypeOther", "phoneNumber", "streetAddressOne",
                 "streetAddressTwo", "zipcode", "city", "state", "county", "country"]
-        password(blank:false, minSize:6, maxSize: 20)
+        password(blank: false, minSize: 6, maxSize: 20)
         passwordTwo(validator: { val, obj ->
-            if(!obj.password.equals(password)){
+            if (!obj.password.equals(val)) {
                 return ['registerCommand.passwordTwo.nomatch']
             }
         })
-        companyType(blank:false, inList:CompanyType.executeQuery(companyTypeQuery, [cache:true]))
+        companyType(blank: false, inList: CompanyType.executeQuery(companyTypeQuery, [cache: true]))
         newCompany(validator: { val, obj ->
-            if(val){
-                if(!obj.companyType){
-                     return ['registration.companyType.blank']
-                }else{
-                    if(!CompanyType.retrieveIntCodes().contains(obj.companyType)){
+            if (val) {
+                if (!obj.companyType) {
+                    return ['registration.companyType.blank']
+                } else {
+                    if (!CompanyType.retrieveIntCodes().contains(obj.companyType)) {
                         return ['registration.companyType.inList']
                     }
                 }
-                if(!obj.phoneNumber?.trim()){
+                if (!obj.phoneNumber?.trim()) {
                     return ['registration.phoneNumber.blank']
                 }
-                if(!obj.streetAddressOne?.trim()){
+                if (!obj.streetAddressOne?.trim()) {
                     return ['registration.streetAddressOne.blank']
                 }
-                if(!obj.zipcode?.trim()){
+                if (!obj.zipcode?.trim()) {
                     return ['registration.zipcode.blank']
                 }
-                if(!obj.city?.trim()){
+                if (!obj.city?.trim()) {
                     return ['registration.city.blank']
                 }
-                if(!obj.state?.trim()){
+                if (!obj.state?.trim()) {
                     return ['registration.state.blank']
                 }
-                if(!obj.country?.trim()){
+                if (!obj.country?.trim()) {
                     return ['registration.country.blank']
-                }else{
-                    if(!SupportedCountryCode.executeQuery("select sc.countryCode from SupportedCountryCode sc where sc.countryCode = :country", [country:obj.country], [cache:true])){
+                } else {
+                    if (!SupportedCountryCode.retrieveSupportedCountryCodes().contains(obj.country)) {
                         return ['registration.country.notfound']
                     }
                 }

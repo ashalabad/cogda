@@ -1,6 +1,7 @@
 package com.cogda.domain.onboarding
 
 import com.cogda.domain.admin.CompanyType
+import com.cogda.multitenant.Company
 
 /**
  * Registration
@@ -23,6 +24,7 @@ class Registration {
     String password
     String companyName
     CompanyType companyType
+    Company existingCompany
     String companyTypeOther
     String phoneNumber
     String streetAddressOne
@@ -35,12 +37,12 @@ class Registration {
     Boolean newCompany
 
     static constraints = {
-        firstName(nullable:false, blank:false)
-        lastName(nullable:false, blank:false)
-        username(nullable:false, blank:false)
+        firstName(nullable:false, blank:false, minSize:1)
+        lastName(nullable:false, blank:false, minSize:1)
+        username(nullable:false, blank:false, minSize:2)
         emailAddress(nullable:false, email:true, blank:false)
         password(nullable:false, blank:false)
-        companyName(nullable:false, blank:false)
+        companyName(nullable:false, blank:false, minSize:1)
         newCompany(nullable:true)
         companyType(nullable:true)
         companyTypeOther(nullable:true)
