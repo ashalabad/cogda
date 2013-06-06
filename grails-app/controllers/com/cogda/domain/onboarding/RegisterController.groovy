@@ -10,6 +10,7 @@ import com.cogda.util.ErrorMessageResolverService
 import grails.converters.JSON
 import grails.plugins.springsecurity.Secured
 import grails.plugins.springsecurity.SpringSecurityService
+import org.codehaus.groovy.grails.plugins.web.taglib.CountryTagLib
 
 /**
  * RegisterController
@@ -221,6 +222,7 @@ class RegisterCommand {
         })
         companyType(blank: false, inList: CompanyType.executeQuery(companyTypeQuery, [cache: true]))
         newCompany(validator: { val, obj ->
+            // if this is a new company then validate that the address information is provided.
             if (val) {
                 if (!obj.companyType) {
                     return ['registration.companyType.blank']
@@ -232,23 +234,27 @@ class RegisterCommand {
                 if (!obj.phoneNumber?.trim()) {
                     return ['registration.phoneNumber.blank']
                 }
+                if (!obj.country?.trim()) {
+                    return ['registration.country.blank']
+                } else {
+                    if (!SupportedCountryCode.retrieveSupportedCountryCodes().contains(obj.country)) {
+                        return ['registration.country.notfound']
+                    }
+                }
+
                 if (!obj.streetAddressOne?.trim()) {
                     return ['registration.streetAddressOne.blank']
                 }
                 if (!obj.zipcode?.trim()) {
                     return ['registration.zipcode.blank']
                 }
-                if (!obj.city?.trim()) {
-                    return ['registration.city.blank']
-                }
-                if (!obj.state?.trim()) {
-                    return ['registration.state.blank']
-                }
-                if (!obj.country?.trim()) {
-                    return ['registration.country.blank']
-                } else {
-                    if (!SupportedCountryCode.retrieveSupportedCountryCodes().contains(obj.country)) {
-                        return ['registration.country.notfound']
+                // if the country is "usa" then we must validate the city and the state fields.
+                if(obj.country?.equals("usa")){
+                    if (!obj.city?.trim()) {
+                        return ['registration.city.blank']
+                    }
+                    if (!obj.state?.trim()) {
+                        return ['registration.state.blank']
                     }
                 }
             }

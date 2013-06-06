@@ -1,18 +1,14 @@
-<%@ page import="com.cogda.domain.onboarding.Registration" %>
-<%@ page import="com.cogda.domain.admin.CompanyType" %>
-
+<%@ page import="com.cogda.common.UsState; com.cogda.domain.onboarding.Registration; com.cogda.domain.admin.CompanyType" %>
 <!doctype html>
 <html>
-
-<head>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<meta name="layout" content="kickstart" />
-	<g:set var="entityName" value="${message(code: 'registration.label', default: 'User Registration')}" />
-    <g:set var="layout_nosecondarymenu"	value="${true}" scope="request"/>
-    <g:set var="layout_nomainmenu"		value="${true}" scope="request"/>
-	<title><g:message code="default.create.label" args="[entityName]" /></title>
-</head>
-
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="layout" content="kickstart" />
+        <g:set var="entityName" value="${message(code: 'registration.label', default: 'User Registration')}" />
+        <g:set var="layout_nosecondarymenu"	value="${true}" scope="request"/>
+        <g:set var="layout_nomainmenu"		value="${true}" scope="request"/>
+        <title><g:message code="default.create.label" args="[entityName]" /></title>
+    </head>
 <body>
 
 <content tag="header">
@@ -27,11 +23,12 @@
 
 <section id="create-registration" class="first">
 
-	<g:hasErrors bean="${registrationInstance}">
-	<div class="alert alert-error">
-		<g:renderErrors bean="${registrationInstance}" as="list" />
+	<div class="alert alert-error" id="errorMessages" style="display:none">
 	</div>
-	</g:hasErrors>
+
+    <div class="alert alert-success" id="messages" style="display:none">
+    </div>
+
 
     <g:formRemote class = "form-horizontal" name="registrationForm" url="[controller:'register', action:'save']"
                   method="POST" onSuccess="registrationHandler(data, textStatus)"
@@ -172,7 +169,7 @@
                             </div>
 
                             <div class="control-group fieldcontain ${hasErrors(bean: registrationInstance, field: 'zipcode', 'error')} ">
-                                <label for="zipcode" class="control-label"><g:message code="registration.zipcode.label" default="Zipcode" />
+                                <label for="zipcode" class="control-label"><g:message code="address.zipcode.label" default="Zipcode" />
                                     <span class="required-indicator">*</span>
                                 </label>
                                 <div class="controls">
@@ -182,7 +179,7 @@
                             </div>
 
                             <div class="control-group fieldcontain ${hasErrors(bean: registrationInstance, field: 'city', 'error')} ">
-                                <label for="city" class="control-label"><g:message code="registration.city.label" default="City" />
+                                <label for="city" class="control-label"><g:message code="address.city.label" default="City" />
                                     <span class="required-indicator">*</span>
                                 </label>
                                 <div class="controls">
@@ -192,17 +189,18 @@
                             </div>
 
                             <div class="control-group fieldcontain ${hasErrors(bean: registrationInstance, field: 'state', 'error')} ">
-                                <label for="state" class="control-label"><g:message code="registration.state.label" default="State" />
+                                <label for="state" class="control-label"><g:message code="address.state.label" default="State" />
                                     <span class="required-indicator">*</span>
                                 </label>
                                 <div class="controls">
-                                    <g:textField name="state" value="${registrationInstance?.state}"/>
+                                    <g:select from="${UsState.values()}" value="${UsState}" optionValue="value" optionKey="key" name="state"></g:select>
+
                                     <span class="help-inline">${hasErrors(bean: registrationInstance, field: 'state', 'error')}</span>
                                 </div>
                             </div>
 
                             <div class="control-group fieldcontain ${hasErrors(bean: registrationInstance, field: 'county', 'error')} ">
-                                <label for="county" class="control-label"><g:message code="registration.county.label" default="County" />
+                                <label for="county" class="control-label"><g:message code="address.county.label" default="County" />
                                 </label>
                                 <div class="controls">
                                     <g:textField name="county" value="${registrationInstance?.county}"/>
@@ -211,7 +209,7 @@
                             </div>
 
                             <div class="control-group fieldcontain ${hasErrors(bean: registrationInstance, field: 'country', 'error')} ">
-                                <label for="country" class="control-label"><g:message code="registration.country.label" default="Country" />
+                                <label for="country" class="control-label"><g:message code="address.country.label" default="Country" />
                                     <span class="required-indicator">*</span>
                                 </label>
                                 <div class="controls">
