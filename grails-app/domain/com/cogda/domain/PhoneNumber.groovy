@@ -9,6 +9,6 @@ class PhoneNumber {
     String phoneNumber
 
     static constraints = {
-        phoneNumber(nullable:false)
+        phoneNumber(nullable:true)
     }
 }

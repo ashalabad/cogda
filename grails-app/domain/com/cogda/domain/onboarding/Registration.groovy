@@ -32,6 +32,7 @@ class Registration {
     String phoneNumber
     String streetAddressOne
     String streetAddressTwo
+    String streetAddressThree
     String zipcode
     String city
     String state
@@ -57,6 +58,7 @@ class Registration {
         phoneNumber(nullable:true)
         streetAddressOne(nullable:true)
         streetAddressTwo(nullable:true)
+        streetAddressThree(nullable:true)
         zipcode(nullable:true)
         city(nullable:true)
         state(nullable:true)

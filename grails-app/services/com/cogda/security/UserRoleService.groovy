@@ -1,5 +1,6 @@
 package com.cogda.security
 
+import com.cogda.domain.security.Role
 import com.cogda.domain.security.User
 import com.cogda.domain.security.UserRole
 
@@ -16,7 +17,7 @@ class UserRoleService {
      * @param user
      * @param roles
      */
-    def createUserRoles(User user, List roles){
+    def createUserRoles(User user, List<Role> roles){
         roles.each { role ->
             UserRole.create(user, role)
         }

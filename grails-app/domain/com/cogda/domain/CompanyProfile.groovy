@@ -1,5 +1,6 @@
 package com.cogda.domain
 
+import com.cogda.domain.admin.CompanyType
 import com.cogda.multitenant.Company
 
 /**
@@ -13,6 +14,8 @@ class CompanyProfile {
     /* Default (injected) attributes of GORM */
 	Long	id
 	Long	version
+
+    CompanyType companyType
 
     Boolean published
 
@@ -43,6 +46,7 @@ class CompanyProfile {
         yearFounded(nullable:true)
         amBestNumber(nullable:true)
         published(nullable:true)
+        companyType(nullable:false)
     }
 
     /**

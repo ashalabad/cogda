@@ -100,6 +100,7 @@ class RegistrationTests {
         assert !registration.errors["phoneNumber"]
         assert !registration.errors["streetAddressOne"]
         assert !registration.errors["streetAddressTwo"]
+        assert !registration.errors["streetAddressThree"]
         assert !registration.errors["zipcode"]
         assert !registration.errors["city"]
         assert !registration.errors["state"]

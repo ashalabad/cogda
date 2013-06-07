@@ -1,12 +1,15 @@
 package com.cogda.multitenant
 
 import com.cogda.domain.onboarding.Registration
+import org.apache.commons.logging.LogFactory
 
 /**
  * CompanyService
  * A service class encapsulates the core business logic of a Grails application
  */
 class CompanyService {
+
+    private static final log = LogFactory.getLog(this)
 
     /**
      * Lists all Company domain classes in the system.
@@ -36,11 +39,20 @@ class CompanyService {
      */
     Company createCompany(Registration registration){
         Company company = new Company()
-        company.name = registration.companyName
-        company.companyType = registration.companyType
+
+        company.companyName = registration.companyName
         company.doingBusinessAs = registration.companyName
         company.parentCompany = null
-        company.level = 0
-        company.save(failOnError:true)
+        company.intCode = 0
+
+        if(!company.validate()){
+            company.errors.each {
+                println it
+            }
+        }
+
+        company.save()
+
+        return company
     }
 }

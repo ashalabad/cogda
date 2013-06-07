@@ -28,6 +28,6 @@ class UserProfileService {
         userProfileEmailAddress.primaryEmailAddress = true
         userProfileEmailAddress.userProfile = userProfile
 
-        userProfile.addToUserProfileAddresses(userProfileEmailAddress)
+        userProfile.addToUserProfileEmailAddresses(userProfileEmailAddress)
     }
 }

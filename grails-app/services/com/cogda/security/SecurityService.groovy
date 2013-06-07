@@ -59,12 +59,6 @@ class SecurityService {
 
     /**
      * Default role for ALL users.
-     * ROLE_EVERYONE = 'ROLE_EVERYONE'
-     */
-    public static final String ROLE_EVERYONE = 'ROLE_EVERYONE'
-
-    /**
-     * Default role for ALL users.
      * This is synonomous with the old-cogda USERS role.
      * ROLE_USER = 'ROLE_USER'
      */
@@ -75,13 +69,6 @@ class SecurityService {
      * ROLE_COMPANY_MANAGER = 'ROLE_COMPANY_MANAGER'
      */
     public static final String ROLE_COMPANY_MANAGER = 'ROLE_COMPANY_MANAGER'
-
-    /**
-     * Default role for account owners - account
-     * owners can handle billing/payment details.
-     * ROLE_ACCOUNT_OWNER = 'ROLE_ACCOUNT_OWNER'
-     */
-    public static final String ROLE_ACCOUNT_OWNER = 'ROLE_ACCOUNT_OWNER'
 
     /**
      * Default role for administrator accounts - the top level account in the hierarchy of roles in the
@@ -96,21 +83,37 @@ class SecurityService {
      * This method should only be used when provisioning a new CustomerAccount.
      */
     void customerAccountSecuritySetup() {
-        println "Tenant ID in SecurityService ${currentTenant.get()}"
-        log.debug "Tenant ID in SecurityService ${currentTenant.get()}"
-        Role hostAdministratorRole = new Role(authority:SecurityService.ROLE_HOST_ADMINISTRATOR)
-        Role underwriterRole = new Role(authority:SecurityService.ROLE_UNDERWRITER)
-        Role customerServiceRepRole = new Role(authority:SecurityService.ROLE_CUSTOMER_SERVICE_REP)
-        Role branchManagerRole = new Role(authority:SecurityService.ROLE_BRANCH_MANAGER)
-        Role marketingManagerRole = new Role(authority:SecurityService.ROLE_MAREKETING_MANAGER)
-        Role salesManagerRole = new Role(authority:SecurityService.ROLE_SALES_MANAGER)
-        Role marketerRole = new Role(authority:SecurityService.ROLE_MARKETER)
-        Role producerRole = new Role(authority:SecurityService.ROLE_PRODUCER)
-        Role everyoneRole = new Role(authority:SecurityService.ROLE_EVERYONE)
-        Role userRole = new Role(authority: SecurityService.ROLE_USER)
-        Role companyManagerRole = new Role(authority: SecurityService.ROLE_COMPANY_MANAGER)
-        Role accountOwnerRole = new Role(authority: SecurityService.ROLE_ACCOUNT_OWNER)
-        Role administratorRole = new Role(authority: SecurityService.ROLE_ADMINISTRATOR)
+//        println "Tenant ID in SecurityService ${currentTenant.get()}"
+//        log.debug "Tenant ID in SecurityService ${currentTenant.get()}"
+        Role hostAdministratorRole = new Role(authority:SecurityService.ROLE_HOST_ADMINISTRATOR,
+                description:"GOD MODE. Performs COGDA level system \n" +
+                "configuration and administration. Also can access any company and act as \n" +
+                "their administrator.")
+        Role underwriterRole = new Role(authority:SecurityService.ROLE_UNDERWRITER, description:
+                "People having access to Submission and Messaging Widget. \n" +
+                "Also can do clearance.")
+        Role customerServiceRepRole = new Role(authority:SecurityService.ROLE_CUSTOMER_SERVICE_REP, description: "Have " +
+                "access to Pipeline, Submissions, Messaging, \n" +
+                "Search clients and Client file")
+        Role branchManagerRole = new Role(authority:SecurityService.ROLE_BRANCH_MANAGER, description: "Local office " +
+                "admin. Like Maria at Rennaissance = Able to oversee \n" +
+                "office functions, office level settings and office level reports.")
+        Role marketingManagerRole = new Role(authority:SecurityService.ROLE_MAREKETING_MANAGER, description: "Have access " +
+                "to CRM/Marketing widget and access to \n" +
+                "Marketing reports.")
+        Role salesManagerRole = new Role(authority:SecurityService.ROLE_SALES_MANAGER, description: "Have access to Sales " +
+                "widget, is able to control \n" +
+                "Pipeline assignments and able to set sales goals to employees.")
+        Role marketerRole = new Role(authority:SecurityService.ROLE_MARKETER, description: "Have access to Submissions, " +
+                "Messaging")
+        Role producerRole = new Role(authority:SecurityService.ROLE_PRODUCER, description: "Has access to Prospect pipeline")
+        Role userRole = new Role(authority: SecurityService.ROLE_USER, description: "All authenticated users.")
+        Role companyManagerRole = new Role(authority: SecurityService.ROLE_COMPANY_MANAGER, description:"Provides access " +
+                "to a dashboard and company level \n" +
+                "reports.")
+        Role administratorRole = new Role(authority: SecurityService.ROLE_ADMINISTRATOR, description:"Company level admin " +
+                "- manages all aspects of the \n" +
+                "Company in COGDA. Profile settings etc.")
 
         hostAdministratorRole.save(failOnError:true)
         underwriterRole.save(failOnError:true)
@@ -120,10 +123,8 @@ class SecurityService {
         salesManagerRole.save(failOnError:true)
         marketerRole.save(failOnError:true)
         producerRole.save(failOnError:true)
-        everyoneRole.save(failOnError:true)
         userRole.save(failOnError:true)
         companyManagerRole.save(failOnError:true)
-        accountOwnerRole.save(failOnError:true)
         administratorRole.save(failOnError:true)
     }
 }

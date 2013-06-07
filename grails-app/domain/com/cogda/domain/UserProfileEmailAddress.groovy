@@ -33,6 +33,6 @@ class UserProfileEmailAddress {
      */
 	@Override	// Override toString for a nicer / more descriptive UI
 	public String toString() {
-		return "${name}";
+		return "${emailAddress}";
 	}
 }

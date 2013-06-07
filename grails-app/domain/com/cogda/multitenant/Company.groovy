@@ -21,13 +21,18 @@ class Company {
      */
     Company parentCompany
 
-    String name
+    String companyName
 
     String doingBusinessAs
 
-    Integer level
-
-    CompanyType companyType
+    /**
+     * Indicates which level in the hierarchy this Company is.
+     * <ul>
+     *     <li>0 = Root (No Parent Company)
+     *     <li>1 = This is a child of the Root Company
+     * </ul>
+     */
+    Integer intCode
 
     CompanyProfile companyProfile
 
@@ -35,15 +40,14 @@ class Company {
     Date	dateCreated
     Date	lastUpdated
 
+    static transients = ['companyProfile']
     static hasMany		= [companies:Company]	// tells GORM to associate other domain objects for a 1-n or n-m mapping
 
     static constraints = {
         parentCompany(nullable:true)
-        name(nullable:false)  // TODO: Add a validator that checks for the company name if this has a ParentCompany - the name should be unique within the company
-        companyProfile(nullable:true)
+        companyName(nullable:false)  // TODO: Add a validator that checks for the company name if this has a ParentCompany - the name should be unique within the company
         doingBusinessAs(nullable:true)
-        level(nullable:true, size:0..100)
-        companyType(nullable:false)
+        intCode(nullable:true, size:0..100)
     }
 
     /*
@@ -51,7 +55,16 @@ class Company {
      */
     @Override
     public String toString() {
-        return "${name}";
+        return "${companyName}";
+    }
+
+    /**
+     * Finds the CompanyProfile associated with this
+     * Company.
+     * @return CompanyProfile
+     */
+    public CompanyProfile getCompanyProfile(){
+        return CompanyProfile.findByCompany(this)
     }
 
     /**

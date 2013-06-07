@@ -22,17 +22,19 @@ class BootStrap {
 
             raisCustomerAccount.withThisTenant {
                 Company company = new Company()
-                company.name = "Renaissance Alliance"
+                company.companyName = "Renaissance Alliance"
                 company.doingBusinessAs = "Renaissance Alliance"
                 company.companyType = wholesaler
-                company.level = 0
+                company.intCode = 0
 
                 if(!company.save()){
                     company.errors.each {
-                        println it
+                        log.debug(it)
                     }
                 }
             }
+
+
 
             SupportedCountryCode usa = new SupportedCountryCode(countryCode:"usa", countryDescription:"United States").save()
             SupportedCountryCode can = new SupportedCountryCode(countryCode:"can", countryDescription:"Canada").save()
@@ -44,8 +46,8 @@ class BootStrap {
                 accountActivationEmailMessage.markupLanguage = MarkupLanguage.MARKDOWN
                 accountActivationEmailMessage.title = "INITIAL_ACCOUNT_ACTIVATION_EMAIL"
                 accountActivationEmailMessage.description = "The email message that is sent to the User when activating a new account."
-                accountActivationEmailMessage.subject = "RapidCommittee Account Verification"
-                accountActivationEmailMessage.fromEmail = "mail@rapidcommittee.com"
+                accountActivationEmailMessage.subject = "Cogda Account Verification"
+                accountActivationEmailMessage.fromEmail = "mail@cogda.com"
                 accountActivationEmailMessage.body = """
 Thank you for your interest in {appName}.  We sincerely look forward to serving you and your organization {organizationName}.
 
@@ -68,8 +70,8 @@ Thank you!
                 accountReminderEmailMessage.markupLanguage = MarkupLanguage.MARKDOWN
                 accountReminderEmailMessage.title = "REMINDER_ACCOUNT_ACTIVATION_EMAIL"
                 accountReminderEmailMessage.description = "The email message that is sent to the User as a reminder to activate their account."
-                accountReminderEmailMessage.subject = "RapidCommittee Account Verification Reminder"
-                accountReminderEmailMessage.fromEmail = "mail@rapidcommittee.com"
+                accountReminderEmailMessage.subject = "Cogda Account Verification Reminder"
+                accountReminderEmailMessage.fromEmail = "mail@cogda.com"
                 accountReminderEmailMessage.body = """
 We recently sent an account activation email to you in response to your request to begin using {appName} at your organization "{organizationName}".
 If you have already activated your account at {appName} then please disregard the following message.
@@ -92,9 +94,9 @@ Thank you!
                 SystemEmailMessageTemplate accountReminderEmailMessage = new SystemEmailMessageTemplate()
                 accountReminderEmailMessage.markupLanguage = MarkupLanguage.MARKDOWN
                 accountReminderEmailMessage.title = "TIMEOUT_ACCOUNT_ACTIVATION_EMAIL"
-                accountReminderEmailMessage.description = "The email message that is sent to the User to tell them that we have deactivated their request to use RapidCommittee."
-                accountReminderEmailMessage.subject = "RapidCommittee Account Verification Timeout"
-                accountReminderEmailMessage.fromEmail = "mail@rapidcommittee.com"
+                accountReminderEmailMessage.description = "The email message that is sent to the User to tell them that we have deactivated their request to use Cogda."
+                accountReminderEmailMessage.subject = "Cogda Account Verification Timeout"
+                accountReminderEmailMessage.fromEmail = "mail@cogda.com"
                 accountReminderEmailMessage.body = """
 We recently sent an account activation email to you in response to your request to begin using {appName} at your organization "{organizationName}".
 
@@ -114,9 +116,9 @@ Sincerely,
                 SystemEmailMessageTemplate accountWelcomeEmailMessage = new SystemEmailMessageTemplate()
                 accountWelcomeEmailMessage.markupLanguage = MarkupLanguage.MARKDOWN
                 accountWelcomeEmailMessage.title = "NEW_ACCOUNT_WELCOME_EMAIL"
-                accountWelcomeEmailMessage.description = "The email message that is sent to the User after they verify their email with us.  Welcoming a new account to RapidCommittee."
-                accountWelcomeEmailMessage.subject = "Welcome to RapidCommittee"
-                accountWelcomeEmailMessage.fromEmail = "mail@rapidcommittee.com"
+                accountWelcomeEmailMessage.description = "The email message that is sent to the User after they verify their email with us.  Welcoming a new account to Cogda."
+                accountWelcomeEmailMessage.subject = "Welcome to Cogda"
+                accountWelcomeEmailMessage.fromEmail = "mail@cogda.com"
                 accountWelcomeEmailMessage.body = """
 Thanks for validating your account with {appName}!  You are now all set to begin using and enjoying {appName}!
 
