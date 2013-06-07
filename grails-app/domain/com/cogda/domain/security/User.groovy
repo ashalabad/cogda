@@ -15,6 +15,17 @@ class User {
 	boolean accountLocked
 	boolean passwordExpired
 
+    /**
+     * Set encodePassword to false to
+     * bypass the encodePassword procedure
+     * this is used in situations where the password
+     * that is being assigned to the user has already been
+     * encoded.
+     */
+    boolean encodePassword = true
+
+    static transients = ['bypassEncodePassword']
+
 	static constraints = {
 		username blank: false, unique: true
 		password blank: false
@@ -39,6 +50,8 @@ class User {
 	}
 
 	protected void encodePassword() {
-		password = springSecurityService.encodePassword(password)
+        if(encodePassword){
+		    password = springSecurityService.encodePassword(password)
+        }
 	}
 }

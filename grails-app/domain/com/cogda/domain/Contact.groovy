@@ -30,9 +30,6 @@ class Contact {
     Address workAddress
     Address homeAddress
 
-    static mapping = {
-    }
-
     static constraints = {
         jobTitle(nullable:true)
         website(nullable:true)

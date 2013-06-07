@@ -1,5 +1,7 @@
 package com.cogda.multitenant
 
+import com.cogda.domain.onboarding.Registration
+
 /**
  * CompanyService
  * A service class encapsulates the core business logic of a Grails application
@@ -26,5 +28,19 @@ class CompanyService {
         qParam = "%" + qParam + "%"
         return Company.executeQuery("from Company c where c.name like :q or c.doingBusinessAs like :qTwo order by c.name",
                 [q:qParam, qTwo:qParam])
+    }
+
+    /**
+     * Creates a company based on a Registration object.
+     * @return Company
+     */
+    Company createCompany(Registration registration){
+        Company company = new Company()
+        company.name = registration.companyName
+        company.companyType = registration.companyType
+        company.doingBusinessAs = registration.companyName
+        company.parentCompany = null
+        company.level = 0
+        company.save(failOnError:true)
     }
 }

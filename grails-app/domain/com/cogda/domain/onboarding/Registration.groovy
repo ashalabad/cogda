@@ -1,7 +1,10 @@
 package com.cogda.domain.onboarding
 
+import com.cogda.common.RegistrationStatus
 import com.cogda.domain.admin.CompanyType
+import com.cogda.domain.security.User
 import com.cogda.multitenant.Company
+import com.cogda.multitenant.CustomerAccount
 
 /**
  * Registration
@@ -35,8 +38,12 @@ class Registration {
     String county
     String country
     Boolean newCompany
+    String subDomain
+    RegistrationStatus registrationStatus = RegistrationStatus.AWAITING_USER_EMAIL_CONFIRMATION
+
 
     static constraints = {
+        importFrom CustomerAccount, include: ["subDomain"]
         firstName(nullable:false, blank:false, minSize:1)
         lastName(nullable:false, blank:false, minSize:1)
         username(nullable:false, blank:false, minSize:2)
@@ -44,7 +51,8 @@ class Registration {
         password(nullable:false, blank:false)
         companyName(nullable:false, blank:false, minSize:1)
         newCompany(nullable:true)
-        companyType(nullable:true)
+        companyType(nullable:false)
+        existingCompany(nullable:true)
         companyTypeOther(nullable:true)
         phoneNumber(nullable:true)
         streetAddressOne(nullable:true)
@@ -54,6 +62,9 @@ class Registration {
         state(nullable:true)
         county(nullable:true)
         country(nullable:true)
+        registrationStatus(nullable:false)
     }
+
+
 
 }

@@ -1,5 +1,7 @@
 package com.cogda.security
 
+import com.cogda.domain.UserProfile
+import com.cogda.domain.onboarding.Registration
 import com.cogda.domain.security.Role
 import com.cogda.domain.security.User
 import com.cogda.domain.security.UserRole
@@ -56,5 +58,26 @@ class UserService {
             }
             return true
         }
+    }
+
+    /**
+     * Creates a user based on the passed in parameters.
+     * encodePassword boolean if set to true
+     * @param username
+     * @param password
+     * @param encodePassword
+     * @return
+     */
+    def createUser(String username, String password, boolean encodePassword = false){
+        // Create the user
+        User user = new User()
+        user.username = username
+        user.password = password
+        user.enabled = true
+        user.accountExpired = false
+        user.accountLocked = false
+        user.passwordExpired = false
+        user.encodePassword = false  // do not allow the password to be re-encoded
+        user.save(failOnError:true)
     }
 }
