@@ -74,7 +74,7 @@ environments {
     }
     production {
         grails.logging.jul.usebridge = false
-        grails.serverURL = "https://cogda.com"
+        grails.serverURL = "http://cogda.cogda.cloudbees.net"
     }
 }
 
