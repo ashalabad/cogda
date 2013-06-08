@@ -11,7 +11,7 @@ class TenantEventService implements InitializingBean {
     def eventBroker
 
     void afterPropertiesSet() {
-        eventBroker.subscribe("tenant.createed") { evt ->
+        eventBroker.subscribe("tenant.created") { evt ->
             println "New tenant created: " + evt.payload
         }
     }

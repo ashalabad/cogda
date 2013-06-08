@@ -12,6 +12,7 @@ import org.junit.*
 class UserRoleServiceTests {
 
     void testSomething() {
-        fail "Implement me"
+
+//        fail "Implement me"
     }
 }

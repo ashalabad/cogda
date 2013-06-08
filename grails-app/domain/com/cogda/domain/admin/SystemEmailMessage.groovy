@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import org.apache.commons.collections.CollectionUtils
-import com.cogda.domain.admin.SystemEmailMessage
 /**
  * IMPORTANT: System maintained.
  * Can not be changed by a client.
@@ -15,7 +14,7 @@ import com.cogda.domain.admin.SystemEmailMessage
  * message body information that we use for
  * sending messages to clients.
  */
-class SystemEmailMessageTemplate {
+class SystemEmailMessage {
     /**
      * The PARAMETER_KEY_PATTERN is the compiled regex pattern
      * that is used to extract dynamic keys from the SystemEmailMessage
@@ -239,10 +238,10 @@ lastUpdated: $lastUpdated"""
      */
     private String convertMarkup(String messageBody){
         switch(markupLanguage){
-            case MarkupLanguage.MARKDOWN:
+            case MarkupLanguageEnum.MARKDOWN:
                 MarkdownProcessor processor = new MarkdownProcessor()
                 return processor.markdown(messageBody)
-            case MarkupLanguage.PLAINTEXT:
+            case MarkupLanguageEnum.PLAINTEXT:
                 return messageBody
             default:
                 log.warn("SystemEmailMessage could not find a markup language to process text-to-html.")

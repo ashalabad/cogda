@@ -8,10 +8,10 @@ import org.junit.*
 /**
  * See the API for {@link grails.test.mixin.domain.DomainClassUnitTestMixin} for usage instructions
  */
-@TestFor(HtmlFragment)
-class HtmlFragmentTests {
+@TestFor(SystemEmailMessage)
+class SystemEmailMessageTests {
 
     void testSomething() {
-//        fail "Implement me"
+//       fail "Implement me"
     }
 }

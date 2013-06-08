@@ -169,7 +169,13 @@ class CustomerAccountServiceTests {
         }
 
         // Verify the UserProfile is associated with the initial administrator and the properties
-        UserProfile userProfile = UserProfile.findByUser(User.findByUsername(registration.username))
+        User user = User.findByUsername(registration.username)
+
+        log.debug "User was found ${user?.username}"
+
+        assert user, "User was not found"
+
+        UserProfile userProfile = UserProfile.findByUser(user)
         assert userProfile, "UserProfile was not found"
         assert userProfile.firstName.equals(registration.firstName)
         assert userProfile.lastName.equals(registration.lastName)
