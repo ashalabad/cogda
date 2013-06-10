@@ -27,7 +27,7 @@ class User {
     static transients = ['bypassEncodePassword']
 
 	static constraints = {
-		username blank: false, unique: true
+		username blank: false, unique: 'tenantId'
 		password blank: false
 	}
 
@@ -54,4 +54,19 @@ class User {
 		    password = springSecurityService.encodePassword(password)
         }
 	}
+
+    String toString(){
+        """
+        User:
+        id: $id
+        version: $version
+        tenantId: $tenantId
+        username: $username
+        password: null
+        enabled: $enabled
+        accountExpired: $accountExpired
+        accountLocked: $accountLocked
+        passwordExpired: $passwordExpired
+        """
+    }
 }

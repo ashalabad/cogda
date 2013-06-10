@@ -9,7 +9,6 @@ import groovy.transform.ToString
  * The UserProfile must represent a User and must be available outside of the
  * tenancy.
  */
-@ToString(includeNames=true, includeFields=true)
 class UserProfile {
 
     User user
@@ -38,7 +37,6 @@ class UserProfile {
                            userProfilePhoneNumbers:UserProfilePhoneNumber,
                            userProfileAddresses:UserProfileAddress]	// tells GORM to associate other domain objects for a 1-n or n-m mapping
 
-
     static constraints = {
         firstName(nullable:false)
         middleName(nullable:true)
@@ -55,5 +53,21 @@ class UserProfile {
      */
     CompanyProfile getCompanyProfile(){
         return company?.companyProfile
+    }
+
+    String toString(){
+        """
+        UserProfile:
+        id: $id
+        version: $version
+        dateCreated: $dateCreated
+        lastUpdated: $lastUpdated
+        published: $published
+        firstName: $firstName
+        middleName: $middleName
+        lastName: $lastName
+        company: ${company?.id}
+        user: ${user?.id}
+        """
     }
 }

@@ -116,6 +116,7 @@ class CustomerAccountServiceTests {
 
     @Test
     void testOnboardCustomerAccount() {
+
         registration = createValidRegistration()
 
         log.debug("Calling customerAccountService.onboardCustomerAccount(registration)")
@@ -168,24 +169,57 @@ class CustomerAccountServiceTests {
 
         }
 
+
+
         // Verify the UserProfile is associated with the initial administrator and the properties
-        User user = User.findByUsername(registration.username)
-
-        log.debug "User was found ${user?.username}"
-
-        assert user, "User was not found"
-
-        UserProfile userProfile = UserProfile.findByUser(user)
+        assert UserProfile.count() == 1, "UserProfile count should be 1"
+        UserProfile userProfile = UserProfile.list().first()
         assert userProfile, "UserProfile was not found"
         assert userProfile.firstName.equals(registration.firstName)
         assert userProfile.lastName.equals(registration.lastName)
         assert userProfile.userProfileEmailAddresses.size() == 1, "UserProfileEmailAddress was not added successfully"
+        assert userProfile.user.username.equals(registration.username), "Username of the Registration did not match the UserProfile.user.username"
 
         UserProfileEmailAddress upea = userProfile.userProfileEmailAddresses.first()
         assert upea.primaryEmailAddress, "primaryEmailAddress should be true"
         assert upea.emailAddress.equals(registration.emailAddress), "emailAddress does not match registration email address"
 
         // Verify the CompanyProfile is associated with the initial Company and its properties
+        assert Company.count() == 1, "Company count should be 1"
+        Company company = Company.list().first()
+        assert company, "Company was not found"
+        assert company.companyName.equals(registration.companyName)
+        assert company.doingBusinessAs.equals(registration.companyName)
+        assert company.parentCompany == null
+        assert company.intCode == 0
+
+        assert CompanyProfile.count() == 1, "CompanyProfile count should be 1"
+        CompanyProfile companyProfile = CompanyProfile.list().first()
+
+        assert companyProfile, "CompanyProfile was not found"
+        assert companyProfile.company, "CompanyProfile does not have an association to a company"
+        assert companyProfile.company.companyName.equals(registration.companyName)
+        assert companyProfile.companyType.equals(registration.companyType)
+        assert companyProfile.companyProfileAddresses.size() == 1
+        CompanyProfileAddress companyProfileAddress = companyProfile.companyProfileAddresses.first()
+        assert companyProfileAddress, "CompanyProfileAddress was not found"
+        assert companyProfileAddress.address.addressOne.equals(registration.streetAddressOne)
+        assert companyProfileAddress.address.addressTwo.equals(registration.streetAddressTwo)
+        assert companyProfileAddress.address.city.equals(registration.city)
+        assert companyProfileAddress.address.country.equals(registration.country)
+        assert companyProfileAddress.address.county.equals(registration.county)
+        assert companyProfileAddress.address.state.equals(registration.state)
+        assert companyProfileAddress.address.zipcode.equals(registration.zipcode)
+        assert companyProfileAddress.primaryAddress == Boolean.TRUE
+
+
+        assert companyProfile.companyProfilePhoneNumbers.size() == 1
+        CompanyProfilePhoneNumber companyProfilePhoneNumber = companyProfile.companyProfilePhoneNumbers.first()
+        assert companyProfilePhoneNumber.primaryPhoneNumber == Boolean.TRUE
+        assert companyProfilePhoneNumber.phoneNumber.phoneNumber.equals(registration.phoneNumber)
+
+
+
 
     }
 
@@ -212,6 +246,7 @@ class CustomerAccountServiceTests {
         registration.city = "Athens"
         registration.state = "GA"
         registration.zipcode = "30601"
+        registration.county = "CLARKE"
         registration.registrationStatus = RegistrationStatus.APPROVED
         registration.subDomain = "rais"
 
