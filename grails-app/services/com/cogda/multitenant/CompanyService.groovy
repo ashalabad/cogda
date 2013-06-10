@@ -29,7 +29,7 @@ class CompanyService {
      */
     List<Company> find(String qParam){
         qParam = "%" + qParam + "%"
-        return Company.executeQuery("from Company c where c.name like :q or c.doingBusinessAs like :qTwo order by c.name",
+        return Company.executeQuery("from Company c where c.companyName like :q or c.doingBusinessAs like :qTwo order by c.companyName",
                 [q:qParam, qTwo:qParam])
     }
 

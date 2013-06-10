@@ -73,7 +73,7 @@ class Company {
      * @return String
      */
     public String prettyCompanyString(){
-        String retString = this.name.trim()
+        String retString = this.companyName.trim()
 
         CompanyProfileAddress companyProfileAddress = this?.companyProfile?.getPrimaryAddress()
         if(companyProfileAddress){

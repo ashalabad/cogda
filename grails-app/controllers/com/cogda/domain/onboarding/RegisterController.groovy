@@ -103,6 +103,8 @@ class RegisterController {
      * @param registerCommand
      */
     def save(RegisterCommand registerCommand) {
+        println registerCommand
+
         AjaxResponseDto ajaxResponseDto = new AjaxResponseDto()
 
         if (registerCommand.hasErrors()) {
@@ -179,7 +181,7 @@ class AvailableUsernameCommand {
 class RegisterCommand {
     SpringSecurityService springSecurityService
     CompanyService companyService
-    static final String companyTypeQuery = "select ct.intCode from CompanyType ct"
+    static final String companyTypeQuery = "select ct.id from CompanyType ct"
 
     String firstName
     String lastName
@@ -190,7 +192,7 @@ class RegisterCommand {
     Long existingCompanyId
     Boolean newCompany
     String companyName
-    Integer companyType
+    Long companyTypeId
     String companyTypeOther
     String phoneNumber
     String streetAddressOne
@@ -213,7 +215,7 @@ class RegisterCommand {
         registration.lastName = this.lastName
         registration.emailAddress = this.emailAddress
         registration.password = springSecurityService.encodePassword(this.password)
-        registration.companyType = CompanyType.findByIntCode(this.companyType)
+        registration.companyType = CompanyType.get(this.companyTypeId)
         registration.phoneNumber = this.phoneNumber
         registration.newCompany = this.newCompany
 
@@ -241,7 +243,7 @@ class RegisterCommand {
                 return ['registerCommand.passwordTwo.nomatch']
             }
         })
-        companyType(blank: false, inList: CompanyType.executeQuery(companyTypeQuery, [cache: true]))
+        companyTypeId(blank: false, inList: CompanyType.executeQuery(companyTypeQuery, [cache: true]))
         newCompany(validator: { val, obj ->
             // if this is a new company then validate that the address information is provided.
             if (val) {
@@ -281,4 +283,30 @@ class RegisterCommand {
             }
         })
     }
+
+    String toString(){
+        """
+        RegisterCommand:
+        firstName: $firstName
+        lastName: $lastName
+        emailAddress: $emailAddress
+        password: *******
+        passwordTwo: *******
+        existingCompany: ${existingCompany?.id}
+        existingCompanyId: $existingCompanyId
+        newCompany: $newCompany
+        companyName: $companyName
+        companyType: $companyType
+        companyTypeOther: $companyTypeOther
+        phoneNumber: $phoneNumber
+        streetAddressOne: $streetAddressOne
+        streetAddressTwo: $streetAddressTwo
+        zipcode: $zipcode
+        city: $city
+        state: $state
+        county: $county
+        country: $country
+        """
+    }
+
 }

@@ -132,7 +132,7 @@
                                     <g:message code="registration.companyType.label" default="Company Type" /></label>
                                 <div class="controls">
                                     <g:select id="companyType" name="companyType" from="${CompanyType.listOrderByIntCode()}"
-                                              optionKey="intCode" optionValue="code" value="${registrationInstance?.companyType?.id}"
+                                              optionKey="id" optionValue="code" value="${registrationInstance?.companyType?.id}"
                                               class="many-to-one"/>
                                     <span class="help-inline">${hasErrors(bean: registrationInstance, field: 'companyType', 'error')}</span>
                                 </div>
