@@ -13,12 +13,17 @@ class DomainFilters {
             before = {
 
                 // Exclusions made to this filter for the purposes of registration:
-                if(controllerName.equals("company") && actionName.equals("typeahead")){
-                    return
-                }
 
 
                 if(request.customerAccount == -1) {
+                    if(controllerName.equals("company") && actionName.equals("typeahead")){
+                        return
+                    }
+
+                    if(controllerName.equals("register") && actionName.equals("availableUsername")){
+                        return
+                    }
+
                     redirect(controller:"register",action:"index")
                 }
             }

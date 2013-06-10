@@ -127,13 +127,20 @@ class RegisterController {
         }
     }
 
+    /**
+     * Renders the string response true if the Username is available.
+     * Renders the string response "false" if the Username is unavailable.
+     * @param availableUsernameCommand
+     * @return String
+     */
     def availableUsername(AvailableUsernameCommand availableUsernameCommand) {
         println params
         boolean valid = Boolean.FALSE
         if (!availableUsernameCommand.hasErrors()) {
             valid = Boolean.TRUE
         }
-        render valid as JSON
+        render valid
+        return
     }
 }
 

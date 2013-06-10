@@ -24,7 +24,6 @@ class BootStrap {
                 Company company = new Company()
                 company.companyName = "Renaissance Alliance"
                 company.doingBusinessAs = "Renaissance Alliance"
-                company.companyType = wholesaler
                 company.intCode = 0
 
                 if(!company.save()){
