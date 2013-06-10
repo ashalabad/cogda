@@ -39,7 +39,16 @@ class Registration {
     String county
     String country
     Boolean newCompany
+
+    /**
+     * subDomain will be the place where this new company's COGDA instance lives.
+     * subDomain.cogda.com
+     */
     String subDomain
+
+    /**
+     * The registrationStatus is the current status of this registration.
+     */
     RegistrationStatus registrationStatus = RegistrationStatus.AWAITING_USER_EMAIL_CONFIRMATION
 
 
