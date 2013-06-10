@@ -28,13 +28,13 @@
                 <ul class="unstyled">
                     <li>
                         <i class="icon-info-sign"></i>
-                        <a href="${createLink(uri: '/about')}">
+                        <a href="http://cogda.com/#divOurSolution">
                             <g:message code="default.about.label"/>
                         </a>
                     </li>
                     <li>
                         <i class="icon-envelope"></i>
-                        <a href="${createLink(uri: '/contact')}">
+                        <a href="http://cogda.com/#divContact">
                             <g:message code="default.contact.label"/>
                         </a>
                     </li>
@@ -44,17 +44,10 @@
             <div class="span8">
                 <h4>Information</h4>
 
-                <p>Designed and built with Twitter's <a href="http://twitter.github.com/bootstrap/"
-                                                        target="_blank">Bootstrap</a>.
-                Code licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0"
-                                           target="_blank">Apache License v2.0</a>.
-                Documentation licensed under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p>
 
-                <p>Icons from <a href="http://fortawesome.github.com/Font-Awesome">Font Awesome</a> and <a
-                        href="http://glyphicons.com">Glyphicons Free</a>, licensed under <a
-                        href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p>
             </div>
         </div>
+
         <h4>Disclaimer</h4>
 
         <p>This Web site may contain other proprietary notices and copyright information, the terms of which must be observed and followed.
