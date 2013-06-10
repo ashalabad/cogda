@@ -24,6 +24,10 @@ class DomainFilters {
                         return
                     }
 
+                    if(controllerName.equals("register") && actionName.equals("save")){
+                        return
+                    }
+
                     redirect(controller:"register",action:"index")
                 }
             }

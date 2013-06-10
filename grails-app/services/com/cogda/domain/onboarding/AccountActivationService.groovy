@@ -55,7 +55,8 @@ class AccountActivationService {
         confLog.emailSubject = emailVerificationMessage.subject
         confLog.emailBody = messageBody
 
-        confLog.save(failOnError:true)
+        confLog.save()
+
         registration.addToEmailConfirmationLogs(confLog)
 
         // Fire the sendEmailConfirmation event method asynchronously after the successful

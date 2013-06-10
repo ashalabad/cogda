@@ -25,6 +25,8 @@ class RegisterController {
     RegisterService registerService
     ErrorMessageResolverService errorMessageResolverService
     SpringSecurityService springSecurityService
+    AccountActivationService accountActivationService
+
 
     static defaultAction = "index"
 
@@ -119,13 +121,12 @@ class RegisterController {
             } else {
 
                 // send the registration verification link to the user
-                String verificationUrl = generateLink('verifyRegistration', [t: registration.token])
-
-
+                String emailVerificationUrl = generateLink('verifyRegistration', [t: registration.token])
+                accountActivationService.prepareEmailVerification(registration, emailVerificationUrl)
 
                 ajaxResponseDto.success = true
                 // Add a success message for this section type
-                ajaxResponseDto.addMessage(message(code: "registration.successful", args: [section.sectionTitle]))
+                ajaxResponseDto.addMessage(message(code: "registration.successful", args: []))
                 ajaxResponseDto.modelObject = [emailAddress: registerCommand.emailAddress]
                 render ajaxResponseDto as JSON
                 return
