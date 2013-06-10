@@ -5,6 +5,7 @@ import com.cogda.domain.onboarding.Registration
 import com.cogda.domain.security.Role
 import com.cogda.domain.security.User
 import com.cogda.domain.security.UserRole
+import com.cogda.multitenant.CustomerAccount
 
 /**
  * UserService
@@ -52,7 +53,7 @@ class UserService {
      * @return boolean
      */
     def availableUsername(String username){
-        User.withoutTenantRestriction {
+        CustomerAccount.withoutTenantRestriction{
             if(User.findByUsername(username)){
                 return false
             }

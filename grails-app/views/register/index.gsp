@@ -58,7 +58,7 @@
             <div class="control-group fieldcontain ${hasErrors(bean: registrationInstance, field: 'username', 'error')} required">
                 <label for="username" class="control-label"><g:message code="registration.username.label" default="Username" /><span class="required-indicator">*</span></label>
                 <div class="controls">
-                    <g:textField name="username" required="" value="${registrationInstance?.username}"/>
+                    <g:textField id="registrationUserName" name="username" required="" value="${registrationInstance?.username}"/>
                     <span class="help-inline">
                         ${hasErrors(bean: registrationInstance, field: 'username', 'error')}
                     </span>
@@ -248,7 +248,7 @@
             }
         });
 
-        $("#registerForm").validate({
+        $("#registrationForm").validate({
             rules: {
                 firstName: {
                     minlength: 1,
@@ -266,7 +266,7 @@
                         type: "POST",
                         data: {
                             username: function() {
-                                return $("#username").val();
+                                return $("#registrationUserName").val();
                             }
                         }
                     }
@@ -284,7 +284,7 @@
             }
         });
 
-        function registrationHandler(data, textStatus) {
+        registrationHandler = function(data, textStatus) {
             if(data.success){
                 for(var i=0; i< data.messages.length; i++){
                     $.pnotify({
