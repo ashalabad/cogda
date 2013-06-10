@@ -12,7 +12,6 @@ import com.cogda.multitenant.CustomerAccount
 // if (System.properties["${appName}.config.location"]) {
 //    grails.config.locations << "file:" + System.properties["${appName}.config.location"]
 // }
-
 grails.project.groupId = appName // change this to alter the default package name and Maven publishing destination
 grails.mime.file.extensions = true // enables the parsing of file extensions from URLs into the request format
 grails.mime.use.accept.header = false
@@ -164,6 +163,8 @@ grails {
                 "mail.smtp.socketFactory.fallback":"false"]
     }
 }
+grails.mail.default.from="postmaster@cogda.com"
+grails.mail.overrideAddress="chris@cogda.com"
 
 // Added by the Spring Security Core plugin:
 grails.plugins.springsecurity.userLookup.userDomainClassName = 'com.cogda.domain.security.User'
@@ -182,3 +183,6 @@ grails.app.context="/"
 // Start: Kickstart plugin configuration
 grails.config.defaults.locations = [KickstartResources]
 // End: Kickstart plugin configuration
+
+
+application.name="Cogda"

@@ -1,5 +1,6 @@
 package com.cogda.multitenant
 
+import com.cogda.BaseIntegrationTest
 import com.cogda.common.RegistrationStatus
 import com.cogda.domain.CompanyProfile
 import com.cogda.domain.CompanyProfileAddress
@@ -25,41 +26,17 @@ import org.apache.commons.logging.LogFactory
 import static org.junit.Assert.*
 import org.junit.*
 
-class CustomerAccountServiceTests {
+class CustomerAccountServiceTests extends BaseIntegrationTest{
 
     private static final log = LogFactory.getLog(this)
 
     SpringSecurityService springSecurityService
     CustomerAccountService customerAccountService
     CompanyService companyService
-    Registration registration
 
     @Before
     void setUp() {
-        CompanyType agency = new CompanyType(code:"Agency/Retailer", intCode:0, description: "Agency/Retailer")
-        if(!agency.save()){
-            agency.errors.each {
-                log.debug it
-            }
-        }
-        CompanyType carrier = new CompanyType(code:"Carrier", intCode:1, description: "Carrier")
-        if(!carrier.save()){
-            carrier.errors.each {
-                log.debug it
-            }
-        }
-        CompanyType reinsurer = new CompanyType(code:"Reinsurer", intCode:2, description: "Reinsurer")
-        if(!reinsurer.save()){
-            reinsurer.errors.each {
-                log.debug it
-            }
-        }
-        CompanyType wholesaler = new CompanyType(code:"Wholesaler (MGA, Broker)", intCode:3, description: "Wholesaler (MGA, Broker)")
-        if(!wholesaler.save()){
-            wholesaler.errors.each {
-                log.debug it
-            }
-        }
+        createCompanyTypes()
     }
 
     @After
@@ -100,7 +77,7 @@ class CustomerAccountServiceTests {
 
     @Test
     void testCreateCustomerAccountThenCompany(){
-        registration = createValidRegistration()
+        Registration registration = createValidRegistration()
         assert !registration.hasErrors(), "Registration has Validation Errors"
         CustomerAccount customerAccount = new CustomerAccount(subDomain: "newsubdomain")
         customerAccountService.create(customerAccount)
@@ -117,7 +94,7 @@ class CustomerAccountServiceTests {
     @Test
     void testOnboardCustomerAccount() {
 
-        registration = createValidRegistration()
+        Registration registration = createValidRegistration()
 
         log.debug("Calling customerAccountService.onboardCustomerAccount(registration)")
         customerAccountService.onboardCustomerAccount(registration)
@@ -218,42 +195,7 @@ class CustomerAccountServiceTests {
         assert companyProfilePhoneNumber.primaryPhoneNumber == Boolean.TRUE
         assert companyProfilePhoneNumber.phoneNumber.phoneNumber.equals(registration.phoneNumber)
 
-
-
-
     }
 
-    /**
-     * Creates a Valid Registration Domain Class.
-     * @return
-     */
-    protected Registration createValidRegistration(){
-        registration = new Registration()
 
-        registration.firstName = "Christopher"
-        registration.lastName = "Kwiatkowski"
-        registration.username = "ctk"
-        registration.emailAddress = "chris@cogda.com"
-        registration.password = springSecurityService.encodePassword("password")
-        registration.companyName = "Cogda Solutions, LLC."
-        registration.companyType = CompanyType.list().first()
-        registration.existingCompany = null
-        registration.companyTypeOther = null
-        registration.phoneNumber = "706-255-9087"
-        registration.streetAddressOne = "1 Press Place"
-        registration.streetAddressTwo = "Suite 200"
-        registration.streetAddressThree = "Office #17"
-        registration.city = "Athens"
-        registration.state = "GA"
-        registration.zipcode = "30601"
-        registration.county = "CLARKE"
-        registration.registrationStatus = RegistrationStatus.APPROVED
-        registration.subDomain = "rais"
-
-        log.debug("Saving Registration Domain Class")
-
-        assert registration.save(), "Registration save failed: ${registration.errors}"
-
-        return registration
-    }
 }

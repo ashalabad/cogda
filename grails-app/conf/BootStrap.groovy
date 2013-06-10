@@ -45,22 +45,22 @@ class BootStrap {
                 accountActivationEmailMessage.markupLanguage = MarkupLanguage.MARKDOWN
                 accountActivationEmailMessage.title = "INITIAL_ACCOUNT_ACTIVATION_EMAIL"
                 accountActivationEmailMessage.description = "The email message that is sent to the User when activating a new account."
-                accountActivationEmailMessage.subject = "Cogda Account Verification"
+                accountActivationEmailMessage.subject = "Cogda Email Verification"
                 accountActivationEmailMessage.fromEmail = "mail@cogda.com"
                 accountActivationEmailMessage.body = """
-    Thank you for your interest in {appName}.  We sincerely look forward to serving you and your organization {organizationName}.
+    Thank you for your interest in {appName}.  We sincerely look forward to serving you and your company.
 
-    Please click the following verification code to activate your new {appName} account.
+    Please click the following verification link to activate your new {appName} account.
 
     {activationUrl}
 
-    Upon successful activation of your account you will be directed to your organization's new {appName} installation!
+    Upon successful activation of your account your company information will be verified and your company's account provisioned on {appName}!
 
     Thank you!
 
     {appName} Team"""
                 accountActivationEmailMessage.acceptsParameters = true
-                accountActivationEmailMessage.requiredParameterNames = ['appName', 'organizationName', 'activationUrl']
+                accountActivationEmailMessage.requiredParameterNames = ['appName', 'activationUrl']
                 accountActivationEmailMessage.save(failOnError:true)
             }
 

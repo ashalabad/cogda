@@ -16,4 +16,6 @@ class RegisterService {
     def list(params){
         Registration.list(params)
     }
+
+
 }

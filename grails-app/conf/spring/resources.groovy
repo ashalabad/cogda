@@ -1,5 +1,6 @@
 import com.cogda.multitenant.CachingTenantRepository
 import com.cogda.multitenant.DomainTenantResolver
+import grails.util.Environment
 
 // Place your Spring DSL code here
 beans = {

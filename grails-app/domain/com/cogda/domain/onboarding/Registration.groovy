@@ -2,6 +2,7 @@ package com.cogda.domain.onboarding
 
 import com.cogda.common.RegistrationStatus
 import com.cogda.domain.admin.CompanyType
+import com.cogda.domain.admin.EmailConfirmationLog
 import com.cogda.domain.security.User
 import com.cogda.multitenant.Company
 import com.cogda.multitenant.CustomerAccount
@@ -40,6 +41,8 @@ class Registration {
     String country
     Boolean newCompany
 
+    String token = UUID.randomUUID().toString().replaceAll('-', '')
+
     /**
      * subDomain will be the place where this new company's COGDA instance lives.
      * subDomain.cogda.com
@@ -51,6 +54,7 @@ class Registration {
      */
     RegistrationStatus registrationStatus = RegistrationStatus.AWAITING_USER_EMAIL_CONFIRMATION
 
+    static hasMany = [emailConfirmationLogs:EmailConfirmationLog]
 
     static constraints = {
         importFrom CustomerAccount, include: ["subDomain"]

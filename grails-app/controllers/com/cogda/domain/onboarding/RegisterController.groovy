@@ -117,6 +117,12 @@ class RegisterController {
                 render ajaxResponseDto as JSON
                 return  // someone is most likely fooling around with the request headers
             } else {
+
+                // send the registration verification link to the user
+                String verificationUrl = generateLink('verifyRegistration', [t: registration.token])
+
+
+
                 ajaxResponseDto.success = true
                 // Add a success message for this section type
                 ajaxResponseDto.addMessage(message(code: "registration.successful", args: [section.sectionTitle]))
@@ -142,6 +148,13 @@ class RegisterController {
         render valid
         return
     }
+
+    protected String generateLink(String action, linkParams) {
+        createLink(base: "$request.scheme://$request.serverName:$request.serverPort$request.contextPath",
+                controller: 'register', action: action,
+                params: linkParams)
+    }
+
 }
 
 class AvailableUsernameCommand {
