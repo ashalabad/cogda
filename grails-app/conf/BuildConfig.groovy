@@ -74,5 +74,7 @@ grails.project.dependency.resolution = {
         compile ":multi-tenant-single-db:0.8.3"
 
         compile ":jquery-datatables:1.7.5"
+
+        compile ":cloud-bees:0.6.2"
     }
 }

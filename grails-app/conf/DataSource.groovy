@@ -50,12 +50,12 @@ environments {
     }
     production {
         dataSource {
-            username = "dev"
-            password = "dev"
-            dbCreate = "" // one of 'create', 'create-drop', 'update', 'validate', ''
+            username = "cogdaprod"
+            password = "10sllow21"
+            dbCreate = "create-drop" // one of 'create', 'create-drop', 'update', 'validate', ''
             pooled = true
             driverClassName = "com.mysql.jdbc.Driver"
-            url = "jdbc:mysql://localhost/cogda_prod"
+            url = "jdbc:mysql://ec2-50-19-213-178.compute-1.amazonaws.com/cogda_prod"
             dialect = org.hibernate.dialect.MySQL5InnoDBDialect
             properties {
                 validationQuery = "SELECT 1"
