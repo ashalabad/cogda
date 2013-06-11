@@ -6,12 +6,15 @@ import com.cogda.domain.admin.EmailConfirmationLog
 import com.cogda.domain.security.User
 import com.cogda.multitenant.Company
 import com.cogda.multitenant.CustomerAccount
+import com.cogda.security.UserService
 
 /**
  * Registration
  * A domain class describes the data object and it's mapping to the database
  */
 class Registration {
+
+    UserService userService
 
     /* Default (injected) attributes of GORM */
 	Long	id
@@ -60,7 +63,7 @@ class Registration {
         firstName(nullable:false, blank:false, minSize:1)
         lastName(nullable:false, blank:false, minSize:1)
         username(nullable:false, blank:false, minSize:2, validator: { val, obj ->
-            if(User.findByUsername(val)){
+            if(!obj.userService.availableUsername(val)){
                 return ['registration.username.taken']
             }
         })
@@ -82,6 +85,7 @@ class Registration {
         country(nullable:true)
         registrationStatus(nullable:false)
         subDomain(nullable:true)
+        token(nullable:false, blank:false)
     }
 
 
