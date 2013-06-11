@@ -3,6 +3,7 @@ package com.cogda
 import com.cogda.common.MarkupLanguage
 import com.cogda.common.RegistrationStatus
 import com.cogda.domain.admin.CompanyType
+import com.cogda.domain.admin.SupportedCountryCode
 import com.cogda.domain.admin.SystemEmailMessageTemplate
 import com.cogda.domain.onboarding.Registration
 import grails.plugins.springsecurity.SpringSecurityService
@@ -43,6 +44,11 @@ class BaseIntegrationTest {
                 log.debug it
             }
         }
+    }
+
+    public void createSupportedCountryCodes(){
+        SupportedCountryCode usa = new SupportedCountryCode(countryCode:"usa", countryDescription:"United States").save()
+        SupportedCountryCode can = new SupportedCountryCode(countryCode:"can", countryDescription:"Canada").save()
     }
 
     /**

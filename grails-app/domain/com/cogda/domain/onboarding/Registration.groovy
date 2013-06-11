@@ -59,6 +59,8 @@ class Registration {
 
     static hasMany = [emailConfirmationLogs:EmailConfirmationLog]
 
+    static transients = ['userService']
+
     static constraints = {
         firstName(nullable:false, blank:false, minSize:1)
         lastName(nullable:false, blank:false, minSize:1)

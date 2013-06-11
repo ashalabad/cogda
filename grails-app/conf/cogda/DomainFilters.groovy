@@ -16,6 +16,11 @@ class DomainFilters {
 
 
                 if(request.customerAccount == -1) {
+
+                    if(controllerName.equals("emailVerification")){
+                        return
+                    }
+
                     if(controllerName.equals("company") && actionName.equals("typeahead")){
                         return
                     }

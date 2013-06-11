@@ -130,6 +130,24 @@ class BootStrap {
                 accountWelcomeEmailMessage.requiredParameterNames = ['appName', 'organizationUrl']
                 accountWelcomeEmailMessage.save()
             }
+
+            if(!SystemEmailMessageTemplate.findByTitle("VERIFIED_SUCCESSFULLY_EMAIL")){
+                SystemEmailMessageTemplate verifiedEmailMessage = new SystemEmailMessageTemplate()
+                verifiedEmailMessage.markupLanguage = MarkupLanguage.MARKDOWN
+                verifiedEmailMessage.title = "VERIFIED_SUCCESSFULLY_EMAIL"
+                verifiedEmailMessage.description = "The email message that is sent to the User after they verify their email with us. "
+                verifiedEmailMessage.subject = "Your email has been verified by Cogda"
+                verifiedEmailMessage.fromEmail = "mail@cogda.com"
+                verifiedEmailMessage.body = """
+    Thank you for validating your email address with {appName}!
+
+    Sincerely,
+
+    {appName} Team"""
+                verifiedEmailMessage.acceptsParameters = true
+                verifiedEmailMessage.requiredParameterNames = ['appName', 'organizationUrl']
+                verifiedEmailMessage.save()
+            }
         }
     }
     def destroy = {

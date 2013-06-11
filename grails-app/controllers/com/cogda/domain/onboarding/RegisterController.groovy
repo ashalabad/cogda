@@ -181,7 +181,7 @@ class AvailableUsernameCommand {
 class RegisterCommand {
     SpringSecurityService springSecurityService
     CompanyService companyService
-    static final String companyTypeQuery = "select ct.id from CompanyType ct"
+    UserService userService
 
     String firstName
     String lastName
@@ -247,7 +247,7 @@ class RegisterCommand {
                 return ['registerCommand.passwordTwo.nomatch']
             }
         })
-        companyTypeId(blank: false, inList: CompanyType.executeQuery(companyTypeQuery, [cache: true]))
+        companyTypeId(blank: false, inList: CompanyType.retrieveIds())
         newCompany(validator: { val, obj ->
             // if this is a new company then validate that the address information is provided.
             if (val) {

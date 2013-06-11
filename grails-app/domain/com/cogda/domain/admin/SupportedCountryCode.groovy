@@ -47,6 +47,6 @@ class SupportedCountryCode {
      * @return List
      */
     static List retrieveSupportedCountryCodes(){
-        return SupportedCountryCode.executeQuery("select sc.countryCode from SupportedCountryCode sc order by sc.countryCode desc")
+        return SupportedCountryCode.list().collect { it.countryCode }
     }
 }

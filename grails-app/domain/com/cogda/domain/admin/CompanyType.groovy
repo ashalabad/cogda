@@ -31,7 +31,7 @@ class CompanyType {
      * @return List
      */
     static List retrieveIntCodes(){
-        return CompanyType.executeQuery("select ct.intCode from CompanyType ct")
+        return CompanyType.list().collect { it.intCode }
     }
 
     /**
@@ -39,14 +39,14 @@ class CompanyType {
      * @return List
      */
     static List retrieveIds(){
-        return CompanyType.executeQuery("select ct.id from CompanyType ct")
+        return CompanyType.list().collect { it.id }
     }
 
     /*
      * Methods of the Domain Class
      */
-//	@Override	// Override toString for a nicer / more descriptive UI 
-//	public String toString() {
-//		return "${name}";
-//	}
+	@Override	// Override toString for a nicer / more descriptive UI
+	public String toString() {
+		return "${code}";
+	}
 }
