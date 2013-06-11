@@ -183,6 +183,28 @@ class BootStrap {
                 verifiedEmailMessage.requiredParameterNames = ['appName', 'organizationUrl']
                 verifiedEmailMessage.save()
             }
+
+            if(!SystemEmailMessageTemplate.findByTitle("RESET_PASSWORD_EMAIL")){
+                SystemEmailMessageTemplate accountActivationEmailMessage = new SystemEmailMessageTemplate()
+                accountActivationEmailMessage.markupLanguage = MarkupLanguage.MARKDOWN
+                accountActivationEmailMessage.title = "RESET_PASSWORD_EMAIL"
+                accountActivationEmailMessage.description = "The email message that is sent to the User when they are attempting to reset their password."
+                accountActivationEmailMessage.subject = "Cogda Reset Forgotten Password"
+                accountActivationEmailMessage.fromEmail = "mail@cogda.com"
+                accountActivationEmailMessage.body = """
+    You are receiving this message because you had completed the Forgot Password form in {appName}.
+
+    Please click the following verification link to reset your {appName} password from within {appName}.
+
+    {resetPasswordUrl}
+
+    Thank you!
+
+    {appName} Team"""
+                accountActivationEmailMessage.acceptsParameters = true
+                accountActivationEmailMessage.requiredParameterNames = ['appName', 'resetPasswordUrl']
+                accountActivationEmailMessage.save(failOnError:true)
+            }
         }
     }
     def destroy = {
