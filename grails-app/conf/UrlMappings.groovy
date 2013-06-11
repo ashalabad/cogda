@@ -29,6 +29,21 @@ class UrlMappings {
 				controller(matches:/^((?!(api|mobile|web)).*)$/)
 		  	}
 		}
+
+        name api0: "/api/admin/$controller/$id"(parseRequest:true){
+            action = [GET: "show", PUT: "update"]
+            constraints {
+                id(matches:/\d+/)
+            }
+        }
+
+        name api1: "/api/admin/$controller"(parseRequest:true){
+            action = [GET: "list", POST: "save", PUT: "update"]
+        }
+
+        name api2: "/api/admin/$controller/$action"(parseRequest:true)
+
+        name api3: "/api/admin/$controller/$action/$id"(parseRequest:true)
 		
 		/* 
 		 * System Pages without controller 
