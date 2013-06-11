@@ -186,6 +186,7 @@ class RegisterCommand {
     String firstName
     String lastName
     String emailAddress
+    String username
     String password
     String passwordTwo
     Company existingCompany
@@ -218,6 +219,9 @@ class RegisterCommand {
         registration.companyType = CompanyType.get(this.companyTypeId)
         registration.phoneNumber = this.phoneNumber
         registration.newCompany = this.newCompany
+        registration.companyName = this.companyName
+        registration.username = this.username
+
 
         if (registration.newCompany) {
             registration.streetAddressOne = this.streetAddressOne
@@ -234,7 +238,7 @@ class RegisterCommand {
     }
 
     static constraints = {
-        importFrom Registration, include: ["firstName", "lastName", "emailAddress", "newCompany",
+        importFrom Registration, include: ["firstName", "lastName", "emailAddress", "username", "newCompany",
                 "companyName", "companyTypeOther", "phoneNumber", "streetAddressOne",
                 "streetAddressTwo", "zipcode", "city", "state", "county", "country"]
         password(blank: false, minSize: 6, maxSize: 20)
@@ -247,11 +251,11 @@ class RegisterCommand {
         newCompany(validator: { val, obj ->
             // if this is a new company then validate that the address information is provided.
             if (val) {
-                if (!obj.companyType) {
-                    return ['registration.companyType.blank']
+                if (!obj.companyTypeId) {
+                    return ['registration.companyTypeId.blank']
                 } else {
-                    if (!CompanyType.retrieveIntCodes().contains(obj.companyType)) {
-                        return ['registration.companyType.inList']
+                    if (!CompanyType.retrieveIds().contains(obj.companyTypeId)) {
+                        return ['registration.companyTypeId.inList']
                     }
                 }
                 if (!obj.phoneNumber?.trim()) {
@@ -296,7 +300,7 @@ class RegisterCommand {
         existingCompanyId: $existingCompanyId
         newCompany: $newCompany
         companyName: $companyName
-        companyType: $companyType
+        companyTypeId: $companyTypeId
         companyTypeOther: $companyTypeOther
         phoneNumber: $phoneNumber
         streetAddressOne: $streetAddressOne
