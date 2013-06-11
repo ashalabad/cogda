@@ -33,6 +33,9 @@ class DomainFilters {
                         return
                     }
 
+                    if (controllerName.equals("adminRegister"))
+                        return
+
                     redirect(controller:"register",action:"index")
                 }
             }
