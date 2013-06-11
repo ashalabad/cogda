@@ -57,10 +57,13 @@ class Registration {
     static hasMany = [emailConfirmationLogs:EmailConfirmationLog]
 
     static constraints = {
-        importFrom CustomerAccount, include: ["subDomain"]
         firstName(nullable:false, blank:false, minSize:1)
         lastName(nullable:false, blank:false, minSize:1)
-        username(nullable:false, blank:false, minSize:2)
+        username(nullable:false, blank:false, minSize:2, validator: { val, obj ->
+            if(User.findByUsername(val)){
+                return ['registration.username.taken']
+            }
+        })
         emailAddress(nullable:false, email:true, blank:false)
         password(nullable:false, blank:false)
         companyName(nullable:false, blank:false, minSize:1)
@@ -78,6 +81,7 @@ class Registration {
         county(nullable:true)
         country(nullable:true)
         registrationStatus(nullable:false)
+        subDomain(nullable:true)
     }
 
 

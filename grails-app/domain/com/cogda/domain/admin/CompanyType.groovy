@@ -34,6 +34,14 @@ class CompanyType {
         return CompanyType.executeQuery("select ct.intCode from CompanyType ct")
     }
 
+    /**
+     * Retrieves the ids from the CompanyType in a List
+     * @return List
+     */
+    static List retrieveIds(){
+        return CompanyType.executeQuery("select ct.id from CompanyType ct")
+    }
+
     /*
      * Methods of the Domain Class
      */

@@ -126,15 +126,16 @@
                     </div>
                     <div id="collapseOne" class="accordion-body collapse">
                         <div class="accordion-inner">
-                            <div class="control-group fieldcontain ${hasErrors(bean: registrationInstance, field: 'companyType', 'error')} ">
-                                <label for="companyType" class="control-label">
+                            <div class="control-group fieldcontain ${hasErrors(bean: registrationInstance, field: 'companyTypeId', 'error')} ">
+                                <label for="companyTypeId" class="control-label">
+                                    <g:message code="registration.companyTypeId.label" default="Company Type" />
                                     <span class="required-indicator">*</span>
-                                    <g:message code="registration.companyType.label" default="Company Type" /></label>
+                                </label>
                                 <div class="controls">
-                                    <g:select id="companyType" name="companyType" from="${CompanyType.listOrderByIntCode()}"
-                                              optionKey="id" optionValue="code" value="${registrationInstance?.companyType?.id}"
+                                    <g:select id="companyTypeId" name="companyTypeId" from="${CompanyType.listOrderByIntCode()}"
+                                              optionKey="id" optionValue="code" value="${registrationInstance?.companyTypeId?.id}"
                                               class="many-to-one"/>
-                                    <span class="help-inline">${hasErrors(bean: registrationInstance, field: 'companyType', 'error')}</span>
+                                    <span class="help-inline">${hasErrors(bean: registrationInstance, field: 'companyTypeId', 'error')}</span>
                                 </div>
                             </div>
 
