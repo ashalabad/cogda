@@ -88,6 +88,19 @@ class Registration {
         token(nullable:false, blank:false)
     }
 
-
+    /**
+     * Retrieves a Registration domain class based on the status being equal to AWAITING_USER_EMAIL_CONFIRMATION and the
+     * passed in token.
+     * @param token
+     * @return Registration
+     */
+    static Registration retrievePendingRegistrationByToken(String token){
+        def c = Registration.createCriteria()
+        Registration registration = c.get(){
+            eq("token",token)
+            eq("registrationStatus", RegistrationStatus.AWAITING_USER_EMAIL_CONFIRMATION)
+        }
+        return registration
+    }
 
 }
