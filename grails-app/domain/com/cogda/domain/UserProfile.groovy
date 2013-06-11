@@ -31,16 +31,16 @@ class UserProfile {
 
     String lastName
 
-    static transients   = ['companyProfile']
+    static transients   = ['companyProfile', 'primaryEmailAddress']
 
 	static hasMany		= [userProfileEmailAddresses:UserProfileEmailAddress,
                            userProfilePhoneNumbers:UserProfilePhoneNumber,
                            userProfileAddresses:UserProfileAddress]	// tells GORM to associate other domain objects for a 1-n or n-m mapping
 
     static constraints = {
-        firstName(nullable:false)
+        firstName(nullable:false, blank:false)
         middleName(nullable:true)
-        lastName(nullable:false)
+        lastName(nullable:false, blank:false)
         company(nullable:true)
         user(nullable:true)
         published(nullable:true)
@@ -69,5 +69,16 @@ class UserProfile {
         company: ${company?.id}
         user: ${user?.id}
         """
+    }
+
+    /**
+     * Get the Primary Email Address for this UserProfile
+     * @return String
+     */
+    public String getPrimaryEmailAddress(){
+        UserProfileEmailAddress userProfileEmailAddress = this.userProfileEmailAddresses.find {
+            it.primaryEmailAddress == Boolean.TRUE
+        }
+        return userProfileEmailAddress?.emailAddress
     }
 }
