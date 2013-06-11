@@ -123,7 +123,7 @@ class RegisterController {
             } else {
 
                 // send the registration verification link to the user
-                String emailVerificationUrl = generateLink('verifyRegistration', [t: registration.token])
+                String emailVerificationUrl = generateLink('verify', [t: registration.token])
                 accountActivationService.prepareEmailVerification(registration, emailVerificationUrl)
 
                 ajaxResponseDto.success = true
@@ -154,7 +154,7 @@ class RegisterController {
 
     protected String generateLink(String action, linkParams) {
         createLink(base: "$request.scheme://$request.serverName:$request.serverPort$request.contextPath",
-                controller: 'register', action: action,
+                controller: 'emailVerification', action: action,
                 params: linkParams)
     }
 
