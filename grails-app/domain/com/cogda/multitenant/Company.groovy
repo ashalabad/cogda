@@ -42,6 +42,8 @@ class Company {
 
     static transients = ['companyProfile']
     static hasMany		= [companies:Company]	// tells GORM to associate other domain objects for a 1-n or n-m mapping
+    static mappedBy     = [companies:'parentCompany']
+
 
     static constraints = {
         parentCompany(nullable:true)
@@ -83,5 +85,14 @@ class Company {
             }
         }
         return retString
+    }
+
+    /**
+     * Gets the top-level company from the Company hierarchy.
+     */
+    static Company retrieveRootCompany(){
+
+        return Company.findWhere(parentCompany:null)
+
     }
 }

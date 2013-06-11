@@ -23,5 +23,4 @@ class CustomerAccount implements Tenant {
     Integer tenantId() {
         id
     }
-	
 }

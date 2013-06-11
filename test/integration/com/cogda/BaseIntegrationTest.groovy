@@ -2,6 +2,8 @@ package com.cogda
 
 import com.cogda.common.MarkupLanguage
 import com.cogda.common.RegistrationStatus
+import com.cogda.domain.UserProfile
+import com.cogda.domain.UserProfileEmailAddress
 import com.cogda.domain.admin.CompanyType
 import com.cogda.domain.admin.SupportedCountryCode
 import com.cogda.domain.admin.SystemEmailMessageTemplate
@@ -18,6 +20,27 @@ import org.apache.commons.logging.LogFactory
  */
 class BaseIntegrationTest {
     private static final log = LogFactory.getLog(this)
+
+    /**
+     * Creates a valid UserProfile object and returns it.
+     * @return  UserProfile
+     */
+    public UserProfile createUserProfile(){
+        UserProfile userProfile = new UserProfile()
+        userProfile.firstName = "firstName"
+        userProfile.lastName = "lastName"
+        userProfile.published = false
+        assert userProfile.save(), "UserProfile test domain class was not saved successfully"
+        String primaryEmailAddress = "primary@cogda.com"
+        List userProfileEmailAddresses = [new UserProfileEmailAddress(emailAddress: primaryEmailAddress, primaryEmailAddress: true, published:false, userProfile: userProfile),
+                new UserProfileEmailAddress(emailAddress: "mezz@cogda.com", primaryEmailAddress: false, published:false, userProfile: userProfile)]
+        userProfileEmailAddresses.each { UserProfileEmailAddress userProfileEmailAddress ->
+            userProfileEmailAddress.userProfile = userProfile
+            userProfile.addToUserProfileEmailAddresses(userProfileEmailAddress)
+        }
+
+        return userProfile
+    }
 
     public void createCompanyTypes(){
         CompanyType agency = new CompanyType(code:"Agency/Retailer", intCode:0, description: "Agency/Retailer")
@@ -140,6 +163,33 @@ Thank you!
         return verifiedEmailMessage
     }
 
+    /**
+     * Creates the RESET_PASSWORD_EMAIL template.
+     * @return SystemEmailMessageTemplate
+     */
+    public SystemEmailMessageTemplate createResetPasswordMessageTemplate(){
+        SystemEmailMessageTemplate resetPasswordEmailMessage = new SystemEmailMessageTemplate()
+        resetPasswordEmailMessage.markupLanguage = MarkupLanguage.MARKDOWN
+        resetPasswordEmailMessage.title = "RESET_PASSWORD_EMAIL"
+        resetPasswordEmailMessage.description = "The email message that is sent to the User when they are attempting to reset their password."
+        resetPasswordEmailMessage.subject = "Cogda Reset Forgotten Password"
+        resetPasswordEmailMessage.fromEmail = "mail@cogda.com"
+        resetPasswordEmailMessage.body = """
+    You are receiving this message because you had completed the Forgot Password form in {appName}.
+
+    Please click the following verification link to reset your {appName} password from within {appName}.
+
+    {resetPasswordUrl}
+
+    Thank you!
+
+    {appName} Team"""
+        resetPasswordEmailMessage.acceptsParameters = true
+        resetPasswordEmailMessage.requiredParameterNames = ['appName', 'resetPasswordUrl']
+        resetPasswordEmailMessage.save(failOnError:true)
+
+        return resetPasswordEmailMessage
+    }
 
     void testNothing(){
         assert 1 == 1
