@@ -358,6 +358,7 @@
         $("#reset").click(function() {
             validator.resetForm();
             $("#newCompanyControlGroup div.off").click();
+            $("#firstName").focus();
         });
 
     });
