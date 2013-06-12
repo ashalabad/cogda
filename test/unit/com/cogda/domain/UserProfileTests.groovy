@@ -17,7 +17,6 @@ class UserProfileTests {
 
     UserProfile userProfile
 
-
     void setUp() {
         // Setup logic here
     }

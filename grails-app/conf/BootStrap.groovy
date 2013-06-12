@@ -74,6 +74,37 @@ class BootStrap {
                 customerAccountService.onboardCustomerAccount(registration)
             }
 
+            if(!Registration.findBySubDomain("libertymutual")){
+                Registration registration
+                Registration.withTransaction {
+                    registration = new Registration()
+
+                    registration.firstName = "Bill"
+                    registration.lastName = "Alexander"
+                    registration.username = "administrator"
+                    registration.emailAddress = "chris@cogda.com"
+                    registration.password = springSecurityService.encodePassword("password")
+                    registration.companyName = "Liberty Mutual"
+                    registration.companyType = CompanyType.findByCode("Carrier")
+                    registration.existingCompany = null
+                    registration.companyTypeOther = null
+                    registration.phoneNumber = "706-255-9087"
+                    registration.streetAddressOne = "1 Press Place"
+                    registration.streetAddressTwo = "Suite 200"
+                    registration.streetAddressThree = "Office #17"
+                    registration.city = "Athens"
+                    registration.state = "GA"
+                    registration.zipcode = "30601"
+                    registration.county = "CLARKE"
+                    registration.registrationStatus = RegistrationStatus.APPROVED
+                    registration.subDomain = "libertymutual"
+
+                    assert registration.save(), "Registration save failed: ${registration.errors}"
+                }
+
+                customerAccountService.onboardCustomerAccount(registration)
+            }
+
 
             if(!SystemEmailMessageTemplate.findByTitle("INITIAL_ACCOUNT_ACTIVATION_EMAIL")){
                 SystemEmailMessageTemplate accountActivationEmailMessage = new SystemEmailMessageTemplate()

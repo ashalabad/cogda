@@ -19,7 +19,7 @@ class Role {
 	}
 
 	static constraints = {
-		authority(blank: false, unique: true)
+		authority(blank: false, unique: 'tenantId')
         description(nullable:true, maxSize:250)
         systemRole(nullable:true)
 	}
