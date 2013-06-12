@@ -1,4 +1,4 @@
-package com.cogda.multitenant
+package com.cogda.security
 
 import com.cogda.domain.security.PasswordCode
 import grails.test.mixin.*
