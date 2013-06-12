@@ -1,4 +1,4 @@
-package com.cogda.multitenant
+package com.cogda.domain.security
 
 /**
  * PasswordCode
@@ -8,6 +8,10 @@ class PasswordCode {
 
     String username
     String token = UUID.randomUUID().toString().replaceAll('-', '')
+
+    /**
+     * Hibernate Managed
+     */
     Date dateCreated
 
     static mapping = {

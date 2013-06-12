@@ -1,9 +1,8 @@
 package com.cogda.security
 
 import com.cogda.domain.security.User
-import com.cogda.multitenant.PasswordCode
+import com.cogda.domain.security.PasswordCode
 import grails.plugins.springsecurity.SpringSecurityService
-import org.codehaus.groovy.grails.plugins.springsecurity.NullSaltSource
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 
 /**
