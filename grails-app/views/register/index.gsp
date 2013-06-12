@@ -271,17 +271,12 @@
             }
         });
 
-        // Reset handler
-        $("#reset").click(function() {
-            $("#newCompanyControlGroup div.off").click();
-        });
-
         // Whether or not the new company section of the form should be required
         function newCompanySectionRequired() {
             return $("#newCompany").is(":checked");
         }
 
-        $("#registrationForm").validate({
+        var validator = $("#registrationForm").validate({
             rules: {
                 firstName: {
                     minlength: 1,
@@ -356,6 +351,12 @@
             submitHandler: function(form) {
 
             } */
+        });
+
+        // Reset handler
+        $("#reset").click(function() {
+            validator.resetForm();
+            $("#newCompanyControlGroup div.off").click();
         });
 
     });
