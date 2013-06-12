@@ -25,6 +25,7 @@ class AccountActivationServiceTests extends BaseIntegrationTest {
     void setUp() {
         createCompanyTypes()
         createValidSystemEmailMessageTemplate()
+
     }
 
     @After
@@ -41,9 +42,39 @@ class AccountActivationServiceTests extends BaseIntegrationTest {
     }
 
     @Test
+    void testConfirmEmailVerification() {
+        Registration registration = createValidRegistration()
+        createConfirmEmailVerificationMessageTemplate()
+
+        EmailConfirmationLog emailConfirmationLog = accountActivationService.confirmEmailVerification(registration)
+
+        SystemEmailMessageTemplate systemEmailMessageTemplate = SystemEmailMessageTemplate.findByTitle("VERIFIED_SUCCESSFULLY_EMAIL")
+        assert systemEmailMessageTemplate, "SystemEmailMessageTemplate was not setup properly"
+
+        assert emailConfirmationLog, "EmailConfirmationLog is null"
+        assert emailConfirmationLog.emailSendReason == EmailSendReasonCode.EMAIL_VERIFIED_SUCCESSFULLY
+        assert emailConfirmationLog.emailErrors == null
+        assert emailConfirmationLog.emailTo.equals(registration.emailAddress)
+        assert emailConfirmationLog.emailFrom.equals(grailsApplication.config.grails.mail.default.from)
+        assert emailConfirmationLog.emailSubject.equals(systemEmailMessageTemplate.subject)
+    }
+
+    @Test
+    void testSendEmailVerified() {
+        Registration registration = createValidRegistration()
+        createConfirmEmailVerificationMessageTemplate()
+
+        EmailConfirmationLog emailConfirmationLog = accountActivationService.confirmEmailVerification(registration)
+
+        accountActivationService.sendEmailVerified(emailConfirmationLog)
+        assert emailConfirmationLog.emailSendStatus == EmailSendStatusCode.SUCCESS
+
+    }
+
+    @Test
     void testPrepareEmailVerification() {
         Registration registration = createValidRegistration()
-        String emailVerificationUrl = "https://cogda.com/register/verifyRegistration"
+        String emailVerificationUrl = "https://cogda.com/emailVerification/verify?t=20020202020"
         EmailConfirmationLog emailConfirmationLog = accountActivationService.prepareEmailVerification(registration, emailVerificationUrl)
 
         SystemEmailMessageTemplate systemEmailMessageTemplate = SystemEmailMessageTemplate.first()
@@ -71,4 +102,6 @@ class AccountActivationServiceTests extends BaseIntegrationTest {
 
 
     }
+
+
 }

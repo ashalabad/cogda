@@ -1,4 +1,4 @@
-package com.cogda.domain.com.cogda.domain
+package com.cogda.domain
 
 import com.cogda.domain.Address
 import com.cogda.domain.CompanyProfile

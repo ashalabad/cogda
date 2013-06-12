@@ -1,9 +1,11 @@
 package com.cogda.domain.onboarding
 
+
 import com.cogda.common.RegistrationStatus
 import com.cogda.domain.admin.CompanyType
 import com.cogda.multitenant.Company
 import com.cogda.multitenant.CustomerAccount
+import com.cogda.security.UserService
 import grails.test.mixin.domain.DomainClassUnitTestMixin
 
 import static org.junit.Assert.*
@@ -80,9 +82,19 @@ class RegistrationTests {
         mockDomain(CustomerAccount)
         mockDomain(CompanyType)
         mockDomain(Company)
-
+//        def userServiceMock = mockFor(UserService, true)
+//        userServiceMock.demand.availableUsername { String username -> Boolean.TRUE}
         registration = new Registration()
+
+        def mockControl = mockFor(UserService, false)
+        mockControl.demand.availableUsername(0..9) { String username ->
+            true
+        }
+        registration.userService = mockControl.createMock()
+
         registration.registrationStatus = null
+
+        registration.token = null
 
         assertFalse registration.validate()
         assert "nullable" == registration.errors["firstName"].code
@@ -93,7 +105,9 @@ class RegistrationTests {
         assert "nullable" == registration.errors["companyName"].code
         assert "nullable" == registration.errors["companyType"].code
         assert "nullable" == registration.errors["registrationStatus"].code
+        assert "nullable" == registration.errors["token"].code
 
+        assert !registration.errors["subDomain"]
         assert !registration.errors["newCompany"]
         assert !registration.errors["companyTypeOther"]
         assert !registration.errors["existingCompany"]
@@ -160,12 +174,19 @@ class RegistrationTests {
 
         registration = new Registration()
 
+        def mockControl = mockFor(UserService, false)
+        mockControl.demand.availableUsername(0..5) { String username ->
+            true
+        }
+        registration.userService = mockControl.createMock()
+
         registration.firstName = "  "
         registration.lastName = "  "
         registration.username = "  "
         registration.emailAddress = "  "
         registration.password = "  "
         registration.companyName = "  "
+        registration.token = "  "
 
         assertFalse registration.validate()
         assert "blank" == registration.errors["firstName"].code
@@ -174,6 +195,7 @@ class RegistrationTests {
         assert "blank" == registration.errors["emailAddress"].code
         assert "blank" == registration.errors["password"].code
         assert "blank" == registration.errors["companyName"].code
+        assert "blank" == registration.errors["token"].code
 
         registration.firstName = "firstName"
         registration.validate()
@@ -215,6 +237,12 @@ class RegistrationTests {
 
         registration = new Registration()
 
+        def mockControl = mockFor(UserService, false)
+        mockControl.demand.availableUsername(0..5) { String username ->
+            true
+        }
+        registration.userService = mockControl.createMock()
+
         registration.emailAddress = "c.com  "
         assertFalse registration.validate()
         assert "email.invalid" == registration.errors["emailAddress"].code
@@ -232,6 +260,12 @@ class RegistrationTests {
      */
      void testMinSize(){
          registration = new Registration()
+
+         def mockControl = mockFor(UserService, false)
+         mockControl.demand.availableUsername(0..5) { String username ->
+             true
+         }
+         registration.userService = mockControl.createMock()
 
          registration.firstName = "a"
          registration.validate()
@@ -254,5 +288,60 @@ class RegistrationTests {
          assert !registration.errors["companyName"]
      }
 
+     void testRetrievePendingRegistrationByToken(){
+         mockDomain(CompanyType, [new CompanyType(code:"R", description: "R", intCode:0)])
 
+         String token = UUID.randomUUID().toString().replaceAll('-', '')
+         String pendingToken = UUID.randomUUID().toString().replaceAll('-', '')
+
+         Registration storedRegistration = createValidRegistration()
+         def mockControl = mockFor(UserService, false)
+         mockControl.demand.availableUsername(0..5) { String username ->
+             true
+         }
+         storedRegistration.userService = mockControl.createMock()
+
+         // Set the fields that will be used in the tests
+         storedRegistration.token = token
+         storedRegistration.registrationStatus = RegistrationStatus.AWAITING_USER_EMAIL_CONFIRMATION
+
+         Registration pendingRegistration = createValidRegistration()
+         pendingRegistration.userService = mockControl.createMock()
+
+         pendingRegistration.registrationStatus = RegistrationStatus.AWAITING_ADMIN_APPROVAL
+         pendingRegistration.token = pendingToken
+
+         mockDomain(Registration, [storedRegistration, pendingRegistration])
+
+         Registration r = Registration.retrievePendingRegistrationByToken(token)
+         assert r, "Registration was not found"
+
+         r = Registration.retrievePendingRegistrationByToken(pendingToken)
+         assertNull "Registration was found and should not have been since it has an invalid status", r
+     }
+
+    private Registration createValidRegistration(){
+        Registration reg = new Registration()
+        reg.firstName = "Christopher"
+        reg.lastName = "Kwiatkowski"
+        reg.username = "ctk"
+        reg.emailAddress = "chris@cogda.com"
+        reg.password = "939020kiddko2"
+        reg.companyName = "Cogda Solutions, LLC."
+        reg.companyType = CompanyType.list().first()
+        reg.existingCompany = null
+        reg.companyTypeOther = null
+        reg.phoneNumber = "706-255-9087"
+        reg.streetAddressOne = "1 Press Place"
+        reg.streetAddressTwo = "Suite 200"
+        reg.streetAddressThree = "Office #17"
+        reg.city = "Athens"
+        reg.state = "GA"
+        reg.zipcode = "30601"
+        reg.county = "CLARKE"
+        reg.registrationStatus = RegistrationStatus.AWAITING_USER_EMAIL_CONFIRMATION
+        reg.subDomain = "rais"
+
+        return reg
+    }
 }

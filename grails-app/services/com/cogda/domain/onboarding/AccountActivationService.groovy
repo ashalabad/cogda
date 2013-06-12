@@ -2,6 +2,7 @@ package com.cogda.domain.onboarding
 
 import com.cogda.account.EmailSendReasonCode
 import com.cogda.account.EmailSendStatusCode
+import com.cogda.common.RegistrationStatus
 import com.cogda.domain.admin.EmailConfirmationLog
 import com.cogda.domain.admin.SystemEmailMessage
 import com.cogda.domain.admin.SystemEmailMessageTemplate
@@ -22,6 +23,72 @@ class AccountActivationService {
     GrailsApplication grailsApplication
     PageRenderer groovyPageRenderer
     MailService mailService
+
+    /**
+     * Saves the registration and updates the status to AWAITING_ADMIN_APPROVAL.
+     * TESTED: NO
+     * @param registration
+     * @return EmailConfirmationLog
+     */
+    public EmailConfirmationLog confirmEmailVerification(Registration registration){
+
+        SystemEmailMessageTemplate emailVerificationMessage = SystemEmailMessageTemplate.findByTitle("VERIFIED_SUCCESSFULLY_EMAIL")
+
+        registration.registrationStatus = RegistrationStatus.AWAITING_ADMIN_APPROVAL
+        registration.save()
+
+        Map messageParameters = [:]
+        messageParameters.appName = grailsApplication.config.application.name
+
+        // Apply the dynamic values to the body of the email template
+        String messageBody = emailVerificationMessage.writeMessageOutput(messageParameters)
+
+        String emailBody = groovyPageRenderer.render(view:'/email/confirmationLayout', model:[body:messageBody])
+
+        EmailConfirmationLog confLog = new EmailConfirmationLog()
+        confLog.emailSendReason = EmailSendReasonCode.EMAIL_VERIFIED_SUCCESSFULLY
+        confLog.emailTo = registration.emailAddress
+        confLog.emailFrom = grailsApplication.config.grails.mail.default.from
+        confLog.emailSubject = emailVerificationMessage.subject
+        confLog.emailBody = messageBody
+
+        confLog.save()
+
+        registration.addToEmailConfirmationLogs(confLog)
+
+        event('sendEmailVerifiedMessage', confLog)
+
+        return confLog
+    }
+
+    @grails.events.Listener(topic="sendEmailVerifiedMessage")
+    def sendEmailConfirmedMessage(EventMessage eventMessage){
+        EmailConfirmationLog confLog = (EmailConfirmationLog)eventMessage.data
+        sendEmailVerified(confLog)
+    }
+
+    /**
+     * Sends the email that tells the user that their email was verified.
+     * TESTED: NO
+     */
+    def sendEmailVerified(EmailConfirmationLog confLog){
+        MailMessage message
+        try {
+            message = mailService.sendMail {
+                to confLog.emailTo
+                from confLog.emailFrom
+                subject confLog.emailSubject
+                html confLog.emailBody
+            }
+            confLog.emailSendStatus = EmailSendStatusCode.SUCCESS
+            confLog.save()
+        } catch (Throwable t) {
+            confLog.emailErrors = t.toString()
+            confLog.emailSendStatus = EmailSendStatusCode.FAILURE
+            confLog.save()
+            log.error("Mail send failed", t)
+        }
+    }
 
     /**
      * Send an email confirmation based on the
@@ -61,7 +128,7 @@ class AccountActivationService {
 
         // Fire the sendEmailConfirmation event method asynchronously after the successful
         // save of EmailConfirmationLog for email processing.
-        event('firstAccountActivationEmailConfirmation', confLog)
+        event('sendEmailVerificationMessage', confLog)
 
         return confLog
     }

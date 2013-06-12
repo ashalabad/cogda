@@ -3,7 +3,7 @@ package com.cogda.multitenant
 import com.cogda.domain.CompanyProfile
 import com.cogda.domain.UserProfile
 import com.cogda.domain.UserProfileService
-import com.cogda.domain.com.cogda.domain.CompanyProfileService
+import com.cogda.domain.CompanyProfileService
 import com.cogda.domain.onboarding.Registration
 import com.cogda.domain.security.Role
 import com.cogda.domain.security.User
