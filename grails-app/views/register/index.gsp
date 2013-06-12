@@ -251,6 +251,8 @@
             }
         });
 
+        // Automatically show/hide the new company form when the user changes 
+        // the new company select checkbox
         $("#newCompanyControlGroup").click(function() {
             if ($("#newCompany").is(":checked") !==
                     $("#newCompanyAccordion #collapseOne").hasClass("in")) {
@@ -258,6 +260,18 @@
             }
         });
 
+        // the "Canada exception"
+        $("#country").change(function() {
+            if ($("select#country option:selected").val() === "can") {
+                $("#state").val("").attr("disabled", "disabled");
+                $("#city").val("").attr("disabled", "disabled");
+            } else if ($("#state").attr("disabled") === "disabled") {
+                $("#state").val("").removeAttr("disabled");
+                $("#city").val("").removeAttr("disabled");
+            }
+        });
+
+        // Whether or not the new company section of the form should be required
         function newCompanySectionRequired() {
             return $("#newCompany").is(":checked");
         }
