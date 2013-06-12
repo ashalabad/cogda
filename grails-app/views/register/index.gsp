@@ -78,7 +78,7 @@
                     <span class="required-indicator">*</span>
                 </label>
                 <div class="controls">
-                    <g:passwordField name="password" required="" value="${registrationInstance?.password}"/>
+                    <g:passwordField name="password" id="passwordOne" required="" value="${registrationInstance?.password}"/>
                     <span class="help-inline">
                         ${hasErrors(bean: registrationInstance, field: 'password', 'error')}
                     </span>
@@ -109,7 +109,7 @@
                 </div>
             </div>
 
-            <div class="control-group fieldcontain ${hasErrors(bean: registrationInstance, field: 'newCompany', 'error')} ">
+            <div class="control-group fieldcontain ${hasErrors(bean: registrationInstance, field: 'newCompany', 'error')} " id="newCompanyControlGroup">
                 <label for="newCompany" class="control-label"><g:message code="registration.newCompany.label" default="New Company?" /></label>
                 <div class="controls">
                     <bs:checkBox name="newCompany" value="${registrationInstance?.newCompany}" />
@@ -120,7 +120,7 @@
             <div class="accordion" id="newCompanyAccordion">
                 <div class="accordion-group">
                     <div class="accordion-heading">
-                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+                        <a id="newCompanyAccordionToggle" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
                             <g:message code="registration.companyInformation.label" default="Company Information" />
                         </a>
                     </div>
@@ -144,7 +144,7 @@
                                     <span class="required-indicator">*</span>
                                 </label>
                                 <div class="controls">
-                                    <g:textField name="phoneNumber" value="${registrationInstance?.phoneNumber}"/>
+                                    <g:textField id="phoneNumber" name="phoneNumber" value="${registrationInstance?.phoneNumber}"/>
                                     <span class="help-inline">${hasErrors(bean: registrationInstance, field: 'phoneNumber', 'error')}</span>
                                 </div>
                             </div>
@@ -154,7 +154,7 @@
                                     <span class="required-indicator">*</span>
                                 </label>
                                 <div class="controls">
-                                    <g:textField name="streetAddressOne" value="${registrationInstance?.streetAddressOne}"/>
+                                    <g:textField id="streetAddressOne" name="streetAddressOne" value="${registrationInstance?.streetAddressOne}"/>
                                     <span class="help-inline">${hasErrors(bean: registrationInstance, field: 'streetAddressOne', 'error')}</span>
                                 </div>
                             </div>
@@ -164,7 +164,7 @@
 
                                 </label>
                                 <div class="controls">
-                                    <g:textField name="streetAddressTwo" value="${registrationInstance?.streetAddressTwo}"/>
+                                    <g:textField id="streetAddressTwo" name="streetAddressTwo" value="${registrationInstance?.streetAddressTwo}"/>
                                     <span class="help-inline">${hasErrors(bean: registrationInstance, field: 'streetAddressTwo', 'error')}</span>
                                 </div>
                             </div>
@@ -174,7 +174,7 @@
                                     <span class="required-indicator">*</span>
                                 </label>
                                 <div class="controls">
-                                    <g:textField name="zipcode" value="${registrationInstance?.zipcode}"/>
+                                    <g:textField id="zipcode" name="zipcode" value="${registrationInstance?.zipcode}"/>
                                     <span class="help-inline">${hasErrors(bean: registrationInstance, field: 'zipcode', 'error')}</span>
                                 </div>
                             </div>
@@ -184,7 +184,7 @@
                                     <span class="required-indicator">*</span>
                                 </label>
                                 <div class="controls">
-                                    <g:textField name="city" value="${registrationInstance?.city}"/>
+                                    <g:textField id="city" name="city" value="${registrationInstance?.city}"/>
                                     <span class="help-inline">${hasErrors(bean: registrationInstance, field: 'city', 'error')}</span>
                                 </div>
                             </div>
@@ -194,7 +194,7 @@
                                     <span class="required-indicator">*</span>
                                 </label>
                                 <div class="controls">
-                                    <g:select from="${UsState.values()}" value="${UsState}" optionValue="value" optionKey="key" name="state"></g:select>
+                                    <g:select from="${UsState.values()}" value="${UsState}" optionValue="value" optionKey="key" id="state" name="state"></g:select>
 
                                     <span class="help-inline">${hasErrors(bean: registrationInstance, field: 'state', 'error')}</span>
                                 </div>
@@ -204,7 +204,7 @@
                                 <label for="county" class="control-label"><g:message code="address.county.label" default="County" />
                                 </label>
                                 <div class="controls">
-                                    <g:textField name="county" value="${registrationInstance?.county}"/>
+                                    <g:textField id="county" name="county" value="${registrationInstance?.county}"/>
                                     <span class="help-inline">${hasErrors(bean: registrationInstance, field: 'county', 'error')}</span>
                                 </div>
                             </div>
@@ -214,7 +214,8 @@
                                     <span class="required-indicator">*</span>
                                 </label>
                                 <div class="controls">
-                                    <g:countrySelect name="country"
+                                    <g:countrySelect id="country"
+                                                     name="country"
                                                      from="${com.cogda.domain.admin.SupportedCountryCode.retrieveSupportedCountryCodes()}"
                                                      value="${registrationInstance?.country}"/>
                                     <span class="help-inline">${hasErrors(bean: registrationInstance, field: 'country', 'error')}</span>
@@ -224,6 +225,7 @@
                     </div>
                 </div>
             </div>
+
             <g:submitButton name="create" class="btn btn-primary" value="${message(code: 'default.button.register.label', default: 'Register')}" />
             <button class="btn" type="reset"><g:message code="default.button.reset.label" default="Reset" /></button>
 		</div>
@@ -233,7 +235,7 @@
 </section>
 
 <g:javascript>
-    $(document).ready(function(){
+    $(document).ready(function() {
 
         $('.ajax-typeahead').typeahead({
             source: function(query, process) {
@@ -249,6 +251,17 @@
             }
         });
 
+        $("#newCompanyControlGroup").click(function() {
+            if ($("#newCompany").is(":checked") !==
+                    $("#newCompanyAccordion #collapseOne").hasClass("in")) {
+                $("#newCompanyAccordionToggle").click();
+            }
+        });
+
+        function newCompanySectionRequired() {
+            return $("#newCompany").is(":checked");
+        }
+
         $("#registrationForm").validate({
             rules: {
                 firstName: {
@@ -260,10 +273,10 @@
                     required: true
                 },
                 username: {
-                    minlength: 3,
+                    minlength: 2,
                     required: true,
                     remote: {
-                        url:'<g:createLink controller="register" action="availableUsername"/>',
+                        url:'<g:createLink controller="register" action="availableUsername" />',
                         type: "POST",
                         data: {
                             username: function() {
@@ -271,6 +284,47 @@
                             }
                         }
                     }
+                },
+                password: {
+                    minlength: 6,
+                    maxlength: 20,
+                    required: true
+                },
+                passwordTwo: {
+                    equalTo: "#passwordOne"
+                },
+
+
+                companyTypeId: {
+                    required: newCompanySectionRequired
+                },
+                phoneNumber: {
+                    required: newCompanySectionRequired,
+                    phoneUS: true
+                },
+                streetAddressOne: {
+                    required: newCompanySectionRequired
+                },
+                streetAddressTwo: {
+
+                },
+                zipcode: {
+                    required: newCompanySectionRequired,
+                    digits: true,
+                    minLength: 5,
+                    maxLength: 5
+                },
+                city: {
+                    required: newCompanySectionRequired
+                },
+                state: {
+                    required: newCompanySectionRequired
+                },
+                county: {
+                    
+                },
+                country: {
+                    required: newCompanySectionRequired
                 }
             },
             highlight: function(element) {
@@ -279,36 +333,37 @@
             success: function(element) {
                 element.text('OK!').addClass('valid')
                         .closest('.control-group').removeClass('error').addClass('success');
-            },
-            submitHandler: function(form){
+            }/*,
+            submitHandler: function(form) {
 
-            }
+            } */
         });
 
-        registrationHandler = function(data, textStatus) {
-            if(data.success){
-                for(var i=0; i< data.messages.length; i++){
-                    $.pnotify({
-                        title: 'Save Successful',
-                        text: data.messages[i],
-                        type: 'success',
-                        opacity: .8,
-                        delay: 10000
-                    });
-                }
-            }else{
-                for(i in data.errors){
-                    $.pnotify({
-                        title: 'Save Failed',
-                        text: data.errors[i],
-                        type: 'error',
-                        opacity: .8,
-                        hide: false
-                    });
-                }
+    });
+
+    function registrationHandler(data, textStatus) {
+        if (data.success) {
+            for(var i = 0; i < data.messages.length; i++) {
+                $.pnotify({
+                    title: 'Save Successful',
+                    text: data.messages[i],
+                    type: 'success',
+                    opacity: 0.8,
+                    delay: 10000
+                });
+            }
+        } else {
+            for (var i in data.errors) {
+                $.pnotify({
+                    title: 'Save Failed',
+                    text: data.errors[i],
+                    type: 'error',
+                    opacity: 0.8,
+                    hide: false
+                });
             }
         }
-    });
+    }
 
     // After the successful submit of the registration data:
     // Email Confirmation: Your account has been created! A confirmation email will be sent to your email address. Please click on the link in the email to verify your account. After you confirm your email address, an email will be sent to the company admin to approve the account.
