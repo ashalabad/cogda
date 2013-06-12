@@ -38,7 +38,7 @@ class BootStrap {
             if(!SupportedCountryCode.findByCountryCode("usa")){
                 new SupportedCountryCode(countryCode:"usa", countryDescription:"United States").save()
             }
-            if(!SupportedCountryCode.findByCountryCode("usa")){
+            if(!SupportedCountryCode.findByCountryCode("can")){
                 new SupportedCountryCode(countryCode:"can", countryDescription:"Canada").save()
             }
 //        SupportedCountryCode bra = new SupportedCountryCode(countryCode:"bra", countryDescription:"Brazil").save()
