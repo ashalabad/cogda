@@ -1,5 +1,7 @@
 package com.cogda.security
 
+import com.cogda.domain.UserProfile
+import com.cogda.domain.admin.CustomerNotificationService
 import com.cogda.domain.security.User
 import com.cogda.domain.security.PasswordCode
 import grails.plugins.springsecurity.SpringSecurityService
@@ -11,6 +13,7 @@ import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
  */
 class PasswordController {
     SpringSecurityService springSecurityService
+    CustomerNotificationService customerNotificationService
 
     static allowedMethods = [forgotPassword:'POST']
 
@@ -20,32 +23,29 @@ class PasswordController {
 
     def forgotPassword() {
         String username = params.username
+
         if (!username) {
             flash.error = message(code: 'spring.security.forgotPassword.username.missing')
-            forward action: 'index'
             return
         }
 
         User user = User.findByUsername(username)
         if (!user) {
             flash.error = message(code: 'spring.security.forgotPassword.user.notFound')
-            forward action: 'index'
             return
         }
+
+        UserProfile userProfile = UserProfile.findByUser(user)
 
         PasswordCode passwordCode = new PasswordCode(username: user.username)
         passwordCode.save(flush: true)
 
-        String url = generateLink('resetPassword', [t: passwordCode.token])
+        String resetPasswordUrl = generateLink('password', 'resetPassword', [t: passwordCode.token])
 
+        customerNotificationService.prepareResetPasswordMessage(userProfile, resetPasswordUrl)
 
+        flash.message = message(code:'spring.security.resetPassword.emailSent', args:[userProfile.primaryEmailAddress])
 
-        mailService.sendMail {
-            to user.email
-            from conf.ui.forgotPassword.emailFrom
-            subject conf.ui.forgotPassword.emailSubject
-            html body.toString()
-        }
 
         [emailSent: true]
     }
@@ -129,10 +129,26 @@ class PasswordController {
         }
     }
 
+    static final forgotPasswordFormValidator = { value, command ->
+        if (!command.username && !command.emailAddress) {
+            return 'forgotPasswordCommand.onefield.required'
+        }
+    }
+
     protected String generateLink(String controller, String action, linkParams) {
         createLink(base: "$request.scheme://$request.serverName:$request.serverPort$request.contextPath",
                 controller: controller, action: action,
                 params: linkParams)
+    }
+}
+
+class ForgotPasswordCommand {
+    String username
+    String emailAddress
+
+    static constraints = {
+        username()
+        emailAddress(email:true)
     }
 }
 
