@@ -1,5 +1,6 @@
 package com.cogda.security
 
+import com.cogda.BaseController
 import com.cogda.domain.UserProfile
 import com.cogda.domain.admin.CustomerNotificationService
 import com.cogda.domain.security.User
@@ -11,7 +12,7 @@ import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
  * PasswordController
  * A controller class handles incoming web requests and performs actions such as redirects, rendering views and so on.
  */
-class PasswordController {
+class PasswordController extends BaseController{
     SpringSecurityService springSecurityService
     CustomerNotificationService customerNotificationService
 
@@ -37,15 +38,19 @@ class PasswordController {
 
         UserProfile userProfile = UserProfile.findByUser(user)
 
-        PasswordCode passwordCode = new PasswordCode(username: user.username)
-        passwordCode.save(flush: true)
+        // If the user already has a PasswordCode out in the system then
+        // re-use it.
+        PasswordCode passwordCode = PasswordCode.findByUsername(user.username)
+        if(!passwordCode){
+            passwordCode = new PasswordCode(username: user.username)
+            passwordCode.save(flush: true)
+        }
 
         String resetPasswordUrl = generateLink('password', 'resetPassword', [t: passwordCode.token])
 
         customerNotificationService.prepareResetPasswordMessage(userProfile, resetPasswordUrl)
 
         flash.message = message(code:'spring.security.resetPassword.emailSent', args:[userProfile.primaryEmailAddress])
-
 
         [emailSent: true]
     }
@@ -57,11 +62,12 @@ class PasswordController {
         PasswordCode passwordCode = token ? PasswordCode.findByToken(token) : null
         if (!passwordCode) {
             flash.error = message(code: 'spring.security.resetPassword.badCode')
-            redirect uri: SpringSecurityUtils.securityConfig.successHandler.defaultTargetUrl
+            redirect uri: "/"
             return
         }
 
         if (!request.post) {
+            flash.message = ""
             return [token: token, command: new ResetPasswordCommand()]
         }
 
@@ -84,7 +90,7 @@ class PasswordController {
 
         flash.message = message(code: 'spring.security.resetPassword.success')
 
-        redirect(controller:"login", action:"auth")
+        redirect(url:generateRedirectLink())
     }
 
     static final passwordValidator = { String password, command ->
@@ -123,8 +129,8 @@ class PasswordController {
         password && password.matches(passValidationRegex)
     }
 
-    static final password2Validator = { value, command ->
-        if (command.password != command.password2) {
+    static final passwordTwoValidator = { value, command ->
+        if (command.password != command.passwordTwo) {
             return 'command.passwordTwo.error.mismatch'
         }
     }
@@ -160,6 +166,6 @@ class ResetPasswordCommand {
     static constraints = {
         username nullable: false
         password blank: false, nullable: false, validator: PasswordController.passwordValidator
-        passwordTwo validator: PasswordController.password2Validator
+        passwordTwo validator: PasswordController.passwordTwoValidator
     }
 }

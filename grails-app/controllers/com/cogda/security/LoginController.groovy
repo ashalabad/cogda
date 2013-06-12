@@ -1,7 +1,9 @@
 package com.cogda.security
 
+import com.cogda.BaseController
 import com.cogda.multitenant.CustomerAccount
 import grails.converters.JSON
+import org.apache.commons.logging.LogFactory
 
 import javax.servlet.http.HttpServletResponse
 
@@ -15,8 +17,8 @@ import org.springframework.security.core.context.SecurityContextHolder as SCH
 import org.springframework.security.web.WebAttributes
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
-class LoginController {
-
+class LoginController extends BaseController {
+    private static final log = LogFactory.getLog(this)
     /**
      * Dependency injection for the authenticationTrustResolver.
      */
@@ -32,9 +34,13 @@ class LoginController {
      */
     def index = {
         if (springSecurityService.isLoggedIn()) {
-            redirect uri: SpringSecurityUtils.securityConfig.successHandler.defaultTargetUrl
+            String redirectLink = generateRedirectLink()
+            log.debug redirectLink
+            redirect(url:redirectLink)
         } else {
-            redirect action: 'auth', params: params
+            String redirectLink = generateRedirectLink("login", "auth")
+            log.debug redirectLink
+            redirect(url:redirectLink)
         }
     }
 
@@ -46,7 +52,9 @@ class LoginController {
         def config = SpringSecurityUtils.securityConfig
 
         if (springSecurityService.isLoggedIn()) {
-            redirect uri: config.successHandler.defaultTargetUrl
+            String redirectLink = generateRedirectLink()
+            log.debug redirectLink
+            redirect(url:redirectLink)
             return
         }
 

@@ -1,6 +1,6 @@
 <html>
 <head>
-	<title><g:message code="springSecurity.login.title"/> ${customerAccountInstance?.id}</title>
+	<title><g:message code="spring.security.login.title" args="${mt.rootCompanyName()}"/></title>
 	<meta name="layout" content="kickstart" />
 
 	<g:set var="layout_nomainmenu"		value="${true}" scope="request"/>

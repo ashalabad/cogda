@@ -18,15 +18,23 @@
 
             <g:if test = "${flash.message}">
                 <div class="alert alert-success" id="messages">
-
+                      ${flash.message}
                 </div>
             </g:if>
+
+            <g:hasErrors bean="${command}">
+                <div class="alert alert-error">
+                    <g:renderErrors bean="${command}" as="list" />
+                </div>
+            </g:hasErrors>
 
             <div class="alert alert-info" id="resetPasswordMessage" >
                 <g:message code="spring.security.resetPassword.description"/>
             </div>
 
-            <g:form class = "form-horizontal" name="resetPasswordForm" autocomplete="off" novalidate="novalidate">
+            <g:form class = "form-horizontal" name="resetPasswordForm" autocomplete="off" novalidate="novalidate"
+                action="resetPassword" controller="password">
+
                 <g:hiddenField name="t" value="${token}"/>
 
                 <fieldset class="form">
@@ -34,26 +42,25 @@
                     <g:message code="forgotPassword.title"/>
                 </legend>
 
+                <div class="control-group fieldcontain ${hasErrors(bean: resetPasswordCommandInstance, field: 'password', 'error')} required">
+                    <label for="password" class="control-label">
+                        <g:message code="springSecurity.login.resetPassword.label" default="New Password" /> <span class="required-indicator">*</span> </label>
+                    <div class="controls">
+                        <g:passwordField name="password" required="" value=""/>
+                        <span class="help-inline"></span>
+                    </div>
+                </div>
+                <div class="control-group fieldcontain ${hasErrors(bean: resetPasswordCommandInstance, field: 'passwordTwo', 'error')} required">
+                    <label for="passwordTwo" class="control-label">
+                        <g:message code="springSecurity.login.resetPasswordTwo.label" default="Re-Type New Password" /> <span class="required-indicator">*</span>
+                    </label>
+                    <div class="controls">
+                        <g:passwordField name="passwordTwo" required="" value=""/>
+                        <span class="help-inline"></span>
+                    </div>
+                </div>
                 <div class="form-actions">
-                    <div class="control-group fieldcontain ${hasErrors(bean: resetPasswordCommandInstance, field: 'password', 'error')} required">
-                        <label for="password" class="control-label">
-                            <g:message code="springSecurity.login.password.label" default="Password" /> <span class="required-indicator">*</span> </label>
-                        <div class="controls">
-                            <g:textField name="password" required="" value=""/>
-                            <span class="help-inline"></span>
-                        </div>
-                    </div>
-                    <div class="control-group fieldcontain ${hasErrors(bean: resetPasswordCommandInstance, field: 'passwordTwo', 'error')} required">
-                        <label for="passwordTwo" class="control-label">
-                            <g:message code="springSecurity.login.passwordTwo.label" default="Re-Type Password" />
-                            <span class="required-indicator">*</span>
-                        </label>
-                        <div class="controls">
-                            <g:textField name="passwordTwo" required="" value=""/>
-                            <span class="help-inline"></span>
-                        </div>
-                    </div>
-                    <g:submitButton name="create" class="btn btn-primary" value="${message(code: 'spring.security.resetPassword.resetButton', default: 'Reset Password')}" />
+                    <g:submitButton name="resetPasswordButton" class="btn btn-primary" value="${message(code: 'spring.security.resetPassword.resetButton', default: 'Reset Password')}" />
                 </div>
             </g:form>
         </section>

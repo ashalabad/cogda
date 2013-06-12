@@ -170,6 +170,7 @@ grails.mail.overrideAddress="chris@cogda.com"
 grails.plugins.springsecurity.userLookup.userDomainClassName = 'com.cogda.domain.security.User'
 grails.plugins.springsecurity.userLookup.authorityJoinClassName = 'com.cogda.domain.security.UserRole'
 grails.plugins.springsecurity.authority.className = 'com.cogda.domain.security.Role'
+grails.plugins.springsecurity.logout.afterLogoutUrl = "/"
 
 
 // Start: MultiTenant plugin configuration
