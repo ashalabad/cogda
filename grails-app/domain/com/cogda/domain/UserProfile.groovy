@@ -31,11 +31,17 @@ class UserProfile {
 
     String lastName
 
+    String description
+
     static transients   = ['companyProfile', 'primaryEmailAddress']
 
 	static hasMany		= [userProfileEmailAddresses:UserProfileEmailAddress,
                            userProfilePhoneNumbers:UserProfilePhoneNumber,
                            userProfileAddresses:UserProfileAddress]	// tells GORM to associate other domain objects for a 1-n or n-m mapping
+
+    static mapping = {
+        description type:'text'
+    }
 
     static constraints = {
         firstName(nullable:false, blank:false)
@@ -44,6 +50,7 @@ class UserProfile {
         company(nullable:true)
         user(nullable:true)
         published(nullable:true)
+        description(nullable:true)
     }
 
     /**
