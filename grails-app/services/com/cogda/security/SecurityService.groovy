@@ -88,32 +88,33 @@ class SecurityService {
         Role hostAdministratorRole = new Role(authority:SecurityService.ROLE_HOST_ADMINISTRATOR,
                 description:"GOD MODE. Performs COGDA level system \n" +
                 "configuration and administration. Also can access any company and act as \n" +
-                "their administrator.")
+                "their administrator.", systemRole: Boolean.TRUE)
+
         Role underwriterRole = new Role(authority:SecurityService.ROLE_UNDERWRITER, description:
                 "People having access to Submission and Messaging Widget. \n" +
-                "Also can do clearance.")
+                "Also can do clearance.", systemRole: Boolean.TRUE)
         Role customerServiceRepRole = new Role(authority:SecurityService.ROLE_CUSTOMER_SERVICE_REP, description: "Have " +
                 "access to Pipeline, Submissions, Messaging, \n" +
-                "Search clients and Client file")
+                "Search clients and Client file", systemRole: Boolean.TRUE)
         Role branchManagerRole = new Role(authority:SecurityService.ROLE_BRANCH_MANAGER, description: "Local office " +
                 "admin. Like Maria at Rennaissance = Able to oversee \n" +
-                "office functions, office level settings and office level reports.")
+                "office functions, office level settings and office level reports.", systemRole: Boolean.TRUE)
         Role marketingManagerRole = new Role(authority:SecurityService.ROLE_MAREKETING_MANAGER, description: "Have access " +
                 "to CRM/Marketing widget and access to \n" +
-                "Marketing reports.")
+                "Marketing reports.", systemRole: Boolean.TRUE)
         Role salesManagerRole = new Role(authority:SecurityService.ROLE_SALES_MANAGER, description: "Have access to Sales " +
                 "widget, is able to control \n" +
-                "Pipeline assignments and able to set sales goals to employees.")
+                "Pipeline assignments and able to set sales goals to employees.", systemRole: Boolean.TRUE)
         Role marketerRole = new Role(authority:SecurityService.ROLE_MARKETER, description: "Have access to Submissions, " +
                 "Messaging")
-        Role producerRole = new Role(authority:SecurityService.ROLE_PRODUCER, description: "Has access to Prospect pipeline")
-        Role userRole = new Role(authority: SecurityService.ROLE_USER, description: "All authenticated users.")
+        Role producerRole = new Role(authority:SecurityService.ROLE_PRODUCER, description: "Has access to Prospect pipeline", systemRole: Boolean.TRUE)
+        Role userRole = new Role(authority: SecurityService.ROLE_USER, description: "All authenticated users.", systemRole: Boolean.TRUE)
         Role companyManagerRole = new Role(authority: SecurityService.ROLE_COMPANY_MANAGER, description:"Provides access " +
                 "to a dashboard and company level \n" +
-                "reports.")
+                "reports.", systemRole: Boolean.TRUE)
         Role administratorRole = new Role(authority: SecurityService.ROLE_ADMINISTRATOR, description:"Company level admin " +
                 "- manages all aspects of the \n" +
-                "Company in COGDA. Profile settings etc.")
+                "Company in COGDA. Profile settings etc.", systemRole: Boolean.TRUE)
 
         hostAdministratorRole.save(failOnError:true)
         underwriterRole.save(failOnError:true)
