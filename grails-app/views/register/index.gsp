@@ -30,7 +30,7 @@
     </div>
 
 
-    <g:formRemote class = "form-horizontal" name="registrationForm" url="[controller:'register', action:'save']"
+    <g:formRemote class="form-horizontal" name="registrationForm" url="[controller:'register', action:'save']"
                   method="POST" onSuccess="registrationHandler(data, textStatus)"
                   novalidate="novalidate">
 
@@ -227,7 +227,7 @@
             </div>
 
             <g:submitButton name="create" class="btn btn-primary" value="${message(code: 'default.button.register.label', default: 'Register')}" />
-            <button class="btn" type="reset"><g:message code="default.button.reset.label" default="Reset" /></button>
+            <button class="btn cancel" type="reset" id="reset"><g:message code="default.button.reset.label" default="Reset" /></button>
 		</div>
         </fieldset>
 	</g:formRemote>
@@ -269,6 +269,11 @@
                 $("#state").val("").removeAttr("disabled");
                 $("#city").val("").removeAttr("disabled");
             }
+        });
+
+        // Reset handler
+        $("#reset").click(function() {
+            $("#newCompanyControlGroup div.off").click();
         });
 
         // Whether or not the new company section of the form should be required
