@@ -239,10 +239,9 @@ class RegisterCommand {
 
     static constraints = {
         importFrom Registration, include: ["firstName", "lastName", "emailAddress", "username", "newCompany",
-                "companyName", "companyTypeOther", "phoneNumber", "streetAddressOne",
-                "streetAddressTwo", "zipcode", "city", "state", "county", "country"]
-        password(blank: false, minSize: 6, maxSize: 20)
-        passwordTwo(validator: { val, obj ->
+                "companyName"]
+        password(blank: false, minSize: 6, maxSize: 84)
+        passwordTwo(blank:false, minSize: 6, maxSize: 84, validator: { val, obj ->
             if (!obj.password.equals(val)) {
                 return ['registerCommand.passwordTwo.nomatch']
             }
@@ -268,7 +267,6 @@ class RegisterCommand {
                         return ['registration.country.notfound']
                     }
                 }
-
                 if (!obj.streetAddressOne?.trim()) {
                     return ['registration.streetAddressOne.blank']
                 }

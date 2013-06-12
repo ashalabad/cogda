@@ -24,6 +24,7 @@
 <section id="create-registration" class="first">
 
 	<div class="alert alert-error" id="errorMessages" style="display:none">
+        <h4>Errors!</h4>
 	</div>
 
     <div class="alert alert-success" id="messages" style="display:none">
@@ -301,7 +302,7 @@
                 },
                 password: {
                     minlength: 6,
-                    maxlength: 20,
+                    maxlength: 84,
                     required: true
                 },
                 passwordTwo: {
@@ -363,6 +364,9 @@
 
     function registrationHandler(data, textStatus) {
         if (data.success) {
+            var errorMessages =  $("#errorMessages");
+            errorMessages.html("");
+            errorMessages.hide();
             for(var i = 0; i < data.messages.length; i++) {
                 $.pnotify({
                     title: 'Save Successful',
@@ -373,15 +377,17 @@
                 });
             }
         } else {
+            var errorMessages =  $("#errorMessages");
+            errorMessages.html("<h4>Errors!</h4>");
+            errorMessages.append('<ul id="errorsList">');
             for (var i in data.errors) {
-                $.pnotify({
-                    title: 'Save Failed',
-                    text: data.errors[i],
-                    type: 'error',
-                    opacity: 0.8,
-                    hide: false
-                });
+                errorMessages.append('<li>');
+                errorMessages.append(data.errors[i]);
+                errorMessages.append('</li>');
             }
+            errorMessages.append('</ul>');
+            errorMessages.show();
+            errorMessages.focus();
         }
     }
 
