@@ -1,13 +1,20 @@
 package com.cogda.multitenant
 
+import com.amazonaws.services.s3.model.DeleteObjectsRequest
+import com.amazonaws.services.s3.model.GetObjectRequest
+import com.amazonaws.services.s3.model.ObjectListing
+import com.amazonaws.services.s3.model.S3Object
+import com.amazonaws.services.s3.model.S3ObjectSummary
 import com.cogda.BaseIntegrationTest
 import com.cogda.common.RegistrationStatus
 import com.cogda.domain.CompanyProfile
 import com.cogda.domain.CompanyProfileAddress
 import com.cogda.domain.CompanyProfilePhoneNumber
+import com.cogda.domain.CompanyProfileService
 import com.cogda.domain.UserProfile
 import com.cogda.domain.UserProfileEmailAddress
 import com.cogda.domain.UserProfilePhoneNumber
+import com.cogda.domain.UserProfileService
 import com.cogda.domain.admin.CompanyType
 import com.cogda.domain.admin.HtmlFragment
 import com.cogda.domain.admin.NaicsCode
@@ -20,8 +27,10 @@ import com.cogda.domain.security.Role
 import com.cogda.domain.security.User
 import com.cogda.domain.security.UserRole
 import com.cogda.security.SecurityService
+import grails.plugin.awssdk.AmazonWebService
 import grails.plugins.springsecurity.SpringSecurityService
 import org.apache.commons.logging.LogFactory
+import org.codehaus.groovy.grails.commons.GrailsApplication
 
 import static org.junit.Assert.*
 import org.junit.*
@@ -33,6 +42,10 @@ class CustomerAccountServiceTests extends BaseIntegrationTest{
     SpringSecurityService springSecurityService
     CustomerAccountService customerAccountService
     CompanyService companyService
+    UserProfileService userProfileService
+    CompanyProfileService companyProfileService
+    AmazonWebService amazonWebService
+    GrailsApplication grailsApplication
 
     @Before
     void setUp() {
@@ -83,13 +96,58 @@ class CustomerAccountServiceTests extends BaseIntegrationTest{
         customerAccountService.create(customerAccount)
 
         assert !customerAccount.hasErrors(), "CustomerAccount has Validation Errors."
+    }
+
+    @Test
+    void testProvisionCustomerAccountAmazonFileSystem(){
+
+        Registration registration = createValidRegistration()
+        assert !registration.hasErrors(), "Registration has Validation Errors"
+
+        CustomerAccount customerAccount = new CustomerAccount(subDomain: "newsubdomain")
+        customerAccountService.create(customerAccount)
+        assert !customerAccount.hasErrors(), "CustomerAccount has Validation Errors."
+
+        // Create the First User
+        User user = customerAccountService.createFirstUser(customerAccount, registration)
+
+        // create the UserProfile
+        UserProfile userProfile = userProfileService.createUserProfile(user, registration)
+
+        // create comp
+        Company company
 
         customerAccount.withThisTenant {
-            companyService.createCompany(registration)
+            company = companyService.createCompany(registration)
         }
 
+        // create the CompanyProfile
+        CompanyProfile companyProfile = companyProfileService.createCompanyProfile(company, registration)
+
+        assert !companyProfile.hasErrors()
+
+        customerAccountService.provisionCustomerAccountAmazonFileSystem(customerAccount, userProfile, companyProfile)
+
+        final String defaultBucket = grailsApplication.config.grails.plugin.awssdk.default.bucket
+        final String pathPrefix = "customerAccounts/"
+        final String companiesFolder = "companies"
+        final String clientsFolder = "clients"
+        final String imagesFolder = "images"
+        final String tempFolder = "temp"
+
+        // delete everything under customerAccounts/
+        ObjectListing objectListing = amazonWebService.s3.listObjects(defaultBucket, pathPrefix)
+
+        List objectSummaries = objectListing.objectSummaries
+
+        assert objectSummaries.size() == 5
+
+        objectSummaries.each { S3ObjectSummary objectSummary ->
+            amazonWebService.s3.deleteObject(defaultBucket, objectSummary.key)
+        }
 
     }
+
 
     @Test
     void testOnboardCustomerAccount() {

@@ -82,6 +82,7 @@ class AmazonWebServiceTests {
         try {
             amazonWebService.s3.getObject(new GetObjectRequest(getEnvironmentSpecificBucket(), FILE_PATH_NAME), fileNameTemp)
         }catch(AmazonS3Exception e){
+            log.debug e.getStatusCode()
             log.debug e.message
             objectNotFound = Boolean.TRUE
         }

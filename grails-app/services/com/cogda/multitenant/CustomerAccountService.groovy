@@ -1,5 +1,9 @@
 package com.cogda.multitenant
 
+import com.amazonaws.services.s3.model.AmazonS3Exception
+import com.amazonaws.services.s3.model.GetObjectRequest
+import com.amazonaws.services.s3.model.PutObjectRequest
+import com.amazonaws.services.s3.model.PutObjectResult
 import com.cogda.domain.CompanyProfile
 import com.cogda.domain.UserProfile
 import com.cogda.domain.UserProfileService
@@ -11,7 +15,9 @@ import com.cogda.errors.CustomerAccountCreationException
 import com.cogda.security.SecurityService
 import com.cogda.security.UserRoleService
 import com.cogda.security.UserService
+import grails.plugin.awssdk.AmazonWebService
 import org.apache.commons.logging.LogFactory
+import org.codehaus.groovy.grails.commons.GrailsApplication
 
 /**
  * CustomerAccountService
@@ -26,6 +32,8 @@ class CustomerAccountService {
     CompanyService companyService // inject CompanyService into CustomerAccountService
     UserRoleService userRoleService  // inject UserRoleService into CustomerAccountService
     CompanyProfileService companyProfileService // inject CompanyProfileService into CustomerAccountService
+    GrailsApplication grailsApplication
+    AmazonWebService amazonWebService
 
     /**
      * Creates a new CustomerAccount
@@ -68,6 +76,56 @@ class CustomerAccountService {
 
         // create the CompanyProfile
         CompanyProfile companyProfile = companyProfileService.createCompanyProfile(company, registration)
+
+        // sets up the customerAccount file system
+        provisionCustomerAccountAmazonFileSystem(customerAccount, userProfile, companyProfile)
+
+    }
+
+    /**
+     * Creates the default file system for a new customer account.
+     */
+    void provisionCustomerAccountAmazonFileSystem(CustomerAccount customerAccount, UserProfile userProfile, CompanyProfile companyProfile){
+        final String defaultBucket = grailsApplication.config.grails.plugin.awssdk.default.bucket
+        final String pathPrefix = "customerAccounts/"
+        final String companiesFolder = "companies"
+        final String clientsFolder = "clients"
+        final String imagesFolder = "images"
+        final String tempFolder = "temp"
+        File file
+        try {
+            file = new File("a.txt")
+            file.write("0")
+
+            String customerAccountRoot = pathPrefix + customerAccount.accountId + "/"
+            // create the customerAccountRoot - at the defaultBucket "customerAccounts/${customerAccount.accountId}/"
+            amazonWebService.s3.putObject(new PutObjectRequest(defaultBucket, customerAccountRoot, file))
+
+            // create the temp folder for the customerAccount "customerAccounts/${customerAccount.accountId}/temp"
+            String customerAccountTemp = customerAccountRoot + tempFolder + "/"
+            amazonWebService.s3.putObject(new PutObjectRequest(defaultBucket, customerAccountTemp, file))
+
+            // create the images folder for the customerAccount "customerAccounts/${customerAccount.accountId}/images"
+            String customerAccountImages = customerAccountRoot + imagesFolder + "/"
+            amazonWebService.s3.putObject(new PutObjectRequest(defaultBucket, customerAccountImages, file))
+
+            // create the companies folder for the customerAccount "customerAccounts/${customerAccount.accountId}/companies"
+            String customerAccountCompanies = customerAccountRoot + companiesFolder + "/"
+            amazonWebService.s3.putObject(new PutObjectRequest(defaultBucket, customerAccountCompanies, file))
+
+            // create the company folder for the customerAccount "customerAccounts/${customerAccount.accountId}/companies/${companyProfile.company.accountId}/
+            String customerAccountRootCompany = customerAccountCompanies + companyProfile.company.accountId
+            amazonWebService.s3.putObject(new PutObjectRequest(defaultBucket, customerAccountRootCompany, file))
+
+        } catch (AmazonS3Exception e){
+            e.printStackTrace()
+            log.error e.message
+
+        } finally {
+
+            file.delete()
+
+        }
     }
 
     /**

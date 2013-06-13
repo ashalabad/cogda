@@ -75,7 +75,8 @@ class EmailConfirmationLog {
 
     static constraints = {
         emailSendStatus(nullable:true)
-        emailErrors(nullable:true, size:0..5000)
+        emailSendReason(nullable:false)
+        emailErrors(nullable:true)
         emailTo(nullable:true)
         emailFrom(nullable:true)
         emailSubject(nullable:true)

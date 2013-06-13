@@ -36,6 +36,8 @@ class Company {
 
     CompanyProfile companyProfile
 
+    String accountId = UUID.randomUUID().toString().replaceAll('-', '')
+
     /* Automatic timestamping of GORM */
     Date	dateCreated
     Date	lastUpdated
@@ -50,6 +52,7 @@ class Company {
         companyName(nullable:false)  // TODO: Add a validator that checks for the company name if this has a ParentCompany - the name should be unique within the company
         doingBusinessAs(nullable:true)
         intCode(nullable:true, size:0..100)
+        accountId(nullable:false, blank:false, unique:true)
     }
 
     /*

@@ -320,7 +320,7 @@ class RegistrationTests {
          assertNull "Registration was found and should not have been since it has an invalid status", r
      }
 
-    private Registration createValidRegistration(){
+    Registration createValidRegistration(){
         Registration reg = new Registration()
         reg.firstName = "Christopher"
         reg.lastName = "Kwiatkowski"

@@ -7,20 +7,39 @@ import grails.plugin.multitenant.core.Tenant
 class CustomerAccount implements Tenant {
     private static List<String> DISALLOWED_SUBDOMAINS = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L",
             "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
-            "cogda", "sombra", "cogdasolutions", "cogdasolutionsllc", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0",
+            "cogda", "sombra", "cogdasolutions", "cogdasolutionsllc",
             "test", "testdrive", "demo", "testing", "sales", "marketing", "development", "api"]
 
     String subDomain
 
+    String accountId = UUID.randomUUID().toString().replaceAll('-', '')
+
     static constraints = {
-        subDomain(nullable:false, blank:false, unique:true, minSize:2, validator: { val, obj ->
+        subDomain(nullable:false, blank:false, unique:true, minSize:2, matches:"[A-Za-z]+", validator: { val, obj ->
             if(CustomerAccount.DISALLOWED_SUBDOMAINS.contains(val)){
                 return ['customerAccount.subDomain.invalid']
             }
         })
+        accountId(nullable:false, blank:false, unique:true)
     }
 
     Integer tenantId() {
         id
+    }
+
+    /**
+     * Verifies if the passed in subDomain is available
+     * @param subDomain
+     * @return
+     */
+    static Boolean availableSubDomain(String subDomain){
+        def c = CustomerAccount.createCriteria()
+        def list = c.list {
+            eq("subDomain", subDomain, [ignoreCase:true])
+        }
+        if(!list.isEmpty()){
+            return Boolean.FALSE
+        }
+        return Boolean.TRUE
     }
 }
