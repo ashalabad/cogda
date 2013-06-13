@@ -125,6 +125,8 @@ environments {
                     'org.hibernate',
                     'net.sf.ehcache.hibernate'
             debug  'com.cogda'
+            debug  'grails.app.services.com.cogda'
+            debug  'grails.app.controllers.com.cogda'
         }
     }
     production {
@@ -187,3 +189,24 @@ grails.config.defaults.locations = [KickstartResources]
 
 
 application.name="Cogda"
+
+// Start: AWS-SDK Plugin Configuration - Eventually we will move this configuration to Java Properties files that
+// are loaded at runtime.
+
+environments {
+    development {
+        grails.plugin.awssdk.accessKey = "AKIAJIUNDMPJW4QGSSTA"
+        grails.plugin.awssdk.secretKey = "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"
+        grails.plugin.awssdk.default.bucket = "cogda-development"
+    }
+    test {
+        grails.plugin.awssdk.accessKey = "AKIAIK4U45JFDKT6YPFQ"
+        grails.plugin.awssdk.secretKey = "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"
+        grails.plugin.awssdk.default.bucket = "cogda-test"
+    }
+    production {
+        grails.plugin.awssdk.accessKey = "AKIAISMZUW57B2VYTYEQ"
+        grails.plugin.awssdk.secretKey = "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"
+        grails.plugin.awssdk.default.bucket = "cogda-production"
+    }
+}
