@@ -2,7 +2,6 @@ package com.cogda.api.admin
 
 import com.cogda.common.web.AjaxResponseDto
 import com.cogda.domain.admin.AdminService
-import com.cogda.domain.onboarding.RegisterCommand
 import com.cogda.domain.onboarding.Registration
 import com.cogda.security.SecurityService
 import com.cogda.util.ErrorMessageResolverService
@@ -22,6 +21,8 @@ class AdminRegisterController {
             edit: ['GET', 'POST'],
             save: 'POST',
             update: ['POST', 'PUT'],
+            approve: ['POST', 'PUT'],
+            updateSubdomain: ['POST']
     ]
 
     AdminService adminService
@@ -53,7 +54,7 @@ class AdminRegisterController {
         return
     }
 
-    def show(Long id) {
+    def show(long id) {
         def registration = adminService.findRegistrationById(id)
         if (!registration) {
             withFormat {
@@ -69,16 +70,16 @@ class AdminRegisterController {
         }
     }
 
-    def update(RegisterCommand registerCommand) {
+    def update(long id) {
+        Registration registration = new Registration(params.registration)
         AjaxResponseDto ajaxResponseDto = new AjaxResponseDto()
-        if (registerCommand.hasErrors()) {
+        if (registration.hasErrors()) {
             ajaxResponseDto.success = Boolean.FALSE
-            ajaxResponseDto.errors = errorMessageResolverService.retrieveErrorStrings(registerCommand)
+            ajaxResponseDto.errors = errorMessageResolverService.retrieveErrorStrings(registration)
             render ajaxResponseDto as JSON
             return
         } else {
-            Registration registration = registerCommand.getRegistrationObject()
-            adminService.updateRegistration(registration)
+            adminService.updateRegistration(id, registration)
             if (registration.hasErrors()) {
                 ajaxResponseDto.success = Boolean.FALSE
                 ajaxResponseDto.errors = errorMessageResolverService.retrieveErrorStrings(registration)
@@ -94,32 +95,54 @@ class AdminRegisterController {
         }
     }
 
-    def approve(Long id) {
-        adminService.approve(id)
+    def approve(long id) {
+        AjaxResponseDto ajaxResponseDto = new AjaxResponseDto()
+        try {
+            adminService.approveRegistration(id)
+            ajaxResponseDto.success = Boolean.TRUE
+            ajaxResponseDto.messages = [g.message(code:'registration.status.adminapproved')]
+        } catch(Exception e) {
+            ajaxResponseDto.success = Boolean.FALSE
+            ajaxResponseDto.errors = [error: g.message(code: 'registration.status.adminapprovedfailed')]
+        }
+        render ajaxResponseDto as JSON
     }
 
-    def save(Registration registration) {
-            AjaxResponseDto ajaxResponseDto = new AjaxResponseDto()
-            if (registration.validate()) {
+    def save() {
+        Registration registration = new Registration(params.registration)
+        AjaxResponseDto ajaxResponseDto = new AjaxResponseDto()
+        if (!registration.validate()) {
+            ajaxResponseDto.success = Boolean.FALSE
+            ajaxResponseDto.errors = errorMessageResolverService.retrieveErrorStrings(registration)
+            render ajaxResponseDto as JSON
+            return
+        } else {
+            adminService.saveRegistration(registration)
+            if (registration.hasErrors()) {
                 ajaxResponseDto.success = Boolean.FALSE
-                ajaxResponseDto.errors = errorMessageResolverService.retrieveErrorStrings(registerCommand)
+                ajaxResponseDto.errors = errorMessageResolverService.retrieveErrorStrings(registration)
                 render ajaxResponseDto as JSON
                 return
             } else {
-                adminService.saveRegistration(registration)
-                if (registration.hasErrors()) {
-                    ajaxResponseDto.success = Boolean.FALSE
-                    ajaxResponseDto.errors = errorMessageResolverService.retrieveErrorStrings(registration)
-                    render ajaxResponseDto as JSON
-                    return
-                } else {
-                    ajaxResponseDto.success = true
-                    ajaxResponseDto.addMessage(message(code: "registration.successful", args: []))
-                    ajaxResponseDto.modelObject = [registration: registration]
-                    render ajaxResponseDto as JSON
-                    return
-                }
+                ajaxResponseDto.success = true
+                ajaxResponseDto.addMessage(message(code: "registration.successful", args: []))
+                ajaxResponseDto.modelObject = [registration: registration]
+                render ajaxResponseDto as JSON
+                return
             }
+        }
     }
 
+    def updateSubdomain(long id, String subDomain){
+        AjaxResponseDto ajaxResponseDto = new AjaxResponseDto()
+        String updatedSubDomain = adminService.updateSubdomain(id, subDomain)
+        if (!updatedSubDomain){
+            ajaxResponseDto.success = Boolean.FALSE
+            ajaxResponseDto.errors = [error: "Failed to update registration"]
+        } else {
+            ajaxResponseDto.success = Boolean.TRUE
+            ajaxResponseDto.modelObject = [subDomain: updatedSubDomain]
+        }
+        render ajaxResponseDto as JSON
+    }
 }

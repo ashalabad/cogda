@@ -6,19 +6,16 @@ import org.springframework.validation.Errors
 
 /**
  * Created with IntelliJ IDEA.
- * User: Justin
+ * User: chewy
  * Date: 6/11/13
- * Time: 1:52 AM
+ * Time: 5:19 PM
  * To change this template use File | Settings | File Templates.
  */
-class RegistrationException extends RuntimeException {
-    Errors errors
+class RegistrationValidationException extends ValidationException{
+    Registration registration
 
-    RegistrationException(String msg) {
-        super(msg)
-    }
-
-    RegistrationException(String message, Throwable exception){
-        super(message, exception)
+    RegistrationValidationException(String msg, Errors e, Registration registration) {
+        super(msg, e)
+        this.registration = registration
     }
 }
