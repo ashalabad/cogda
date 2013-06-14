@@ -20,7 +20,14 @@ class PasswordGeneratorTests {
         // Tear down logic here
     }
 
-    void testSomething() {
-        fail "Implement me"
+    /**
+     * Test the create temp password
+     */
+    void testCreateTempPassword() {
+        (0..1000).each{
+            String password = PasswordGenerator.createTempPassword()
+            assert password.size() == PasswordGenerator.COUNT
+            assert password ==~ PasswordGenerator.PASSWORD_REGEX
+        }
     }
 }
