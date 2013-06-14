@@ -140,7 +140,6 @@ class EmailVerificationControllerTests {
         reg.registrationStatus = RegistrationStatus.AWAITING_USER_EMAIL_CONFIRMATION
         reg.subDomain = "rais"
 
-        assert reg.validate(), "createValidRegistration() Registration did not validate!"
 
         return reg
     }
