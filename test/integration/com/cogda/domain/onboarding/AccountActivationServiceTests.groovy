@@ -44,6 +44,7 @@ class AccountActivationServiceTests extends BaseIntegrationTest {
     @Test
     void testConfirmEmailVerification() {
         Registration registration = createValidRegistration()
+        assert registration.save(flush:true), "Registration did not save ${registration.errors}"
         createConfirmEmailVerificationMessageTemplate()
 
         EmailConfirmationLog emailConfirmationLog = accountActivationService.confirmEmailVerification(registration)
@@ -62,6 +63,8 @@ class AccountActivationServiceTests extends BaseIntegrationTest {
     @Test
     void testSendEmailVerified() {
         Registration registration = createValidRegistration()
+        assert registration.save(flush:true), "Registration did not save ${registration.errors}"
+
         createConfirmEmailVerificationMessageTemplate()
 
         EmailConfirmationLog emailConfirmationLog = accountActivationService.confirmEmailVerification(registration)
@@ -74,6 +77,7 @@ class AccountActivationServiceTests extends BaseIntegrationTest {
     @Test
     void testPrepareEmailVerification() {
         Registration registration = createValidRegistration()
+        assert registration.save(flush:true), "Registration did not save ${registration.errors}"
         String emailVerificationUrl = "https://cogda.com/emailVerification/verify?t=20020202020"
         EmailConfirmationLog emailConfirmationLog = accountActivationService.prepareEmailVerification(registration, emailVerificationUrl)
 
@@ -93,6 +97,7 @@ class AccountActivationServiceTests extends BaseIntegrationTest {
     @Test
     void testSendEmailVerification() {
         Registration registration = createValidRegistration()
+        assert registration.save(flush:true), "Registration did not save ${registration.errors}"
         String emailVerificationUrl = "https://cogda.com/register/verifyRegistration"
         EmailConfirmationLog emailConfirmationLog = accountActivationService.prepareEmailVerification(registration, emailVerificationUrl)
 

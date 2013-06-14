@@ -32,7 +32,7 @@
         <g:message code="spring.security.resetPassword.description"/>
     </div>
 
-    <g:form class = "form-horizontal" name="userImportForm" autocomplete="off" novalidate="novalidate"
+    <g:uploadForm class = "form-horizontal" name="userImportForm" autocomplete="off" novalidate="novalidate"
             action="importUserFile" controller="userImport">
 
         <fieldset class="form">
@@ -41,26 +41,17 @@
         </legend>
 
         <div class="control-group fieldcontain ${hasErrors(bean: userImportCommandInstance, field: 'importFile', 'error')} required">
-            <label for="password" class="control-label">
-                <g:message code="springSecurity.login.resetPassword.label" default="New Password" /> <span class="required-indicator">*</span> </label>
+            <label for="file" class="control-label">
+                <g:message code="userImport.importFile.label" default="User File" /> <span class="required-indicator">*</span> </label>
             <div class="controls">
-                <g:passwordField name="password" required="" value=""/>
-                <span class="help-inline"></span>
-            </div>
-        </div>
-        <div class="control-group fieldcontain ${hasErrors(bean: resetPasswordCommandInstance, field: 'passwordTwo', 'error')} required">
-            <label for="passwordTwo" class="control-label">
-                <g:message code="springSecurity.login.resetPasswordTwo.label" default="Re-Type New Password" /> <span class="required-indicator">*</span>
-            </label>
-            <div class="controls">
-                <g:passwordField name="passwordTwo" required="" value=""/>
+                <input type = "file" name="file" id="file" required=""/>
                 <span class="help-inline"></span>
             </div>
         </div>
         <div class="form-actions">
             <g:submitButton name="userImportButton" class="btn btn-primary" value="${message(code: 'userImport.import.button', default: 'Import')}" />
         </div>
-    </g:form>
+    </g:uploadForm>
 </section>
 </body>
 </html>

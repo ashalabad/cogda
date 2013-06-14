@@ -54,11 +54,13 @@ class UserService {
      */
     def availableUsername(String username){
         CustomerAccount.withoutTenantRestriction{
+            println " attempting to find $username in availableUsername "
             if(User.findByUsername(username)){
+                println " Found $username in availableUsername on ${User.findByUsername(username)}"
                 return false
             }
-            return true
         }
+        return true
     }
 
     /**

@@ -63,8 +63,9 @@ class UserImportController extends BaseController{
             return
         }
 
+        List<Map> importMessages = userImportService.loadUserData(file)
 
-
+        return [importMessages:importMessages]
     }
 }
 

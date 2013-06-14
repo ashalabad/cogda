@@ -12,6 +12,8 @@ import com.cogda.errors.RegistrationValidationException
 import com.cogda.multitenant.Company
 import com.cogda.multitenant.CustomerAccount
 import grails.validation.ValidationException
+import groovy.sql.Sql
+import org.hibernate.SessionFactory
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -29,12 +31,14 @@ import org.junit.rules.ExpectedException
 class RegisterServiceIntegrationTests extends BaseIntegrationTest {
 
     RegisterService registerService
+    def dataSource
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none()
 
     @Before
     void setUp() {
+        deleteAllData(dataSource)
         createCompanyTypes()
         for (def i = 0; i < 5; i++)
             createAndSaveValidRegistration(generator((('A'..'Z') + ('0'..'9')).join(), 9))
@@ -43,32 +47,33 @@ class RegisterServiceIntegrationTests extends BaseIntegrationTest {
     @After
     void tearDown() {
         // Tear down logic here
-        Registration.executeUpdate("delete from Registration")
-
-        UserRole.executeUpdate("delete from UserRole")
-        Role.executeUpdate("delete from Role")
-
-        UserProfileEmailAddress.executeUpdate("delete from UserProfileEmailAddress")
-        UserProfilePhoneNumber.executeUpdate("delete from UserProfilePhoneNumber")
-        UserProfile.executeUpdate("delete from UserProfile")
-        User.executeUpdate("delete from User")
-
-        CompanyProfileAddress.executeUpdate("delete from CompanyProfileAddress")
-        CompanyProfilePhoneNumber.executeUpdate("delete from CompanyProfilePhoneNumber")
-        CompanyProfile.executeUpdate("delete from CompanyProfile")
-        Company.executeUpdate("delete from Company")
-
-        CustomerAccount.executeUpdate("delete from CustomerAccount")
-
-        CompanyType.executeUpdate("delete from CompanyType")
-        HtmlFragment.executeUpdate("delete from HtmlFragment")
-        NaicsCode.executeUpdate("delete from NaicsCode")
-        SicCode.executeUpdate("delete from SicCode")
-        SicCodeDivision.executeUpdate("delete from SicCodeDivision")
-        SupportedCountryCode.executeUpdate("delete from SupportedCountryCode")
-        SystemEmailMessageTemplate.executeUpdate("delete from SystemEmailMessageTemplate")
-//        CustomerAccount.withoutTenantRestriction {
+        deleteAllData(dataSource)
+//
+//        Registration.withTransaction {
+//            Registration.executeUpdate("delete from Registration")
+//
+//            UserRole.executeUpdate("delete from UserRole")
+//            Role.executeUpdate("delete from Role")
+//
+//            UserProfileEmailAddress.executeUpdate("delete from UserProfileEmailAddress")
+//            UserProfilePhoneNumber.executeUpdate("delete from UserProfilePhoneNumber")
+//            UserProfile.executeUpdate("delete from UserProfile")
+//            User.executeUpdate("delete from User")
+//
+//            CompanyProfileAddress.executeUpdate("delete from CompanyProfileAddress")
+//            CompanyProfilePhoneNumber.executeUpdate("delete from CompanyProfilePhoneNumber")
+//            CompanyProfile.executeUpdate("delete from CompanyProfile")
 //            Company.executeUpdate("delete from Company")
+//
+//            CustomerAccount.executeUpdate("delete from CustomerAccount")
+//            EmailConfirmationLog.executeUpdate("delete from EmailConfirmationLog")
+//            CompanyType.executeUpdate("delete from CompanyType")
+//            HtmlFragment.executeUpdate("delete from HtmlFragment")
+//            NaicsCode.executeUpdate("delete from NaicsCode")
+//            SicCode.executeUpdate("delete from SicCode")
+//            SicCodeDivision.executeUpdate("delete from SicCodeDivision")
+//            SupportedCountryCode.executeUpdate("delete from SupportedCountryCode")
+//            SystemEmailMessageTemplate.executeUpdate("delete from SystemEmailMessageTemplate")
 //        }
     }
 

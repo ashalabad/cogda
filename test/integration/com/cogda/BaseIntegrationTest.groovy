@@ -9,6 +9,7 @@ import com.cogda.domain.admin.SupportedCountryCode
 import com.cogda.domain.admin.SystemEmailMessageTemplate
 import com.cogda.domain.onboarding.Registration
 import grails.plugins.springsecurity.SpringSecurityService
+import groovy.sql.Sql
 import org.apache.commons.logging.LogFactory
 
 /**
@@ -19,7 +20,15 @@ import org.apache.commons.logging.LogFactory
  * To change this template use File | Settings | File Templates.
  */
 class BaseIntegrationTest {
+
     private static final log = LogFactory.getLog(this)
+
+    void deleteAllData(dataSource){
+        Sql sql = new Sql(dataSource)
+        sql.execute('SET foreign_key_checks = 0;')
+        sql.execute("select 'mysql truncate table ' | table_name from information_schema.tables")
+        sql.execute('SET foreign_key_checks = 1;')
+    }
 
     /**
      * Creates a valid UserProfile object and returns it.
@@ -101,9 +110,7 @@ class BaseIntegrationTest {
         registration.registrationStatus = RegistrationStatus.APPROVED
         registration.subDomain = "rais"
 
-        log.debug("Saving Registration Domain Class")
 
-        assert registration.save(), "Registration save failed: ${registration.errors}"
 
         return registration
     }

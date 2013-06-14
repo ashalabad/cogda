@@ -16,6 +16,7 @@ import com.cogda.domain.UserProfileEmailAddress
 import com.cogda.domain.UserProfilePhoneNumber
 import com.cogda.domain.UserProfileService
 import com.cogda.domain.admin.CompanyType
+import com.cogda.domain.admin.EmailConfirmationLog
 import com.cogda.domain.admin.HtmlFragment
 import com.cogda.domain.admin.NaicsCode
 import com.cogda.domain.admin.SicCode
@@ -29,8 +30,10 @@ import com.cogda.domain.security.UserRole
 import com.cogda.security.SecurityService
 import grails.plugin.awssdk.AmazonWebService
 import grails.plugins.springsecurity.SpringSecurityService
+import groovy.sql.Sql
 import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.hibernate.SessionFactory
 
 import static org.junit.Assert.*
 import org.junit.*
@@ -46,39 +49,62 @@ class CustomerAccountServiceTests extends BaseIntegrationTest{
     CompanyProfileService companyProfileService
     AmazonWebService amazonWebService
     GrailsApplication grailsApplication
+    def dataSource
+
+    private void deleteAllObjectsInTestAmazonBucket(){
+        final String defaultBucket = grailsApplication.config.grails.plugin.awssdk.default.bucket
+        final String pathPrefix = "customerAccounts/"
+
+        ObjectListing objectListing = amazonWebService.s3.listObjects(defaultBucket, pathPrefix)
+
+        List objectSummaries = objectListing.objectSummaries
+
+        objectSummaries.each { S3ObjectSummary objectSummary ->
+            amazonWebService.s3.deleteObject(defaultBucket, objectSummary.key)
+        }
+    }
 
     @Before
     void setUp() {
+        deleteAllData(dataSource)
+
+        deleteAllObjectsInTestAmazonBucket()
+
         createCompanyTypes()
     }
 
     @After
     void tearDown() {
-        // Tear down logic here
-        Registration.executeUpdate("delete from Registration")
-
-        UserRole.executeUpdate("delete from UserRole")
-        Role.executeUpdate("delete from Role")
-
-        UserProfileEmailAddress.executeUpdate("delete from UserProfileEmailAddress")
-        UserProfilePhoneNumber.executeUpdate("delete from UserProfilePhoneNumber")
-        UserProfile.executeUpdate("delete from UserProfile")
-        User.executeUpdate("delete from User")
-
-        CompanyProfileAddress.executeUpdate("delete from CompanyProfileAddress")
-        CompanyProfilePhoneNumber.executeUpdate("delete from CompanyProfilePhoneNumber")
-        CompanyProfile.executeUpdate("delete from CompanyProfile")
-        Company.executeUpdate("delete from Company")
-
-        CustomerAccount.executeUpdate("delete from CustomerAccount")
-
-        CompanyType.executeUpdate("delete from CompanyType")
-        HtmlFragment.executeUpdate("delete from HtmlFragment")
-        NaicsCode.executeUpdate("delete from NaicsCode")
-        SicCode.executeUpdate("delete from SicCode")
-        SicCodeDivision.executeUpdate("delete from SicCodeDivision")
-        SupportedCountryCode.executeUpdate("delete from SupportedCountryCode")
-        SystemEmailMessageTemplate.executeUpdate("delete from SystemEmailMessageTemplate")
+        deleteAllData(dataSource)
+//        Registration.withTransaction {
+//
+//            // Tear down logic here
+//            Registration.executeUpdate("delete from Registration")
+//
+//            UserRole.executeUpdate("delete from UserRole")
+//            Role.executeUpdate("delete from Role")
+//
+//            UserProfileEmailAddress.executeUpdate("delete from UserProfileEmailAddress")
+//            UserProfilePhoneNumber.executeUpdate("delete from UserProfilePhoneNumber")
+//            UserProfile.executeUpdate("delete from UserProfile")
+//            User.executeUpdate("delete from User")
+//
+//            CompanyProfileAddress.executeUpdate("delete from CompanyProfileAddress")
+//            CompanyProfilePhoneNumber.executeUpdate("delete from CompanyProfilePhoneNumber")
+//            CompanyProfile.executeUpdate("delete from CompanyProfile")
+//            Company.executeUpdate("delete from Company")
+//            EmailConfirmationLog.executeUpdate("delete from EmailConfirmationLog")
+//
+//            CustomerAccount.executeUpdate("delete from CustomerAccount")
+//
+//            CompanyType.executeUpdate("delete from CompanyType")
+//            HtmlFragment.executeUpdate("delete from HtmlFragment")
+//            NaicsCode.executeUpdate("delete from NaicsCode")
+//            SicCode.executeUpdate("delete from SicCode")
+//            SicCodeDivision.executeUpdate("delete from SicCodeDivision")
+//            SupportedCountryCode.executeUpdate("delete from SupportedCountryCode")
+//            SystemEmailMessageTemplate.executeUpdate("delete from SystemEmailMessageTemplate")
+//        }
     }
 
     @Test
@@ -91,6 +117,7 @@ class CustomerAccountServiceTests extends BaseIntegrationTest{
     @Test
     void testCreateCustomerAccountThenCompany(){
         Registration registration = createValidRegistration()
+        assert registration.save(flush:true), "Registration did not save ${registration.errors}"
         assert !registration.hasErrors(), "Registration has Validation Errors"
         CustomerAccount customerAccount = new CustomerAccount(subDomain: "newsubdomain")
         customerAccountService.create(customerAccount)
@@ -102,6 +129,7 @@ class CustomerAccountServiceTests extends BaseIntegrationTest{
     void testProvisionCustomerAccountAmazonFileSystem(){
 
         Registration registration = createValidRegistration()
+        assert registration.save(flush:true), "Registration did not save ${registration.errors}"
         assert !registration.hasErrors(), "Registration has Validation Errors"
 
         CustomerAccount customerAccount = new CustomerAccount(subDomain: "newsubdomain")
@@ -153,6 +181,7 @@ class CustomerAccountServiceTests extends BaseIntegrationTest{
     void testOnboardCustomerAccount() {
 
         Registration registration = createValidRegistration()
+        assert registration.save(flush:true), "Registration did not save ${registration.errors}"
 
         log.debug("Calling customerAccountService.onboardCustomerAccount(registration)")
         customerAccountService.onboardCustomerAccount(registration)
@@ -160,6 +189,8 @@ class CustomerAccountServiceTests extends BaseIntegrationTest{
         // verify CustomerAccount setup - check that the CustomerAccount was saved successfully
         CustomerAccount customerAccount = CustomerAccount.findBySubDomain(registration.subDomain)
         assert customerAccount, "CustomerAccount with subDomain ${registration.subDomain} was not created successfully"
+
+        Long companyId = null
 
         // verify Security setup - check that all Role objects were created successfully
         customerAccount.withThisTenant {
@@ -188,7 +219,7 @@ class CustomerAccountServiceTests extends BaseIntegrationTest{
             assert company.doingBusinessAs.equals(registration.companyName), "Doing Business As does not match Registration Company Name"
             assert company.parentCompany == null, "Parent Company should be null"
             assert company.intCode == 0, "Company intCode should be 0"
-
+            companyId = company.id
 
             // verify First User setup - check that the initial administrator of the root Company was created successfully
             User user = User.findByUsername(registration.username)
@@ -220,18 +251,8 @@ class CustomerAccountServiceTests extends BaseIntegrationTest{
         assert upea.emailAddress.equals(registration.emailAddress), "emailAddress does not match registration email address"
 
         // Verify the CompanyProfile is associated with the initial Company and its properties
-        assert Company.count() == 1, "Company count should be 1"
-        Company company = Company.list().first()
-        assert company, "Company was not found"
-        assert company.companyName.equals(registration.companyName)
-        assert company.doingBusinessAs.equals(registration.companyName)
-        assert company.parentCompany == null
-        assert company.intCode == 0
+        CompanyProfile companyProfile = CompanyProfile.executeQuery("from CompanyProfile cp where cp.company.id = ? ", [companyId]).first()
 
-        assert CompanyProfile.count() == 1, "CompanyProfile count should be 1"
-        CompanyProfile companyProfile = CompanyProfile.list().first()
-
-        assert companyProfile, "CompanyProfile was not found"
         assert companyProfile.company, "CompanyProfile does not have an association to a company"
         assert companyProfile.company.companyName.equals(registration.companyName)
         assert companyProfile.companyType.equals(registration.companyType)

@@ -29,7 +29,7 @@ class UserImportService {
         List<Map> list = parseDataFile(userDataFile)
         List<Map> importMessages = []
         list.eachWithIndex { int i, Map mapData ->
-            Map importMessage = [success:false, message:""]
+            Map importMessage = [line:(i+1), success:false, message:""]
             String rootMessage = "User at line ${i + 1} "
             if(!User.findByUsername(mapData.username)){
                 User user = createDefaultUser(mapData.username)
