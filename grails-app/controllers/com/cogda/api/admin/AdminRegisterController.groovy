@@ -3,6 +3,7 @@ package com.cogda.api.admin
 import com.cogda.common.web.AjaxResponseDto
 import com.cogda.domain.admin.AdminService
 import com.cogda.domain.onboarding.Registration
+import com.cogda.errors.RegistrationException
 import com.cogda.security.SecurityService
 import com.cogda.util.ErrorMessageResolverService
 import grails.converters.JSON
@@ -97,13 +98,14 @@ class AdminRegisterController {
 
     def approve(long id) {
         AjaxResponseDto ajaxResponseDto = new AjaxResponseDto()
+        ajaxResponseDto.modelObject = [id: id]
         try {
             adminService.approveRegistration(id)
             ajaxResponseDto.success = Boolean.TRUE
             ajaxResponseDto.messages = [g.message(code:'registration.status.adminapproved')]
-        } catch(Exception e) {
+        } catch(RegistrationException e) {
             ajaxResponseDto.success = Boolean.FALSE
-            ajaxResponseDto.errors = [error: g.message(code: 'registration.status.adminapprovedfailed')]
+            ajaxResponseDto.errors = [error0: g.message(code: 'registration.status.adminapprovedfailed'), error1: e.message]
         }
         render ajaxResponseDto as JSON
     }
@@ -142,6 +144,7 @@ class AdminRegisterController {
         } else {
             ajaxResponseDto.success = Boolean.TRUE
             ajaxResponseDto.modelObject = [subDomain: updatedSubDomain]
+            ajaxResponseDto.addMessage(message(code: "registration.subdomain.successful", args: []))
         }
         render ajaxResponseDto as JSON
     }
