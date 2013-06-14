@@ -2,7 +2,7 @@ package com.cogda.domain.onboarding
 
 import com.cogda.common.RegistrationStatus
 import com.cogda.errors.RegistrationException
-
+import com.cogda.multitenant.CustomerAccountService
 
 /**
  * RegisterService
@@ -10,54 +10,78 @@ import com.cogda.errors.RegistrationException
  */
 class RegisterService {
 
+    CustomerAccountService customerAccountService
+
     /**
      * Save a com.cogda.domain.onboarding.Registration object
      */
     def save(Registration registration) {
-        registration.save()
+        if (!registration.save(failOnError: true, flush: true)) {
+            registration.errors.each {
+                log.error(it)
+            }
+        }
     }
 
     def list(params) {
         Registration.list(params)
     }
 
-    def update(Registration registration) {
-        def instance = Registration.get(registration.id)
+    def update(long id, Registration registration) {
+        def instance = Registration.get(id)
         if (!instance) {
-            throw new RegistrationException("Registration not found.", null, null)
+            throw new RegistrationException("Registration not found.")
         } else {
             instance.setProperties(registration.properties)
-            if (!instance.save()) {
+            if (!instance.save(failOnError: true, flush: true)) {
                 instance.errors.each {
                     log.error(it)
                 }
-                throw new RegistrationException("Registration update failed.", instance.errors, instance)
             }
             return instance
         }
     }
 
-    def findById(id, params) {
+    def findById(Long id) {
+        def registration = Registration.findById(id)
+        return registration
+    }
+
+    def findById(long id, Map params) {
         def registration = Registration.findById(id, params)
         return registration
     }
 
     def approve(long id) {
-        def registration = Registration.get(id)
+        Registration registration = Registration.get(id)
         if (!registration) {
-            throw new RegistrationException("Registration not found.", null, null)
+            throw new RegistrationException("Registration not found.")
         } else if (!registration.registrationStatus) {
-            throw new RegistrationException("Registration status is empty.", registration.getErrors(), registration)
+            throw new RegistrationException("Registration status is empty")
         } else if (registration.registrationStatus != RegistrationStatus.AWAITING_ADMIN_APPROVAL) {
-            throw new RegistrationException("Registration status is not in correct status",null, null)
+            throw new RegistrationException("Registration status is not in correct status")
+        } else if (!registration.subDomain) {
+            throw new RegistrationException("Registration must have sub domain before approval")
         } else {
             registration.registrationStatus = RegistrationStatus.APPROVED
-            if (!registration.save()) {
+            if (!registration.save(failOnError: true, flush: true)) {
                 registration.errors.each {
                     log.error(it)
                 }
-                throw new RegistrationException("Registration approve failed", registration.errors, registration)
+            }
+            else {
+                customerAccountService.onboardCustomerAccount(registration)
             }
         }
+    }
+
+    def findByToken(String token, Map params) {
+        def registration = Registration.findByToken(token, params)
+        return registration
+    }
+
+    def get(long id){
+        def registration = Registration.get(id)
+        return registration
     }
 }
