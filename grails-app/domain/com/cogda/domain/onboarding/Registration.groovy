@@ -86,7 +86,7 @@ class Registration {
         county(nullable:true)
         country(nullable:true)
         registrationStatus(nullable:false)
-        subDomain(nullable:true)
+        subDomain(nullable:true, matches: "[-A-Za-z0-9]+")
         token(nullable:false, blank:false)
     }
 
