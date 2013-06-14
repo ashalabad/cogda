@@ -34,7 +34,7 @@ class BaseController {
     private String retrieveSubDomainUrl(){
         String domainURL = grailsApplication.config.grails.domainURL
         CustomerAccount customerAccount = CustomerAccount.get(request.customerAccount)
-        domainURL = customerAccount.subDomain + "." + domainURL
+        domainURL = customerAccount?.subDomain + "." + domainURL
         log.debug "Created the following subDomainUrl: " + domainURL
         return domainURL
     }
