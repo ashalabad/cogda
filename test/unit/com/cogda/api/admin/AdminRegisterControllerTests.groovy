@@ -11,4 +11,9 @@ import org.junit.*
 @TestFor(AdminRegisterController)
 class AdminRegisterControllerTests {
 
+
+    @Test
+    void TestSomething() {
+        assert true
+    }
 }
