@@ -103,7 +103,6 @@ class RegisterController {
      * @param registerCommand
      */
     def save(RegisterCommand registerCommand) {
-        println registerCommand
 
         AjaxResponseDto ajaxResponseDto = new AjaxResponseDto()
 

@@ -8,7 +8,7 @@ class CustomerAccount implements Tenant {
     private static List<String> DISALLOWED_SUBDOMAINS = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L",
             "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
             "cogda", "sombra", "cogdasolutions", "cogdasolutionsllc",
-            "test", "testdrive", "demo", "testing", "sales", "marketing", "development", "api"]
+            "test", "testdrive", "demo", "testing", "sales", "marketing", "development", "api", "staging"]
 
     String subDomain
 

@@ -1,17 +1,18 @@
 package com.cogda.domain.security
 
+import com.cogda.BaseController
 import org.springframework.dao.DataIntegrityViolationException
 
 /**
  * UserController
  * A controller class handles incoming web requests and performs actions such as redirects, rendering views and so on.
  */
-class UserController {
+class UserController extends BaseController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
     def index() {
-        redirect(action: "list", params: params)
+        redirect(url: generateRedirectLink("user", "list", params))
     }
 
     def list() {
@@ -31,14 +32,14 @@ class UserController {
         }
 
 		flash.message = message(code: 'default.created.message', args: [message(code: 'user.label', default: 'User'), userInstance.id])
-        redirect(action: "show", id: userInstance.id)
+        redirect(url: generateRedirectLink("user", "show", [id:userInstance.id]))
     }
 
     def show() {
         def userInstance = User.get(params.id)
         if (!userInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), params.id])
-            redirect(action: "list")
+            redirect(url: generateRedirectLink("user", "list"))
             return
         }
 
@@ -49,7 +50,7 @@ class UserController {
         def userInstance = User.get(params.id)
         if (!userInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), params.id])
-            redirect(action: "list")
+            redirect(url: generateRedirectLink("user", "list"))
             return
         }
 
@@ -60,7 +61,7 @@ class UserController {
         def userInstance = User.get(params.id)
         if (!userInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), params.id])
-            redirect(action: "list")
+            redirect(url: generateRedirectLink("user", "list"))
             return
         }
 
@@ -83,25 +84,25 @@ class UserController {
         }
 
 		flash.message = message(code: 'default.updated.message', args: [message(code: 'user.label', default: 'User'), userInstance.id])
-        redirect(action: "show", id: userInstance.id)
+        redirect(url: generateRedirectLink("user", "show", [id:userInstance.id]))
     }
 
     def delete() {
         def userInstance = User.get(params.id)
         if (!userInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), params.id])
-            redirect(action: "list")
+            redirect(url: generateRedirectLink("user", "list"))
             return
         }
 
         try {
             userInstance.delete(flush: true)
 			flash.message = message(code: 'default.deleted.message', args: [message(code: 'user.label', default: 'User'), params.id])
-            redirect(action: "list")
+            redirect(url: generateRedirectLink("user", "list"))
         }
         catch (DataIntegrityViolationException e) {
 			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'user.label', default: 'User'), params.id])
-            redirect(action: "show", id: params.id)
+            redirect(url: generateRedirectLink("user", "show", [id:params.id]))
         }
     }
 }

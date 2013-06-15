@@ -1,6 +1,7 @@
 package com.cogda.security
 
 import com.cogda.BaseController
+import org.springframework.web.multipart.MultipartFile
 
 /**
  * UserImportController
@@ -17,7 +18,7 @@ class UserImportController extends BaseController{
     def messageSource
 
     def index(){
-
+        render([view:"index"])
     }
 
     /**
@@ -29,13 +30,12 @@ class UserImportController extends BaseController{
         /**************************
          check if file exists
          **************************/
-        File file = request.getFile("file")
-        Boolean firstRowContainsHeadings = params.firstRowContainsHeadings ? true : false
+        MultipartFile file = request.getFile("file")
 
-        if(file.size() == 0){
-            def msg = messageSource.getMessage("fileupload.upload.nofile", null, request.locale)
-            log.debug(msg)
-            flash.message = msg
+        Boolean firstRowContainsHeadings = params?.firstRowContainsHeadings ? true : false
+
+        if(file.empty){
+            flash.error = message(code:"fileupload.upload.nofile")
             redirect(url:generateRedirectLink("userImport", "index"))
             return
         }
@@ -45,9 +45,7 @@ class UserImportController extends BaseController{
          ************************/
         def fileExtension = file.originalFilename.substring(file.originalFilename.lastIndexOf('.')+1).toUpperCase()
         if(!ALLOWED_FILE_EXTENSIONS.contains(fileExtension)){
-            def msg = messageSource.getMessage("fileupload.upload.unauthorizedExtension", [fileExtension, ALLOWED_FILE_EXTENSIONS] as Object[], request.locale)
-            log.debug msg
-            flash.message = msg
+            flash.error = message(code:"fileupload.upload.unauthorizedExtension", args:[fileExtension, ALLOWED_FILE_EXTENSIONS])
             redirect(url:generateRedirectLink("userImport", "index"))
             return
         }
@@ -58,14 +56,14 @@ class UserImportController extends BaseController{
         if (file.size > MAX_FILE_SIZE) { //if filesize is bigger than allowed
             def maxSizeInKb = ((int) (MAX_FILE_SIZE/1024))
             log.debug "FileUploader plugin received a file bigger than allowed. Max file size is ${maxSizeInKb} kb"
-            flash.message = messageSource.getMessage("fileupload.upload.fileBiggerThanAllowed", [maxSizeInKb] as Object[], request.locale)
+            flash.error = message(code:"fileupload.upload.fileBiggerThanAllowed", args:[maxSizeInKb])
             redirect(url:generateRedirectLink("userImport", "index"))
             return
         }
 
-        List<Map> importMessages = userImportService.loadUserData(file)
+        List importMessages = userImportService.loadUserData(file.inputStream)
 
-        return [importMessages:importMessages]
+        return ["importMessages":importMessages]
     }
 }
 

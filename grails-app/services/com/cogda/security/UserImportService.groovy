@@ -25,9 +25,9 @@ class UserImportService {
      *
      * @param userDataFile
      */
-    def loadUserData(File userDataFile) {
-        List<Map> list = parseDataFile(userDataFile)
-        List<Map> importMessages = []
+    public List loadUserData(InputStream inputStream) {
+        List list = parseInputStream(inputStream)
+        List importMessages = []
         list.eachWithIndex { int i, Map mapData ->
             Map importMessage = [line:(i+1), success:false, message:""]
             String rootMessage = "User at line ${i + 1} "
@@ -61,12 +61,12 @@ class UserImportService {
 
     /**
      * Parses the data file based on the comma separated values
-     * @param dataFile
+     * @param inputStream
      * @return List
      */
-    def List<Map> parseDataFile(File dataFile){
+    def List<Map> parseInputStream(InputStream inputStream){
         List returnList = []
-        CSVReader reader = new CSVReader(new FileReader(dataFile))
+        CSVReader reader = new CSVReader(new InputStreamReader(inputStream))
         String [] nextLine;
         Integer count = 0;
         while((nextLine = reader.readNext()) != null){
