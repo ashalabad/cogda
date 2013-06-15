@@ -53,12 +53,23 @@ class UserService {
      * @return boolean
      */
     def availableUsername(String username){
+        Boolean available = Boolean.TRUE
         CustomerAccount.withoutTenantRestriction{
             if(User.findByUsername(username)){
-                return false
+                available = Boolean.FALSE
             }
         }
-        return true
+
+        if(!available){
+            return Boolean.FALSE
+        }
+
+        // Now check Registration
+        if(Registration.findByUsername(username)){
+            return Boolean.FALSE
+        }
+
+        return Boolean.TRUE
     }
 
     /**

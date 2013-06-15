@@ -35,7 +35,15 @@ class DomainTenantResolver implements TenantResolver {
         else
         {
             def subDomain = request.serverName.substring(0, request.serverName.indexOf("."))
+
             CustomerAccount ca = CustomerAccount.findBySubDomain(subDomain)
+
+            if(!ca){
+                request.customerAccount = -1
+                request.domain = ""
+                return null
+            }
+
             request.customerAccount = ca.id
             request.domain = subDomain
             return ca.id  // the customer account id is the tenant id.
@@ -58,6 +66,13 @@ class DomainTenantResolver implements TenantResolver {
         {
             def subDomain = request.serverName.substring(0, request.serverName.indexOf("."))
             CustomerAccount ca = CustomerAccount.findBySubDomain(subDomain)
+
+            if(!ca){
+                request.customerAccount = -1
+                request.domain = ""
+                return null
+            }
+
             request.customerAccount = ca.id
             request.domain = subDomain
             return ca.id  // the customer account id is the tenant id.

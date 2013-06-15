@@ -16,20 +16,22 @@ class CompanyController {
      * Returns a list of map objects
      */
     def typeahead(){
-        String q = params.query
-        Map returnMap = [options:[]]
+        String q = params.q
+        List returnList = []
 
         if(!q){
-            render returnMap as JSON
+            render returnList as JSON
             return
         }
 
         List companies = companyService.find(q)
+
+        println companies
         List companyInstances = companies.collect { Company company ->
-            returnMap.options.add(company.prettyCompanyString())
+            returnList.add([companyName:company.prettyCompanyString(), companyId:company.id])
         }
 
-        render returnMap as JSON
+        render returnList as JSON
         return
     }
 }

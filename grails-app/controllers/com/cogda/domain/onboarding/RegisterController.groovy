@@ -8,6 +8,7 @@ import com.cogda.multitenant.CompanyService
 import com.cogda.security.UserService
 import com.cogda.util.ErrorMessageResolverService
 import grails.converters.JSON
+import grails.gsp.PageRenderer
 import grails.plugins.springsecurity.Secured
 import grails.plugins.springsecurity.SpringSecurityService
 import org.codehaus.groovy.grails.plugins.web.taglib.CountryTagLib
@@ -26,7 +27,7 @@ class RegisterController {
     ErrorMessageResolverService errorMessageResolverService
     SpringSecurityService springSecurityService
     AccountActivationService accountActivationService
-
+    PageRenderer groovyPageRenderer
 
     static defaultAction = "index"
 
@@ -129,6 +130,7 @@ class RegisterController {
                 // Add a success message for this section type
                 ajaxResponseDto.addMessage(message(code: "registration.successful", args: []))
                 ajaxResponseDto.modelObject = [emailAddress: registerCommand.emailAddress]
+                ajaxResponseDto.htmlTemplate = groovyPageRenderer.render(template: "/register/successfulRegistration", model:[registrationInstance:registration])
                 render ajaxResponseDto as JSON
                 return
             }
