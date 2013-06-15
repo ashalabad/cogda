@@ -20,7 +20,7 @@ class DomainTenantResolver implements TenantResolver {
             case [Environment.DEVELOPMENT, Environment.TEST]:
                 return developmentResolver(request)
             case Environment.PRODUCTION:
-                return productionResolver(request)
+                return developmentResolver(request)  // We switched over to the cogdalocal.com domain so the developmentResolver now works.
             default:
                 return null
         }
