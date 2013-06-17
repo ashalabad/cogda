@@ -55,7 +55,7 @@ environments {
             dbCreate = "create-drop" // one of 'create', 'create-drop', 'update', 'validate', ''
             pooled = true
             driverClassName = "com.mysql.jdbc.Driver"
-            url = "jdbc:mysql://localhost/cogda_test"
+            url = "jdbc:mysql://ec2-50-19-213-178.compute-1.amazonaws.com/cogda_test"
             dialect = org.hibernate.dialect.MySQL5InnoDBDialect
             properties {
                 validationQuery = "SELECT 1"

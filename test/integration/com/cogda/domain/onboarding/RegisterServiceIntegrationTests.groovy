@@ -44,8 +44,7 @@ class RegisterServiceIntegrationTests extends BaseIntegrationTest {
 
     @After
     void tearDown() {
-        // Tear down logic here
-        deleteAllData()
+
     }
 
     @Test

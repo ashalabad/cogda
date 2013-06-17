@@ -9,6 +9,7 @@ import com.cogda.domain.UserProfile
 import com.cogda.domain.UserProfileEmailAddress
 import com.cogda.domain.UserProfilePhoneNumber
 import com.cogda.domain.admin.CompanyType
+import com.cogda.domain.admin.EmailConfirmationLog
 import com.cogda.domain.admin.HtmlFragment
 import com.cogda.domain.admin.NaicsCode
 import com.cogda.domain.admin.SicCode
@@ -42,6 +43,7 @@ class BaseIntegrationTest {
 //        sql.execute("select 'mysql truncate table ' | table_name from information_schema.tables")
 //        sql.execute('SET foreign_key_checks = 1;')
 
+        EmailConfirmationLog.executeUpdate("delete from EmailConfirmationLog ")
         Registration.executeUpdate("delete from Registration")
 
         UserRole.executeUpdate("delete from UserRole")
@@ -152,37 +154,7 @@ class BaseIntegrationTest {
         return registration
     }
 
-    /**
-     * Creates a Valid SystemEmailMessageTemplate
-     * @return SystemEmailMessageTemplate
-     */
-    public SystemEmailMessageTemplate createValidSystemEmailMessageTemplate(){
-        SystemEmailMessageTemplate accountActivationEmailMessage = new SystemEmailMessageTemplate()
-        accountActivationEmailMessage.markupLanguage = MarkupLanguage.MARKDOWN
-        accountActivationEmailMessage.title = "INITIAL_ACCOUNT_ACTIVATION_EMAIL"
-        accountActivationEmailMessage.description = "The email message that is sent to the User when activating a new account."
-        accountActivationEmailMessage.subject = "Cogda Email Verification"
-        accountActivationEmailMessage.fromEmail = "mail@cogda.com"
-        accountActivationEmailMessage.body = """
-Thank you for your interest in {appName}.  We sincerely look forward to serving you and your company.
 
-Please click the following verification link to activate your new {appName} account.
-
-{activationUrl}
-
-Upon successful activation of your account your company information will be verified and your company's account provisioned on {appName}!
-
-Thank you!
-
-{appName} Team"""
-        accountActivationEmailMessage.acceptsParameters = true
-        accountActivationEmailMessage.requiredParameterNames = ['appName', 'activationUrl']
-        assert accountActivationEmailMessage.save(), "AccountActivationEmailMessage save failed: ${accountActivationEmailMessage.errors}"
-
-        log.debug "Successfully saved AccountActivationEmailMessage"
-
-        return accountActivationEmailMessage
-    }
 
     /**
      * Creates the VERIFIED_SUCCESSFULLY_EMAIL template.

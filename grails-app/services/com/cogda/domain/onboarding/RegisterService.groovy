@@ -21,6 +21,7 @@ class RegisterService {
                 log.error(it)
             }
         }
+        return registration
     }
 
     def list(params) {

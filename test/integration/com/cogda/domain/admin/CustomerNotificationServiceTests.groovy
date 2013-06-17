@@ -23,10 +23,7 @@ class CustomerNotificationServiceTests extends BaseIntegrationTest {
 
     @After
     void tearDown() {
-        // Tear down logic here
-        UserProfileEmailAddress.executeUpdate("delete from UserProfileEmailAddress")
-        UserProfile.executeUpdate("delete from UserProfile")
-        EmailConfirmationLog.executeUpdate("delete from EmailConfirmationLog")
+
     }
 
     @Test

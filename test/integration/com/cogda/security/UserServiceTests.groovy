@@ -20,8 +20,7 @@ class UserServiceTests extends BaseIntegrationTest{
 
     @After
     void tearDown() {
-        // Tear down logic here
-        deleteAllData()
+
     }
 
     @Test

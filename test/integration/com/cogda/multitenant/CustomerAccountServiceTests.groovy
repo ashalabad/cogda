@@ -61,7 +61,7 @@ class CustomerAccountServiceTests extends BaseIntegrationTest{
 
     @After
     void tearDown() {
-        deleteAllData()
+
     }
 
     @Test

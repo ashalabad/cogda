@@ -123,7 +123,7 @@ class RegisterController {
                 return  // someone is most likely fooling around with the request headers
             } else {
 
-                registerService.save(registration)
+                registration = registerService.save(registration)
 
                 // send the registration verification link to the user
                 String emailVerificationUrl = generateLink('verify', [t: registration.token])

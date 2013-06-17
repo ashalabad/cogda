@@ -23,26 +23,18 @@ class AccountActivationServiceTests extends BaseIntegrationTest {
 
     @Before
     void setUp() {
-        createCompanyTypes()
-        createValidSystemEmailMessageTemplate()
 
     }
 
     @After
     void tearDown() {
-        // Tear down logic here
-        Registration.list().each { Registration registration ->
-            registration.emailConfirmationLogs.each { log ->
-                registration.removeFromEmailConfirmationLogs(log)
-            }
-        }
-        Registration.executeUpdate("delete from Registration")
-        SystemEmailMessageTemplate.executeUpdate("delete from SystemEmailMessageTemplate")
-        CompanyType.executeUpdate("delete from CompanyType")
+
     }
 
     @Test
     void testConfirmEmailVerification() {
+        createCompanyTypes()
+
         Registration registration = createValidRegistration()
         assert registration.save(flush:true), "Registration did not save ${registration.errors}"
         createConfirmEmailVerificationMessageTemplate()
@@ -62,6 +54,7 @@ class AccountActivationServiceTests extends BaseIntegrationTest {
 
     @Test
     void testSendEmailVerified() {
+        createCompanyTypes()
         Registration registration = createValidRegistration()
         assert registration.save(flush:true), "Registration did not save ${registration.errors}"
 
@@ -76,6 +69,8 @@ class AccountActivationServiceTests extends BaseIntegrationTest {
 
     @Test
     void testPrepareEmailVerification() {
+        createCompanyTypes()
+        createValidSystemEmailMessageTemplate()
         Registration registration = createValidRegistration()
         assert registration.save(flush:true), "Registration did not save ${registration.errors}"
         String emailVerificationUrl = "https://cogda.com/emailVerification/verify?t=20020202020"
@@ -96,6 +91,8 @@ class AccountActivationServiceTests extends BaseIntegrationTest {
 
     @Test
     void testSendEmailVerification() {
+        createCompanyTypes()
+        createValidSystemEmailMessageTemplate()
         Registration registration = createValidRegistration()
         assert registration.save(flush:true), "Registration did not save ${registration.errors}"
         String emailVerificationUrl = "https://cogda.com/register/verifyRegistration"
@@ -108,5 +105,35 @@ class AccountActivationServiceTests extends BaseIntegrationTest {
 
     }
 
+    /**
+     * Creates a Valid SystemEmailMessageTemplate
+     * @return SystemEmailMessageTemplate
+     */
+    private SystemEmailMessageTemplate createValidSystemEmailMessageTemplate(){
+        SystemEmailMessageTemplate accountActivationEmailMessage = new SystemEmailMessageTemplate()
+        accountActivationEmailMessage.markupLanguage = MarkupLanguage.MARKDOWN
+        accountActivationEmailMessage.title = "INITIAL_ACCOUNT_ACTIVATION_EMAIL"
+        accountActivationEmailMessage.description = "The email message that is sent to the User when activating a new account."
+        accountActivationEmailMessage.subject = "Cogda Email Verification"
+        accountActivationEmailMessage.fromEmail = "mail@cogda.com"
+        accountActivationEmailMessage.body = """
+Thank you for your interest in {appName}.  We sincerely look forward to serving you and your company.
 
+Please click the following verification link to activate your new {appName} account.
+
+{activationUrl}
+
+Upon successful activation of your account your company information will be verified and your company's account provisioned on {appName}!
+
+Thank you!
+
+{appName} Team"""
+        accountActivationEmailMessage.acceptsParameters = true
+        accountActivationEmailMessage.requiredParameterNames = ['appName', 'activationUrl']
+        assert accountActivationEmailMessage.save(flush:true), "AccountActivationEmailMessage save failed: ${accountActivationEmailMessage.errors}"
+
+        log.debug "Successfully saved AccountActivationEmailMessage"
+
+        return accountActivationEmailMessage
+    }
 }

@@ -65,7 +65,7 @@ class Registration {
         firstName(nullable:false, blank:false, minSize:1)
         lastName(nullable:false, blank:false, minSize:1)
         username(nullable:false, blank:false, matches: "[A-Za-z0-9]+", minSize:2, validator: { val, obj ->
-            if(!obj?.id || (obj?.id && obj.isDirty("username") && !obj.persistentValue("username").equals(val))){
+            if(!obj?.id || (obj?.id && obj.isDirty("username") && !obj.getPersistentValue("username").equals(val))){
                 if(!obj.userService.availableUsername(val)){
                     return ['registration.username.taken']
                 }

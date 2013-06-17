@@ -41,33 +41,7 @@ class AdminRegisterControllerIntegrationTests extends BaseIntegrationTest {
 
     @After
     void tearDown() {
-        // Tear down logic here
-        // Tear down logic here
-        Registration.executeUpdate("delete from Registration")
 
-        UserRole.executeUpdate("delete from UserRole")
-        Role.executeUpdate("delete from Role")
-
-        UserProfileEmailAddress.executeUpdate("delete from UserProfileEmailAddress")
-        UserProfilePhoneNumber.executeUpdate("delete from UserProfilePhoneNumber")
-        UserProfile.executeUpdate("delete from UserProfile")
-        User.executeUpdate("delete from User")
-
-        CompanyProfileAddress.executeUpdate("delete from CompanyProfileAddress")
-        CompanyProfilePhoneNumber.executeUpdate("delete from CompanyProfilePhoneNumber")
-        CompanyProfile.executeUpdate("delete from CompanyProfile")
-        Company.executeUpdate("delete from Company")
-
-        CustomerAccount.executeUpdate("delete from CustomerAccount")
-
-        CompanyType.executeUpdate("delete from CompanyType")
-        HtmlFragment.executeUpdate("delete from HtmlFragment")
-        NaicsCode.executeUpdate("delete from NaicsCode")
-        SicCode.executeUpdate("delete from SicCode")
-        SicCodeDivision.executeUpdate("delete from SicCodeDivision")
-        SupportedCountryCode.executeUpdate("delete from SupportedCountryCode")
-        SystemEmailMessageTemplate.executeUpdate("delete from SystemEmailMessageTemplate")
-        assert Company.count == 0
     }
 
     @Test
