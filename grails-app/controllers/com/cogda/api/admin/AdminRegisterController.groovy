@@ -74,11 +74,12 @@ class AdminRegisterController {
     def update(long id) {
         Registration registration = Registration.get(id)
         AjaxResponseDto ajaxResponseDto = new AjaxResponseDto()
-        if (!registration)
+        if (!registration) {
             ajaxResponseDto.success = Boolean.FALSE
             ajaxResponseDto.errors = [error: message(code: "registration.failure.failedToFind", args: [])]
             render ajaxResponseDto as JSON
             return
+        }
         if (registration.hasErrors()) {
             ajaxResponseDto.success = Boolean.FALSE
             ajaxResponseDto.errors = errorMessageResolverService.retrieveErrorStrings(registration)
@@ -107,8 +108,8 @@ class AdminRegisterController {
         try {
             adminService.approveRegistration(id)
             ajaxResponseDto.success = Boolean.TRUE
-            ajaxResponseDto.messages = [g.message(code:'registration.status.adminapproved')]
-        } catch(RegistrationException e) {
+            ajaxResponseDto.messages = [g.message(code: 'registration.status.adminapproved')]
+        } catch (RegistrationException e) {
             ajaxResponseDto.success = Boolean.FALSE
             ajaxResponseDto.errors = [error0: g.message(code: 'registration.status.adminapprovedfailed'), error1: e.message]
         }
@@ -140,10 +141,10 @@ class AdminRegisterController {
         }
     }
 
-    def updateSubdomain(long id, String subDomain){
+    def updateSubdomain(long id, String subDomain) {
         AjaxResponseDto ajaxResponseDto = new AjaxResponseDto()
         String updatedSubDomain = adminService.updateSubdomain(id, subDomain)
-        if (!updatedSubDomain){
+        if (!updatedSubDomain) {
             ajaxResponseDto.success = Boolean.FALSE
             ajaxResponseDto.errors = [error: "Failed to update registration"]
         } else {
