@@ -286,11 +286,8 @@
                 }
             },
             updater: function(item) {
-                console.log("Item: " + item);
                 $("#existingCompanyId").val(companyNameMap[item].companyId);
-                console.log("#existingCompanyId value set to: " + $("#existingCompanyId").val());
                 $("#newCompany").val("");
-                console.log("#newCompany value set to: " + $("#newCompany").val());
                 $('#newCompanyAccordion').hide();
 
 
@@ -305,20 +302,13 @@
          * @param event
          */
         var typeaheadChangeHandler = function(event){
-            console.log("Changed: " + event.target.value);
             var item = event.target.value;
             if(companyNameMap[item] == null){
-                console.log("Company Name is New this is a new company");
                 $('#newCompanyAccordion').show();
                 $('#collapseOne').collapse('show');
                 $('#newCompany').val("true");
                 $("#existingCompanyId").val("");
                 $("#companyTypeId").focus();
-
-                console.log("#existingCompanyId value set to: " + $("#existingCompanyId").val());
-                console.log("#newCompany value set to: " + $("#newCompany").val());
-            }else{
-                console.log("The user has selected an existing company");
             }
         }
 
@@ -433,6 +423,7 @@
             for(var i = 0; i < data.messages.length; i++) {
                 if(data.htmlTemplate){
                     $('#registrationFormDiv').html(data.htmlTemplate);
+                    $('#successMessagesDiv').focus();
                 }
 
                 $.pnotify({
