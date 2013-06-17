@@ -323,6 +323,38 @@ class RegistrationTests {
          assertNull "Registration was found and should not have been since it has an invalid status", r
      }
 
+    /**
+     * username matches: "[A-Za-z0-9]+"
+     * subDomain matches: "[A-Za-z0-9]+"
+     */
+    void testMatches(){
+        registration = new Registration()
+
+        def mockControl = mockFor(UserService, false)
+        mockControl.demand.availableUsername(0..5) { String username ->
+            true
+        }
+        registration.userService = mockControl.createMock()
+
+        registration.username = "********"
+        registration.subDomain = "@@@@@@@@@@"
+
+        assertFalse registration.validate()
+        assert "matches.invalid" == registration.errors["username"].code
+
+        assertFalse registration.validate()
+        assert "matches.invalid" == registration.errors["subDomain"].code
+
+
+        registration.username = "anewusernamevalid"
+        registration.subDomain = "avalidsubdomain"
+
+        registration.validate()
+
+        assert !registration.errors["username"]
+        assert !registration.errors["subDomain"]
+    }
+
     Registration createValidRegistration(){
         Registration reg = new Registration()
         reg.firstName = "Christopher"

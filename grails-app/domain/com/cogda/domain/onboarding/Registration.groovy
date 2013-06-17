@@ -64,7 +64,7 @@ class Registration {
     static constraints = {
         firstName(nullable:false, blank:false, minSize:1)
         lastName(nullable:false, blank:false, minSize:1)
-        username(nullable:false, blank:false, minSize:2, validator: { val, obj ->
+        username(nullable:false, blank:false, matches: "[A-Za-z0-9]+", minSize:2, validator: { val, obj ->
             if(!obj.id || (obj.id && obj.isDirty("username"))){
                 if(!obj.userService.availableUsername(val)){
                     return ['registration.username.taken']
@@ -88,7 +88,7 @@ class Registration {
         county(nullable:true)
         country(nullable:true)
         registrationStatus(nullable:false)
-        subDomain(nullable:true, matches: "[-A-Za-z0-9]+")
+        subDomain(nullable:true, matches: "[A-Za-z0-9]+")
         token(nullable:false, blank:false)
     }
 
