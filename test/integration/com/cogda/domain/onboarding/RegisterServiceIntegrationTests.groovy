@@ -31,7 +31,6 @@ import org.junit.rules.ExpectedException
 class RegisterServiceIntegrationTests extends BaseIntegrationTest {
 
     RegisterService registerService
-    def dataSource
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none()
@@ -46,7 +45,7 @@ class RegisterServiceIntegrationTests extends BaseIntegrationTest {
     @After
     void tearDown() {
         // Tear down logic here
-        deleteAllData(dataSource)
+        deleteAllData()
     }
 
     @Test
