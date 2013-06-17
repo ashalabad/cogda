@@ -429,7 +429,7 @@
             for(var i = 0; i < data.messages.length; i++) {
                 if(data.htmlTemplate){
                     $('#registrationFormDiv').html(data.htmlTemplate);
-                    $('#successMessagesDiv').focus();
+                    window.scrollTo(0, 0);
                 }
 
                 $.pnotify({
