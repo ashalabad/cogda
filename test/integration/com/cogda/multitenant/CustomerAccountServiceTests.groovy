@@ -37,7 +37,6 @@ class CustomerAccountServiceTests extends BaseIntegrationTest{
     CompanyProfileService companyProfileService
     AmazonWebService amazonWebService
     GrailsApplication grailsApplication
-    def dataSource
 
     private void deleteAllObjectsInTestAmazonBucket(){
         final String defaultBucket = grailsApplication.config.grails.plugin.awssdk.default.bucket
@@ -62,36 +61,7 @@ class CustomerAccountServiceTests extends BaseIntegrationTest{
 
     @After
     void tearDown() {
-//        deleteAllData(dataSource)
-//        Registration.withTransaction {
-//
-//            // Tear down logic here
-//            Registration.executeUpdate("delete from Registration")
-//
-//            UserRole.executeUpdate("delete from UserRole")
-//            Role.executeUpdate("delete from Role")
-//
-//            UserProfileEmailAddress.executeUpdate("delete from UserProfileEmailAddress")
-//            UserProfilePhoneNumber.executeUpdate("delete from UserProfilePhoneNumber")
-//            UserProfile.executeUpdate("delete from UserProfile")
-//            User.executeUpdate("delete from User")
-//
-//            CompanyProfileAddress.executeUpdate("delete from CompanyProfileAddress")
-//            CompanyProfilePhoneNumber.executeUpdate("delete from CompanyProfilePhoneNumber")
-//            CompanyProfile.executeUpdate("delete from CompanyProfile")
-//            Company.executeUpdate("delete from Company")
-//            EmailConfirmationLog.executeUpdate("delete from EmailConfirmationLog")
-//
-//            CustomerAccount.executeUpdate("delete from CustomerAccount")
-//
-//            CompanyType.executeUpdate("delete from CompanyType")
-//            HtmlFragment.executeUpdate("delete from HtmlFragment")
-//            NaicsCode.executeUpdate("delete from NaicsCode")
-//            SicCode.executeUpdate("delete from SicCode")
-//            SicCodeDivision.executeUpdate("delete from SicCodeDivision")
-//            SupportedCountryCode.executeUpdate("delete from SupportedCountryCode")
-//            SystemEmailMessageTemplate.executeUpdate("delete from SystemEmailMessageTemplate")
-//        }
+        deleteAllData()
     }
 
     @Test
@@ -103,7 +73,6 @@ class CustomerAccountServiceTests extends BaseIntegrationTest{
         }catch(Exception e){
             assert !e, "Exception thrown ${e.message}"
         }
-
     }
 
     @Test

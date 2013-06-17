@@ -31,7 +31,6 @@ import org.junit.rules.ExpectedException
 class RegisterServiceIntegrationTests extends BaseIntegrationTest {
 
     RegisterService registerService
-    def dataSource
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none()
