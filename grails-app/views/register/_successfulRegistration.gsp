@@ -1,5 +1,5 @@
 <%@ page import="com.cogda.domain.onboarding.Registration;"%>
-<div class="big-message">
+<div id="successMessagesDiv" class="big-message">
     <div class="container">
 
         <h2><g:message code="registration.successful"/></h2>
@@ -14,7 +14,7 @@
         <g:else>
 
             <div class = "alert alert-success ">
-                <g:message code = "registration.successful.existingCompany" args="[registrationInstance.emailAddress, registrationInstance?.existingCompany?.companyName, grailsApplication.config.application.name]"/>
+                <g:message code = "registration.successful.existingCompany" args="[registrationInstance.emailAddress, registrationInstance?.companyName, grailsApplication.config.application.name]"/>
             </div>
 
         </g:else>
