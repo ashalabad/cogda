@@ -26,7 +26,7 @@ class EmailVerificationControllerTests {
             true
         }
         registration.userService = mockControl.createMock()
-
+        registration.metaClass.isDirty = { String fieldName -> return false }
         registration.registrationStatus = RegistrationStatus.AWAITING_ADMIN_APPROVAL
         registration.save()
 
@@ -50,7 +50,7 @@ class EmailVerificationControllerTests {
             true
         }
         registration.userService = mockControl.createMock()
-
+        registration.metaClass.isDirty = { String fieldName -> return false }
         registration.registrationStatus = RegistrationStatus.APPROVED
         registration.save()
 
@@ -74,7 +74,7 @@ class EmailVerificationControllerTests {
             true
         }
         registration.userService = mockControl.createMock()
-
+        registration.metaClass.isDirty = { String fieldName -> return false }
         registration.registrationStatus = RegistrationStatus.APPROVED
         registration.save()
 
@@ -98,7 +98,7 @@ class EmailVerificationControllerTests {
             true
         }
         registration.userService = mockControl.createMock()
-
+        registration.metaClass.isDirty = { String fieldName -> return false }
         registration.registrationStatus = RegistrationStatus.AWAITING_USER_EMAIL_CONFIRMATION
         registration.save()
 

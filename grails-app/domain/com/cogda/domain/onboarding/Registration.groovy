@@ -65,8 +65,10 @@ class Registration {
         firstName(nullable:false, blank:false, minSize:1)
         lastName(nullable:false, blank:false, minSize:1)
         username(nullable:false, blank:false, minSize:2, validator: { val, obj ->
-            if(!obj.userService.availableUsername(val)){
-                return ['registration.username.taken']
+            if(!obj.id || (obj.id && obj.isDirty("username"))){
+                if(!obj.userService.availableUsername(val)){
+                    return ['registration.username.taken']
+                }
             }
         })
         emailAddress(nullable:false, email:true, blank:false)

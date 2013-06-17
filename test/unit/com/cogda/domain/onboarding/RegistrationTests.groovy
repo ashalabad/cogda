@@ -300,6 +300,8 @@ class RegistrationTests {
              true
          }
          storedRegistration.userService = mockControl.createMock()
+         storedRegistration.metaClass.isDirty = { String fieldName -> return false }
+
 
          // Set the fields that will be used in the tests
          storedRegistration.token = token
@@ -307,6 +309,7 @@ class RegistrationTests {
 
          Registration pendingRegistration = createValidRegistration()
          pendingRegistration.userService = mockControl.createMock()
+         pendingRegistration.metaClass.isDirty = { String fieldName -> return false }
 
          pendingRegistration.registrationStatus = RegistrationStatus.AWAITING_ADMIN_APPROVAL
          pendingRegistration.token = pendingToken

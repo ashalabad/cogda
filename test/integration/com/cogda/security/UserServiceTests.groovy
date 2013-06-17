@@ -1,5 +1,6 @@
 package com.cogda.security
 
+import com.cogda.BaseIntegrationTest
 import com.cogda.common.RegistrationStatus
 import com.cogda.domain.admin.CompanyType
 import com.cogda.domain.onboarding.Registration
@@ -9,7 +10,7 @@ import com.cogda.multitenant.CustomerAccount
 import static org.junit.Assert.*
 import org.junit.*
 
-class UserServiceTests {
+class UserServiceTests extends BaseIntegrationTest{
     UserService userService
 
     @Before
@@ -20,12 +21,7 @@ class UserServiceTests {
     @After
     void tearDown() {
         // Tear down logic here
-        User.withTransaction {
-            Registration.executeUpdate("delete from Registration ")
-            CompanyType.executeUpdate("delete from CompanyType")
-            User.executeUpdate("delete from User")
-            CustomerAccount.executeUpdate("delete from CustomerAccount ")
-        }
+        deleteAllData()
     }
 
     @Test

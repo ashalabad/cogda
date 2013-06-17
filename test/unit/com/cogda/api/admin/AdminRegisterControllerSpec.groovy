@@ -84,6 +84,7 @@ class AdminRegisterControllerSpec extends Specification {
         setup:
         mockDomain(Registration)
         registration.userService = userService
+        registration.metaClass.isDirty = { String fieldName -> return false }
         assert registration.userService != null
         registration.save(failOnError: true)
 
@@ -183,6 +184,7 @@ class AdminRegisterControllerSpec extends Specification {
 
     def saveRegistration(Registration registration) {
         registration.userService = userService
+        registration.metaClass.isDirty = { String fieldName -> return false }
         registration.save(failOnError: true)
     }
 
