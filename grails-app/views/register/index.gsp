@@ -355,6 +355,9 @@
                     required: true,
                     equalTo: "#passwordOne"
                 },
+                companyName: {
+                    required: true
+                },
                 companyTypeId: {
                     required: newCompanySectionRequired
                 },
@@ -410,6 +413,9 @@
                 passwordTwo: {
                     required: "<g:message code = 'registerCommand.passwordTwo.blank'/>",
                     equalTo: "<g:message code = 'registerCommand.passwordTwo.nomatch'/>"
+                },
+                companyName: {
+                    required: "<g:message code = 'registerCommand.passwordTwo.blank'/>"
                 },
                 companyTypeId: {
                     required: "<g:message code = 'registerCommand.companyTypeId.blank'/>"
