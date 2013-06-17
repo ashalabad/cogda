@@ -239,12 +239,17 @@ class RegisterCommand {
     }
 
     static constraints = {
-        importFrom Registration, include: ["firstName", "lastName", "emailAddress", "username", "newCompany",
+        importFrom Registration, include: ["firstName", "lastName", "emailAddress", "newCompany",
                 "companyName"]
         password(blank: false, minSize: 6, maxSize: 84)
         passwordTwo(blank:false, minSize: 6, maxSize: 84, validator: { val, obj ->
             if (!obj.password.equals(val)) {
                 return ['registerCommand.passwordTwo.nomatch']
+            }
+        })
+        username(nullable:false, blank:false, minSize:2, validator: { val, obj ->
+            if(!obj.userService.availableUsername(val)){
+                return ['registration.username.taken']
             }
         })
         companyTypeId(blank: false, inList: CompanyType.retrieveIds())

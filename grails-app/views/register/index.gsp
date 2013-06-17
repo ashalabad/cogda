@@ -390,6 +390,7 @@
             $("#newCompanyControlGroup div.off").click();
             $("#registrationForm").find("div.control-group").removeClass("success error")
             $("#firstName").focus();
+            $("#newCompanyAccordion").hide();
         });
 
         $('#registrationForm').on("submit", function(e){
