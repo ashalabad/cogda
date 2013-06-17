@@ -16,7 +16,7 @@ class RegisterService {
      * Save a com.cogda.domain.onboarding.Registration object
      */
     def save(Registration registration) {
-        if (!registration.save(flush: true)) {
+        if (!registration.save(flush: true, failOnError: true)) {
             registration.errors.each {
                 log.error(it)
             }
@@ -33,7 +33,7 @@ class RegisterService {
             throw new RegistrationException("Registration not found.")
         } else {
             instance.setProperties(registration.properties)
-            if (!instance.save(flush: true)) {
+            if (!instance.save(flush: true, failOnError: true)) {
                 instance.errors.each {
                     log.error(it)
                 }

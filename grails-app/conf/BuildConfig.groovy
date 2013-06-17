@@ -47,6 +47,7 @@ grails.project.dependency.resolution = {
         build 'org.apache.httpcomponents:httpclient:4.1'
         runtime 'org.apache.httpcomponents:httpcore:4.1'
         runtime 'org.apache.httpcomponents:httpclient:4.1'
+        test "org.spockframework:spock-grails-support:0.7-groovy-2.0"
     }
 
     plugins {
@@ -84,5 +85,8 @@ grails.project.dependency.resolution = {
         compile ":jquery-datatables:1.7.5"
 
         compile ":cloud-bees:0.6.2"
+        test(":spock:0.7") {
+            exclude "spock-grails-support"
+        }
     }
 }
