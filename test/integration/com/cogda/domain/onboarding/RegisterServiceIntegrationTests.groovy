@@ -31,6 +31,7 @@ import org.junit.rules.ExpectedException
 class RegisterServiceIntegrationTests extends BaseIntegrationTest {
 
     RegisterService registerService
+    def dataSource
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none()
@@ -121,6 +122,15 @@ class RegisterServiceIntegrationTests extends BaseIntegrationTest {
         String originalFirstName = registrationToUpdate.firstName
         registrationToUpdate.firstName = null
         registerService.update(registrationToUpdate.id, registrationToUpdate)
+        Registration actualRegistration = Registration.findByToken(registrationToUpdate.token)
+        assert originalFirstName, actualRegistration.firstName
+    }
+
+    @Test(expected = RegistrationException)
+    void testInvalidIdUpdate() {
+        def registrationToUpdate = Registration.first()
+        String originalFirstName = registrationToUpdate.firstName
+        registerService.update(-5, registrationToUpdate)
         Registration actualRegistration = Registration.findByToken(registrationToUpdate.token)
         assert originalFirstName, actualRegistration.firstName
     }

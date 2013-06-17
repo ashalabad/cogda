@@ -72,8 +72,13 @@ class AdminRegisterController {
     }
 
     def update(long id) {
-        Registration registration = new Registration(params.registration)
+        Registration registration = Registration.get(id)
         AjaxResponseDto ajaxResponseDto = new AjaxResponseDto()
+        if (!registration)
+            ajaxResponseDto.success = Boolean.FALSE
+            ajaxResponseDto.errors = [error: message(code: "registration.failure.failedToFind", args: [])]
+            render ajaxResponseDto as JSON
+            return
         if (registration.hasErrors()) {
             ajaxResponseDto.success = Boolean.FALSE
             ajaxResponseDto.errors = errorMessageResolverService.retrieveErrorStrings(registration)
