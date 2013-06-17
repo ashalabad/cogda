@@ -2,12 +2,25 @@ package com.cogda
 
 import com.cogda.common.MarkupLanguage
 import com.cogda.common.RegistrationStatus
+import com.cogda.domain.CompanyProfile
+import com.cogda.domain.CompanyProfileAddress
+import com.cogda.domain.CompanyProfilePhoneNumber
 import com.cogda.domain.UserProfile
 import com.cogda.domain.UserProfileEmailAddress
+import com.cogda.domain.UserProfilePhoneNumber
 import com.cogda.domain.admin.CompanyType
+import com.cogda.domain.admin.HtmlFragment
+import com.cogda.domain.admin.NaicsCode
+import com.cogda.domain.admin.SicCode
+import com.cogda.domain.admin.SicCodeDivision
 import com.cogda.domain.admin.SupportedCountryCode
 import com.cogda.domain.admin.SystemEmailMessageTemplate
 import com.cogda.domain.onboarding.Registration
+import com.cogda.domain.security.Role
+import com.cogda.domain.security.User
+import com.cogda.domain.security.UserRole
+import com.cogda.multitenant.Company
+import com.cogda.multitenant.CustomerAccount
 import grails.plugins.springsecurity.SpringSecurityService
 import groovy.sql.Sql
 import org.apache.commons.logging.LogFactory
@@ -23,11 +36,36 @@ class BaseIntegrationTest {
 
     private static final log = LogFactory.getLog(this)
 
-    void deleteAllData(dataSource){
-        Sql sql = new Sql(dataSource)
-        sql.execute('SET foreign_key_checks = 0;')
-        sql.execute("select 'mysql truncate table ' | table_name from information_schema.tables")
-        sql.execute('SET foreign_key_checks = 1;')
+    void deleteAllData(dataSource = null){
+//        Sql sql = new Sql(dataSource)
+//        sql.execute('SET foreign_key_checks = 0;')
+//        sql.execute("select 'mysql truncate table ' | table_name from information_schema.tables")
+//        sql.execute('SET foreign_key_checks = 1;')
+
+        Registration.executeUpdate("delete from Registration")
+
+        UserRole.executeUpdate("delete from UserRole")
+        Role.executeUpdate("delete from Role")
+
+        UserProfileEmailAddress.executeUpdate("delete from UserProfileEmailAddress")
+        UserProfilePhoneNumber.executeUpdate("delete from UserProfilePhoneNumber")
+        UserProfile.executeUpdate("delete from UserProfile")
+        User.executeUpdate("delete from User")
+
+        CompanyProfileAddress.executeUpdate("delete from CompanyProfileAddress")
+        CompanyProfilePhoneNumber.executeUpdate("delete from CompanyProfilePhoneNumber")
+        CompanyProfile.executeUpdate("delete from CompanyProfile")
+        Company.executeUpdate("delete from Company")
+
+        CustomerAccount.executeUpdate("delete from CustomerAccount")
+
+        CompanyType.executeUpdate("delete from CompanyType")
+        HtmlFragment.executeUpdate("delete from HtmlFragment")
+        NaicsCode.executeUpdate("delete from NaicsCode")
+        SicCode.executeUpdate("delete from SicCode")
+        SicCodeDivision.executeUpdate("delete from SicCodeDivision")
+        SupportedCountryCode.executeUpdate("delete from SupportedCountryCode")
+        SystemEmailMessageTemplate.executeUpdate("delete from SystemEmailMessageTemplate")
     }
 
     /**
@@ -89,7 +127,6 @@ class BaseIntegrationTest {
      */
     public Registration createValidRegistration(){
         Registration registration = new Registration()
-
         registration.firstName = "Christopher"
         registration.lastName = "Kwiatkowski"
         registration.username = "ctk"
@@ -140,7 +177,7 @@ Thank you!
 {appName} Team"""
         accountActivationEmailMessage.acceptsParameters = true
         accountActivationEmailMessage.requiredParameterNames = ['appName', 'activationUrl']
-        assert accountActivationEmailMessage.save(failOnError:true), "AccountActivationEmailMessage save failed: ${accountActivationEmailMessage.errors}"
+        assert accountActivationEmailMessage.save(), "AccountActivationEmailMessage save failed: ${accountActivationEmailMessage.errors}"
 
         log.debug "Successfully saved AccountActivationEmailMessage"
 
@@ -193,7 +230,7 @@ Thank you!
     {appName} Team"""
         resetPasswordEmailMessage.acceptsParameters = true
         resetPasswordEmailMessage.requiredParameterNames = ['appName', 'resetPasswordUrl']
-        resetPasswordEmailMessage.save(failOnError:true)
+        resetPasswordEmailMessage.save() ?: log.error("Error saving resetPasswordEmailMessage errors -> ${resetPasswordEmailMessage.errors}")
 
         return resetPasswordEmailMessage
     }

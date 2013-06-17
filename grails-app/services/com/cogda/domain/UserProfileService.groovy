@@ -21,7 +21,7 @@ class UserProfileService {
         userProfile.user = user
         userProfile.firstName = registration.firstName
         userProfile.lastName = registration.lastName
-        userProfile.save(failOnError: true)
+        userProfile.save() ?: log.error ("Error saving UserProfile errors -> ${userProfile.errors}")
 
         addUserProfileEmailAddress(userProfile, registration.emailAddress, Boolean.TRUE)
 

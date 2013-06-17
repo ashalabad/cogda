@@ -10,14 +10,52 @@ import com.cogda.multitenant.CustomerAccountService
 import grails.plugins.springsecurity.SpringSecurityService
 import grails.util.Environment
 import grails.util.GrailsUtil
+import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.springframework.transaction.interceptor.TransactionAspectSupport
+import org.springframework.transaction.support.TransactionSynchronizationManager
 
 class BootStrap {
     CustomerAccountService customerAccountService
     SpringSecurityService springSecurityService
-
+    GrailsApplication grailsApplication
     def init = { servletContext ->
 
+        /*
+         * Add some convenience currentTransactionStatus methods
+         * to the service classes so that we do not have to throw
+         * RuntimeExceptions to rollback a transaction.
+         * Instead, we can setRollbackOnly by executing the
+         * setRollbackOnly method in the transaction upon hitting
+         * a case where the continuation of the execution will
+         * corrupt the data.
+         */
+        def ctx = grailsApplication.mainContext
+        for (sc in ctx.grailsApplication.serviceClasses) {
+            def metaClass = sc.clazz.metaClass
+            // returns TransactionStatus
+            metaClass.getCurrentTransactionStatus = { ->
+                if (!delegate.isTransactionActive()) {
+                    return null
+                }
+                TransactionAspectSupport.currentTransactionStatus()
+            }
+            // void, throws NoTransactionException
+            metaClass.setRollbackOnly = { ->
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly()
+            }
+            // returns boolean
+            metaClass.isRollbackOnly = { ->
+                if (!delegate.isTransactionActive()) {
+                    return false
+                }
+                delegate.getCurrentTransactionStatus().isRollbackOnly()
 
+            }
+            // returns boolean
+            metaClass.isTransactionActive = { ->
+                TransactionSynchronizationManager.isSynchronizationActive()
+            }
+        }
 
         if(Environment.current != Environment.TEST){
 
@@ -127,7 +165,7 @@ class BootStrap {
     {appName} Team"""
                 accountActivationEmailMessage.acceptsParameters = true
                 accountActivationEmailMessage.requiredParameterNames = ['appName', 'activationUrl']
-                accountActivationEmailMessage.save(failOnError:true)
+                accountActivationEmailMessage.save() ?: log.error("Error saving AccountActivationEmailMessage errors -> ${accountActivationEmailMessage.errors}")
             }
 
             if(!SystemEmailMessageTemplate.findByTitle("REMINDER_ACCOUNT_ACTIVATION_EMAIL")){
@@ -152,7 +190,7 @@ class BootStrap {
     {appName} Team"""
                 accountReminderEmailMessage.acceptsParameters = true
                 accountReminderEmailMessage.requiredParameterNames = ['appName', 'organizationName', 'activationUrl']
-                accountReminderEmailMessage.save(failOnError:true)
+                accountReminderEmailMessage.save() ?: log.error("Error saving accountReminderEmailMessage errors -> ${accountReminderEmailMessage.errors}")
             }
 
             if(!SystemEmailMessageTemplate.findByTitle("TIMEOUT_ACCOUNT_ACTIVATION_EMAIL")){
@@ -174,7 +212,7 @@ class BootStrap {
     {appName} Team"""
                 accountReminderEmailMessage.acceptsParameters = true
                 accountReminderEmailMessage.requiredParameterNames = ['appName', 'organizationName', 'appUrl']
-                accountReminderEmailMessage.save(failOnError:true)
+                accountReminderEmailMessage.save() ?: log.error("Error saving accountReminderEmailMessage errors -> ${accountReminderEmailMessage.errors}")
             }
 
             if(!SystemEmailMessageTemplate.findByTitle("NEW_ACCOUNT_WELCOME_EMAIL")){
@@ -234,7 +272,7 @@ class BootStrap {
     {appName} Team"""
                 accountActivationEmailMessage.acceptsParameters = true
                 accountActivationEmailMessage.requiredParameterNames = ['appName', 'resetPasswordUrl']
-                accountActivationEmailMessage.save(failOnError:true)
+                accountActivationEmailMessage.save() ?: log.error("Error saving accountActivationEmailMessage errors -> ${accountActivationEmailMessage.errors}")
             }
         }
     }

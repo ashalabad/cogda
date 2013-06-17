@@ -1,6 +1,7 @@
 package com.cogda.security
 
 import com.cogda.multitenant.CustomerAccount
+import com.cogda.multitenant.CustomerAccountService
 import grails.test.mixin.*
 import grails.test.mixin.domain.DomainClassUnitTestMixin
 import org.junit.*
@@ -77,8 +78,8 @@ class UserImportControllerTests {
 
 
     private File createCsvFile(){
-        def contents = """"username","firstName","lastName","emailAddress","${SecurityService.ROLE_MARKETER},${SecurityService.ROLE_PRODUCER}"
-"mariarais","maria","schiller","maria@rais.com","${SecurityService.ROLE_MARKETER},${SecurityService.ROLE_PRODUCER}"
+        def contents = """"username","firstName","lastName","emailAddress","${CustomerAccountService.ROLE_MARKETER},${CustomerAccountService.ROLE_PRODUCER}"
+"mariarais","maria","schiller","maria@rais.com","${CustomerAccountService.ROLE_MARKETER},${CustomerAccountService.ROLE_PRODUCER}"
 """
         File file = new File(CSV_FILE_NAME)
         file.write(contents)

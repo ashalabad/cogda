@@ -1,9 +1,9 @@
 package com.cogda.multitenant
 
-import com.amazonaws.services.s3.model.DeleteObjectsRequest
-import com.amazonaws.services.s3.model.GetObjectRequest
+import com.amazonaws.AmazonClientException
+import com.amazonaws.AmazonServiceException
 import com.amazonaws.services.s3.model.ObjectListing
-import com.amazonaws.services.s3.model.S3Object
+
 import com.amazonaws.services.s3.model.S3ObjectSummary
 import com.cogda.BaseIntegrationTest
 import com.cogda.common.RegistrationStatus
@@ -13,27 +13,15 @@ import com.cogda.domain.CompanyProfilePhoneNumber
 import com.cogda.domain.CompanyProfileService
 import com.cogda.domain.UserProfile
 import com.cogda.domain.UserProfileEmailAddress
-import com.cogda.domain.UserProfilePhoneNumber
 import com.cogda.domain.UserProfileService
 import com.cogda.domain.admin.CompanyType
-import com.cogda.domain.admin.EmailConfirmationLog
-import com.cogda.domain.admin.HtmlFragment
-import com.cogda.domain.admin.NaicsCode
-import com.cogda.domain.admin.SicCode
-import com.cogda.domain.admin.SicCodeDivision
-import com.cogda.domain.admin.SupportedCountryCode
-import com.cogda.domain.admin.SystemEmailMessageTemplate
-import com.cogda.domain.onboarding.Registration
 import com.cogda.domain.security.Role
 import com.cogda.domain.security.User
 import com.cogda.domain.security.UserRole
-import com.cogda.security.SecurityService
 import grails.plugin.awssdk.AmazonWebService
 import grails.plugins.springsecurity.SpringSecurityService
-import groovy.sql.Sql
 import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.grails.commons.GrailsApplication
-import org.hibernate.SessionFactory
 
 import static org.junit.Assert.*
 import org.junit.*
@@ -66,7 +54,6 @@ class CustomerAccountServiceTests extends BaseIntegrationTest{
 
     @Before
     void setUp() {
-        deleteAllData(dataSource)
 
         deleteAllObjectsInTestAmazonBucket()
 
@@ -75,7 +62,7 @@ class CustomerAccountServiceTests extends BaseIntegrationTest{
 
     @After
     void tearDown() {
-        deleteAllData(dataSource)
+//        deleteAllData(dataSource)
 //        Registration.withTransaction {
 //
 //            // Tear down logic here
@@ -108,80 +95,284 @@ class CustomerAccountServiceTests extends BaseIntegrationTest{
     }
 
     @Test
-    void testCreate(){
-        CustomerAccount customerAccount = new CustomerAccount(subDomain: "newsubdomain")
-        customerAccountService.create(customerAccount)
-        assert !customerAccount.hasErrors(), "CustomerAccount has Validation Errors."
+    void testCreateCustomerAccount(){
+        String subDomain = "salsldfsfdlssalsfd"
+        try {
+            CustomerAccount customerAccount = customerAccountService.createCustomerAccount(subDomain)
+            assert !customerAccount.hasErrors(), "CustomerAccount has Validation Errors."
+        }catch(Exception e){
+            assert !e, "Exception thrown ${e.message}"
+        }
+
     }
 
     @Test
     void testCreateCustomerAccountThenCompany(){
-        Registration registration = createValidRegistration()
-        assert registration.save(flush:true), "Registration did not save ${registration.errors}"
-        assert !registration.hasErrors(), "Registration has Validation Errors"
-        CustomerAccount customerAccount = new CustomerAccount(subDomain: "newsubdomain")
-        customerAccountService.create(customerAccount)
+        String subDomain = "djjjakka"
+        CustomerAccount customerAccount
+        try {
+            customerAccount = customerAccountService.createCustomerAccount(subDomain)
+            assert !customerAccount.hasErrors(), "CustomerAccount has Validation Errors."
+        }catch(Exception e){
+            assert !e, "Exception thrown ${e.message}"
+        }
+        Company company = new Company()
+        company.companyName = "A New Company Name"
+        company.doingBusinessAs = "A New Company Name"
+        company.intCode = 0
+        company.parentCompany = null
 
-        assert !customerAccount.hasErrors(), "CustomerAccount has Validation Errors."
+        customerAccount.withThisTenant {
+            company.save(flush:true)
+        }
+
+        assert !company.hasErrors(), "Errors found on Company errors -> ${company.errors}"
+        assert company.id, "Company id is null"
+        log.debug ("Company was successfully created id: ${company.id}, companyName: ${company.companyName} ")
+
     }
 
     @Test
-    void testProvisionCustomerAccountAmazonFileSystem(){
+    void testCreateCustomerAccountThenCompanyAndUser(){
+        String subDomain = "djjjaueueu"
+        CustomerAccount customerAccount
+        try {
+            customerAccount = customerAccountService.createCustomerAccount(subDomain)
+            assert !customerAccount.hasErrors(), "CustomerAccount has Validation Errors."
+        }catch(Exception e){
+            assert !e, "Exception thrown ${e.message}"
+        }
+        Company company = new Company()
+        company.companyName = "A New Company Name"
+        company.doingBusinessAs = "A New Company Name"
+        company.intCode = 0
+        company.parentCompany = null
 
-        Registration registration = createValidRegistration()
-        assert registration.save(flush:true), "Registration did not save ${registration.errors}"
-        assert !registration.hasErrors(), "Registration has Validation Errors"
+        User user = new User()
+        user.username = "availableusername"
+        user.enabled = Boolean.TRUE
+        user.password = "password"
 
-        CustomerAccount customerAccount = new CustomerAccount(subDomain: "newsubdomain")
-        customerAccountService.create(customerAccount)
-        assert !customerAccount.hasErrors(), "CustomerAccount has Validation Errors."
-
-        // Create the First User
-        User user = customerAccountService.createFirstUser(customerAccount, registration)
-
-        // create the UserProfile
-        UserProfile userProfile = userProfileService.createUserProfile(user, registration)
-
-        // create comp
-        Company company
 
         customerAccount.withThisTenant {
-            company = companyService.createCompany(registration)
+            company.save(flush:true)
+            user.save(flush:true)
         }
 
-        // create the CompanyProfile
-        CompanyProfile companyProfile = companyProfileService.createCompanyProfile(company, registration)
+        assert !company.hasErrors(), "Errors found on Company errors -> ${company.errors}"
+        assert company.id, "Company id is null"
+        assert !user.hasErrors(), "Errors found on User errors -> ${user.errors}"
+        assert user.id, "User id is null"
 
-        assert !companyProfile.hasErrors()
 
-        customerAccountService.provisionCustomerAccountAmazonFileSystem(customerAccount, userProfile, companyProfile)
 
-        final String defaultBucket = grailsApplication.config.grails.plugin.awssdk.default.bucket
-        final String pathPrefix = "customerAccounts/"
-        final String companiesFolder = "companies"
-        final String clientsFolder = "clients"
-        final String imagesFolder = "images"
-        final String tempFolder = "temp"
-
-        // delete everything under customerAccounts/
-        ObjectListing objectListing = amazonWebService.s3.listObjects(defaultBucket, pathPrefix)
-
-        List objectSummaries = objectListing.objectSummaries
-
-        assert objectSummaries.size() == 5
-
-        objectSummaries.each { S3ObjectSummary objectSummary ->
-            amazonWebService.s3.deleteObject(defaultBucket, objectSummary.key)
-        }
-
+        log.debug ("Company was successfully created id: ${company.id}, companyName: ${company.companyName} ")
+        log.debug ("User was successfully created id: ${user.id}, username: ${user.username}")
     }
 
+    @Test
+    void testCreateCustomerAccountThenCompanyAndUserAndRoles(){
+        String subDomain = "djjjaueueu"
+        CustomerAccount customerAccount
+        try {
+            customerAccount = customerAccountService.createCustomerAccount(subDomain)
+            assert !customerAccount.hasErrors(), "CustomerAccount has Validation Errors."
+        }catch(Exception e){
+            assert !e, "Exception thrown ${e.message}"
+        }
+        Company company = new Company()
+        company.companyName = "A New Company Name"
+        company.doingBusinessAs = "A New Company Name"
+        company.intCode = 0
+        company.parentCompany = null
+
+        User user = new User()
+        user.username = "availableusername"
+        user.enabled = Boolean.TRUE
+        user.password = "password"
+
+        Role hostAdministratorRole = new Role(authority:CustomerAccountService.ROLE_HOST_ADMINISTRATOR, description:"GOD MODE. Performs COGDA level system configuration and administration. Also can access any company and act as their administrator.", systemRole: Boolean.TRUE)
+        Role underwriterRole = new Role(authority:CustomerAccountService.ROLE_UNDERWRITER, description: "People having access to Submission and Messaging Widget. Also can do clearance.", systemRole: Boolean.TRUE)
+        Role customerServiceRepRole = new Role(authority:CustomerAccountService.ROLE_CUSTOMER_SERVICE_REP, description: "Have access to Pipeline, Submissions, Messaging, Search clients and Client file", systemRole: Boolean.TRUE)
+        Role branchManagerRole = new Role(authority:CustomerAccountService.ROLE_BRANCH_MANAGER, description: "Local office admin. Like Maria at Rennaissance = Able to oversee office functions, office level settings and office level reports.", systemRole: Boolean.TRUE)
+        Role marketingManagerRole = new Role(authority:CustomerAccountService.ROLE_MAREKETING_MANAGER, description: "Have access to CRM/Marketing widget and access to Marketing reports.", systemRole: Boolean.TRUE)
+        Role salesManagerRole = new Role(authority:CustomerAccountService.ROLE_SALES_MANAGER, description: "Have access to Sales widget, is able to control Pipeline assignments and able to set sales goals to employees.", systemRole: Boolean.TRUE)
+        Role marketerRole = new Role(authority:CustomerAccountService.ROLE_MARKETER, description: "Have access to Submissions, Messaging")
+        Role producerRole = new Role(authority:CustomerAccountService.ROLE_PRODUCER, description: "Has access to Prospect pipeline", systemRole: Boolean.TRUE)
+        Role userRole = new Role(authority: CustomerAccountService.ROLE_USER, description: "All authenticated users.", systemRole: Boolean.TRUE)
+        Role companyManagerRole = new Role(authority: CustomerAccountService.ROLE_COMPANY_MANAGER, description:"Provides access to a dashboard and company level reports.", systemRole: Boolean.TRUE)
+        Role administratorRole = new Role(authority: CustomerAccountService.ROLE_ADMINISTRATOR, description:"Company level admin - manages all aspects of the Company in COGDA. Profile settings etc.", systemRole: Boolean.TRUE)
+
+
+        customerAccount.withThisTenant {
+            company.save(flush:true)
+            user.save(flush:true)
+            hostAdministratorRole.save() ?: log.error ("Unable to save hostAdministratorRole - Failed with ${hostAdministratorRole.errors}")
+            underwriterRole.save() ?: log.error ("Unable to save underwriterRole - Failed with ${underwriterRole.errors}")
+            customerServiceRepRole.save() ?: log.error ("Unable to save customerServiceRepRole - Failed with ${customerServiceRepRole.errors}")
+            branchManagerRole.save() ?: log.error ("Unable to save branchManagerRole - Failed with ${branchManagerRole.errors}")
+            marketingManagerRole.save() ?: log.error ("Unable to save marketingManagerRole - Failed with ${marketingManagerRole.errors}")
+            salesManagerRole.save() ?: log.error ("Unable to save salesManagerRole - Failed with ${salesManagerRole.errors}")
+            marketerRole.save() ?: log.error ("Unable to save marketerRole - Failed with ${marketerRole.errors}")
+            producerRole.save() ?: log.error ("Unable to save producerRole - Failed with ${producerRole.errors}")
+            userRole.save() ?: log.error ("Unable to save userRole - Failed with ${userRole.errors}")
+            companyManagerRole.save() ?: log.error ("Unable to save companyManagerRole - Failed with ${companyManagerRole.errors}")
+            administratorRole.save() ?: log.error ("Unable to save administratorRole - Failed with ${administratorRole.errors}")
+        }
+
+        assert !company.hasErrors(), "Errors found on Company errors -> ${company.errors}"
+        assert company.id, "Company id is null"
+        assert !user.hasErrors(), "Errors found on User errors -> ${user.errors}"
+        assert user.id, "User id is null"
+        assert !hostAdministratorRole.hasErrors()
+        assert !underwriterRole.hasErrors()
+        assert !customerServiceRepRole.hasErrors()
+        assert !branchManagerRole.hasErrors()
+        assert !marketingManagerRole.hasErrors()
+        assert !salesManagerRole.hasErrors()
+        assert !marketerRole.hasErrors()
+        assert !producerRole.hasErrors()
+        assert !userRole.hasErrors()
+        assert !companyManagerRole.hasErrors()
+        assert !administratorRole.hasErrors()
+
+
+        log.debug ("Company was successfully created id: ${company.id}, companyName: ${company.companyName} ")
+        log.debug ("User was successfully created id: ${user.id}, username: ${user.username}")
+    }
+
+    @Test
+    void testCreateCustomerAccountThenCompanyUserRolesAndCompanyUserProfiles(){
+        String subDomain = "djjjaueueu"
+        CustomerAccount customerAccount
+        try {
+            customerAccount = customerAccountService.createCustomerAccount(subDomain)
+            assert !customerAccount.hasErrors(), "CustomerAccount has Validation Errors."
+        }catch(Exception e){
+            assert !e, "Exception thrown ${e.message}"
+        }
+        Company company = new Company()
+        company.companyName = "A New Company Name"
+        company.doingBusinessAs = "A New Company Name"
+        company.intCode = 0
+        company.parentCompany = null
+
+        User user = new User()
+        user.username = "availableusername"
+        user.enabled = Boolean.TRUE
+        user.password = "password"
+
+        Role hostAdministratorRole = new Role(authority:CustomerAccountService.ROLE_HOST_ADMINISTRATOR, description:"GOD MODE. Performs COGDA level system configuration and administration. Also can access any company and act as their administrator.", systemRole: Boolean.TRUE)
+        Role underwriterRole = new Role(authority:CustomerAccountService.ROLE_UNDERWRITER, description: "People having access to Submission and Messaging Widget. Also can do clearance.", systemRole: Boolean.TRUE)
+        Role customerServiceRepRole = new Role(authority:CustomerAccountService.ROLE_CUSTOMER_SERVICE_REP, description: "Have access to Pipeline, Submissions, Messaging, Search clients and Client file", systemRole: Boolean.TRUE)
+        Role branchManagerRole = new Role(authority:CustomerAccountService.ROLE_BRANCH_MANAGER, description: "Local office admin. Like Maria at Rennaissance = Able to oversee office functions, office level settings and office level reports.", systemRole: Boolean.TRUE)
+        Role marketingManagerRole = new Role(authority:CustomerAccountService.ROLE_MAREKETING_MANAGER, description: "Have access to CRM/Marketing widget and access to Marketing reports.", systemRole: Boolean.TRUE)
+        Role salesManagerRole = new Role(authority:CustomerAccountService.ROLE_SALES_MANAGER, description: "Have access to Sales widget, is able to control Pipeline assignments and able to set sales goals to employees.", systemRole: Boolean.TRUE)
+        Role marketerRole = new Role(authority:CustomerAccountService.ROLE_MARKETER, description: "Have access to Submissions, Messaging")
+        Role producerRole = new Role(authority:CustomerAccountService.ROLE_PRODUCER, description: "Has access to Prospect pipeline", systemRole: Boolean.TRUE)
+        Role userRole = new Role(authority: CustomerAccountService.ROLE_USER, description: "All authenticated users.", systemRole: Boolean.TRUE)
+        Role companyManagerRole = new Role(authority: CustomerAccountService.ROLE_COMPANY_MANAGER, description:"Provides access to a dashboard and company level reports.", systemRole: Boolean.TRUE)
+        Role administratorRole = new Role(authority: CustomerAccountService.ROLE_ADMINISTRATOR, description:"Company level admin - manages all aspects of the Company in COGDA. Profile settings etc.", systemRole: Boolean.TRUE)
+
+        customerAccount.withThisTenant {
+            company.save(flush:true)
+            user.save(flush:true)
+            hostAdministratorRole.save() ?: log.error ("Unable to save hostAdministratorRole - Failed with ${hostAdministratorRole.errors}")
+            underwriterRole.save() ?: log.error ("Unable to save underwriterRole - Failed with ${underwriterRole.errors}")
+            customerServiceRepRole.save() ?: log.error ("Unable to save customerServiceRepRole - Failed with ${customerServiceRepRole.errors}")
+            branchManagerRole.save() ?: log.error ("Unable to save branchManagerRole - Failed with ${branchManagerRole.errors}")
+            marketingManagerRole.save() ?: log.error ("Unable to save marketingManagerRole - Failed with ${marketingManagerRole.errors}")
+            salesManagerRole.save() ?: log.error ("Unable to save salesManagerRole - Failed with ${salesManagerRole.errors}")
+            marketerRole.save() ?: log.error ("Unable to save marketerRole - Failed with ${marketerRole.errors}")
+            producerRole.save() ?: log.error ("Unable to save producerRole - Failed with ${producerRole.errors}")
+            userRole.save() ?: log.error ("Unable to save userRole - Failed with ${userRole.errors}")
+            companyManagerRole.save() ?: log.error ("Unable to save companyManagerRole - Failed with ${companyManagerRole.errors}")
+            administratorRole.save() ?: log.error ("Unable to save administratorRole - Failed with ${administratorRole.errors}")
+        }
+
+        // Post @MultiTenant object saves we should be able to associate the User with a UserProfile and a Company with a CompanyProfile
+        UserProfile userProfile = new UserProfile()
+        userProfile.user = user
+        userProfile.firstName = "Test"
+        userProfile.lastName = "Test"
+        userProfile.published = true
+
+        userProfile.save(flush:true) ?: log.error ("Unable to save userProfile - Failed with ${userProfile.errors}")
+
+        CompanyProfile companyProfile = new CompanyProfile()
+        companyProfile.company = company
+        companyProfile.companyType = CompanyType.findByCode("Carrier")
+
+        companyProfile.save(flush:true) ?: log.error ("Unable to save companyProfile - Failed with ${companyProfile.errors}")
+
+        assert !company.hasErrors(), "Errors found on Company errors -> ${company.errors}"
+        assert company.id, "Company id is null"
+        assert !user.hasErrors(), "Errors found on User errors -> ${user.errors}"
+        assert user.id, "User id is null"
+        assert !hostAdministratorRole.hasErrors()
+        assert hostAdministratorRole.id
+        assert !underwriterRole.hasErrors()
+        assert underwriterRole.id
+        assert !customerServiceRepRole.hasErrors()
+        assert customerServiceRepRole.id
+        assert !branchManagerRole.hasErrors()
+        assert branchManagerRole.id
+        assert !marketingManagerRole.hasErrors()
+        assert marketingManagerRole.id
+        assert !salesManagerRole.hasErrors()
+        assert salesManagerRole.id
+        assert !marketerRole.hasErrors()
+        assert marketerRole.id
+        assert !producerRole.hasErrors()
+        assert producerRole.id
+        assert !userRole.hasErrors()
+        assert userRole.id
+        assert !companyManagerRole.hasErrors()
+        assert companyManagerRole.id
+        assert !administratorRole.hasErrors()
+        assert administratorRole.id
+        assert !userProfile.hasErrors()
+        assert userProfile.id
+        assert userProfile.user.id
+        assert !companyProfile.hasErrors()
+        assert companyProfile.id
+        assert companyProfile.company.id
+
+
+        log.debug ("Company was successfully created id: ${company.id}, companyName: ${company.companyName} ")
+        log.debug ("User was successfully created id: ${user.id}, username: ${user.username}")
+        log.debug ("Company was successfully created id: ${company.id}, companyName: ${company.companyName}")
+        log.debug ("UserProfile was successfully created id: ${userProfile.id}, firstName: ${userProfile.firstName}")
+        log.debug ("CompanyProfile was successfully created id: ${companyProfile.id}, companyType: ${companyProfile.companyType.code}")
+
+
+
+
+    }
 
     @Test
     void testOnboardCustomerAccount() {
 
-        Registration registration = createValidRegistration()
-        assert registration.save(flush:true), "Registration did not save ${registration.errors}"
+        Map registration = [:]
+        registration.firstName = "Christopher"
+        registration.lastName = "Kwiatkowski"
+        registration.username = "ctk"
+        registration.emailAddress = "chris@cogda.com"
+        registration.password = "939020kiddko2"
+        registration.companyName = "Cogda Solutions, LLC."
+        registration.companyType = CompanyType.list().first()
+        registration.existingCompany = null
+        registration.companyTypeOther = null
+        registration.phoneNumber = "706-255-9087"
+        registration.streetAddressOne = "1 Press Place"
+        registration.streetAddressTwo = "Suite 200"
+        registration.streetAddressThree = "Office #17"
+        registration.city = "Athens"
+        registration.state = "GA"
+        registration.zipcode = "30601"
+        registration.county = "CLARKE"
+        registration.registrationStatus = RegistrationStatus.APPROVED
+        registration.subDomain = "rais"
 
         log.debug("Calling customerAccountService.onboardCustomerAccount(registration)")
         customerAccountService.onboardCustomerAccount(registration)
@@ -197,17 +388,17 @@ class CustomerAccountServiceTests extends BaseIntegrationTest{
 
             // verify First User setup - check that the initial administrator of the root Company was created successfully
             [
-                    SecurityService.ROLE_HOST_ADMINISTRATOR,
-                    SecurityService.ROLE_UNDERWRITER,
-                    SecurityService.ROLE_CUSTOMER_SERVICE_REP,
-                    SecurityService.ROLE_BRANCH_MANAGER,
-                    SecurityService.ROLE_MAREKETING_MANAGER,
-                    SecurityService.ROLE_SALES_MANAGER,
-                    SecurityService.ROLE_MARKETER,
-                    SecurityService.ROLE_PRODUCER,
-                    SecurityService.ROLE_USER,
-                    SecurityService.ROLE_COMPANY_MANAGER,
-                    SecurityService.ROLE_ADMINISTRATOR
+                    CustomerAccountService.ROLE_HOST_ADMINISTRATOR,
+                    CustomerAccountService.ROLE_UNDERWRITER,
+                    CustomerAccountService.ROLE_CUSTOMER_SERVICE_REP,
+                    CustomerAccountService.ROLE_BRANCH_MANAGER,
+                    CustomerAccountService.ROLE_MAREKETING_MANAGER,
+                    CustomerAccountService.ROLE_SALES_MANAGER,
+                    CustomerAccountService.ROLE_MARKETER,
+                    CustomerAccountService.ROLE_PRODUCER,
+                    CustomerAccountService.ROLE_USER,
+                    CustomerAccountService.ROLE_COMPANY_MANAGER,
+                    CustomerAccountService.ROLE_ADMINISTRATOR
             ].each { String role ->
                 assert Role.findByAuthority(role), "$role was not created successfully"
             }
@@ -231,7 +422,7 @@ class CustomerAccountServiceTests extends BaseIntegrationTest{
             }
 
             assert roles.size() == 2, "UserRoles associated with User should be 2"
-            assert roles.containsAll([SecurityService.ROLE_ADMINISTRATOR, SecurityService.ROLE_USER]), "Roles were not assigned successfully for the first User"
+            assert roles.containsAll([CustomerAccountService.ROLE_ADMINISTRATOR, CustomerAccountService.ROLE_USER]), "Roles were not assigned successfully for the first User"
 
         }
 
@@ -273,6 +464,34 @@ class CustomerAccountServiceTests extends BaseIntegrationTest{
         CompanyProfilePhoneNumber companyProfilePhoneNumber = companyProfile.companyProfilePhoneNumbers.first()
         assert companyProfilePhoneNumber.primaryPhoneNumber == Boolean.TRUE
         assert companyProfilePhoneNumber.phoneNumber.phoneNumber.equals(registration.phoneNumber)
+
+
+        // Test that the Amazon s3 folders were created successfully
+        final String defaultBucket = grailsApplication.config.grails.plugin.awssdk.default.bucket
+        final String pathPrefix = "customerAccounts/"
+        final String companiesFolder = "companies"
+        final String clientsFolder = "clients"
+        final String imagesFolder = "images"
+        final String tempFolder = "temp"
+
+        // delete everything under customerAccounts/
+        ObjectListing objectListing = amazonWebService.s3.listObjects(defaultBucket, pathPrefix)
+
+        List objectSummaries = objectListing.objectSummaries
+
+        assert objectSummaries.size() == 8
+
+        objectSummaries.each { S3ObjectSummary objectSummary ->
+            try {
+                amazonWebService.s3.deleteObject(defaultBucket, objectSummary.key)
+            }catch(AmazonClientException ace){
+                log.error ("Unable to clean the integration test's AmazonWebServices folder structure ${objectSummary.key}")
+                log.error ("AmazonClientException ${ace.message}")
+            }catch(AmazonServiceException ase){
+                log.error ("Unable to clean the integration test's AmazonWebServices folder structure ${objectSummary.key}")
+                log.error ("AmazonServiceException ${ase.message}")
+            }
+        }
 
     }
 

@@ -4,18 +4,26 @@ import com.amazonaws.services.s3.model.AmazonS3Exception
 import com.amazonaws.services.s3.model.GetObjectRequest
 import com.amazonaws.services.s3.model.PutObjectRequest
 import com.amazonaws.services.s3.model.PutObjectResult
+import com.cogda.domain.Address
 import com.cogda.domain.CompanyProfile
+import com.cogda.domain.CompanyProfileAddress
+import com.cogda.domain.CompanyProfilePhoneNumber
+import com.cogda.domain.PhoneNumber
 import com.cogda.domain.UserProfile
+import com.cogda.domain.UserProfileEmailAddress
 import com.cogda.domain.UserProfileService
 import com.cogda.domain.CompanyProfileService
+import com.cogda.domain.admin.CompanyType
 import com.cogda.domain.onboarding.Registration
 import com.cogda.domain.security.Role
 import com.cogda.domain.security.User
+import com.cogda.domain.security.UserRole
 import com.cogda.errors.CustomerAccountCreationException
 import com.cogda.security.SecurityService
 import com.cogda.security.UserRoleService
 import com.cogda.security.UserService
 import grails.plugin.awssdk.AmazonWebService
+import grails.plugin.multitenant.core.Tenant
 import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.grails.commons.GrailsApplication
 
@@ -25,6 +33,75 @@ import org.codehaus.groovy.grails.commons.GrailsApplication
  */
 class CustomerAccountService {
     private static final log = LogFactory.getLog(this)
+
+    /**
+     * A ROLE_HOST_ADMINISTRATOR
+     * ROLE_HOST_ADMINISTRATOR = 'ROLE_HOST_ADMINISTRATOR'
+     */
+    public static final String ROLE_HOST_ADMINISTRATOR = 'ROLE_HOST_ADMINISTRATOR'
+
+    /**
+     * A ROLE_UNDERWRITER
+     * ROLE_UNDERWRITER = 'ROLE_UNDERWRITER'
+     */
+    public static final String ROLE_UNDERWRITER = 'ROLE_UNDERWRITER'
+
+    /**
+     * A ROLE_CUSTOMER_SERVICE_REP
+     * ROLE_CUSTOMER_SERVICE_REP = 'ROLE_CUSTOMER_SERVICE_REP'
+     */
+    public static final String ROLE_CUSTOMER_SERVICE_REP = 'ROLE_CUSTOMER_SERVICE_REP'
+
+    /**
+     * A ROLE_BRANCH_MANAGER
+     * ROLE_BRANCH_MANAGER = 'ROLE_BRANCH_MANAGER'
+     */
+    public static final String ROLE_BRANCH_MANAGER = 'ROLE_BRANCH_MANAGER'
+
+    /**
+     * A ROLE_MAREKETING_MANAGER
+     * ROLE_MAREKETING_MANAGER = 'ROLE_MAREKETING_MANAGER'
+     */
+    public static final String ROLE_MAREKETING_MANAGER = 'ROLE_MAREKETING_MANAGER'
+
+    /**
+     * A Sales Manager's Role
+     * SALES_MANAGER = 'SALES_MANAGER'
+     */
+    public static final String ROLE_SALES_MANAGER = 'ROLE_SALES_MANAGER'
+
+    /**
+     * A Marketer Role
+     * ROLE_MARKETER = 'ROLE_MARKETER'
+     */
+    public static final String ROLE_MARKETER = 'ROLE_MARKETER'
+
+    /**
+     * Default role for ALL users.
+     * ROLE_PRODUCER = 'ROLE_PRODUCER'
+     */
+    public static final String ROLE_PRODUCER = 'ROLE_PRODUCER'
+
+    /**
+     * Default role for ALL users.
+     * This is synonomous with the old-cogda USERS role.
+     * ROLE_USER = 'ROLE_USER'
+     */
+    public static final String ROLE_USER = 'ROLE_USER'
+
+    /**
+     * Default role for users that manage a company..
+     * ROLE_COMPANY_MANAGER = 'ROLE_COMPANY_MANAGER'
+     */
+    public static final String ROLE_COMPANY_MANAGER = 'ROLE_COMPANY_MANAGER'
+
+    /**
+     * Default role for administrator accounts - the top level account in the hierarchy of roles in the
+     * system.
+     * ROLE_ADMINISTRATOR = 'ROLE_ADMINISTRATOR'
+     */
+    public static final String ROLE_ADMINISTRATOR = 'ROLE_ADMINISTRATOR'
+
 
     SecurityService securityService // inject SecurityService into CustomerAccountService
     UserService userService  // inject UserService into CustomerAccountService
@@ -39,10 +116,17 @@ class CustomerAccountService {
      * Creates a new CustomerAccount
      * @param customerAccount
      */
-    def create(CustomerAccount customerAccount){
-        if(!customerAccount.save(insert:true)){
+
+    public CustomerAccount createCustomerAccount(String subDomain){
+
+        // Create the new CustomerAccount
+        CustomerAccount customerAccount = new CustomerAccount(subDomain: subDomain)
+
+        // Create the Customer Account
+        if(!customerAccount.save(insert:true, flush:true)){
             throw new CustomerAccountCreationException("Error creating a new CustomerAccount", customerAccount.getErrors(), customerAccount)
         }
+
         return customerAccount
     }
 
@@ -55,49 +139,76 @@ class CustomerAccountService {
      * @param organizationName
      * @param emailAddress
      */
-    void onboardCustomerAccount(Registration registration){
-        // Create the new organization
-        CustomerAccount customerAccount = new CustomerAccount(subDomain: registration.subDomain)
+    void onboardCustomerAccount(registration){
 
-        // Create the Customer Account
-        create(customerAccount)
+        CustomerAccount customerAccount = createCustomerAccount(registration.subDomain)
+
+        String customerAccountUuid = customerAccount.accountId
+
+        // Create the First Company and that Company's Company Profile
+        String companyAccountId = createFirstCompany(customerAccount, registration)
 
         // Create the Customer Account Security Profile
-        createCustomerAccountSecurityProfile(customerAccount)
+        customerAccountSecuritySetup(customerAccount)
 
-        // Create the First Company
-        Company company = createFirstCompany(customerAccount, registration)
-
-        // Create the First User
-        User user = createFirstUser(customerAccount, registration)
-
-        // create the UserProfile
-        UserProfile userProfile = userProfileService.createUserProfile(user, registration)
-
-        // create the CompanyProfile
-        CompanyProfile companyProfile = companyProfileService.createCompanyProfile(company, registration)
+        // Create the First User and the Corresponding UserProfile and the UserProfile's primaryEmailAddress
+        String userAccountId = createFirstUser(customerAccount, registration)
 
         // sets up the customerAccount file system
-        provisionCustomerAccountAmazonFileSystem(customerAccount, userProfile, companyProfile)
-
+        provisionCustomerAccountAmazonFileSystem(customerAccountUuid, companyAccountId, userAccountId)
     }
+
+    /**
+     * This method creates all of the security assets for the new
+     * CustomerAccount.
+     * This method should only be used when provisioning a new CustomerAccount.
+     */
+    void customerAccountSecuritySetup(CustomerAccount customerAccount) {
+        Role hostAdministratorRole = new Role(authority:CustomerAccountService.ROLE_HOST_ADMINISTRATOR, description:"GOD MODE. Performs COGDA level system configuration and administration. Also can access any company and act as their administrator.", systemRole: Boolean.TRUE)
+        Role underwriterRole = new Role(authority:CustomerAccountService.ROLE_UNDERWRITER, description: "People having access to Submission and Messaging Widget. Also can do clearance.", systemRole: Boolean.TRUE)
+        Role customerServiceRepRole = new Role(authority:CustomerAccountService.ROLE_CUSTOMER_SERVICE_REP, description: "Have access to Pipeline, Submissions, Messaging, Search clients and Client file", systemRole: Boolean.TRUE)
+        Role branchManagerRole = new Role(authority:CustomerAccountService.ROLE_BRANCH_MANAGER, description: "Local office admin. Like Maria at Rennaissance = Able to oversee office functions, office level settings and office level reports.", systemRole: Boolean.TRUE)
+        Role marketingManagerRole = new Role(authority:CustomerAccountService.ROLE_MAREKETING_MANAGER, description: "Have access to CRM/Marketing widget and access to Marketing reports.", systemRole: Boolean.TRUE)
+        Role salesManagerRole = new Role(authority:CustomerAccountService.ROLE_SALES_MANAGER, description: "Have access to Sales widget, is able to control Pipeline assignments and able to set sales goals to employees.", systemRole: Boolean.TRUE)
+        Role marketerRole = new Role(authority:CustomerAccountService.ROLE_MARKETER, description: "Have access to Submissions, Messaging")
+        Role producerRole = new Role(authority:CustomerAccountService.ROLE_PRODUCER, description: "Has access to Prospect pipeline", systemRole: Boolean.TRUE)
+        Role userRole = new Role(authority: CustomerAccountService.ROLE_USER, description: "All authenticated users.", systemRole: Boolean.TRUE)
+        Role companyManagerRole = new Role(authority: CustomerAccountService.ROLE_COMPANY_MANAGER, description:"Provides access to a dashboard and company level reports.", systemRole: Boolean.TRUE)
+        Role administratorRole = new Role(authority: CustomerAccountService.ROLE_ADMINISTRATOR, description:"Company level admin - manages all aspects of the Company in COGDA. Profile settings etc.", systemRole: Boolean.TRUE)
+
+        customerAccount.withThisTenant {
+            hostAdministratorRole.save() ?: log.error ("Unable to save hostAdministratorRole - Failed with ${hostAdministratorRole.errors}")
+            underwriterRole.save() ?: log.error ("Unable to save underwriterRole - Failed with ${underwriterRole.errors}")
+            customerServiceRepRole.save() ?: log.error ("Unable to save customerServiceRepRole - Failed with ${customerServiceRepRole.errors}")
+            branchManagerRole.save() ?: log.error ("Unable to save branchManagerRole - Failed with ${branchManagerRole.errors}")
+            marketingManagerRole.save() ?: log.error ("Unable to save marketingManagerRole - Failed with ${marketingManagerRole.errors}")
+            salesManagerRole.save() ?: log.error ("Unable to save salesManagerRole - Failed with ${salesManagerRole.errors}")
+            marketerRole.save() ?: log.error ("Unable to save marketerRole - Failed with ${marketerRole.errors}")
+            producerRole.save() ?: log.error ("Unable to save producerRole - Failed with ${producerRole.errors}")
+            userRole.save() ?: log.error ("Unable to save userRole - Failed with ${userRole.errors}")
+            companyManagerRole.save() ?: log.error ("Unable to save companyManagerRole - Failed with ${companyManagerRole.errors}")
+            administratorRole.save() ?: log.error ("Unable to save administratorRole - Failed with ${administratorRole.errors}")
+        }
+    }
+
 
     /**
      * Creates the default file system for a new customer account.
      */
-    void provisionCustomerAccountAmazonFileSystem(CustomerAccount customerAccount, UserProfile userProfile, CompanyProfile companyProfile){
+    void provisionCustomerAccountAmazonFileSystem(String customerAccountUuid, String companyAccountId, String userAccountId){
         final String defaultBucket = grailsApplication.config.grails.plugin.awssdk.default.bucket
         final String pathPrefix = "customerAccounts/"
         final String companiesFolder = "companies"
         final String clientsFolder = "clients"
         final String imagesFolder = "images"
         final String tempFolder = "temp"
+        final String usersFolder = "users"
         File file
         try {
             file = new File("a.txt")
             file.write("0")
 
-            String customerAccountRoot = pathPrefix + customerAccount.accountId + "/"
+            String customerAccountRoot = pathPrefix + customerAccountUuid + "/"
             // create the customerAccountRoot - at the defaultBucket "customerAccounts/${customerAccount.accountId}/"
             amazonWebService.s3.putObject(new PutObjectRequest(defaultBucket, customerAccountRoot, file))
 
@@ -113,9 +224,22 @@ class CustomerAccountService {
             String customerAccountCompanies = customerAccountRoot + companiesFolder + "/"
             amazonWebService.s3.putObject(new PutObjectRequest(defaultBucket, customerAccountCompanies, file))
 
-            // create the company folder for the customerAccount "customerAccounts/${customerAccount.accountId}/companies/${companyProfile.company.accountId}/
-            String customerAccountRootCompany = customerAccountCompanies + companyProfile.company.accountId
+            // create the company folder for the customerAccount "customerAccounts/${customerAccount.accountId}/companies/${company.accountId}/
+            String customerAccountRootCompany = customerAccountCompanies + companyAccountId
             amazonWebService.s3.putObject(new PutObjectRequest(defaultBucket, customerAccountRootCompany, file))
+
+            // create the users folder for the customerAccount "customerAccounts/${customerAccount.accountId}/users"
+            String customerAccountRootUsers = customerAccountRoot + usersFolder + "/"
+            amazonWebService.s3.putObject(new PutObjectRequest(defaultBucket, customerAccountRootUsers, file))
+
+            // create the folder for the customerAccount's first user "customerAccounts/${customerAccount.accountId}/users/${user.accountId}/"
+            String customerAccountFirstUser = customerAccountRootUsers + userAccountId + "/"
+            amazonWebService.s3.putObject(new PutObjectRequest(defaultBucket, customerAccountFirstUser, file))
+
+            // create the folder for the customerAccount's first user "customerAccounts/${customerAccount.accountId}/users/${user.accountId}/images/"
+            String customerAccountFirstUserImages = customerAccountFirstUser + imagesFolder + "/"
+            amazonWebService.s3.putObject(new PutObjectRequest(defaultBucket, customerAccountFirstUserImages, file))
+
 
         } catch (AmazonS3Exception e){
             e.printStackTrace()
@@ -129,58 +253,104 @@ class CustomerAccountService {
     }
 
     /**
-     * Create the Security Profile for this new CustomerAccount
-     * @param customerAccount
-     */
-    void createCustomerAccountSecurityProfile(CustomerAccount customerAccount){
-        // Create the default security roles for this CustomerAccount
-        customerAccount.withThisTenant {
-            securityService.customerAccountSecuritySetup()
-        }
-    }
-
-    /**
      *
      * @param customerAccount
      * @param registration
      * @return Company
      */
-    Company createFirstCompany(CustomerAccount customerAccount, Registration registration){
+    String createFirstCompany(CustomerAccount customerAccount, registration){
+
+        Company company = new Company()
+
+        company.companyName = registration.companyName
+        company.doingBusinessAs = registration.companyName
+        company.parentCompany = null
+        company.intCode = 0
+
         customerAccount.withThisTenant {
-            Company company = new Company()
-
-            company.companyName = registration.companyName
-            company.doingBusinessAs = registration.companyName
-            company.parentCompany = null
-            company.intCode = 0
-
-            company.save()
-
-            return company
+            company.save() ?: log.error ("Save of Company failed with errors ${company.errors}")
         }
+
+        CompanyProfile companyProfile = new CompanyProfile()
+        companyProfile.company = company
+        companyProfile.companyType = CompanyType.get(registration.companyType.ident())
+
+        // Save the Company Profile
+        companyProfile.save() ?: log.error ("Error saving CompanyProfile errors -> ${companyProfile.errors}")
+
+        CompanyProfileAddress companyProfileAddress = new CompanyProfileAddress()
+        companyProfileAddress.address = new Address()
+        companyProfileAddress.address.addressOne = registration.streetAddressOne
+        companyProfileAddress.address.addressTwo = registration.streetAddressTwo
+        companyProfileAddress.address.city = registration.city
+        companyProfileAddress.address.country = registration.country
+        companyProfileAddress.address.county = registration.county
+        companyProfileAddress.address.state = registration.state
+        companyProfileAddress.address.zipcode = registration.zipcode
+        companyProfileAddress.primaryAddress = true
+        companyProfileAddress.companyProfile = companyProfile
+
+        companyProfileAddress.validate() ?: log.error ("Error saving CompanyProfileAddress errors -> ${companyProfileAddress.errors}")
+
+        companyProfile.addToCompanyProfileAddresses(companyProfileAddress)
+
+        CompanyProfilePhoneNumber companyProfilePhoneNumber = new CompanyProfilePhoneNumber()
+        companyProfilePhoneNumber.companyProfile = companyProfile
+        companyProfilePhoneNumber.phoneNumber = new PhoneNumber(phoneNumber:registration.phoneNumber)
+        companyProfilePhoneNumber.primaryPhoneNumber = true
+
+        companyProfilePhoneNumber.validate() ?: log.error ("Error saving CompanyProfilePhoneNumber errors -> ${companyProfilePhoneNumber.errors}")
+
+        companyProfile.addToCompanyProfilePhoneNumbers(companyProfilePhoneNumber)
+
+        return company.accountId
     }
 
     /**
-     *
+     * Creates the first user for a brand new CustomerAccount during the onBoardCustomer process.
      * @param customerAccount
      * @param registration
      * @return User
      */
-    User createFirstUser(CustomerAccount customerAccount, Registration registration){
+    String createFirstUser(CustomerAccount customerAccount, registration){
+        // create the user based on the passed in registration parameters
+        User user = new User()
+        user.username = registration.username
+        user.password = registration.password
+        user.enabled = true
+        user.accountExpired = false
+        user.accountLocked = false
+        user.passwordExpired = false
+        user.encodePassword = false  // do not allow the password to be re-encoded
+
 
         customerAccount.withThisTenant {
 
-            User user = new User()
-
-            // create the user based on the passed in registration parameters
-            user = userService.createUser(registration.username, registration.password, false)
+            user.save() ?: log.error ("Error saving User errors -> ${user.errors}")
 
             // add the user roles for the host_administrator and user_role
-            Role roleAdministrator = Role.findByAuthority(SecurityService.ROLE_ADMINISTRATOR)
-            Role roleUser = Role.findByAuthority(SecurityService.ROLE_USER)
-            userRoleService.createUserRoles(user, [roleAdministrator, roleUser])
+            Role roleAdministrator = Role.findByAuthority(CustomerAccountService.ROLE_ADMINISTRATOR)
+            Role roleUser = Role.findByAuthority(CustomerAccountService.ROLE_USER)
 
-            return user
+            // Add the roles to the User
+            UserRole.create(user, roleAdministrator)
+            UserRole.create(user, roleUser)
         }
+
+        // Add the UserProfile for this User
+        UserProfile userProfile = new UserProfile()
+        userProfile.user = user
+        userProfile.firstName = registration.firstName
+        userProfile.lastName = registration.lastName
+        userProfile.save() ?: log.error ("Error saving UserProfile errors -> ${userProfile.errors}")
+
+        UserProfileEmailAddress userProfileEmailAddress = new UserProfileEmailAddress()
+        userProfileEmailAddress.emailAddress = registration.emailAddress
+        userProfileEmailAddress.primaryEmailAddress = Boolean.TRUE
+        userProfileEmailAddress.userProfile = userProfile
+
+        userProfile.addToUserProfileEmailAddresses(userProfileEmailAddress)
+
+        return user.accountId
     }
 }

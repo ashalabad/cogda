@@ -22,7 +22,7 @@ class CompanyProfileService {
         companyProfile.companyType = registration.companyType
 
         // Save the Company Profile
-        companyProfile.save(failOnError:true)
+        companyProfile.save() ?: log.error ("Error saving CompanyProfile errors -> ${companyProfile.errors}")
 
         CompanyProfileAddress companyProfileAddress = new CompanyProfileAddress()
         companyProfileAddress.address = new Address()
@@ -36,6 +36,8 @@ class CompanyProfileService {
         companyProfileAddress.primaryAddress = true
         companyProfileAddress.companyProfile = companyProfile
 
+        companyProfileAddress.validate() ?: log.error ("Error saving CompanyProfileAddress errors -> ${companyProfileAddress.errors}")
+
         companyProfile.addToCompanyProfileAddresses(companyProfileAddress)
 
         CompanyProfilePhoneNumber companyProfilePhoneNumber = new CompanyProfilePhoneNumber()
@@ -43,6 +45,9 @@ class CompanyProfileService {
         companyProfilePhoneNumber.phoneNumber = new PhoneNumber(phoneNumber:registration.phoneNumber)
         companyProfilePhoneNumber.primaryPhoneNumber = true
 
+        companyProfilePhoneNumber.validate() ?: log.error ("Error saving CompanyProfilePhoneNumber errors -> ${companyProfilePhoneNumber.errors}")
+
         companyProfile.addToCompanyProfilePhoneNumbers(companyProfilePhoneNumber)
+
     }
 }

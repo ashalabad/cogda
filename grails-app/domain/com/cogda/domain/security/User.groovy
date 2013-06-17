@@ -10,6 +10,8 @@ class User {
 	String username
 	String password
 
+    String accountId = UUID.randomUUID().toString().replaceAll('-', '')
+
     boolean enabled
 	boolean accountExpired
 	boolean accountLocked
@@ -29,6 +31,7 @@ class User {
 	static constraints = {
 		username blank: false, unique: 'tenantId'
 		password blank: false
+        accountId(nullable:false, blank:false, unique:true)
 	}
 
 	static mapping = {

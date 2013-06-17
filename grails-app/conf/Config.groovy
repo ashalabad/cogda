@@ -107,7 +107,6 @@ environments {
     test {
         log4j = {
             // Example of changing the log pattern for the default console appender:
-            //
             appenders {
                 console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
             }
@@ -125,8 +124,8 @@ environments {
                     'org.hibernate',
                     'net.sf.ehcache.hibernate'
             debug  'com.cogda'
-            debug  'grails.app.services.com.cogda'
-            debug  'grails.app.controllers.com.cogda'
+            debug  'grails.app.services.com.cogda', console
+            debug  'grails.app.controllers.com.cogda', console
         }
     }
     production {

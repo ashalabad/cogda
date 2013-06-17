@@ -21,7 +21,8 @@ class UserService {
      * @return
      */
     def create(User user) {
-        user.save(failOnError: true)
+        user.save() ?: log.error("Error saving User errors -> ${user.errors}")
+        return user
     }
 
     /**
@@ -32,10 +33,13 @@ class UserService {
      */
     def create(User user, List<Role> roles){
         create(user)
-        roles.each { Role role ->
-            UserRole.create(user, role)
+        if(!user.hasErrors()){
+            roles.each { Role role ->
+                UserRole.create(user, role)
+            }
+        }else{
+            log.error ("Unable to apply roles to User due to validation errors on User errors -> ${user.errors}")
         }
-
     }
 
     def createWithStringRoles(User user, List<String> roles){
@@ -90,6 +94,7 @@ class UserService {
         user.accountLocked = false
         user.passwordExpired = false
         user.encodePassword = false  // do not allow the password to be re-encoded
-        user.save(failOnError:true)
+        user.save() ?: log.error ("Error saving User errors -> ${user.errors}")
+        return user
     }
 }

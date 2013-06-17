@@ -24,7 +24,7 @@ class CustomerAccount implements Tenant {
     }
 
     Integer tenantId() {
-        id
+        return this.id
     }
 
     /**
