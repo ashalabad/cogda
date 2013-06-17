@@ -360,8 +360,7 @@
                 },
                 zipcode: {
                     required: newCompanySectionRequired,
-                    minLength: 5,
-                    maxLength: 5
+                    minlength: 5
                 },
                 city: {
                     required: newCompanySectionRequired
@@ -405,7 +404,13 @@
                             registrationHandler(data, textStatus);
                         },
                         error:function(XMLHttpRequest,textStatus,errorThrown){
-
+                            $.pnotify({
+                                title: 'Error Saving',
+                                text: textStatus + " " + errorThrown,
+                                type: 'error',
+                                opacity: 0.8,
+                                delay: 10000
+                            });
                         }
                     }
                 );

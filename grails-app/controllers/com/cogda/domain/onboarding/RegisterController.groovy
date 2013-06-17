@@ -114,6 +114,7 @@ class RegisterController {
             return  // someone is most likely fooling around with the request headers
         } else {
             Registration registration = registerCommand.getRegistrationObject()
+
             registerService.save(registration)
             if (registration.hasErrors()) {
                 ajaxResponseDto.success = Boolean.FALSE
@@ -144,7 +145,6 @@ class RegisterController {
      * @return String
      */
     def availableUsername(AvailableUsernameCommand availableUsernameCommand) {
-        println params
         boolean valid = Boolean.FALSE
         if (!availableUsernameCommand.hasErrors()) {
             valid = Boolean.TRUE
@@ -222,7 +222,9 @@ class RegisterCommand {
         registration.newCompany = this.newCompany
         registration.companyName = this.companyName
         registration.username = this.username
-
+        if(registration.existingCompanyId && Company.exists(registration.existingCompanyId)){
+            registration.existingCompany = Company.get(registration.existingCompanyId)
+        }
 
         if (registration.newCompany) {
             registration.streetAddressOne = this.streetAddressOne
@@ -232,8 +234,6 @@ class RegisterCommand {
             registration.state = this.state
             registration.county = this.county
             registration.country = this.country
-        } else {
-//            registration.existingCompany =
         }
         return registration
     }

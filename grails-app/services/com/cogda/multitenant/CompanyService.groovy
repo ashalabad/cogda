@@ -47,7 +47,7 @@ class CompanyService {
 
         if(!company.validate()){
             company.errors.each {
-                println it
+                log.error it
             }
         }
 

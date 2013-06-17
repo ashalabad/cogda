@@ -26,7 +26,6 @@ class CompanyController {
 
         List companies = companyService.find(q)
 
-        println companies
         List companyInstances = companies.collect { Company company ->
             returnList.add([companyName:company.prettyCompanyString(), companyId:company.id])
         }
