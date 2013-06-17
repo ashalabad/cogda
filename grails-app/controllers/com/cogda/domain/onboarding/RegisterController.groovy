@@ -247,7 +247,7 @@ class RegisterCommand {
                 return ['registerCommand.passwordTwo.nomatch']
             }
         })
-        username(nullable:false, blank:false, minSize:2, validator: { val, obj ->
+        username(nullable:false, blank:false, minSize:2, matches: "[A-Za-z0-9]+", validator: { val, obj ->
             if(!obj.userService.availableUsername(val)){
                 return ['registration.username.taken']
             }

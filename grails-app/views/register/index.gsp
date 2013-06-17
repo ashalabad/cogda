@@ -31,7 +31,7 @@
 </div>
 
 <div id = "registrationFormDiv">
-    <g:form class="form-horizontal" name="registrationForm" novalidate="novalidate">
+    <g:form class="form-horizontal" name="registrationForm" novalidate="novalidate" autocomplete="off">
 
         <fieldset class="form">
             <legend>${entityName}</legend>
@@ -314,6 +314,10 @@
 
         $("#companyName").on('change', typeaheadChangeHandler)
 
+        $.validator.addMethod("usernameRegex", function(value, element) {
+                return this.optional(element) || /^[a-z0-9]+$/i.test(value);
+        }, "<g:message code="registerCommand.username.matches.invalid"/>");
+
         var validator = $("#registrationForm").validate({
             rules: {
                 firstName: {
@@ -327,6 +331,7 @@
                 username: {
                     minlength: 2,
                     required: true,
+                    usernameRegex: true,
                     remote: {
                         url:'<g:createLink controller="register" action="availableUsername" />',
                         type: "POST",
@@ -337,20 +342,24 @@
                         }
                     }
                 },
+                emailAddress: {
+                    required: true,
+                    email: true
+                },
                 password: {
                     minlength: 6,
                     maxlength: 84,
                     required: true
                 },
                 passwordTwo: {
+                    required: true,
                     equalTo: "#passwordOne"
                 },
                 companyTypeId: {
                     required: newCompanySectionRequired
                 },
                 phoneNumber: {
-                    required: newCompanySectionRequired,
-                    phoneUS: true
+                    required: newCompanySectionRequired
                 },
                 streetAddressOne: {
                     required: newCompanySectionRequired
@@ -374,6 +383,57 @@
                 country: {
                     required: newCompanySectionRequired
                 }
+            },
+            messages: {
+                firstName: {
+                    required: "<g:message code = 'registerCommand.firstName.blank'/>",
+                    minlength: "<g:message code = 'registerCommand.firstName.minSize.notmet'/>"
+                },
+                lastName: {
+                    required: "<g:message code = 'registerCommand.lastName.blank'/>",
+                    minlength: "<g:message code = 'registerCommand.lastName.minSize.notmet'/>"
+                },
+                username: {
+                    required: "<g:message code = 'registerCommand.username.blank'/>",
+                    minlength: "<g:message code = 'registerCommand.username.minSize.notmet'/>",
+                    remote: "<g:message code = 'validation.username.notavailable'/>"
+                },
+                emailAddress: {
+                    required: "<g:message code = 'registerCommand.emailAddress.blank'/>",
+                    email: "<g:message code = 'registerCommand.emailAddress.email.invalid'/>"
+                },
+                password: {
+                    required: "<g:message code = 'registerCommand.password.blank'/>",
+                    minlength: "<g:message code = "registerCommand.password.minSize.notmet"/>",
+                    maxlength: "<g:message code = "registerCommand.password.maxSize.exceeded"/>"
+                },
+                passwordTwo: {
+                    required: "<g:message code = 'registerCommand.passwordTwo.blank'/>",
+                    equalTo: "<g:message code = 'registerCommand.passwordTwo.nomatch'/>"
+                },
+                companyTypeId: {
+                    required: "<g:message code = 'registerCommand.companyTypeId.blank'/>"
+                },
+                phoneNumber: {
+                    required: "<g:message code = 'registration.phoneNumber.blank'/>"
+                },
+                streetAddressOne: {
+                    required: "<g:message code = 'registration.streetAddressOne.blank'/>"
+                },
+                zipcode: {
+                    required: "<g:message code = 'registration.zipcode.blank'/>"
+                },
+                city: {
+                    required: "<g:message code = 'registration.city.blank'/>"
+
+                },
+                state: {
+
+                },
+                country: {
+                    required: "<g:message code = 'registration.city.blank'/>"
+                }
+
             },
             highlight: function(element) {
                 $(element).closest('.control-group').removeClass('success').addClass('error');
