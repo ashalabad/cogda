@@ -114,14 +114,16 @@ class RegisterController {
             return  // someone is most likely fooling around with the request headers
         } else {
             Registration registration = registerCommand.getRegistrationObject()
+            registration.validate()
 
-            registerService.save(registration)
             if (registration.hasErrors()) {
                 ajaxResponseDto.success = Boolean.FALSE
                 ajaxResponseDto.errors = errorMessageResolverService.retrieveErrorStrings(registration)
                 render ajaxResponseDto as JSON
                 return  // someone is most likely fooling around with the request headers
             } else {
+
+                registerService.save(registration)
 
                 // send the registration verification link to the user
                 String emailVerificationUrl = generateLink('verify', [t: registration.token])
@@ -252,7 +254,7 @@ class RegisterCommand {
                 return ['registration.username.taken']
             }
         })
-        companyTypeId(blank: false, inList: CompanyType.retrieveIds())
+
         newCompany(validator: { val, obj ->
             // if this is a new company then validate that the address information is provided.
             if (val) {

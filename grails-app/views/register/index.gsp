@@ -415,7 +415,7 @@
                     equalTo: "<g:message code = 'registerCommand.passwordTwo.nomatch'/>"
                 },
                 companyName: {
-                    required: "<g:message code = 'registerCommand.passwordTwo.blank'/>"
+                    required: "<g:message code = 'registerCommand.companyName.blank'/>"
                 },
                 companyTypeId: {
                     required: "<g:message code = 'registerCommand.companyTypeId.blank'/>"

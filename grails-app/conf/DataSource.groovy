@@ -48,6 +48,26 @@ environments {
             }
         }
     }
+    beestest {
+        dataSource {
+            username = "testingbees"
+            password = "beescloudtesting"
+            dbCreate = "create-drop" // one of 'create', 'create-drop', 'update', 'validate', ''
+            pooled = true
+            driverClassName = "com.mysql.jdbc.Driver"
+            url = "jdbc:mysql://localhost/cogda_test"
+            dialect = org.hibernate.dialect.MySQL5InnoDBDialect
+            properties {
+                validationQuery = "SELECT 1"
+                testOnBorrow = true
+                testOnReturn = true
+                testWhileIdle = true
+                timeBetweenEvictionRunsMillis = 1000 * 60 * 30
+                numTestsPerEvictionRun = 3
+                minEvictableIdleTimeMillis = 1000 * 60 * 30
+            }
+        }
+    }
     production {
         dataSource {
             username = "cogdaprod"
