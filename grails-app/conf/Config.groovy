@@ -192,8 +192,20 @@ grails {
                 "mail.smtp.socketFactory.fallback":"false"]
     }
 }
+
+environments {
+    development {
+        grails.mail.overrideAddress="chris@cogda.com"
+    }
+    test {
+        grails.mail.overrideAddress="chris@cogda.com"
+    }
+    beestest {
+        grails.mail.overrideAddress="chris@cogda.com"
+    }
+}
 grails.mail.default.from="postmaster@cogda.com"
-grails.mail.overrideAddress="chris@cogda.com"
+
 
 // Added by the Spring Security Core plugin:
 grails.plugins.springsecurity.userLookup.userDomainClassName = 'com.cogda.domain.security.User'
@@ -227,6 +239,11 @@ environments {
         grails.plugin.awssdk.default.bucket = "cogda-development"
     }
     test {
+        grails.plugin.awssdk.accessKey = "AKIAIK4U45JFDKT6YPFQ"
+        grails.plugin.awssdk.secretKey = "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"
+        grails.plugin.awssdk.default.bucket = "cogda-test"
+    }
+    beestest {
         grails.plugin.awssdk.accessKey = "AKIAIK4U45JFDKT6YPFQ"
         grails.plugin.awssdk.secretKey = "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"
         grails.plugin.awssdk.default.bucket = "cogda-test"
