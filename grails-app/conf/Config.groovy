@@ -108,8 +108,9 @@ environments {
         log4j = {
             // Example of changing the log pattern for the default console appender:
             appenders {
-                console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
+                console name:'stdout', layout:pattern(conversionPattern: '%d [%t] %-5p %c - %m%n'), threshold: org.apache.log4j.Level.DEBUG
             }
+
             // trace 'org.hibernate.type'
             // debug 'org.hibernate.SQL'
             warn  'org.codehaus.groovy.grails.web.servlet',        // controllers
@@ -123,17 +124,28 @@ environments {
                     'org.springframework',
                     'org.hibernate',
                     'net.sf.ehcache.hibernate'
-            debug  'com.cogda'
-            debug  'grails.app.services.com.cogda', console
-            debug  'grails.app.controllers.com.cogda', console
+            debug  'grails.app.services.com.cogda'
+            debug  'grails.app.controllers.com.cogda'
+            debug  'grails.app.filters'
+            debug  'grails.app.domain'
+            debug  'grails.app.taglib'
+            debug  'grails.app.conf'
+
+            root {
+                error 'stdout'
+                info 'stdout'
+                warn 'stdout'
+                debug 'stdout'
+                additivity = true
+            }
         }
     }
     production {
         log4j = {
             // Example of changing the log pattern for the default console appender:
-            //
             appenders {
-                console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
+                console name:'stdout', layout:pattern(conversionPattern: '%d [%t] %-5p %c - %m%n'), threshold: org.apache.log4j.Level.DEBUG
+                null name:'stacktrace'
             }
 
             error  'org.codehaus.groovy.grails.web.servlet',        // controllers
@@ -147,7 +159,23 @@ environments {
                     'org.springframework',
                     'org.hibernate',
                     'net.sf.ehcache.hibernate'
-            error  'com.cogda'
+
+            warn   'org.mortbay.log'
+
+            error  'grails.app.services.com.cogda'
+            error  'grails.app.controllers.com.cogda'
+            error  'grails.app.filters'
+            error  'grails.app.domain'
+            error  'grails.app.taglib'
+            error  'grails.app.conf'
+
+            root {
+                error 'stdout'
+                info 'stdout'
+                warn 'stdout'
+                debug 'stdout'
+                additivity = true
+            }
         }
     }
 }

@@ -442,13 +442,14 @@ class CustomerAccountServiceTests extends BaseIntegrationTest{
         final String clientsFolder = "clients"
         final String imagesFolder = "images"
         final String tempFolder = "temp"
+        final String usersFolder = "users"
 
         // delete everything under customerAccounts/
         ObjectListing objectListing = amazonWebService.s3.listObjects(defaultBucket, pathPrefix)
 
         List objectSummaries = objectListing.objectSummaries
 
-        assert objectSummaries.size() == 8
+        assert objectSummaries.size() == 11
 
         objectSummaries.each { S3ObjectSummary objectSummary ->
             try {
