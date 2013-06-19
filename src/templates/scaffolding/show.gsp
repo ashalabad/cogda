@@ -14,6 +14,8 @@
 
 <section id="show-${domainClass.propertyName}" class="first">
 
+    <h2><g:message code="default.show.label" args="[entityName]" /></h2>
+
 	<table class="table">
 		<tbody>
 		<%  excludedProps = Event.allEvents.toList() << 'id' << 'version'
