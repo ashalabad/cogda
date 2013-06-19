@@ -224,11 +224,11 @@ class RegisterCommand {
         registration.newCompany = this.newCompany
         registration.companyName = this.companyName
         registration.username = this.username
-        if(registration.existingCompanyId && Company.exists(registration.existingCompanyId)){
-            registration.existingCompany = Company.get(registration.existingCompanyId)
+        if(this.existingCompanyId && Company.exists(this.existingCompanyId)){
+            registration.existingCompany = Company.get(this.existingCompanyId)
         }
 
-        if (registration.newCompany) {
+        if (this.newCompany) {
             registration.streetAddressOne = this.streetAddressOne
             registration.streetAddressTwo = this.streetAddressTwo
             registration.zipcode = this.zipcode
