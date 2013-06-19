@@ -86,22 +86,24 @@ class AdminRegisterControllerIntegrationTests extends BaseIntegrationTest {
     }
 
     boolean compareRegistrationsJSONExcludingExistingCompany(JSONObject a, JSONObject b) {
-        return a.city == b.city &&
-                a.companyName == b.companyName &&
-                a.companyType == b.companyType &&
-                a.companyTypeOther == b.companyTypeOther &&
-                a.country == b.country &&
-                a.county == b.county &&
-                a.emailAddress == b.emailAddress &&
-                a.firstName == b.firstName &&
-                a.lastName == b.lastName &&
-                a.phoneNumber == b.phoneNumber &&
-                a.streetAddressOne == b.streetAddressOne &&
-                a.streetAddressTwo == b.streetAddressTwo &&
-                a.streetAddressThree == b.streetAddressThree &&
-                a.zipcode == b.zipcode &&
-                a.state == b.state &&
-                a.newCompany == b.newCompany
+        assert a.city == b.city
+        assert a.companyName == b.companyName
+        assert a.companyType.id == b.companyType.id
+        assert a.companyType.intCode == b.companyType.intCode
+        assert a.companyTypeOther == b.companyTypeOther
+        assert a.country == b.country
+        assert a.county == b.county
+        assert a.emailAddress == b.emailAddress
+        assert a.firstName == b.firstName
+        assert a.lastName == b.lastName
+        assert a.phoneNumber == b.phoneNumber
+        assert a.streetAddressOne == b.streetAddressOne
+        assert a.streetAddressTwo == b.streetAddressTwo
+        assert a.streetAddressThree == b.streetAddressThree
+        assert a.zipcode == b.zipcode
+        assert a.state == b.state
+        assert a.newCompany == b.newCompany
+        return true
     }
 
     boolean compareRegistrations(Registration a, Registration b) {
@@ -145,7 +147,7 @@ class AdminRegisterControllerIntegrationTests extends BaseIntegrationTest {
         Registration expectedRegistration = Registration.first()
         adminRegisterController.show(expectedRegistration.id)
         assert adminRegisterController.response.status == 200
-        assert compareRegistrationToJson(expectedRegistration, adminRegisterController.response.json.registration)
+        assert compareRegistrationToJson(expectedRegistration, adminRegisterController.response.json.registrationInstance)
     }
 
     @Test
@@ -163,14 +165,15 @@ class AdminRegisterControllerIntegrationTests extends BaseIntegrationTest {
         adminRegisterController.adminService = adminService
         adminRegisterController.errorMessageResolverService = errorMessageResolverService
         Registration registrationToUpdate = Registration.first()
+        def registrationToUpdateJson = JSON.parse(registrationToUpdate.encodeAsJSON())
         def newSubDomain = 'bananaphone'
-        registrationToUpdate.subDomain = newSubDomain
+        registrationToUpdateJson.subDomain = newSubDomain
+        adminRegisterController.request.json = registrationToUpdateJson
         adminRegisterController.update(registrationToUpdate.id)
-        adminRegisterController.request.json = registrationToUpdate.encodeAsJSON()
         AjaxResponseDto ajaxResponseDto = adminRegisterController.response.json
         assert ajaxResponseDto.success == true
         assert ajaxResponseDto.modelObject.registration.subDomain == newSubDomain
-        assert Registration.get(registrationToUpdate.id).subDomain == newSubDomain
+        assert Registration.get(registrationToUpdateJson.id).subDomain == newSubDomain
     }
 
     @Test(expected = ValidationException.class)
@@ -179,15 +182,16 @@ class AdminRegisterControllerIntegrationTests extends BaseIntegrationTest {
         adminRegisterController.adminService = adminService
         adminRegisterController.errorMessageResolverService = errorMessageResolverService
         Registration registrationToUpdate = Registration.first()
+        def registrationToUpdateJSON = JSON.parse(registrationToUpdate.encodeAsJSON())
         def newSubDomain = '@@@'
         def originalSubDomain = registrationToUpdate.subDomain
-        registrationToUpdate.subDomain = newSubDomain
+        registrationToUpdateJSON.subDomain = newSubDomain
+        adminRegisterController.request.json = registrationToUpdateJSON
         adminRegisterController.update(registrationToUpdate.id)
-        adminRegisterController.request.json = registrationToUpdate.encodeAsJSON()
         AjaxResponseDto ajaxResponseDto = adminRegisterController.response.json
         assert ajaxResponseDto.success == false
         assert ajaxResponseDto.modelObject.subDomain == newSubDomain
-        assert Registration.get(registrationToUpdate.id).subDomain == originalSubDomain
+        assert Registration.get(registrationToUpdateJSON.id).subDomain == originalSubDomain
     }
 
     @Test
@@ -247,8 +251,11 @@ class AdminRegisterControllerIntegrationTests extends BaseIntegrationTest {
    "city":"Athens",
    "companyName":"Adgoc Solutions, LLC.",
    "companyType":{
-      "class":"CompanyType",
-      "id":1
+      "class":"com.cogda.domain.admin.CompanyType",
+      "id":4,
+      "code":"Wholesaler (MGA, Broker)",
+      "description":"Wholesaler (MGA, Broker)",
+      "intCode":3,
    },
    "companyTypeOther":null,
    "country":null,

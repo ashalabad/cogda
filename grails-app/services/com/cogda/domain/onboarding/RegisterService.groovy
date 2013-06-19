@@ -34,6 +34,11 @@ class RegisterService {
             throw new RegistrationException("Registration not found.")
         } else {
             instance.setProperties(registration.properties)
+            if (!instance.validate()) {
+                instance.errors.each {
+                    log.error(it)
+                }
+            }
             if (!instance.save(flush: true, failOnError: true)) {
                 instance.errors.each {
                     log.error(it)
