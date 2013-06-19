@@ -7,11 +7,24 @@
 	<meta name="layout" content="kickstart" />
 	<g:set var="entityName" value="\${message(code: '${domainClass.propertyName}.label', default: '${className}')}" />
 	<title><g:message code="default.list.label" args="[entityName]" /></title>
+    <g:set var="layout_nosecondarymenu"	value="${true}" scope="request"/>
+    <g:set var="layout_nomainmenu"		value="${true}" scope="request"/>
+    <r:require module="dataTables"/>
 </head>
 
 <body>
-	
+<content tag="header">
+    <!-- Empty Header -->
+</content>
+
+<div id="MenuRow" class="row">
+    <div class="span12">
+        &nbsp;
+    </div>
+</div>
 <section id="list-${domainClass.propertyName}" class="first">
+
+    <h2><g:message code="default.list.label" args="[entityName]" /></h2>
 
 	<table class="table table-bordered">
 		<thead>
