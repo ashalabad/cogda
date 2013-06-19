@@ -2,6 +2,7 @@ package com.cogda.api.admin
 
 import com.cogda.common.web.AjaxResponseDto
 import com.cogda.domain.admin.AdminService
+import com.cogda.domain.admin.CompanyType
 import com.cogda.domain.onboarding.Registration
 import com.cogda.errors.RegistrationException
 import com.cogda.security.SecurityService
@@ -10,7 +11,7 @@ import grails.converters.JSON
 import grails.converters.XML
 import grails.plugins.springsecurity.Secured
 
-/**
+/**                                                                                    lo
  * AdminRegisterController
  * A controller class handles incoming web requests and performs actions such as redirects, rendering views and so on.
  */
@@ -23,7 +24,8 @@ class AdminRegisterController {
             save: 'POST',
             update: ['POST', 'PUT'],
             approve: ['POST', 'PUT'],
-            updateSubdomain: ['POST']
+            updateSubdomain: ['POST'],
+            companyTypes: ['GET']
     ]
 
     AdminService adminService
@@ -57,14 +59,16 @@ class AdminRegisterController {
 
     def show(long id) {
         def registration = adminService.findRegistrationById(id)
-        if (!registration) {
+        def companyTypes = CompanyType.list()
+        if (!registration || !companyTypes) {
             withFormat {
                 json { response.sendError(404) }
                 xml { response.sendError(404) }
             }
             return
         }
-        def object = [registration: registration]
+
+        def object = [registrationInstance: registration, companyTypes: companyTypes]
         withFormat {
             json { render object as JSON }
             xml { render object as XML }
@@ -80,6 +84,7 @@ class AdminRegisterController {
             render ajaxResponseDto as JSON
             return
         }
+        registration.properties = params.registration
         if (registration.hasErrors()) {
             ajaxResponseDto.success = Boolean.FALSE
             ajaxResponseDto.errors = errorMessageResolverService.retrieveErrorStrings(registration)
@@ -93,7 +98,7 @@ class AdminRegisterController {
                 render ajaxResponseDto as JSON
                 return
             } else {
-                ajaxResponseDto.success = true
+                ajaxResponseDto.success = Boolean.TRUE
                 ajaxResponseDto.addMessage(message(code: "registration.update.successful", args: []))
                 ajaxResponseDto.modelObject = [registration: registration]
                 render ajaxResponseDto as JSON
@@ -153,5 +158,20 @@ class AdminRegisterController {
             ajaxResponseDto.addMessage(message(code: "registration.subdomain.successful", args: []))
         }
         render ajaxResponseDto as JSON
+    }
+
+    def companyTypes() {
+        def companyTypes = CompanyType.list()
+        if (!companyTypes) {
+            withFormat {
+                json { response.sendError(404) }
+                xml { response.sendError(404) }
+            }
+        }
+        def model = [companyTypes: companyTypes]
+        withFormat {
+            json { render model as JSON }
+            xml { render model as XML }
+        }
     }
 }

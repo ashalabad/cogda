@@ -85,6 +85,7 @@ grails.project.dependency.resolution = {
         compile ":jquery-datatables:1.7.5"
 
         compile ":cloud-bees:0.6.2"
+
         test(":spock:0.7") {
             exclude "spock-grails-support"
         }

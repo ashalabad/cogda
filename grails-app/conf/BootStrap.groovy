@@ -14,6 +14,8 @@ import grails.util.GrailsUtil
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.springframework.transaction.interceptor.TransactionAspectSupport
 import org.springframework.transaction.support.TransactionSynchronizationManager
+import org.springframework.web.context.WebApplicationContext
+import org.springframework.web.context.support.WebApplicationContextUtils
 
 class BootStrap {
     CustomerAccountService customerAccountService
@@ -57,6 +59,8 @@ class BootStrap {
                 TransactionSynchronizationManager.isSynchronizationActive()
             }
         }
+        def springContext = WebApplicationContextUtils.getWebApplicationContext(servletContext)
+        springContext.getBean("customObjectMarshallers").register()
 
         if(Environment.current != Environment.TEST){
 
