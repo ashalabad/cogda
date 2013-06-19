@@ -27,7 +27,6 @@ class ContactController extends BaseController{
         dataToRender.iTotalDisplayRecords = dataToRender.iTotalRecords
         dataToRender.aaData = contactInstanceList
 
-
         render dataToRender as JSON
         return
     }
@@ -44,14 +43,14 @@ class ContactController extends BaseController{
         }
 
         flash.message = message(code: 'default.created.message', args: [message(code: 'contact.label', default: 'Contact'), contactInstance.id])
-        redirect(action: "show", id: contactInstance.id)
+        generateRedirectLink("contact", "show", [id:contactInstance.id])
     }
 
     def show() {
         def contactInstance = Contact.get(params.id)
         if (!contactInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'contact.label', default: 'Contact'), params.id])
-            redirect(action: "list")
+            generateRedirectLink("contact", "index")
             return
         }
 
@@ -62,7 +61,7 @@ class ContactController extends BaseController{
         def contactInstance = Contact.get(params.id)
         if (!contactInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'contact.label', default: 'Contact'), params.id])
-            redirect(action: "list")
+            generateRedirectLink("contact", "index")
             return
         }
 
@@ -73,7 +72,7 @@ class ContactController extends BaseController{
         def contactInstance = Contact.get(params.id)
         if (!contactInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'contact.label', default: 'Contact'), params.id])
-            redirect(action: "list")
+            generateRedirectLink("contact", "index")
             return
         }
 
@@ -96,25 +95,25 @@ class ContactController extends BaseController{
         }
 
         flash.message = message(code: 'default.updated.message', args: [message(code: 'contact.label', default: 'Contact'), contactInstance.id])
-        redirect(action: "show", id: contactInstance.id)
+        generateRedirectLink("contact", "show", [id:contactInstance.id])
     }
 
     def delete() {
         def contactInstance = Contact.get(params.id)
         if (!contactInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'contact.label', default: 'Contact'), params.id])
-            redirect(action: "list")
+            generateRedirectLink("contact", "index")
             return
         }
 
         try {
             contactInstance.delete(flush: true)
             flash.message = message(code: 'default.deleted.message', args: [message(code: 'contact.label', default: 'Contact'), params.id])
-            redirect(action: "list")
+            generateRedirectLink("contact", "index")
         }
         catch (DataIntegrityViolationException e) {
             flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'contact.label', default: 'Contact'), params.id])
-            redirect(action: "show", id: params.id)
+            generateRedirectLink("contact", "show", [id:contactInstance.id])
         }
     }
 }

@@ -15,9 +15,10 @@
         /* Table initialisation */
         $(document).ready(function() {
             $('#contactList').dataTable( {
-                "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
-                "sPaginationType": "bootstrap",
-                "oLanguage": {
+                sAjaxSource: '${request.contextPath + '/contact/list'}' ,
+                sDom: "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+                sPaginationType: "bootstrap",
+                oLanguage: {
                     "sLengthMenu": "_MENU_ records per page"
                 }
             } );
