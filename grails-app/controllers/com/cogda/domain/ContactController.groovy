@@ -1,6 +1,8 @@
 package com.cogda.domain
 
 import com.cogda.BaseController
+import com.cogda.common.web.AjaxResponseDto
+import com.cogda.util.ErrorMessageResolverService
 import grails.converters.JSON
 import org.springframework.dao.DataIntegrityViolationException
 
@@ -9,6 +11,8 @@ import org.springframework.dao.DataIntegrityViolationException
  * A controller class handles incoming web requests and performs actions such as redirects, rendering views and so on.
  */
 class ContactController extends BaseController{
+
+    ErrorMessageResolverService errorMessageResolverService
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
@@ -24,76 +28,101 @@ class ContactController extends BaseController{
     def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
 
-        List contactInstanceList = Contact.displayContactList(params)
+        List contactInstanceList = Contact.list()
 
         def dataToRender = [:]
 
-        dataToRender.iTotalRecords = contactInstanceList.size()
-        dataToRender.iTotalDisplayRecords = dataToRender.iTotalRecords
-        dataToRender.aaData = contactInstanceList
+        dataToRender.aaData = []
+        contactInstanceList.each { Contact contact ->
+            Map map = [:]
+            map.id = contact.id
+            map.version = contact.version
+            map.companyName = contact.companyName
+            map.lastName = contact.lastName
+            map.firstName = contact.firstName
+            map.jobTitle = contact.jobTitle
+            map.primaryEmailAddress = contact.primaryEmailAddress
+
+            dataToRender.aaData.add(map)
+        }
+        dataToRender.sEcho = 1
 
         render dataToRender as JSON
 
         return
     }
 
-    def create() {
-        [contactInstance: new Contact(params)]
-    }
-
+    /**
+     * Inserts a new Contact into the database based on the passed in
+     * JSON.
+     * @return AjaxResponseDto as JSON
+     */
     def save() {
         def contactInstance = new Contact(JSON.parse(params.contact))
-        if (!contactInstance.save(flush: true)) {
-            render(view: "create", model: [contactInstance: contactInstance])
-            return
+
+        contactInstance.save(flush: true)
+
+        AjaxResponseDto ajaxResponseDto = new AjaxResponseDto()
+        if(contactInstance.hasErrors()){
+            ajaxResponseDto.errors = errorMessageResolverService.retrieveErrorStrings(contactInstance)
+            ajaxResponseDto.success = Boolean.FALSE
+            ajaxResponseDto.modelObject = contactInstance
+        }else{
+            ajaxResponseDto.success = Boolean.TRUE
+            ajaxResponseDto.addMessage(message(code:'contact.save.successful'))
+            ajaxResponseDto.modelObject = contactInstance
         }
 
-        flash.message = message(code: 'default.created.message', args: [message(code: 'contact.label', default: 'Contact'), contactInstance.id])
-        generateRedirectLink("contact", "show", [id:contactInstance.id])
+        render ajaxResponseDto as JSON
+        return
     }
 
-    def show() {
+    /**
+     * Retrieves the Contact instance and parses it to JSON.
+     * @return AjaxResponseDto as JSON
+     */
+    def get(){
         def contactInstance = Contact.get(params.id)
-        if (!contactInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'contact.label', default: 'Contact'), params.id])
-            generateRedirectLink("contact", "index")
-            return
+        AjaxResponseDto ajaxResponseDto = new AjaxResponseDto()
+        if(!contactInstance){
+
+            ajaxResponseDto.success = Boolean.FALSE
+            ajaxResponseDto.errors.put("id", message(code: 'contact.not.found'))
+            ajaxResponseDto.modelObject = null
+
+        }else{
+
+            ajaxResponseDto.success = Boolean.TRUE
+            ajaxResponseDto.modelObject = contactInstance
+
         }
-
-        [contactInstance: contactInstance]
-    }
-
-    def edit() {
-        def contactInstance = Contact.get(params.id)
-        if (!contactInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'contact.label', default: 'Contact'), params.id])
-            generateRedirectLink("contact", "index")
-            return
-        }
-
-        [contactInstance: contactInstance]
+        render ajaxResponseDto as JSON
+        return
     }
 
     def update() {
-        def contactInstance = Contact.get(params.id)
+        def contactProperties = JSON.parse(params.contact)
+        Contact contactInstance = Contact.get(contactProperties.id)
+        AjaxResponseDto ajaxResponseDto = new AjaxResponseDto()
+
         if (!contactInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'contact.label', default: 'Contact'), params.id])
-            generateRedirectLink("contact", "index")
-            return
+            ajaxResponseDto.success = Boolean.FALSE
+            ajaxResponseDto.errors.put("id", message(code: 'contact.not.found'))
+            ajaxResponseDto.modelObject = null
         }
 
-        if (params.version) {
-            def version = params.version.toLong()
+        if (contactProperties.version) {
+            def version = contactProperties.version.toLong()
             if (contactInstance.version > version) {
-                contactInstance.errors.rejectValue("version", "default.optimistic.locking.failure",
-                        [message(code: 'contact.label', default: 'Contact')] as Object[],
-                        "Another user has updated this Contact while you were editing")
-                render(view: "edit", model: [contactInstance: contactInstance])
-                return
+                ajaxResponseDto.errors.put("version", message(code:"default.optimistic.locking.failure",
+                        args: [message(code: 'contact.label', default: 'Contact')] as Object[]))
+
+                ajaxResponseDto.success = Boolean.FALSE
+                ajaxResponseDto.modelObject = null
             }
         }
 
-        contactInstance.properties = params
+        contactInstance.properties = contactProperties.properties
 
         if (!contactInstance.save(flush: true)) {
             render(view: "edit", model: [contactInstance: contactInstance])

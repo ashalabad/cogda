@@ -12,7 +12,8 @@ modules = {
 
     dataTables {
         dependsOn 'jquery,  jquery-ui'
-        resource url:[dir: 'js', plugin:'jquery-datatables', file: 'jquery.dataTables.min.js']
+        resource url:[dir: 'js/dataTables/css', file: 'jquery.dataTables.css']
+        resource url:[dir: 'js/dataTables', file: 'jquery.dataTables.js']
         resource url:[dir: 'js/dataTables', file:'dataTables.bootstrap.css']
         resource url:[dir: 'js/dataTables', file:'dataTables.bootstrap.js']
     }
