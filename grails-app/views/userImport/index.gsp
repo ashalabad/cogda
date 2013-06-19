@@ -33,15 +33,10 @@
         </div>
     </g:hasErrors>
 
-    <div id="informationDiv" class="big-message">
-        <div class="container">
+    <h2><g:message code="userImport.title" default="User Import"/></h2>
 
-            <h2><g:message code="userImport.title" default="User Import"/></h2>
-
-                <div class = "alert alert-info">
-                    <g:message code = "userImport.import.instructions"/>
-                </div>
-        </div>
+    <div class = "alert alert-info">
+        <g:message code = "userImport.import.instructions"/>
     </div>
 
     <div class = "row">
@@ -96,13 +91,14 @@
                 </g:uploadForm>
             </section>
 
+            <hr/>
 
             <section id="importFileInstructions" class = "sectionSnip">
                 <div class="pretty">
                     <h3>
                         <g:message code="userImport.title.fileLayout"/>
                     </h3>
-                    <table class="table-condensed">
+                    <table class="table-condensed table-bordered table-hover">
                         <thead>
                         <tr>
                             <th>
@@ -200,7 +196,7 @@
                     </table>
                 </div>
 
-                <br/>
+                <hr/>
 
                 <div class="pretty">
                     <h4>
@@ -211,6 +207,8 @@
                         janecogda,Jane,Jaynes,janejaynes@codga.com,ROLE_BRANCH_MANAGER
                     </div>
                 </div>
+
+                <hr/>
 
                 <div class="pretty">
                     <h4>
@@ -226,7 +224,7 @@
 
                 </div>
 
-                <br/>
+                <hr/>
 
                 <div class="pretty">
                     <h4>

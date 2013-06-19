@@ -11,6 +11,7 @@ import com.cogda.domain.security.UserRole
 import com.cogda.errors.RoleNotFoundException
 import com.cogda.multitenant.CustomerAccount
 import com.cogda.util.ErrorMessageResolverService
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.validation.FieldError
 
 /**
@@ -39,7 +40,6 @@ class UserImportService {
 
             if(!command.hasErrors()){
 
-
                 User user = createDefaultUser(command.username)
                 user.validate()
                 if(user.hasErrors()){
@@ -53,27 +53,36 @@ class UserImportService {
                     }
                 }
                 else{
-                    user.save(insert:true, flush:true)
 
-                    log.debug ("Successfully inserted new user -> ${user.username}")
-
-                    List userRoles = []
-                    command.parsedSecurityRoles.each { String securityRole ->
-                        if(Role.ADMIN_ASSIGNABLE_AUTHORITIES.contains(securityRole)){
-                            userRoles.add(Role.findByAuthority(securityRole))
-                        }else{
-                            log.warn("User attempted to load a role that was not found in the Role.ADMIN_ASSIGNABLE_AUTHORITIES list -> ${securityRole}")
-                        }
+                    try {
+                        user.save(insert:true)
+                    }catch(DataIntegrityViolationException dive){
+                        command.errors.rejectValue("username", "registration.username.taken")
+                        user = null
                     }
 
-                    if(userRoles){
-                        userRoles.each { Role role ->
-                            UserRole.create(user, role)
-                            log.debug ("Successfully added role -> ${role.authority} to User -> ${user.username}")
-                        }
-                    }
+                    if(!command.hasErrors()){
 
-                    userProfileService.createUserProfile(user, command.firstName, command.lastName, command.emailAddress)
+                        log.debug ("Successfully inserted new user -> ${user.username}")
+
+                        List userRoles = []
+                        command.parsedSecurityRoles.each { String securityRole ->
+                            if(Role.ADMIN_ASSIGNABLE_AUTHORITIES.contains(securityRole)){
+                                userRoles.add(Role.findByAuthority(securityRole))
+                            }else{
+                                log.warn("User attempted to load a role that was not found in the Role.ADMIN_ASSIGNABLE_AUTHORITIES list -> ${securityRole}")
+                            }
+                        }
+
+                        if(userRoles){
+                            userRoles.each { Role role ->
+                                UserRole.create(user, role)
+                                log.debug ("Successfully added role -> ${role.authority} to User -> ${user.username}")
+                            }
+                        }
+
+                        userProfileService.createUserProfile(user, command.firstName, command.lastName, command.emailAddress)
+                    }
                 }
 
 

@@ -29,8 +29,8 @@ class User {
     static transients = ['bypassEncodePassword']
 
 	static constraints = {
-		username blank: false, unique: 'tenantId'
-		password blank: false
+		username(blank: false, unique: true)
+		password(blank: false)
         accountId(nullable:false, blank:false, unique:true)
 	}
 

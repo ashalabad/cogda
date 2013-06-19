@@ -6,22 +6,22 @@
 		</a>
 		<ul class="dropdown-menu">
 			<li class="">
-				<a tabindex="-1" href="#"><b>Technical Admin</b></a>
+				<a tabindex="-1" href="#"><b><g:message code="default.admin.hostAdmin.label"></g:message></b></a>
 			</li>
-			<g:if env="development">
-			<li class="">
-				<a href="${createLink(uri: '/dbconsole')}">
-					<i class="icon-dashboard"></i>
-					<g:message code="default.dbconsole.label"/>
-				</a>
-			</li>
-			</g:if>
+            <li class="">
+                <a href="/userImport/index">
+                    <i class="icon-file"></i>
+                    <g:message code = "userImport.menu.label"/>
+                </a>
+            </li>
 			<li class="">
 				<a href="${createLink(uri: '/systeminfo')}">
 					<i class="icon-info-sign"></i>
 					<g:message code="default.systeminfo.label"/>
 				</a>
 			</li>
+
+            <g:if env="development"></g:if>
 			<li class="dropdown-submenu">
 				<a tabindex="-1" href="#">
 					<i class="icon-sitemap"></i>

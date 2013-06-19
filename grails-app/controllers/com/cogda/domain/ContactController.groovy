@@ -42,7 +42,7 @@ class ContactController extends BaseController{
     }
 
     def save() {
-        def contactInstance = new Contact(params)
+        def contactInstance = new Contact(JSON.parse(params.contact))
         if (!contactInstance.save(flush: true)) {
             render(view: "create", model: [contactInstance: contactInstance])
             return
