@@ -28,6 +28,8 @@ class Contact {
     String title
     UserProfile userProfile  // Is this contact on Cogda?
 
+    static transients   = ['primaryEmailAddress']
+
     static hasMany		= [contactEmailAddresses:ContactEmailAddress,
             contactPhoneNumbers:ContactPhoneNumber,
             contactAddresses:ContactAddress]
@@ -44,6 +46,39 @@ class Contact {
         initials(nullable:true)
         title(nullable:true)
         userProfile(nullable:true)
+    }
+
+    /**
+     * Get the Primary Email Address for this UserProfile
+     * @return String
+     */
+    public String getPrimaryEmailAddress(){
+        ContactEmailAddress contactEmailAddress = this.contactEmailAddresses.find {
+            it.primaryEmailAddress == Boolean.TRUE
+        }
+        return contactEmailAddress?.emailAddress
+    }
+
+    /**
+     *
+     * @param params
+     * @return
+     */
+    static List<Map> displayContactList(params){
+        List contacts = Contact.list(params)
+        List displayContacts = []
+        contacts.each { Contact contact ->
+            List contactInfoList = []
+            contactInfoList.add(contact.id)
+            contactInfoList.add(contact.version)
+            contactInfoList.add(contact.lastName)
+            contactInfoList.add(contact.firstName)
+            contactInfoList.add(contact.companyName)
+            contactInfoList.add(contact.jobTitle)
+            contactInfoList.add(contact.getPrimaryEmailAddress())
+            displayContacts.add(contactInfoList.toArray())
+        }
+        return displayContacts
     }
 
 }

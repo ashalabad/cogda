@@ -16,10 +16,15 @@ class ContactController extends BaseController{
 
     }
 
+    /**
+     * Passes back a JSON list of Contacts
+     *
+     * @return
+     */
     def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
 
-        List contactInstanceList = Contact.list(params)
+        List contactInstanceList = Contact.displayContactList(params)
 
         def dataToRender = [:]
 
@@ -28,6 +33,7 @@ class ContactController extends BaseController{
         dataToRender.aaData = contactInstanceList
 
         render dataToRender as JSON
+
         return
     }
 

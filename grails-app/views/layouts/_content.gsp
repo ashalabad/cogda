@@ -1,4 +1,11 @@
 <div id="Content" class="container">
+
+    <mt:hasTenant>
+        <sec:ifLoggedIn>
+            <g:render template="/_menu/applicationnavbar"/>
+        </sec:ifLoggedIn>
+    </mt:hasTenant>
+
 <!-- Main menu in one row (e.g., controller entry points -->
     <g:if test="${!layout_nomainmenu}">
         <div class="row">

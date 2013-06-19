@@ -29,3 +29,7 @@ label.error {
     font-weight: 200;
     margin: 1.0em 0 0.5em;
 }
+
+#applicationNavBar {
+    margin-top: 55px;
+}
