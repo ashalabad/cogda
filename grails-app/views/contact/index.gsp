@@ -24,7 +24,6 @@
                     {"mDataProp":"companyName"},
                     {"mDataProp":"lastName"},
                     {"mDataProp":"firstName"},
-
                     {"mDataProp":"jobTitle"},
                     {"mDataProp":"primaryEmailAddress"}
                 ],

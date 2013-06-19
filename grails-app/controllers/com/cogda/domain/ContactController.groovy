@@ -100,9 +100,13 @@ class ContactController extends BaseController{
         return
     }
 
+    /**
+     * Updates an existing Contact
+     * @return AjaxResponseDto as JSON
+     */
     def update() {
-        def contactProperties = JSON.parse(params.contact)
-        Contact contactInstance = Contact.get(contactProperties.id)
+        def jsonProperties = JSON.parse(params.contact)
+        Contact contactInstance = Contact.get(jsonProperties.id)
         AjaxResponseDto ajaxResponseDto = new AjaxResponseDto()
 
         if (!contactInstance) {
@@ -111,8 +115,8 @@ class ContactController extends BaseController{
             ajaxResponseDto.modelObject = null
         }
 
-        if (contactProperties.version) {
-            def version = contactProperties.version.toLong()
+        if (jsonProperties.version) {
+            def version = jsonProperties.version.toLong()
             if (contactInstance.version > version) {
                 ajaxResponseDto.errors.put("version", message(code:"default.optimistic.locking.failure",
                         args: [message(code: 'contact.label', default: 'Contact')] as Object[]))
@@ -122,33 +126,50 @@ class ContactController extends BaseController{
             }
         }
 
-        contactInstance.properties = contactProperties.properties
+        contactInstance.properties = jsonProperties.properties
 
         if (!contactInstance.save(flush: true)) {
-            render(view: "edit", model: [contactInstance: contactInstance])
-            return
+            if(contactInstance.hasErrors()){
+                ajaxResponseDto.errors = errorMessageResolverService.retrieveErrorStrings(contactInstance)
+                ajaxResponseDto.success = Boolean.FALSE
+                ajaxResponseDto.modelObject = contactInstance
+            }else{
+                ajaxResponseDto.success = Boolean.TRUE
+                ajaxResponseDto.addMessage(message(code:'contact.save.successful'))
+                ajaxResponseDto.modelObject = contactInstance
+            }
         }
 
-        flash.message = message(code: 'default.updated.message', args: [message(code: 'contact.label', default: 'Contact'), contactInstance.id])
-        generateRedirectLink("contact", "show", [id:contactInstance.id])
+        render ajaxResponseDto as JSON
+        return
     }
 
+    /**
+     * Deletes a Contact
+     * @return AjaxResponseDto as JSON
+     */
     def delete() {
-        def contactInstance = Contact.get(params.id)
-        if (!contactInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'contact.label', default: 'Contact'), params.id])
-            generateRedirectLink("contact", "index")
-            return
-        }
+        def jsonProperties = JSON.parse(params.contact)
 
+        Contact contactInstance = Contact.get(jsonProperties.id)
+        AjaxResponseDto ajaxResponseDto = new AjaxResponseDto()
+
+        if (!contactInstance) {
+            ajaxResponseDto.success = Boolean.FALSE
+            ajaxResponseDto.errors.put("id", message(code: 'contact.not.found'))
+            ajaxResponseDto.modelObject = null
+        }
         try {
             contactInstance.delete(flush: true)
-            flash.message = message(code: 'default.deleted.message', args: [message(code: 'contact.label', default: 'Contact'), params.id])
-            generateRedirectLink("contact", "index")
+            ajaxResponseDto.success = Boolean.TRUE
+            ajaxResponseDto.addMessage(message(code:'contact.delete.successful'))
         }
         catch (DataIntegrityViolationException e) {
-            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'contact.label', default: 'Contact'), params.id])
-            generateRedirectLink("contact", "show", [id:contactInstance.id])
+            ajaxResponseDto.errors.put("id", message(code: 'default.not.deleted.message', args: [message(code: 'contact.label', default: 'Contact')]))
+            ajaxResponseDto.success = Boolean.FALSE
         }
+
+        render ajaxResponseDto as JSON
+        return
     }
 }
