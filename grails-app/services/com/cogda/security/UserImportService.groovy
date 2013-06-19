@@ -1,12 +1,17 @@
 package com.cogda.security
 
+import au.com.bytecode.opencsv.CSVParser
 import au.com.bytecode.opencsv.CSVReader
+import com.cogda.command.UserImportCommand
 import com.cogda.domain.UserProfile
 import com.cogda.domain.UserProfileService
 import com.cogda.domain.security.Role
 import com.cogda.domain.security.User
 import com.cogda.domain.security.UserRole
 import com.cogda.errors.RoleNotFoundException
+import com.cogda.multitenant.CustomerAccount
+import com.cogda.util.ErrorMessageResolverService
+import org.springframework.validation.FieldError
 
 /**
  * UserImportService
@@ -15,7 +20,8 @@ import com.cogda.errors.RoleNotFoundException
 class UserImportService {
 
     UserProfileService userProfileService
-
+    UserService userService
+    ErrorMessageResolverService errorMessageResolverService
 
     /**
      * Loads users based on the passed in userDataFile
@@ -27,83 +33,103 @@ class UserImportService {
      */
     public List loadUserData(InputStream inputStream) {
         List list = parseInputStream(inputStream)
-        List importMessages = []
-        list.eachWithIndex { int i, Map mapData ->
-            Map importMessage = [line:(i+1), success:false, message:""]
-            String rootMessage = "User at line ${i + 1} "
-            if(!User.findByUsername(mapData.username)){
-                User user = createDefaultUser(mapData.username)
-                List securityRoles = parseRoles(mapData.securityRoles)
+        List userImports = []
+        list.each { UserImportCommand command ->
+            command.validate()
 
-                if(!user.validate()){
-                    importMessage.success = false
-                    importMessage.message = rootMessage + "Error validating the user.  ${user.errors}"
-                }else{
-                    user.save()
+            if(!command.hasErrors()){
 
-                    securityRoles.each { Role role ->
-                        UserRole.create(user, role)
+
+                User user = createDefaultUser(command.username)
+                user.validate()
+                if(user.hasErrors()){
+                    if (user.errors.hasErrors())
+                    {
+                        user.errors.allErrors.each { FieldError error ->
+                            final String field = error.field
+                            final String code = "userImportCommand.$field.$error.code"
+                            command.errors.rejectValue(field, code)
+                        }
+                    }
+                }
+                else{
+                    user.save(insert:true, flush:true)
+
+                    log.debug ("Successfully inserted new user -> ${user.username}")
+
+                    List userRoles = []
+                    command.parsedSecurityRoles.each { String securityRole ->
+                        if(Role.ADMIN_ASSIGNABLE_AUTHORITIES.contains(securityRole)){
+                            userRoles.add(Role.findByAuthority(securityRole))
+                        }else{
+                            log.warn("User attempted to load a role that was not found in the Role.ADMIN_ASSIGNABLE_AUTHORITIES list -> ${securityRole}")
+                        }
                     }
 
-                    userProfileService.createUserProfile(user, mapData.firstName, mapData.lastName, mapData.emailAddress)
+                    if(userRoles){
+                        userRoles.each { Role role ->
+                            UserRole.create(user, role)
+                            log.debug ("Successfully added role -> ${role.authority} to User -> ${user.username}")
+                        }
+                    }
 
-                    importMessage.success = true
-                    importMessage.message = rootMessage + "Import Successful"
+                    userProfileService.createUserProfile(user, command.firstName, command.lastName, command.emailAddress)
                 }
-            }else{
-                importMessage.success = false
-                importMessage.message = rootMessage + "Username ${mapData.username} already exists."
-                importMessages.add(importMessage)
+
+
             }
+            userImports.add(command)
         }
-        return importMessages
+        return userImports
     }
 
     /**
-     * Parses the data file based on the comma separated values
+     * Parses the data file based on the comma separated values into the
+     * UserImportCommand object.
      * @param inputStream
+     * @param skipFirstLine
      * @return List
      */
-    def List<Map> parseInputStream(InputStream inputStream){
+    def List parseInputStream(InputStream inputStream, Boolean skipFirstLine = Boolean.FALSE){
         List returnList = []
         CSVReader reader = new CSVReader(new InputStreamReader(inputStream))
         String [] nextLine;
         Integer count = 0;
         while((nextLine = reader.readNext()) != null){
-            // skip the first line
-            if (count != 0){
-                // nextLine[] is an array of values from the line
-                Map map = [:]
-                map.username = nextLine[0]?.toLong()
-                map.firstName = nextLine[1]?.trim()
-                map.lastName = nextLine[2]?.trim()
-                map.emailAddress = nextLine[3]?.trim()
-                map.securityRoles = nextLine[4]?.trim()
-                map.suggestedUsername = nextLine[5]?.substring(0, nextLine[6]?.indexOf('@'))
-                returnList.add(map)
+            if(nextLine.size() < 5){
+
+                log.warn ("User attempted to import a line that did not have the proper column length ${nextLine}")
+
+            }else{
+
+                if (count == 0 && skipFirstLine){
+                    // gulp
+                }
+                else {
+                    // nextLine[] is an array of values from the line
+                    UserImportCommand command = new UserImportCommand()
+                    command.username = nextLine[0]?.trim()
+                    command.firstName = nextLine[1]?.trim()
+                    command.lastName = nextLine[2]?.trim()
+                    command.emailAddress = nextLine[3]?.trim()
+                    command.securityRoles = nextLine[4]?.trim()
+                    returnList.add(command)
+                }
             }
+
             count++
+
         }
 
         return returnList
     }
 
-    def List<Role> parseRoles(String securityRoles){
-        String[] securityRolesArray = securityRoles.split(",")
-        List roles = []
-        securityRolesArray.each { String authority ->
-            Role role = Role.findByAuthority(authority)
-            if(role){
-                roles.add(role)
-            }
-        }
-        return roles
-    }
-
     /**
-     * Creates a default user based on the passed in
+     * Creates a default user based on the passed in username.
+     * Generates a temporary password and sets the passwordExpired
+     * to true.
      * @param username
-     * @return
+     * @return User
      */
     def User createDefaultUser(String username){
         User user = new User(username: username)

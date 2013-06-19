@@ -11,9 +11,10 @@ class ErrorMessageResolverService {
     def messageSource
 
     /**
-     *
+     * Takes a validateableClass and resolves errors based on the i18n message.properties
+     * and the current Locale.
      * @param validateableClass
-     * @return
+     * @return Map
      */
     def Map<String, String> retrieveErrorStrings(validateableClass){
         def stringsByField = [:]

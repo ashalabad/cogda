@@ -1,6 +1,7 @@
 package com.cogda.security
 
 import com.cogda.BaseController
+import com.cogda.domain.security.Role
 import org.springframework.web.multipart.MultipartFile
 
 /**
@@ -18,7 +19,9 @@ class UserImportController extends BaseController{
     def messageSource
 
     def index(){
-        render([view:"index"])
+        List assignableRoleInstances = Role.adminAssignableAuthorities()
+
+        render([view:"index", model:[assignableRoleInstances:assignableRoleInstances]])
     }
 
     /**
@@ -67,7 +70,7 @@ class UserImportController extends BaseController{
     }
 }
 
-class UserImportCommand {
+class UserImportFileCommand {
 
     static constraints = {
         file()

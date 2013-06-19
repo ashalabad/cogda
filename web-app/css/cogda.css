@@ -23,3 +23,9 @@ label.error {
 #errorMessages {
     margin-top: 10px;
 }
+
+.pretty h2 {
+    font-size: 30px;
+    font-weight: 200;
+    margin: 1.0em 0 0.5em;
+}

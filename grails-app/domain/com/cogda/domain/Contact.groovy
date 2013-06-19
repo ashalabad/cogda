@@ -26,31 +26,24 @@ class Contact {
     GenderEnum gender
     String initials
     String title
-    UserProfile userProfile
-    Address workAddress
-    Address homeAddress
+    UserProfile userProfile  // Is this contact on Cogda?
+
+    static hasMany		= [contactEmailAddresses:ContactEmailAddress,
+            contactPhoneNumbers:ContactPhoneNumber,
+            contactAddresses:ContactAddress]
 
     static constraints = {
         jobTitle(nullable:true)
         website(nullable:true)
         companyName(nullable:true)
-        firstName(nullable:true)
+        firstName(nullable:false, blank:false)
         middleName(nullable:true)
-        lastName(nullable:true)
+        lastName(nullable:false, blank:false)
         dateOfBirth(nullable:true)
-        gender(nullable:true)
+        gender(nullable:true, inList:GenderEnum.values().toList())
         initials(nullable:true)
         title(nullable:true)
         userProfile(nullable:true)
-        workAddress(nullable:true)
-        homeAddress(nullable:true)
     }
 
-    /*
-     * Methods of the Domain Class
-     */
-//	@Override	// Override toString for a nicer / more descriptive UI 
-//	public String toString() {
-//		return "${name}";
-//	}
 }
