@@ -15,7 +15,7 @@ import grails.plugins.springsecurity.Secured
  * AdminRegisterController
  * A controller class handles incoming web requests and performs actions such as redirects, rendering views and so on.
  */
-//@Secured('ROLE_ADMINISTRATOR')
+@Secured('ROLE_ADMINISTRATOR')
 class AdminRegisterController {
 
     static allowedMethods = [list: 'GET',
