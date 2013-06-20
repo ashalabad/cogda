@@ -1,7 +1,6 @@
 package com.cogda.domain
 
 import com.cogda.BaseController
-import com.cogda.common.BeanPropertyUtils
 import com.cogda.common.GenderEnum
 import com.cogda.common.web.AjaxResponseDto
 import com.cogda.util.ErrorMessageResolverService
