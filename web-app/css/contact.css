@@ -10,8 +10,13 @@ label{font-weight: bold;}
 }
 div.field {padding:2px;clear:both;}
 div.field input {float:left; height:13px;}
+div.field span {float:left; height:13px;}
 div.field label {float:left; width:120px;}
 .btn-group {float:left;}
 fieldset{margin-top:20px;}
 .add-field {margin-left:5px;}
 #contactHeader {width:300px;}
+#contactModal {width:960px;left:450px;}
+div.button {margin-left: 20px;}
+.editHide {display:none;visibility:hidden;}
+.editShow {visibility:visible;}

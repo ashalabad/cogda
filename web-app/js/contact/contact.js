@@ -1,3 +1,14 @@
+function toggleEdit(){
+  $(".contactShow").toggleClass("editHide");
+  $(".contactEdit").toggleClass("editHide");
+  $(".contactShow").toggleClass("editShow");
+  $(".contactEdit").toggleClass("editShow");  
+}
+function saveContact(){
+  toggleEdit();
+  // save
+}
+
 $(document).ready(function() {
     $('#contactList').dataTable(
     {
@@ -20,12 +31,17 @@ $(document).ready(function() {
             $(nRow).dblclick( function() {
                 $.get("contact/get/"+$(this).attr("id").replace("row_",""), function(data) {
                     $("#firstName").val(data.modelObject.firstName);
+                    $(".firstName").text(data.modelObject.firstName);                    
                     $("#lastName").val(data.modelObject.lastName);
+                    $(".lastName").text(data.modelObject.lastName);                    
                     $("#companyName").val(data.modelObject.companyName);
+                    $(".companyName").text(data.modelObject.companyName);                    
                     $("#jobTitle").val(data.modelObject.jobTitle);                    
-                    $('#test_modal').modal('show');
+                    $(".jobTitle").text(data.modelObject.jobTitle);                                        
+                    $('#contactModal').modal('show');
                 });
             });
         }                
     });
+    
 });

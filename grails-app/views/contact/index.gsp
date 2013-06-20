@@ -49,39 +49,42 @@
     </table>
 </section>
 
-<div class="modal hide fade" id="test_modal">
+<div class="modal hide fade" id="contactModal">
 	<div class="modal-header">
 	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 	<div id="contactHeader">
 		<h3>Contact Details</h3>
 	</div>
-	<div class="btn-group">
-		<button class="btn">View</button>
-		<button class="btn">Edit</button>
-	</div>	
 
 	</div>
 	<div class="modal-body">
 		<form class="form-inline">
 			<fieldset>
-			<div id="contactData">
-				<div class="field">
-					<label>First Name</label>
-					<input type="text" id="firstName">
+				<div id="contactData">
+					<div class="field">
+						<label>First Name</label>
+						<span id="firstNameLbl" class="editShow firstName contactShow"></span>
+						<input type="text" id="firstName" class="editHide contactEdit">
+					</div>
+					<div class="field">
+						<label>Last Name</label>
+						<span id="lastNameLbl" class="editShow lastName contactShow"></span>
+						<input type="text" id="lastName" class="editHide contactEdit">
+					</div>
+					<div class="field">
+						<label>Company Name</label>
+						<span id="companyNameLbl" class="editShow companyName contactShow"></span>						
+						<input type="text" id="companyName" class="editHide contactEdit">
+					</div>
+					<div class="field">
+						<label>Job Title</label>
+						<span id="companyNameLbl" class="editShow jobTitle contactShow"></span>						
+						<input type="text" id="jobTitle" class="editHide jobTitle contactEdit">
+					</div>            
 				</div>
-				<div class="field">
-					<label>Last Name</label>
-					<input type="text" id="lastName">
-				</div>
-				<div class="field">
-					<label>Company Name</label>
-					<input type="text" id="companyName">
-				</div>
-				<div class="field">
-					<label>Job Title</label>
-					<input type="text" id="jobTitle">
-				</div>            
-			</div>
+				<a class="btn btn-mini add-field editShow contactShow" href="#" onclick="toggleEdit();"><i class="icon-edit"></i> Edit</a>
+				<a class="btn btn-mini add-field editHide contactEdit" href="#" onclick="saveContact();"><i class="icon-save"></i> Save</a>				
+
 			</fieldset>
 			<fieldset>
 				<legend>Email Addresses</legend>
