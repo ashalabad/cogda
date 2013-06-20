@@ -9,5 +9,13 @@ package com.cogda.common
  */
 enum GenderEnum {
 
-    MALE, FEMALE;
+    MALE("M"), FEMALE("F")
+
+    private final String value
+
+    private GenderEnum(String value){
+        this.value = value
+    }
+
+    String value() { value }
 }

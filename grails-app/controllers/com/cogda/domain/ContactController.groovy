@@ -1,9 +1,11 @@
 package com.cogda.domain
 
 import com.cogda.BaseController
+import com.cogda.common.GenderEnum
 import com.cogda.common.web.AjaxResponseDto
 import com.cogda.util.ErrorMessageResolverService
 import grails.converters.JSON
+import org.apache.commons.beanutils.BeanUtils
 import org.springframework.dao.DataIntegrityViolationException
 
 /**
@@ -105,14 +107,19 @@ class ContactController extends BaseController{
      * @return AjaxResponseDto as JSON
      */
     def update() {
-        def jsonProperties = JSON.parse(params.contact)
-        Contact contactInstance = Contact.get(jsonProperties.id)
-        AjaxResponseDto ajaxResponseDto = new AjaxResponseDto()
 
+        def jsonProperties = JSON.parse(params.contact)
+
+        Contact contactInstance = Contact.get(params.id)
+
+        AjaxResponseDto ajaxResponseDto = new AjaxResponseDto()
+        println "contactInstance was not found? " + !contactInstance
         if (!contactInstance) {
             ajaxResponseDto.success = Boolean.FALSE
             ajaxResponseDto.errors.put("id", message(code: 'contact.not.found'))
             ajaxResponseDto.modelObject = null
+            render ajaxResponseDto as JSON
+            return
         }
 
         if (jsonProperties.version) {
@@ -123,21 +130,25 @@ class ContactController extends BaseController{
 
                 ajaxResponseDto.success = Boolean.FALSE
                 ajaxResponseDto.modelObject = null
+                render ajaxResponseDto as JSON
+                return
             }
         }
 
-        contactInstance.properties = jsonProperties.properties
+        // copy the properties from jsonProperties into the contactInstance
 
-        if (!contactInstance.save(flush: true)) {
-            if(contactInstance.hasErrors()){
-                ajaxResponseDto.errors = errorMessageResolverService.retrieveErrorStrings(contactInstance)
-                ajaxResponseDto.success = Boolean.FALSE
-                ajaxResponseDto.modelObject = contactInstance
-            }else{
-                ajaxResponseDto.success = Boolean.TRUE
-                ajaxResponseDto.addMessage(message(code:'contact.save.successful'))
-                ajaxResponseDto.modelObject = contactInstance
-            }
+        println contactInstance
+
+        contactInstance.save()
+
+        if(contactInstance.hasErrors()){
+            ajaxResponseDto.errors = errorMessageResolverService.retrieveErrorStrings(contactInstance)
+            ajaxResponseDto.success = Boolean.FALSE
+            ajaxResponseDto.modelObject = contactInstance
+        }else{
+            ajaxResponseDto.success = Boolean.TRUE
+            ajaxResponseDto.addMessage(message(code:'contact.save.successful'))
+            ajaxResponseDto.modelObject = contactInstance
         }
 
         render ajaxResponseDto as JSON

@@ -1,11 +1,13 @@
 package com.cogda.domain
 
 import com.cogda.common.GenderEnum
+import groovy.transform.ToString
 
 /**
  * Contact
  * A domain class describes the data object and it's mapping to the database
  */
+@ToString(includeNames=true, includeFields=true)
 class Contact {
 
     /* Default (injected) attributes of GORM */
@@ -36,7 +38,7 @@ class Contact {
 
     static constraints = {
         jobTitle(nullable:true)
-        website(nullable:true)
+        website(nullable:true, url:true)
         companyName(nullable:true)
         firstName(nullable:false, blank:false)
         middleName(nullable:true)
