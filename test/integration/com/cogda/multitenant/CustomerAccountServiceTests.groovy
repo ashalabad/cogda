@@ -118,14 +118,15 @@ class CustomerAccountServiceTests extends BaseIntegrationTest{
         company.parentCompany = null
 
         User user = new User()
-        user.username = "availableusername"
+        user.username = "alllwlwllwlsl"
         user.enabled = Boolean.TRUE
         user.password = "password"
 
+        println User.list()
 
         customerAccount.withThisTenant {
-            company.save(flush:true)
-            user.save(flush:true)
+            company.save()
+            user.save()
         }
 
         assert !company.hasErrors(), "Errors found on Company errors -> ${company.errors}"
@@ -156,7 +157,7 @@ class CustomerAccountServiceTests extends BaseIntegrationTest{
         company.parentCompany = null
 
         User user = new User()
-        user.username = "availableusername"
+        user.username = "akkdjsk"
         user.enabled = Boolean.TRUE
         user.password = "password"
 
@@ -174,8 +175,8 @@ class CustomerAccountServiceTests extends BaseIntegrationTest{
 
 
         customerAccount.withThisTenant {
-            company.save(flush:true)
-            user.save(flush:true)
+            company.save()
+            user.save()
             hostAdministratorRole.save() ?: log.error ("Unable to save hostAdministratorRole - Failed with ${hostAdministratorRole.errors}")
             underwriterRole.save() ?: log.error ("Unable to save underwriterRole - Failed with ${underwriterRole.errors}")
             customerServiceRepRole.save() ?: log.error ("Unable to save customerServiceRepRole - Failed with ${customerServiceRepRole.errors}")
@@ -244,8 +245,8 @@ class CustomerAccountServiceTests extends BaseIntegrationTest{
         Role administratorRole = new Role(authority: CustomerAccountService.ROLE_ADMINISTRATOR, description:"Company level admin - manages all aspects of the Company in COGDA. Profile settings etc.", systemRole: Boolean.TRUE)
 
         customerAccount.withThisTenant {
-            company.save(flush:true)
-            user.save(flush:true)
+            company.save()
+            user.save()
             hostAdministratorRole.save() ?: log.error ("Unable to save hostAdministratorRole - Failed with ${hostAdministratorRole.errors}")
             underwriterRole.save() ?: log.error ("Unable to save underwriterRole - Failed with ${underwriterRole.errors}")
             customerServiceRepRole.save() ?: log.error ("Unable to save customerServiceRepRole - Failed with ${customerServiceRepRole.errors}")
@@ -394,8 +395,6 @@ class CustomerAccountServiceTests extends BaseIntegrationTest{
             assert roles.containsAll([CustomerAccountService.ROLE_ADMINISTRATOR, CustomerAccountService.ROLE_USER]), "Roles were not assigned successfully for the first User"
 
         }
-
-
 
         // Verify the UserProfile is associated with the initial administrator and the properties
         assert UserProfile.count() == 1, "UserProfile count should be 1"

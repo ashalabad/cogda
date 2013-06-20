@@ -1,5 +1,6 @@
 package com.cogda.security
 
+import com.cogda.domain.security.Role
 import com.cogda.multitenant.CustomerAccount
 import com.cogda.multitenant.CustomerAccountService
 import grails.test.mixin.*
@@ -27,6 +28,7 @@ class UserImportControllerTests {
 
 
     void testIndexAction() {
+       mockDomain(Role)
        controller.index()
 
        assert view.equals("/userImport/index")
