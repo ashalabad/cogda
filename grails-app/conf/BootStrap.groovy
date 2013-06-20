@@ -1,11 +1,16 @@
 import com.cogda.common.MarkupLanguage
 import com.cogda.common.RegistrationStatus
 import com.cogda.domain.Contact
+import com.cogda.domain.PhoneNumber
 import com.cogda.domain.admin.AccountType
 import com.cogda.domain.admin.CompanyType
 import com.cogda.domain.admin.NoteType
 import com.cogda.domain.admin.SystemEmailMessageTemplate
 import com.cogda.domain.onboarding.Registration
+import com.cogda.multitenant.Account
+import com.cogda.multitenant.AccountContact
+import com.cogda.multitenant.AccountEmailAddress
+import com.cogda.multitenant.AccountPhoneNumber
 import com.cogda.multitenant.Company
 import com.cogda.multitenant.CustomerAccount
 import com.cogda.domain.admin.SupportedCountryCode
@@ -155,6 +160,48 @@ class BootStrap {
                     }
                 }
 
+                //Import Account Test Data
+                URL testAccountsURL = new URL("https://s3-us-west-2.amazonaws.com/cogda-test/testingfiles/AccountData.csv")
+                testAccountsURL.splitEachLine(',') {fields ->
+                    if(fields[0].trim() != "accountName"){
+                        customerAccount.withThisTenant {
+                                Account testAccount = new Account()
+                                testAccount.accountName= fields[0].trim()
+                                testAccount.accountCode= fields[1].trim()
+                                testAccount.accountType= AccountType.findByCode(fields[2].trim())
+                            if (testAccount.hasErrors() || !testAccount.validate() ) {
+                                log.error("Could not import testAccount with AccountCode: ${testAccount.accountCode}  ${testAccount.errors}")
+                            }
+                            else{
+                                testAccount.save(flush: true)
+
+                                def testAccountPhoneNumber = new AccountPhoneNumber(account: testAccount,phoneNumber:fields[7].trim() ,primaryPhoneNumber: true).save(flush:true)
+                                def testAccountEmail = new AccountEmailAddress(account: testAccount,emailAddress:fields[6].trim(),primaryEmailAddress: true).save(flush: true)
+
+                                def testAccountContact = new AccountContact(
+                                        firstName: fields[3].trim(),
+                                        middleName: fields[4].trim(),
+                                        lastName: fields[5].trim(),
+                                        account: testAccount,
+                                        primaryContact: true,
+                                        accountEmailAddresses: [testAccountEmail],
+                                        accountPhoneNumbers: [testAccountPhoneNumber]
+                                )
+                                if (testAccountContact.hasErrors() || !testAccountContact.validate() ) {
+                                    log.error("Could not import testAccountContact ${testAccountContact.firstName} ${testAccountContact.lastName}  ${testAccountContact.errors}")
+                                }
+                                else
+                                {
+                                    testAccountContact.save(flush: true)
+
+                                    testAccount.addToAccountContacts(testAccountContact)
+                                    testAccount.save()
+                                }
+                            }
+                            log.debug("Importing testAccount  ${testAccount.toString()}")
+                        }
+                    }
+                }
             }
 
             if(!Registration.findBySubDomain("libertymutual")){

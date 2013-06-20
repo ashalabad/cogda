@@ -56,6 +56,7 @@ class AccountContact {
 
 
     static constraints = {
+        userProfile(nullable: true)
         firstName(nullable:false, blank:false)
         middleName(nullable:true)
         lastName(nullable:false, blank:false)
