@@ -45,7 +45,7 @@ class ContactControllerTests {
         def converter = contact as JSON
 
         String jsonContactString = converter.toString(true)
-        println  jsonContactString
+//        println  jsonContactString
 
         params.contact = jsonContactString
 
@@ -61,7 +61,60 @@ class ContactControllerTests {
         assert response.getJson()?.messages.first() == "contact.save.successful"
     }
 
+    void testGet(){
+        mockDomain(Contact)
+        Contact contact = new Contact(firstName:"Chris", lastName:"Kwiatkowski", companyName:"Cogda Solutions, LLC.")
+        assert contact.save()
+        assert contact.id
+        params.id = contact.id
 
+        controller.get()
 
+        assert response.getJson()?.success, "The response says we could not find the Contact"
+        assert response.getJson()?.modelObject, "The response says we don't have a Contact Instance"
+        assert response.getJson()?.modelObject.id == contact.id
+        assert response.getJson()?.modelObject.firstName == contact.firstName
+        assert response.getJson()?.modelObject.lastName == contact.lastName
+        assert response.getJson()?.modelObject.companyName == contact.companyName
+    }
 
+    void testGetNotFound(){
+        mockDomain(Contact)
+
+        params.id = 99999999
+
+        controller.get()
+        assert !response.getJson()?.success, "The response says we found a Contact and we shouldn't have"
+        assert response.getJson()?.errors.id == "contact.not.found"
+    }
+
+    void testUpdate(){
+        mockDomain(Contact)
+        Contact contact = new Contact(firstName:"Christopher".reverse(), lastName:"Kwiatkowski".reverse(), companyName:"Cogda Solutions, LLC.".reverse())
+        assert contact.save()
+        assert contact.id
+        params.id = contact.id
+
+        Contact updatedContact = new Contact(id:contact.id, version:contact.version, firstName:"Christopher", lastName:"Kwiatkowski", companyName:"Cogda Solutions, LLC.")
+
+        Map contactMap = [contact:updatedContact]
+
+        def converter = contactMap as JSON
+
+        String jsonUpdatedContactString = converter.toString(true)
+        println  jsonUpdatedContactString
+
+        params.contact = jsonUpdatedContactString
+
+        controller.update()
+
+        println response.getJson()
+
+        assert response.getJson()?.success, "The response says we could not find the Contact"
+        assert response.getJson()?.modelObject, "The response says we don't have a Contact Instance"
+        assert response.getJson()?.modelObject.id == contact.id
+        assert response.getJson()?.modelObject.firstName == updatedContact.firstName
+        assert response.getJson()?.modelObject.lastName == updatedContact.lastName
+        assert response.getJson()?.modelObject.companyName == updatedContact.companyName
+    }
 }
