@@ -37,7 +37,7 @@ class ContactController extends BaseController{
         dataToRender.aaData = []
         contactInstanceList.each { Contact contact ->
             Map map = [:]
-            map.id = contact.id
+            map.DT_RowId = "row_"+contact.id
             map.version = contact.version
             map.companyName = contact.companyName
             map.lastName = contact.lastName
@@ -183,4 +183,5 @@ class ContactController extends BaseController{
         render ajaxResponseDto as JSON
         return
     }
+       
 }

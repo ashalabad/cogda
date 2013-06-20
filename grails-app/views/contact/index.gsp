@@ -8,31 +8,10 @@
     <g:set var="entityName" value="${message(code: 'contact.label', default: 'Contact')}" />
     <g:set var="layout_nosecondarymenu"	value="${true}" scope="request"/>
     <g:set var="layout_nomainmenu"		value="${true}" scope="request"/>
+    <link rel="stylesheet" type="text/css" href="css/contact.css" />
+    <script type="text/javascript" src="js/contact/contact.js" ></script>
     <title><g:message code="default.list.label" args="[entityName]" /></title>
     <r:require module="dataTables"/>
-    <g:javascript>
-
-        /* Table initialisation */
-        $(document).ready(function() {
-            $('#contactList').dataTable(
-            {
-                "bProcessing": true,
-                "sAjaxSource": "${request.contextPath + 'contact/list'}",
-                "aoColumns": [
-//                    {"mDataProp":"id"},
-//                    {"mDataProp":"version"},
-                    {"mDataProp":"companyName"},
-                    {"mDataProp":"lastName"},
-                    {"mDataProp":"firstName"},
-                    {"mDataProp":"jobTitle"},
-                    {"mDataProp":"primaryEmailAddress"}
-                ],
-                "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
-                "sPaginationType": "bootstrap"
-            }
-            );
-        } );
-    </g:javascript>
 
 </head>
 
@@ -49,13 +28,9 @@
 </div>
 
 <section id="list-contact" class="first">
-    <table class="table table-bordered" id="contactList">
+    <table class="table table-bordered" id="contactList" width="80%">
         <thead>
         <tr>
-
-            %{--<th>${message(code: 'contact.id.label', default: 'Id')}</th>--}%
-
-            %{--<th>${message(code: 'contact.version.label', default: 'Version')}</th>--}%
 
             <th>${message(code: 'contact.companyName.label', default: 'Company Name')}</th>
 
@@ -69,28 +44,79 @@
         </tr>
         </thead>
         <tbody>
-        <g:each in="${contactInstanceList}" status="i" var="contactInstance">
-            <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
-
-                %{--<td>${fieldValue(bean: contactInstance, field: "id")}</td>--}%
-
-                %{--<td>${fieldValue(bean: contactInstance, field: "version")}</td>--}%
-
-                <td>${fieldValue(bean: contactInstance, field: "companyName")}</td>
-
-                <td>${fieldValue(bean: contactInstance, field: "lastName")}</td>
-
-                <td>${fieldValue(bean: contactInstance, field: "firstName")}</td>
-
-                <td>${fieldValue(bean: contactInstance, field: "jobTitle")}</td>
-
-                <td>${fieldValue(bean: contactInstance, field: "primaryEmailAddress")}</td>
-
-            </tr>
-        </g:each>
+ 
         </tbody>
     </table>
 </section>
+
+<div class="modal hide fade" id="contactModal">
+	<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	<div id="contactHeader">
+		<h3>Contact Details</h3>
+	</div>
+
+	</div>
+	<div class="modal-body">
+		<form class="form-inline">
+			<fieldset>
+				<div id="contactData">
+					<div class="field">
+						<label>First Name</label>
+						<span id="firstNameLbl" class="editShow firstName contactShow"></span>
+						<input type="text" id="firstName" class="editHide contactEdit">
+					</div>
+					<div class="field">
+						<label>Last Name</label>
+						<span id="lastNameLbl" class="editShow lastName contactShow"></span>
+						<input type="text" id="lastName" class="editHide contactEdit">
+					</div>
+					<div class="field">
+						<label>Company Name</label>
+						<span id="companyNameLbl" class="editShow companyName contactShow"></span>						
+						<input type="text" id="companyName" class="editHide contactEdit">
+					</div>
+					<div class="field">
+						<label>Job Title</label>
+						<span id="companyNameLbl" class="editShow jobTitle contactShow"></span>						
+						<input type="text" id="jobTitle" class="editHide jobTitle contactEdit">
+					</div>            
+				</div>
+				<a class="btn btn-mini add-field editShow contactShow" href="#" onclick="toggleEdit();"><i class="icon-edit"></i> Edit</a>
+				<a class="btn btn-mini add-field editHide contactEdit" href="#" onclick="saveContact();"><i class="icon-save"></i> Save</a>				
+
+			</fieldset>
+			<fieldset>
+				<legend>Email Addresses</legend>
+				<div class="field">
+					<label>Email Address</label>
+					<input type="text" id="emailAddress_1">
+				</div>
+				<a class="btn btn-mini add-field" href="#" onclick="addEmailAddressField();"><i class="icon-plus"></i> Add</a>
+			</fieldset>
+			<fieldset>
+				<legend>Mailing Addresses</legend>
+				<div class="field">
+					<label>Mailing Address</label>
+					<input type="text" id="mailingAddress_1">
+				</div>
+				<a class="btn btn-mini add-field" href="#"><i class="icon-plus"></i> Add</a>
+			</fieldset>		
+			<fieldset>
+				<legend>Phone Numbers</legend>
+				<div class="field">
+					<label>Phone Numbers</label>
+					<input type="text" id="phoneNumbers_1">
+				</div>	
+				<a class="btn btn-mini add-field" href="#"><i class="icon-plus"></i> Add</a>
+			</fieldset>				
+		</form>
+	</div>
+	<div class="modal-footer">
+		<a href="#" class="btn">Close</a>
+		<a href="#" class="btn btn-primary">Save changes</a>
+	</div>
+</div>
 
 
 </body>
