@@ -12,7 +12,7 @@ function saveContact(){
   contact.id = $("form").attr("id").replace("contactForm_","");
   contact.firstName = $("#firstName").val();
   contact.lastName = $("#lastName").val();  
-  $.post("/contact/update", JSON.stringify(contactDeets), function(){alert('success!');});
+  $.post("/contact/update", JSON.stringify(contactDeets), function(data){updateContact(data)});
 }
 
 function addEmailAddressField(){
@@ -20,7 +20,7 @@ function addEmailAddressField(){
   var field = $(document.createElement("div")).addClass("field");
   $(field).append($(document.createElement("label")).append("Email Address"));
   $(field).append($(document.createElement("input")).attr("id","emailAddress_"+count).val("").attr("type","text"));  
-	$("#emailFieldset").append($(field));
+	$("#emailFieldset").prepend($(field));
 }
 
 function addMailingAddressField(){
@@ -28,7 +28,7 @@ function addMailingAddressField(){
   var field = $(document.createElement("div")).addClass("field");
   $(field).append($(document.createElement("label")).append("Mailing Address"));
   $(field).append($(document.createElement("input")).attr("id","mailingAddress_"+count).val("").attr("type","text"));  
-	$("#mailFieldset").append($(field));
+	$("#mailFieldset").prepend($(field));
 }
 
 function addPhoneField(){
@@ -36,7 +36,54 @@ function addPhoneField(){
   var field = $(document.createElement("div")).addClass("field");
   $(field).append($(document.createElement("label")).append("Phone"));
   $(field).append($(document.createElement("input")).attr("id","phone_"+count).val("").attr("type","text"));  
-	$("#phoneFieldset").append($(field));
+	$("#phoneFieldset").prepend($(field));
+}
+
+function updateContact(data){
+  $("#firstName").val(data.modelObject.firstName);
+  $(".firstName").text(data.modelObject.firstName);                    
+  $("#lastName").val(data.modelObject.lastName);
+  $(".lastName").text(data.modelObject.lastName);                    
+  $("#companyName").val(data.modelObject.companyName);
+  $(".companyName").text(data.modelObject.companyName);                    
+  $("#jobTitle").val(data.modelObject.jobTitle);                    
+  $(".jobTitle").text(data.modelObject.jobTitle);  
+}
+
+function updateEmails(data){
+  $("#emailFieldset .field").remove();
+  $.each(data.modelObject.contactEmailAddresses, function(ind,elt){
+    var field = $(document.createElement("div")).addClass("field");
+    $(field).append($(document.createElement("label")).append("Email Address"));
+    var span = $(document.createElement("span")).attr("id","emailAddress_"+ind);
+    $(span).text(elt.id);
+    $(field).append(span);    
+  	$("#emailFieldset").prepend($(field));
+  });
+}
+
+function updateMailingAddresses(data){
+  $("#mailFieldset .field").remove();  
+  $.each(data.modelObject.contactAddresses, function(ind,elt){
+    var field = $(document.createElement("div")).addClass("field");
+    $(field).append($(document.createElement("label")).append("Mailing Address"));
+    var span = $(document.createElement("span")).attr("id","mailingAddress_"+ind);
+    $(span).text(elt.id);
+    $(field).append(span);    
+  	$("#mailFieldset").prepend($(field));
+  });
+}
+
+function updatePhones(data){
+  $("#phoneFieldset .field").remove();  
+  $.each(data.modelObject.contactPhoneNumbers, function(ind,elt){
+    var field = $(document.createElement("div")).addClass("field");
+    $(field).append($(document.createElement("label")).append("Phone Number"));
+    var span = $(document.createElement("span")).attr("id","phone_"+ind);
+    $(span).text(elt.id);
+    $(field).append(span);    
+  	$("#phoneFieldset").prepend($(field));
+  });
 }
 
 $(document).ready(function() {
@@ -61,15 +108,11 @@ $(document).ready(function() {
             $(nRow).dblclick( function() {
                 var rowId = $(this).attr("id").replace("row_","");
                 $.get("/contact/get/"+rowId, function(data) {
-                    $("#firstName").val(data.modelObject.firstName);
-                    $(".firstName").text(data.modelObject.firstName);                    
-                    $("#lastName").val(data.modelObject.lastName);
-                    $(".lastName").text(data.modelObject.lastName);                    
-                    $("#companyName").val(data.modelObject.companyName);
-                    $(".companyName").text(data.modelObject.companyName);                    
-                    $("#jobTitle").val(data.modelObject.jobTitle);                    
-                    $(".jobTitle").text(data.modelObject.jobTitle);  
-                    $('#contactForm').attr("id","contactForm_"+rowId);                       
+                    updateContact(data);
+                    updateEmails(data);
+                    updateMailingAddresses(data);      
+                    updatePhones(data);                                        
+                    $('#contactForm').attr("id","contactForm_"+rowId);
                     $('#contactModal').modal('show');
                 });
             });

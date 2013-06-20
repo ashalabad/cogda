@@ -20,3 +20,8 @@ fieldset{margin-top:20px;}
 div.button {margin-left: 20px;}
 .editHide {display:none;visibility:hidden;}
 .editShow {visibility:visible;}
+div.add {
+  clear:both;
+  text-align: right;
+  max-width: 415px;
+}

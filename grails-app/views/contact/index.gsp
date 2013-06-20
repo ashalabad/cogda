@@ -88,12 +88,9 @@
 			</fieldset>
 			<fieldset id="emailFieldset">
 				<legend>Email Addresses</legend>
-				<div class="field">
-					<label>Email Address</label>
-					<span id="emailAddress_1">					
-					<input type="text" id="emailAddress_0">
+				<div class="add">
+					<a class="btn btn-mini add-field" href="#" onclick="addEmailAddressField();"><i class="icon-plus"></i> Add</a>
 				</div>
-				<a class="btn btn-mini add-field" href="#" onclick="addEmailAddressField();"><i class="icon-plus"></i> Add</a>
 			</fieldset>
 			<fieldset id="mailFieldset">
 				<legend>Mailing Addresses</legend>
@@ -101,7 +98,9 @@
 					<label>Mailing Address</label>
 					<input type="text" id="mailingAddress_0">
 				</div>
-				<a class="btn btn-mini add-field" href="#" onclick="addMailingAddressField();"><i class="icon-plus"></i> Add</a>
+				<div class="add">
+					<a class="btn btn-mini add-field" href="#" onclick="addMailingAddressField();"><i class="icon-plus"></i> Add</a>
+				</div>
 			</fieldset>		
 			<fieldset id="phoneFieldset">
 				<legend>Phone Numbers</legend>
@@ -109,7 +108,9 @@
 					<label>Phone</label>
 					<input type="text" id="phone_0">
 				</div>	
-				<a class="btn btn-mini add-field" href="#" onclick="addPhoneField();"><i class="icon-plus"></i> Add</a>
+				<div class="add">
+					<a class="btn btn-mini add-field" href="#" onclick="addPhoneField();"><i class="icon-plus"></i> Add</a>
+				</div>
 			</fieldset>				
 		</form>
 	</div>
