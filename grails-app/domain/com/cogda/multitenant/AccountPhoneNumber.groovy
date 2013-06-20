@@ -15,9 +15,7 @@ class AccountPhoneNumber {
 
     String description
 
-    PhoneNumber phoneNumber
-
-    static embedded = ['phoneNumber']
+    String phoneNumber
 
     static belongsTo	= [account:Account]	// tells GORM to cascade commands: e.g., delete this object if the "parent" is deleted.
 
