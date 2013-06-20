@@ -396,8 +396,6 @@ class CustomerAccountServiceTests extends BaseIntegrationTest{
 
         }
 
-
-
         // Verify the UserProfile is associated with the initial administrator and the properties
         assert UserProfile.count() == 1, "UserProfile count should be 1"
         UserProfile userProfile = UserProfile.list().first()

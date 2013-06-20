@@ -1,7 +1,9 @@
 import com.cogda.common.MarkupLanguage
 import com.cogda.common.RegistrationStatus
 import com.cogda.domain.Contact
+import com.cogda.domain.admin.AccountType
 import com.cogda.domain.admin.CompanyType
+import com.cogda.domain.admin.NoteType
 import com.cogda.domain.admin.SystemEmailMessageTemplate
 import com.cogda.domain.onboarding.Registration
 import com.cogda.multitenant.Company
@@ -77,6 +79,28 @@ class BootStrap {
                 new CompanyType(code:"Wholesaler (MGA, Broker)", intCode:3, description: "Wholesaler (MGA, Broker)").save()
             }
 
+            if(!AccountType.findByCode("Agency")){
+                new AccountType(code:"Agency", intCode:0, description: "Agency").save()
+            }
+            if(!AccountType.findByCode("MGA")){
+                new AccountType(code:"MGA", intCode:1, description: "MGA").save()
+            }
+            if(!AccountType.findByCode("Carrier")){
+                new AccountType(code:"Carrier", intCode:2, description: "Carrier").save()
+            }
+            if(!AccountType.findByCode("Reinsurer")){
+                new AccountType(code:"Reinsurer", intCode:3, description: "Reinsurer").save()
+            }
+
+            if(!NoteType.findByCode("Visit")){
+                new NoteType(code:"Visit", intCode:0, description: "Visit").save()
+            }
+            if(!NoteType.findByCode("Call")){
+                new NoteType(code:"Call", intCode:1, description: "Call").save()
+            }
+            if(!AccountType.findByCode("Other")){
+                new NoteType(code:"Other", intCode:2, description: "Other").save()
+            }
 
             if(!SupportedCountryCode.findByCountryCode("usa")){
                 new SupportedCountryCode(countryCode:"usa", countryDescription:"United States").save()
