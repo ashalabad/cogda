@@ -8,8 +8,8 @@
     <g:set var="entityName" value="${message(code: 'contact.label', default: 'Contact')}" />
     <g:set var="layout_nosecondarymenu"	value="${true}" scope="request"/>
     <g:set var="layout_nomainmenu"		value="${true}" scope="request"/>
-    <link rel="stylesheet" type="text/css" href="css/contact.css" />
-    <script type="text/javascript" src="js/contact/contact.js" ></script>
+    <link rel="stylesheet" type="text/css" href="/css/contact.css" />
+    <script type="text/javascript" src="/js/contact/contact.js" ></script>
     <title><g:message code="default.list.label" args="[entityName]" /></title>
     <r:require module="dataTables"/>
 
@@ -58,7 +58,7 @@
 
 	</div>
 	<div class="modal-body">
-		<form class="form-inline">
+		<form class="form-inline" id="contactForm">
 			<fieldset>
 				<div id="contactData">
 					<div class="field">
@@ -86,35 +86,36 @@
 				<a class="btn btn-mini add-field editHide contactEdit" href="#" onclick="saveContact();"><i class="icon-save"></i> Save</a>				
 
 			</fieldset>
-			<fieldset>
+			<fieldset id="emailFieldset">
 				<legend>Email Addresses</legend>
-				<div class="field">
-					<label>Email Address</label>
-					<input type="text" id="emailAddress_1">
+				<div class="add">
+					<a class="btn btn-mini add-field" href="#" onclick="addEmailAddressField();"><i class="icon-plus"></i> Add</a>
 				</div>
-				<a class="btn btn-mini add-field" href="#" onclick="addEmailAddressField();"><i class="icon-plus"></i> Add</a>
 			</fieldset>
-			<fieldset>
+			<fieldset id="mailFieldset">
 				<legend>Mailing Addresses</legend>
 				<div class="field">
 					<label>Mailing Address</label>
-					<input type="text" id="mailingAddress_1">
+					<input type="text" id="mailingAddress_0">
 				</div>
-				<a class="btn btn-mini add-field" href="#"><i class="icon-plus"></i> Add</a>
+				<div class="add">
+					<a class="btn btn-mini add-field" href="#" onclick="addMailingAddressField();"><i class="icon-plus"></i> Add</a>
+				</div>
 			</fieldset>		
-			<fieldset>
+			<fieldset id="phoneFieldset">
 				<legend>Phone Numbers</legend>
 				<div class="field">
-					<label>Phone Numbers</label>
-					<input type="text" id="phoneNumbers_1">
+					<label>Phone</label>
+					<input type="text" id="phone_0">
 				</div>	
-				<a class="btn btn-mini add-field" href="#"><i class="icon-plus"></i> Add</a>
+				<div class="add">
+					<a class="btn btn-mini add-field" href="#" onclick="addPhoneField();"><i class="icon-plus"></i> Add</a>
+				</div>
 			</fieldset>				
 		</form>
 	</div>
 	<div class="modal-footer">
-		<a href="#" class="btn">Close</a>
-		<a href="#" class="btn btn-primary">Save changes</a>
+		<a href="#" class="btn btn-primary" data-dismiss="modal">Done</a>
 	</div>
 </div>
 
