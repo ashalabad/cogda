@@ -1,0 +1,17 @@
+#contactList td{
+  cursor: pointer;
+}
+label{font-weight: bold;}
+.row_selected {
+  background-color: #ccc !important;
+}
+.row_selected td{
+  background-color: #ccc !important;
+}
+div.field {padding:2px;clear:both;}
+div.field input {float:left; height:13px;}
+div.field label {float:left; width:120px;}
+.btn-group {float:left;}
+fieldset{margin-top:20px;}
+.add-field {margin-left:5px;}
+#contactHeader {width:300px;}
