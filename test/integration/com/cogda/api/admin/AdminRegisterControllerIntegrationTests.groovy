@@ -201,7 +201,7 @@ class AdminRegisterControllerIntegrationTests extends BaseIntegrationTest {
         adminRegisterController.errorMessageResolverService = errorMessageResolverService
         Registration registrationToApprove = createAndSaveValidRegistration("kitty", RegistrationStatus.AWAITING_ADMIN_APPROVAL)
         registrationToApprove.subDomain = 'iliketurtles'
-        registrationToApprove.save(flush: true, failOnError: true)
+        registrationToApprove.save(failOnError: true)
         adminRegisterController.approve(registrationToApprove.id)
         AjaxResponseDto ajaxResponseDto = adminRegisterController.response.json
         assert ajaxResponseDto.success == true
@@ -228,7 +228,7 @@ class AdminRegisterControllerIntegrationTests extends BaseIntegrationTest {
         adminRegisterController.errorMessageResolverService = errorMessageResolverService
         Registration registrationToApprove = createAndSaveValidRegistration("fluffypants", RegistrationStatus.AWAITING_USER_EMAIL_CONFIRMATION)
         registrationToApprove.subDomain = 'iliketurtles'
-        registrationToApprove.save(flush: true, failOnError: true)
+        registrationToApprove.save(failOnError: true)
         adminRegisterController.approve(registrationToApprove.id)
         AjaxResponseDto ajaxResponseDto = adminRegisterController.response.json
         validateInvalidRegistration(ajaxResponseDto, registrationToApprove.id)
@@ -349,7 +349,7 @@ class AdminRegisterControllerIntegrationTests extends BaseIntegrationTest {
 
     def saveRegistration(Registration registration) {
         log.debug("Saving Registration Domain Class")
-        assert registration.save(flush: true, failOnError: true), "Registration save failed: ${registration.errors}"
+        assert registration.save(failOnError: true), "Registration save failed: ${registration.errors}"
         return registration
     }
 

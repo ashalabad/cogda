@@ -16,6 +16,7 @@ class RegistrationMarshaller {
         JSON.registerObjectMarshaller(Registration) { Registration registration ->
             def returnValue =  [
                     class: registration.class.canonicalName,
+                    version: registration.version,
                     id: registration.id,
                     dateCreated: registration.dateCreated,
                     lastUpdated: registration.lastUpdated,
@@ -39,7 +40,8 @@ class RegistrationMarshaller {
                     token: registration.token,
                     subDomain: registration.subDomain,
                     registrationStatus: registration.registrationStatus,
-                    emailConfirmationLogs: registration.emailConfirmationLogs
+                    emailConfirmationLogs: registration.emailConfirmationLogs,
+                    password: registration.password
             ]
             if (registration?.existingCompany){
                 returnValue.existingCompany = registration.existingCompany
