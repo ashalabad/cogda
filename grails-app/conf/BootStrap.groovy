@@ -13,6 +13,10 @@ import com.cogda.domain.admin.CompanyType
 import com.cogda.domain.admin.NoteType
 import com.cogda.domain.admin.SystemEmailMessageTemplate
 import com.cogda.domain.onboarding.Registration
+import com.cogda.multitenant.Account
+import com.cogda.multitenant.AccountContact
+import com.cogda.multitenant.AccountEmailAddress
+import com.cogda.multitenant.AccountPhoneNumber
 import com.cogda.multitenant.Company
 import com.cogda.multitenant.CustomerAccount
 import com.cogda.domain.admin.SupportedCountryCode
@@ -83,23 +87,37 @@ class BootStrap {
         if (Environment.current != Environment.TEST) {
 
             // create admin domain classes
-            createNoteTypes()
-            createCompanyTypes()
-            createAccountTypes()
-            createSupportedCountryCodes()
-
-            createRennaissanceRegistration()
-            def raisRegistration = Registration.findBySubDomain("rais")
-            if(raisRegistration){
-                customerAccountService.onboardCustomerAccount(raisRegistration)
-                createRennaissanceDummyData(raisRegistration)
+            if(NoteType.count() == 0){
+                createNoteTypes()
+            }
+            if(CompanyType.count() == 0){
+                createCompanyTypes()
+            }
+            if(AccountType.count() == 0){
+                createAccountTypes()
+            }
+            if(SupportedCountryCode.count() == 0){
+                createSupportedCountryCodes()
             }
 
-            createLibertyMutualRegistration()
-            def libertyRegistration = Registration.findBySubDomain("libertymutual")
-            if(libertyRegistration){
-                customerAccountService.onboardCustomerAccount(libertyRegistration)
+            if(!Registration.findBySubDomain("rais")){
+                createRennaissanceRegistration()
+                def raisRegistration = Registration.findBySubDomain("rais")
+                if(raisRegistration){
+                    customerAccountService.onboardCustomerAccount(raisRegistration)
+                    createRennaissanceDummyData(raisRegistration)
+                    createRennaissanceAccountDummyData(raisRegistration)
+                }
             }
+
+            if(!Registration.findBySubDomain("libertymutual")){
+                createLibertyMutualRegistration()
+                def libertyRegistration = Registration.findBySubDomain("libertymutual")
+                if(libertyRegistration){
+                    customerAccountService.onboardCustomerAccount(libertyRegistration)
+                }
+            }
+
 
             // Create the email templates
             createInitialAccountActivationEmail()
@@ -113,20 +131,78 @@ class BootStrap {
     def destroy = {
     }
 
+    def createRennaissanceAccountDummyData(Registration registration){
+        CustomerAccount customerAccount = CustomerAccount.findBySubDomain(registration.subDomain)
+        InputStream is = amazonWebService.s3.getObject(new GetObjectRequest("cogda-test", "testingfiles/AccountData.csv")).getObjectContent()
+        CSVReader reader = new CSVReader(new InputStreamReader(is))
+        String[] nextLine;
+        Integer count = 0;
+        while ((nextLine = reader.readNext()) != null) {
+            if(nextLine[0]?.trim() != "accountName"){
+                customerAccount.withThisTenant {
+
+                    Account.withTransaction {
+                        Account testAccount = new Account()
+                        testAccount.accountName= nextLine[0]?.trim()
+                        testAccount.accountCode= nextLine[1]?.trim()
+                        testAccount.accountType= AccountType.findByCode(nextLine[2]?.trim())
+                        if (testAccount.hasErrors() || !testAccount.validate() ) {
+                            log.error("Could not import testAccount with AccountCode: ${testAccount.accountCode}  ${testAccount.errors}")
+                        }
+                        else{
+                            testAccount.save()
+
+                            def testAccountPhoneNumber = new AccountPhoneNumber(account: testAccount,phoneNumber:nextLine[7]?.trim() ,primaryPhoneNumber: true).save()
+                            def testAccountEmail = new AccountEmailAddress(account: testAccount,emailAddress:nextLine[6]?.trim(),primaryEmailAddress: true).save()
+
+                            def testAccountContact = new AccountContact(
+                                    firstName: nextLine[3]?.trim(),
+                                    middleName: nextLine[4]?.trim(),
+                                    lastName: nextLine[5]?.trim(),
+                                    account: testAccount,
+                                    primaryContact: true,
+                                    accountEmailAddresses: [testAccountEmail],
+                                    accountPhoneNumbers: [testAccountPhoneNumber]
+                            )
+                            if (testAccountContact.hasErrors() || !testAccountContact.validate() ) {
+                                log.error("Could not import testAccountContact ${testAccountContact.firstName} ${testAccountContact.lastName}  ${testAccountContact.errors}")
+                            }
+                            else
+                            {
+                                testAccountContact.save()
+
+                                testAccount.addToAccountContacts(testAccountContact)
+                                testAccount.save()
+                            }
+                        }
+                        log.debug("Importing testAccount  ${testAccount}")
+                    }
+                }
+            }
+            count ++
+        }
+    }
+
+
     def createRennaissanceDummyData(Registration registration){
         CustomerAccount customerAccount = CustomerAccount.findBySubDomain(registration.subDomain)
 
+        List<String> companyNames = ["Cogda Solutions, LLC", "Sombra Technologies", "Rennaissance Alliance", "Hartford", "AIG", "QBE", "HBA", "ABC", "123", "456"]
+        List<String> jobTitles = ["Thane", "King", "Queen", "Prince", "Princess", "Queen Mother", "Regent", "Prior", "Dean", "Bishop"]
         InputStream is = amazonWebService.s3.getObject(new GetObjectRequest("cogda-test", "testingfiles/ContactTestDataBigFile.csv")).getObjectContent()
         CSVReader reader = new CSVReader(new InputStreamReader(is))
         String[] nextLine;
         Integer count = 0;
         while ((nextLine = reader.readNext()) != null) {
             // nextLine[] is an array of values from the line
+            int randomIndex = (int)(Math.random()*10)
             Contact contact = new Contact(
+                    companyName: companyNames.get(randomIndex),
                     firstName: nextLine[0]?.trim(),
                     middleName: nextLine[1]?.trim(),
                     lastName: nextLine[2]?.trim(),
                     birthDate: Date.parse("MM/dd/yyyy", nextLine[3]?.trim()),
+                    jobTitle: jobTitles.get(randomIndex),
                     gender: (nextLine[4] == "M" ? GenderEnum.MALE : GenderEnum.FEMALE)
             )
             customerAccount.withThisTenant {
@@ -201,54 +277,62 @@ class BootStrap {
     }
 
     def createSupportedCountryCodes(){
-        if (!SupportedCountryCode.findByCountryCode("usa")) {
-            new SupportedCountryCode(countryCode: "usa", countryDescription: "United States").save()
-        }
-        if (!SupportedCountryCode.findByCountryCode("can")) {
-            new SupportedCountryCode(countryCode: "can", countryDescription: "Canada").save()
+        SupportedCountryCode.withTransaction {
+            if (!SupportedCountryCode.findByCountryCode("usa")) {
+                new SupportedCountryCode(countryCode: "usa", countryDescription: "United States").save()
+            }
+            if (!SupportedCountryCode.findByCountryCode("can")) {
+                new SupportedCountryCode(countryCode: "can", countryDescription: "Canada").save()
+            }
         }
 //        SupportedCountryCode bra = new SupportedCountryCode(countryCode:"bra", countryDescription:"Brazil").save()
     }
 
     def createNoteTypes(){
-        if (!NoteType.findByCode("Visit")) {
-            new NoteType(code: "Visit", intCode: 0, description: "Visit").save()
-        }
-        if (!NoteType.findByCode("Call")) {
-            new NoteType(code: "Call", intCode: 1, description: "Call").save()
-        }
-        if (!AccountType.findByCode("Other")) {
-            new NoteType(code: "Other", intCode: 2, description: "Other").save()
+        NoteType.withTransaction {
+            if (!NoteType.findByCode("Visit")) {
+                new NoteType(code: "Visit", intCode: 0, description: "Visit").save()
+            }
+            if (!NoteType.findByCode("Call")) {
+                new NoteType(code: "Call", intCode: 1, description: "Call").save()
+            }
+            if (!AccountType.findByCode("Other")) {
+                new NoteType(code: "Other", intCode: 2, description: "Other").save()
+            }
         }
     }
 
     def createAccountTypes(){
-        if (!AccountType.findByCode("Agency")) {
-            new AccountType(code: "Agency", intCode: 0, description: "Agency").save()
-        }
-        if (!AccountType.findByCode("MGA")) {
-            new AccountType(code: "MGA", intCode: 1, description: "MGA").save()
-        }
-        if (!AccountType.findByCode("Carrier")) {
-            new AccountType(code: "Carrier", intCode: 2, description: "Carrier").save()
-        }
-        if (!AccountType.findByCode("Reinsurer")) {
-            new AccountType(code: "Reinsurer", intCode: 3, description: "Reinsurer").save()
+        AccountType.withTransaction {
+            if (!AccountType.findByCode("Agency")) {
+                new AccountType(code: "Agency", intCode: 0, description: "Agency").save()
+            }
+            if (!AccountType.findByCode("MGA")) {
+                new AccountType(code: "MGA", intCode: 1, description: "MGA").save()
+            }
+            if (!AccountType.findByCode("Carrier")) {
+                new AccountType(code: "Carrier", intCode: 2, description: "Carrier").save()
+            }
+            if (!AccountType.findByCode("Reinsurer")) {
+                new AccountType(code: "Reinsurer", intCode: 3, description: "Reinsurer").save()
+            }
         }
     }
 
     def createCompanyTypes(){
-        if (!CompanyType.findByCode("Agency/Retailer")) {
-            new CompanyType(code: "Agency/Retailer", intCode: 0, description: "Agency/Retailer").save()
-        }
-        if (!CompanyType.findByCode("Carrier")) {
-            new CompanyType(code: "Carrier", intCode: 1, description: "Carrier").save()
-        }
-        if (!CompanyType.findByCode("Reinsurer")) {
-            new CompanyType(code: "Reinsurer", intCode: 2, description: "Reinsurer").save()
-        }
-        if (!CompanyType.findByCode("Wholesaler (MGA, Broker)")) {
-            new CompanyType(code: "Wholesaler (MGA, Broker)", intCode: 3, description: "Wholesaler (MGA, Broker)").save()
+        CompanyType.withTransaction {
+            if (!CompanyType.findByCode("Agency/Retailer")) {
+                new CompanyType(code: "Agency/Retailer", intCode: 0, description: "Agency/Retailer").save()
+            }
+            if (!CompanyType.findByCode("Carrier")) {
+                new CompanyType(code: "Carrier", intCode: 1, description: "Carrier").save()
+            }
+            if (!CompanyType.findByCode("Reinsurer")) {
+                new CompanyType(code: "Reinsurer", intCode: 2, description: "Reinsurer").save()
+            }
+            if (!CompanyType.findByCode("Wholesaler (MGA, Broker)")) {
+                new CompanyType(code: "Wholesaler (MGA, Broker)", intCode: 3, description: "Wholesaler (MGA, Broker)").save()
+            }
         }
     }
 
