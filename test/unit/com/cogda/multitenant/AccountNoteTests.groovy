@@ -1,13 +1,15 @@
-package com.cogda.domain
+package com.cogda.multitenant
 
-import com.cogda.multitenant.Account
+
+
 import grails.test.mixin.*
+import org.junit.*
 
 /**
  * See the API for {@link grails.test.mixin.domain.DomainClassUnitTestMixin} for usage instructions
  */
-@TestFor(Account)
-class AccountSpec {
+@TestFor(AccountNote)
+class AccountNoteTests {
 
     void testSomething() {
         fail "Implement me"

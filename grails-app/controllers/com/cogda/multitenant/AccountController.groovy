@@ -1,4 +1,4 @@
-package com.cogda.domain
+package com.cogda.multitenant
 
 import com.cogda.BaseController
 import com.cogda.common.web.AjaxResponseDto
@@ -41,7 +41,7 @@ class AccountController extends BaseController{
             map.version = account.version
             map.accountName = account.accountName
             map.accountCode = account.accountCode
-            map.accountType = account.accountType
+            map.accountType = account.accountType.code
             map.primaryContactName = account.primaryAccountContactName
             map.primaryEmailAddress = account.primaryEmailAddress
             map.primaryPhoneNumber = account.primaryAccountContactPhoneNumberString
