@@ -13,6 +13,10 @@ import com.cogda.domain.admin.CompanyType
 import com.cogda.domain.admin.NoteType
 import com.cogda.domain.admin.SystemEmailMessageTemplate
 import com.cogda.domain.onboarding.Registration
+import com.cogda.multitenant.Account
+import com.cogda.multitenant.AccountContact
+import com.cogda.multitenant.AccountEmailAddress
+import com.cogda.multitenant.AccountPhoneNumber
 import com.cogda.multitenant.Company
 import com.cogda.multitenant.CustomerAccount
 import com.cogda.domain.admin.SupportedCountryCode
@@ -93,6 +97,7 @@ class BootStrap {
             if(raisRegistration){
                 customerAccountService.onboardCustomerAccount(raisRegistration)
                 createRennaissanceDummyData(raisRegistration)
+                createRennaissanceAccountDummyData(raisRegistration)
             }
 
             createLibertyMutualRegistration()
@@ -113,20 +118,77 @@ class BootStrap {
     def destroy = {
     }
 
+    def createRennaissanceAccountDummyData(Registration registration){
+        CustomerAccount customerAccount = CustomerAccount.findBySubDomain(registration.subDomain)
+        InputStream is = amazonWebService.s3.getObject(new GetObjectRequest("cogda-test", "testingfiles/AccountData.csv")).getObjectContent()
+        CSVReader reader = new CSVReader(new InputStreamReader(is))
+        String[] nextLine;
+        Integer count = 0;
+        while ((nextLine = reader.readNext()) != null) {
+            if(nextLine[0]?.trim() != "accountName"){
+                customerAccount.withThisTenant {
+
+                    Account.withTransaction {
+                        Account testAccount = new Account()
+                        testAccount.accountName= nextLine[0]?.trim()
+                        testAccount.accountCode= nextLine[1]?.trim()
+                        testAccount.accountType= AccountType.findByCode(nextLine[2]?.trim())
+                        if (testAccount.hasErrors() || !testAccount.validate() ) {
+                            log.error("Could not import testAccount with AccountCode: ${testAccount.accountCode}  ${testAccount.errors}")
+                        }
+                        else{
+                            testAccount.save()
+
+                            def testAccountPhoneNumber = new AccountPhoneNumber(account: testAccount,phoneNumber:nextLine[7]?.trim() ,primaryPhoneNumber: true).save()
+                            def testAccountEmail = new AccountEmailAddress(account: testAccount,emailAddress:nextLine[6]?.trim(),primaryEmailAddress: true).save()
+
+                            def testAccountContact = new AccountContact(
+                                    firstName: nextLine[3]?.trim(),
+                                    middleName: nextLine[4]?.trim(),
+                                    lastName: nextLine[5]?.trim(),
+                                    account: testAccount,
+                                    primaryContact: true,
+                                    accountEmailAddresses: [testAccountEmail],
+                                    accountPhoneNumbers: [testAccountPhoneNumber]
+                            )
+                            if (testAccountContact.hasErrors() || !testAccountContact.validate() ) {
+                                log.error("Could not import testAccountContact ${testAccountContact.firstName} ${testAccountContact.lastName}  ${testAccountContact.errors}")
+                            }
+                            else
+                            {
+                                testAccountContact.save()
+
+                                testAccount.addToAccountContacts(testAccountContact)
+                                testAccount.save()
+                            }
+                        }
+                        log.debug("Importing testAccount  ${testAccount}")
+                    }
+                }
+            }
+            count ++
+        }
+    }
+
+
     def createRennaissanceDummyData(Registration registration){
         CustomerAccount customerAccount = CustomerAccount.findBySubDomain(registration.subDomain)
-
+        List<String> companyNames = ["Cogda Solutions, LLC", "Sombra Technologies", "Rennaissance Alliance", "Hartford", "AIG", "QBE", "HBA", "ABC", "123", "456"]
+        List<String> jobTitles = ["Thane", "King", "Queen", "Prince", "Princess", "Queen Mother", "Regent", "Prior", "Dean", "Bishop"]
         InputStream is = amazonWebService.s3.getObject(new GetObjectRequest("cogda-test", "testingfiles/ContactTestDataBigFile.csv")).getObjectContent()
         CSVReader reader = new CSVReader(new InputStreamReader(is))
         String[] nextLine;
         Integer count = 0;
         while ((nextLine = reader.readNext()) != null) {
             // nextLine[] is an array of values from the line
+            int randomIndex = (int)(Math.random()*10)
             Contact contact = new Contact(
+                    companyName: companyNames.get(randomIndex),
                     firstName: nextLine[0]?.trim(),
                     middleName: nextLine[1]?.trim(),
                     lastName: nextLine[2]?.trim(),
                     birthDate: Date.parse("MM/dd/yyyy", nextLine[3]?.trim()),
+                    jobTitle: jobTitles.get(randomIndex),
                     gender: (nextLine[4] == "M" ? GenderEnum.MALE : GenderEnum.FEMALE)
             )
             customerAccount.withThisTenant {
