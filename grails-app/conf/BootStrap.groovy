@@ -87,24 +87,37 @@ class BootStrap {
         if (Environment.current != Environment.TEST) {
 
             // create admin domain classes
-            createNoteTypes()
-            createCompanyTypes()
-            createAccountTypes()
-            createSupportedCountryCodes()
-
-            createRennaissanceRegistration()
-            def raisRegistration = Registration.findBySubDomain("rais")
-            if(raisRegistration){
-                customerAccountService.onboardCustomerAccount(raisRegistration)
-                createRennaissanceDummyData(raisRegistration)
-                createRennaissanceAccountDummyData(raisRegistration)
+            if(NoteType.count() == 0){
+                createNoteTypes()
+            }
+            if(CompanyType.count() == 0){
+                createCompanyTypes()
+            }
+            if(AccountType.count()){
+                createAccountTypes()
+            }
+            if(SupportedCountryCode.count()){
+                createSupportedCountryCodes()
             }
 
-            createLibertyMutualRegistration()
-            def libertyRegistration = Registration.findBySubDomain("libertymutual")
-            if(libertyRegistration){
-                customerAccountService.onboardCustomerAccount(libertyRegistration)
+            if(!Registration.findBySubDomain("rais")){
+                createRennaissanceRegistration()
+                def raisRegistration = Registration.findBySubDomain("rais")
+                if(raisRegistration){
+                    customerAccountService.onboardCustomerAccount(raisRegistration)
+                    createRennaissanceDummyData(raisRegistration)
+                    createRennaissanceAccountDummyData(raisRegistration)
+                }
             }
+
+            if(!Registration.findBySubDomain("libertymutual")){
+                createLibertyMutualRegistration()
+                def libertyRegistration = Registration.findBySubDomain("libertymutual")
+                if(libertyRegistration){
+                    customerAccountService.onboardCustomerAccount(libertyRegistration)
+                }
+            }
+
 
             // Create the email templates
             createInitialAccountActivationEmail()
@@ -173,6 +186,7 @@ class BootStrap {
 
     def createRennaissanceDummyData(Registration registration){
         CustomerAccount customerAccount = CustomerAccount.findBySubDomain(registration.subDomain)
+
         List<String> companyNames = ["Cogda Solutions, LLC", "Sombra Technologies", "Rennaissance Alliance", "Hartford", "AIG", "QBE", "HBA", "ABC", "123", "456"]
         List<String> jobTitles = ["Thane", "King", "Queen", "Prince", "Princess", "Queen Mother", "Regent", "Prior", "Dean", "Bishop"]
         InputStream is = amazonWebService.s3.getObject(new GetObjectRequest("cogda-test", "testingfiles/ContactTestDataBigFile.csv")).getObjectContent()
@@ -229,7 +243,7 @@ class BootStrap {
 
                         ContactPhoneNumber contactPhoneNumberTwo = new ContactPhoneNumber()
                         contactPhoneNumberTwo.phoneNumber = nextLine[8]?.trim()
-                        contact.addToContactPhoneNumbers(contactPhoneNumberTwo)
+                        contact.addTcreateNoteTypesoContactPhoneNumbers(contactPhoneNumberTwo)
                         contactPhoneNumberTwo.save()
 
                         if(contactPhoneNumberTwo.hasErrors()){
