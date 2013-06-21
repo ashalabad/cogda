@@ -22,6 +22,6 @@ class AccountPhoneNumber {
     static constraints = {
         primaryPhoneNumber(nullable:true)
         description(nullable:true)
-        phoneNumber(nullable:true)
+        phoneNumber(nullable: false, blank:false)
     }
 }
