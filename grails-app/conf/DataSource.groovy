@@ -12,7 +12,7 @@ environments {
         dataSource {
             username = "dev"
             password = "dev"
-            dbCreate = "update" // one of 'create', 'create-drop', 'update', 'validate', ''
+            dbCreate = "create-drop" // one of 'create', 'create-drop', 'update', 'validate', ''
             pooled = true
             driverClassName = "com.mysql.jdbc.Driver"
             url = "jdbc:mysql://localhost/cogda_dev"
