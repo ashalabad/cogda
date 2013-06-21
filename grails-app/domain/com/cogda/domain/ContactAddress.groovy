@@ -1,9 +1,12 @@
 package com.cogda.domain
 
+import groovy.transform.ToString
+
 /**
  * ContactAddress
  * A domain class describes the data object and it's mapping to the database
  */
+@ToString(includeNames=true, includeFields=true)
 class ContactAddress {
 
     Contact contact
