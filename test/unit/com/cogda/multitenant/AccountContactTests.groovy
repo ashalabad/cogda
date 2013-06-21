@@ -1,15 +1,15 @@
-package com.cogda.domain
+package com.cogda.multitenant
 
-import com.cogda.multitenant.AccountPhoneNumber
 import grails.test.mixin.*
+import org.junit.*
 
 /**
  * See the API for {@link grails.test.mixin.domain.DomainClassUnitTestMixin} for usage instructions
  */
-@TestFor(AccountPhoneNumber)
-class AccountPhoneNumberSpec {
+@TestFor(AccountContact)
+class AccountContactTests {
 
     void testSomething() {
-        fail "Implement me"
+
     }
 }

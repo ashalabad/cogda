@@ -1,13 +1,12 @@
-package com.cogda.domain
+package com.cogda.multitenant
 
-import com.cogda.multitenant.AccountEmailAddress
 import grails.test.mixin.*
 
 /**
  * See the API for {@link grails.test.mixin.domain.DomainClassUnitTestMixin} for usage instructions
  */
 @TestFor(AccountEmailAddress)
-class AccountEmailAddressSpec {
+class AccountEmailAddressTests {
 
     void testSomething() {
         fail "Implement me"

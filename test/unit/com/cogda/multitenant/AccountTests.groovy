@@ -1,10 +1,6 @@
-package com.cogda.domain
+package com.cogda.multitenant
 
 import com.cogda.domain.admin.AccountType
-import com.cogda.multitenant.Account
-import com.cogda.multitenant.AccountContact
-import com.cogda.multitenant.AccountEmailAddress
-import com.cogda.multitenant.AccountPhoneNumber
 import grails.test.mixin.*
 import grails.test.mixin.domain.DomainClassUnitTestMixin
 

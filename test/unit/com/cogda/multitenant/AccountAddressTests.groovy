@@ -1,6 +1,5 @@
-package com.cogda.domain
+package com.cogda.multitenant
 
-import com.cogda.multitenant.AccountAddress
 import grails.test.mixin.*
 import grails.test.mixin.domain.DomainClassUnitTestMixin
 
