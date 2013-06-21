@@ -46,14 +46,14 @@ function saveContact(){
   contact.id = $("form").attr("id").replace("contactForm_","");
   contact.firstName = $("#firstName").val();
   contact.lastName = $("#lastName").val();  
+  contact.middleName = $("#middleName").val();    
+  contact.initials = $("#initials").val();      
+  contact.jobTitle = $("#jobtitle").val();        
+  contact.companyName = $("#companyName").val();          
+  contact.website = $("#website").val();            
   $.post("/contact/update", JSON.stringify(contactDeets), function(data){updateContact(data)});
 }
 
-function addMailingAddressField(){
-  var count = $("#mailFieldset div.field").length;  
-  var field = buildAddressField(count);
-	$(field).insertBefore($("#mailAdd"));  
-}
 
 function addPhoneField(){
   var count = $("#phoneFieldset div.field").length;  
@@ -75,13 +75,14 @@ function updateContact(data){
   $(".website").text(data.modelObject.website).val(data.modelObject.website);    
 }
 
+/******emails******/
 function updateEmails(data){
   $("#emailFieldset .field").remove();
   $.each(data.modelObject.contactEmailAddresses, function(ind,elt){
     var field = $(document.createElement("div")).addClass("field");
     $(field).append($(document.createElement("label")).append("Email Address"));
     var span = $(document.createElement("span")).attr("id","emailAddress_"+ind);
-    $(span).text(elt.id);
+    $(span).text(elt.emailAddress);
     $(field).append(span);    
   	$("#emailFieldset").prepend($(field));
   });
@@ -89,33 +90,30 @@ function updateEmails(data){
 
 function addEmailAddressField(){
   var count = $("#emailFieldset div.field").length;
-  var field = buildEmailField(count);
-  buildEmailField(count);
-	$("#emailFieldset").prepend($(field));
-}
-
-function buildEmailField(rowNum){
   var field = $(document.createElement("div")).addClass("field");
   $(field).append($(document.createElement("label")).append("Email Address"));
-  $(field).append($(document.createElement("input")).attr("id","emailAddress_"+rowNum).val("").attr("type","text"));
-  return field;  
-}
-
-function buildAddressField(rowNum){
-  var field = $(".address.template").clone();
-  $(field).removeClass("template");
-  $(field).show();
-  $(field).attr("visibility","visible");
-  $(field).attr("id","address_"+rowNum);
-  return field;
-}
-
-function saveAddress(){
-  
+  $(field).append($(document.createElement("input")).attr("id","emailAddress_"+count).val("").attr("type","text"));
+	$("#emailFieldset").prepend($(field));
+	$(field).insertBefore("#addEmail");
 }
 
 function saveEmail(){
 
+}
+
+/*******addresses*******/
+function addMailingAddressField(){
+  var count = $("#mailFieldset div.field").length;  
+  var field = $(".address.template").clone();
+  $(field).removeClass("template");
+  $(field).show();
+  $(field).attr("visibility","visible");
+  $(field).attr("id","address_"+count);
+	$(field).insertBefore($("#addMail"));  
+}
+
+function saveAddress(){
+  
 }
 
 function updateMailingAddresses(data){
@@ -143,6 +141,7 @@ function updateMailingAddresses(data){
   });
 }
 
+/*******phones******/
 function updatePhones(data){
   $("#phoneFieldset .field").remove();  
   $.each(data.modelObject.contactPhoneNumbers, function(ind,elt){
