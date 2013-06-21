@@ -10,24 +10,25 @@ label{font-weight: bold;}
 div.field {padding:2px;clear:both;}
 div.field input {float:left; height:13px;}
 div.field select {height: 23px;}
-fieldset{margin-top:20px;}
+fieldset{margin-bottom:20px;}
 .add-field {margin-left:5px;}
 div.add {
   clear:both;
   text-align: right;
-  max-width: 367px;
+  max-width: 415px;
 }
 
 /******contact data******/
 #contactData span {float:left; height:13px;}
 #contactData label {float:left; width:130px;}
-#contactData {padding:15px;}
 div.button {margin-left: 20px;}
 .editHide {display:none;visibility:hidden;}
 .editShow {visibility:visible;}
 
 /******emails******/
 #emailFieldset label {width:130px;float:left;}
+#addEmail {padding-top:4px;}
+.saveEmail {margin-left:4px;}
 
 /******mailing addresses******/
 div.addressOne,div.addressTwo,div.addressThree, span.city {
@@ -46,5 +47,5 @@ div.address input, div.address select {
 .addressLbl {float:left;}
 .viewAddressLbl {margin-right:55px;}
 input.zip {margin-right:65px;}
-.save {margin-left:120px;clear:both;}
+.save {margin-left:180px;clear:both;}
 div.address {margin-bottom:20px;}

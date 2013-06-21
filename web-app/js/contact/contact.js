@@ -40,9 +40,7 @@ function toggleEdit(){
 }
 function saveContact(){
   toggleEdit();
-  var contactDeets = new Object();
   var contact = new Object();
-  contactDeets.contact = contact;
   contact.id = $("form").attr("id").replace("contactForm_","");
   contact.firstName = $("#firstName").val();
   contact.lastName = $("#lastName").val();  
@@ -51,7 +49,7 @@ function saveContact(){
   contact.jobTitle = $("#jobtitle").val();        
   contact.companyName = $("#companyName").val();          
   contact.website = $("#website").val();            
-  $.post("/contact/update", JSON.stringify(contactDeets), function(data){updateContact(data)});
+  $.post("/contact/update", JSON.stringify(contact), function(data){updateContact(data)});
 }
 
 
@@ -92,13 +90,17 @@ function addEmailAddressField(){
   var count = $("#emailFieldset div.field").length;
   var field = $(document.createElement("div")).addClass("field");
   $(field).append($(document.createElement("label")).append("Email Address"));
-  $(field).append($(document.createElement("input")).attr("id","emailAddress_"+count).val("").attr("type","text"));
+  $(field).append($(document.createElement("input")).attr("id","emailAddress_"+count).val("").attr("type","text").addClass("input-xlarge"));
+  var saveBtn = $(".saveEmail.template").clone();
+  $(saveBtn).removeClass("template");
+  $(saveBtn).appendTo($(field));
 	$("#emailFieldset").prepend($(field));
 	$(field).insertBefore("#addEmail");
 }
 
 function saveEmail(){
-
+  // ajax get to email update
+  // on success updateEmails
 }
 
 /*******addresses*******/
@@ -109,7 +111,7 @@ function addMailingAddressField(){
   $(field).show();
   $(field).attr("visibility","visible");
   $(field).attr("id","address_"+count);
-	$(field).insertBefore($("#addMail"));  
+	$(field).insertBefore($("#addMail"));
 }
 
 function saveAddress(){
@@ -139,6 +141,10 @@ function updateMailingAddresses(data){
     $(field).append(add1).append(add2).append(add3).append(city).append(", ").append(state).append(" ").append(zip);    
   	$("#mailFieldset").prepend($(field));
   });
+}
+
+function cancelNewAddress(el){
+  $(el).parent().parent().remove();
 }
 
 /*******phones******/
