@@ -15,14 +15,6 @@ function saveContact(){
   $.post("/contact/update", JSON.stringify(contactDeets), function(data){updateContact(data)});
 }
 
-function addEmailAddressField(){
-  var count = $("#emailFieldset div.field").length;
-  var field = $(document.createElement("div")).addClass("field");
-  $(field).append($(document.createElement("label")).append("Email Address"));
-  $(field).append($(document.createElement("input")).attr("id","emailAddress_"+count).val("").attr("type","text"));  
-	$("#emailFieldset").prepend($(field));
-}
-
 function addMailingAddressField(){
   var count = $("#mailFieldset div.field").length;  
   var field = $(document.createElement("div")).addClass("field");
@@ -40,14 +32,15 @@ function addPhoneField(){
 }
 
 function updateContact(data){
-  $("#firstName").val(data.modelObject.firstName);
+  $(".title").text(data.modelObject.title);                    
   $(".firstName").text(data.modelObject.firstName);                    
-  $("#lastName").val(data.modelObject.lastName);
-  $(".lastName").text(data.modelObject.lastName);                    
-  $("#companyName").val(data.modelObject.companyName);
+  $(".middleName").text(data.modelObject.middleName);                      
+  $(".lastName").text(data.modelObject.lastName);       
+  $(".initials").text(data.modelObject.initials);                      
+  $(".gender").text(data.modelObject.gender);                      
   $(".companyName").text(data.modelObject.companyName);                    
-  $("#jobTitle").val(data.modelObject.jobTitle);                    
   $(".jobTitle").text(data.modelObject.jobTitle);  
+  $(".website").text(data.modelObject.website);    
 }
 
 function updateEmails(data){
@@ -60,6 +53,28 @@ function updateEmails(data){
     $(field).append(span);    
   	$("#emailFieldset").prepend($(field));
   });
+}
+
+function addEmailAddressField(){
+  var count = $("#emailFieldset div.field").length;
+  var field = buildEmailField(count);
+  buildEmailField(count);
+	$("#emailFieldset").prepend($(field));
+}
+
+function buildEmailField(rowNum){
+  var field = $(document.createElement("div")).addClass("field");
+  $(field).append($(document.createElement("label")).append("Email Address"));
+  $(field).append($(document.createElement("input")).attr("id","emailAddress_"+rowNum).val("").attr("type","text"));
+  return field;  
+}
+
+function listenForBlur(ev){
+  $(this).on("blur",saveEmail());
+}
+
+function saveEmail(){
+  $("#testemail").append(" save ");
 }
 
 function updateMailingAddresses(data){

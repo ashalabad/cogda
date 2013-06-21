@@ -62,9 +62,19 @@
 			<fieldset>
 				<div id="contactData">
 					<div class="field">
+						<label>Title</label>
+						<span id="titleLbl" class="editShow title contactShow"></span>
+						<input type="text" id="title" class="editHide input-mini title contactEdit">
+					</div>				
+					<div class="field">
 						<label>First Name</label>
 						<span id="firstNameLbl" class="editShow firstName contactShow"></span>
-						<input type="text" id="firstName" class="editHide contactEdit">
+						<input type="text" id="firstName" class="editHide firstName contactEdit">
+					</div>
+					<div class="field">
+						<label>Middle Name</label>
+						<span id="middleNameLbl" class="editShow middleName contactShow"></span>						
+						<input type="text" id="middleName" class="editHide contactEdit">
 					</div>
 					<div class="field">
 						<label>Last Name</label>
@@ -72,22 +82,43 @@
 						<input type="text" id="lastName" class="editHide contactEdit">
 					</div>
 					<div class="field">
+						<label>Initials</label>
+						<span id="initialsLbl" class="editShow initials contactShow"></span>						
+						<input type="text" id="initials" class="editHide input-mini contactEdit">
+					</div>	
+					<div class="field">
+						<label>Gender</label>
+						<span id="genderLbl" class="editShow gender contactShow"></span>						
+						<select id="gender" class="editHide contactEdit">
+							<option value="Male">Male</option>
+							<option value="Female">Female</option>							
+						</select>
+					</div>									
+					<div class="field">
 						<label>Company Name</label>
 						<span id="companyNameLbl" class="editShow companyName contactShow"></span>						
 						<input type="text" id="companyName" class="editHide contactEdit">
 					</div>
 					<div class="field">
 						<label>Job Title</label>
-						<span id="companyNameLbl" class="editShow jobTitle contactShow"></span>						
-						<input type="text" id="jobTitle" class="editHide jobTitle contactEdit">
-					</div>            
-				</div>
-				<a class="btn btn-mini add-field editShow contactShow" href="#" onclick="toggleEdit();"><i class="icon-edit"></i> Edit</a>
-				<a class="btn btn-mini add-field editHide contactEdit" href="#" onclick="saveContact();"><i class="icon-save"></i> Save</a>				
+						<span id="jobTitleLbl" class="editShow jobTitle contactShow"></span>						
+						<input type="text" id="jobTitle" class="editHide contactEdit">
+					</div>   
+					<div class="field">
+						<label>Website</label>
+						<span id="websiteLbl" class="editShow website contactShow"></span>						
+						<input type="text" id="website" class="editHide website contactEdit">
+					</div>					
 
+				</div>
+				<div class="add">
+					<a class="btn btn-mini add-field editShow contactShow" href="#" onclick="toggleEdit();"><i class="icon-edit"></i> Edit</a>
+					<a class="btn btn-mini btn-primary add-field editHide contactEdit" href="#" onclick="saveContact();"><i class="icon-save"></i> Save</a>				
+				</div>
 			</fieldset>
 			<fieldset id="emailFieldset">
 				<legend>Email Addresses</legend>
+				<span id="testemail"></span>
 				<div class="add">
 					<a class="btn btn-mini add-field" href="#" onclick="addEmailAddressField();"><i class="icon-plus"></i> Add</a>
 				</div>
