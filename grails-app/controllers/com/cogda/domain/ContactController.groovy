@@ -5,6 +5,7 @@ import com.cogda.common.GenderEnum
 import com.cogda.common.web.AjaxResponseDto
 import com.cogda.util.ErrorMessageResolverService
 import grails.converters.JSON
+import grails.plugin.gson.converters.GSON
 import org.apache.commons.beanutils.BeanUtils
 import org.springframework.dao.DataIntegrityViolationException
 
@@ -44,7 +45,6 @@ class ContactController extends BaseController{
             map.firstName = contact.firstName
             map.jobTitle = contact.jobTitle
             map.primaryEmailAddress = contact.primaryEmailAddress
-
             dataToRender.aaData.add(map)
         }
         dataToRender.sEcho = 1
@@ -98,7 +98,7 @@ class ContactController extends BaseController{
             ajaxResponseDto.modelObject = contactInstance
 
         }
-        render ajaxResponseDto as JSON
+        render ajaxResponseDto as GSON
         return
     }
 

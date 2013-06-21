@@ -10,6 +10,7 @@ label{font-weight: bold;}
 }
 div.field {padding:2px;clear:both;}
 div.field input {float:left; height:13px;}
+div.field select {height: 23px;}
 div.field span {float:left; height:13px;}
 div.field label {float:left; width:120px;}
 .btn-group {float:left;}
@@ -25,3 +26,4 @@ div.add {
   text-align: right;
   max-width: 415px;
 }
+#contactData {padding:15px;}
