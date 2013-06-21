@@ -74,8 +74,11 @@ function updateEmails(data){
     $(field).append($(document.createElement("label")).append("Email Address"));
     var span = $(document.createElement("span")).attr("id","emailAddress_"+ind);
     $(span).text(elt.emailAddress);
-    $(field).append(span);    
-  	$("#emailFieldset").prepend($(field));
+    var radio = $(document.createElement("input")).attr("type","radio").attr("name","primary").addClass("primaryRadio");
+    
+    $(field).append(span);
+    $(field).append(radio);
+  	$(field).insertBefore("#addEmail");    
   });
 }
 
@@ -132,7 +135,7 @@ function updateMailingAddresses(data){
     $(zip).text(elt.address.zipcode);
             
     $(field).append(add1).append(add2).append(add3).append(city).append(", ").append(state).append(" ").append(zip);    
-  	$("#mailFieldset").prepend($(field));
+  	$(field).insertBefore($("#addMail"));  	
   });
 }
 
@@ -147,17 +150,26 @@ function updatePhones(data){
     var field = $(document.createElement("div")).addClass("field");
     $(field).append($(document.createElement("label")).append("Phone Number"));
     var span = $(document.createElement("span")).attr("id","phone_"+ind);
-    $(span).text(elt.id);
+    $(span).text(elt.phoneNumber);
     $(field).append(span);    
   	$("#phoneFieldset").prepend($(field));
   });
 }
 
 function addPhoneField(){
-  var count = $("#phoneFieldset div.field").length;  
+  var count = $("#phoneFieldset div.field").length;
   var field = $(document.createElement("div")).addClass("field");
-  $(field).append($(document.createElement("label")).append("Phone"));
-  $(field).append($(document.createElement("input")).attr("id","phone_"+count).val("").attr("type","text"));  
+  $(field).append($(document.createElement("label")).append("Phone Number"));
+  $(field).append($(document.createElement("input")).attr("id","phone_"+count).val("").attr("type","text").addClass("input-xlarge"));
+  var saveBtn = $(".savePhone.template").clone();
+  $(saveBtn).removeClass("template");
+  $(saveBtn).appendTo($(field));
 	$("#phoneFieldset").prepend($(field));
+	$(field).insertBefore("#addPhone");
 }
+
+function savePhone(){
+  
+}
+
 

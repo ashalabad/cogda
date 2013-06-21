@@ -25,11 +25,18 @@ div.button {margin-left: 20px;}
 .editHide {display:none;visibility:hidden;}
 .editShow {visibility:visible;}
 
-/******emails******/
-#emailFieldset label {width:130px;float:left;}
-#addEmail {padding-top:4px;}
-.saveEmail {margin-left:4px;}
+/******emails & phones******/
+.primaryRadio {float:right !important;margin-right:415px !important;}
+#emailFieldset label, #phoneFieldset label {width:130px;float:left;}
+#addEmail, #addPhone {padding-top:4px;}
+.saveEmail, .savePhone {margin-left:4px;}
+#emailPrimary {
+  float: right;
+  clear: both !important;
+  margin-right: 397px;
+}
 
+  
 /******mailing addresses******/
 div.addressOne,div.addressTwo,div.addressThree, span.city {
   margin-left:10px;

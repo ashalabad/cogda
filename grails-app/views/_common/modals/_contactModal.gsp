@@ -73,11 +73,23 @@
 			</fieldset>
 			<fieldset id="emailFieldset">
 				<legend>Email Addresses</legend>
+				<div id="emailPrimary">Primary</div>
 				<a class="btn btn-mini btn-primary saveEmail template" href="#" onclick="saveEmail();"><i class="icon-save"></i> Save</a>				
 				<div class="add" id="addEmail">
 					<a class="btn btn-mini add-field" href="#" onclick="addEmailAddressField();"><i class="icon-plus"></i> Add</a>
 				</div>
 			</fieldset>
+			<fieldset id="phoneFieldset">
+				<legend>Phone Numbers</legend>
+				<a class="btn btn-mini btn-primary savePhone template" href="#" onclick="savePhone();"><i class="icon-save"></i> Save</a>					
+				<div class="field">
+					<label>Phone</label>
+					<input type="text" id="phone_0">
+				</div>	
+				<div class="add" id="addPhone">
+					<a class="btn btn-mini add-field" href="#" onclick="addPhoneField();"><i class="icon-plus"></i> Add</a>
+				</div>
+			</fieldset>			
 			<fieldset id="mailFieldset">
 				<legend>Mailing Addresses</legend>
 				<div class="field address template edit">
@@ -110,16 +122,7 @@
 					<a class="btn btn-mini add-field" href="#" onclick="addMailingAddressField();"><i class="icon-plus"></i> Add</a>
 				</div>
 			</fieldset>		
-			<fieldset id="phoneFieldset">
-				<legend>Phone Numbers</legend>
-				<div class="field">
-					<label>Phone</label>
-					<input type="text" id="phone_0">
-				</div>	
-				<div class="add">
-					<a class="btn btn-mini add-field" href="#" onclick="addPhoneField();"><i class="icon-plus"></i> Add</a>
-				</div>
-			</fieldset>				
+				
 		</form>
 	</div>
 	<div class="modal-footer">
