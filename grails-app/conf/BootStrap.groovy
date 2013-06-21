@@ -93,10 +93,10 @@ class BootStrap {
             if(CompanyType.count() == 0){
                 createCompanyTypes()
             }
-            if(AccountType.count()){
+            if(AccountType.count() == 0){
                 createAccountTypes()
             }
-            if(SupportedCountryCode.count()){
+            if(SupportedCountryCode.count() == 0){
                 createSupportedCountryCodes()
             }
 
@@ -243,7 +243,7 @@ class BootStrap {
 
                         ContactPhoneNumber contactPhoneNumberTwo = new ContactPhoneNumber()
                         contactPhoneNumberTwo.phoneNumber = nextLine[8]?.trim()
-                        contact.addTcreateNoteTypesoContactPhoneNumbers(contactPhoneNumberTwo)
+                        contact.addToContactPhoneNumbers(contactPhoneNumberTwo)
                         contactPhoneNumberTwo.save()
 
                         if(contactPhoneNumberTwo.hasErrors()){
@@ -277,54 +277,62 @@ class BootStrap {
     }
 
     def createSupportedCountryCodes(){
-        if (!SupportedCountryCode.findByCountryCode("usa")) {
-            new SupportedCountryCode(countryCode: "usa", countryDescription: "United States").save()
-        }
-        if (!SupportedCountryCode.findByCountryCode("can")) {
-            new SupportedCountryCode(countryCode: "can", countryDescription: "Canada").save()
+        SupportedCountryCode.withTransaction {
+            if (!SupportedCountryCode.findByCountryCode("usa")) {
+                new SupportedCountryCode(countryCode: "usa", countryDescription: "United States").save()
+            }
+            if (!SupportedCountryCode.findByCountryCode("can")) {
+                new SupportedCountryCode(countryCode: "can", countryDescription: "Canada").save()
+            }
         }
 //        SupportedCountryCode bra = new SupportedCountryCode(countryCode:"bra", countryDescription:"Brazil").save()
     }
 
     def createNoteTypes(){
-        if (!NoteType.findByCode("Visit")) {
-            new NoteType(code: "Visit", intCode: 0, description: "Visit").save()
-        }
-        if (!NoteType.findByCode("Call")) {
-            new NoteType(code: "Call", intCode: 1, description: "Call").save()
-        }
-        if (!AccountType.findByCode("Other")) {
-            new NoteType(code: "Other", intCode: 2, description: "Other").save()
+        NoteType.withTransaction {
+            if (!NoteType.findByCode("Visit")) {
+                new NoteType(code: "Visit", intCode: 0, description: "Visit").save()
+            }
+            if (!NoteType.findByCode("Call")) {
+                new NoteType(code: "Call", intCode: 1, description: "Call").save()
+            }
+            if (!AccountType.findByCode("Other")) {
+                new NoteType(code: "Other", intCode: 2, description: "Other").save()
+            }
         }
     }
 
     def createAccountTypes(){
-        if (!AccountType.findByCode("Agency")) {
-            new AccountType(code: "Agency", intCode: 0, description: "Agency").save()
-        }
-        if (!AccountType.findByCode("MGA")) {
-            new AccountType(code: "MGA", intCode: 1, description: "MGA").save()
-        }
-        if (!AccountType.findByCode("Carrier")) {
-            new AccountType(code: "Carrier", intCode: 2, description: "Carrier").save()
-        }
-        if (!AccountType.findByCode("Reinsurer")) {
-            new AccountType(code: "Reinsurer", intCode: 3, description: "Reinsurer").save()
+        AccountType.withTransaction {
+            if (!AccountType.findByCode("Agency")) {
+                new AccountType(code: "Agency", intCode: 0, description: "Agency").save()
+            }
+            if (!AccountType.findByCode("MGA")) {
+                new AccountType(code: "MGA", intCode: 1, description: "MGA").save()
+            }
+            if (!AccountType.findByCode("Carrier")) {
+                new AccountType(code: "Carrier", intCode: 2, description: "Carrier").save()
+            }
+            if (!AccountType.findByCode("Reinsurer")) {
+                new AccountType(code: "Reinsurer", intCode: 3, description: "Reinsurer").save()
+            }
         }
     }
 
     def createCompanyTypes(){
-        if (!CompanyType.findByCode("Agency/Retailer")) {
-            new CompanyType(code: "Agency/Retailer", intCode: 0, description: "Agency/Retailer").save()
-        }
-        if (!CompanyType.findByCode("Carrier")) {
-            new CompanyType(code: "Carrier", intCode: 1, description: "Carrier").save()
-        }
-        if (!CompanyType.findByCode("Reinsurer")) {
-            new CompanyType(code: "Reinsurer", intCode: 2, description: "Reinsurer").save()
-        }
-        if (!CompanyType.findByCode("Wholesaler (MGA, Broker)")) {
-            new CompanyType(code: "Wholesaler (MGA, Broker)", intCode: 3, description: "Wholesaler (MGA, Broker)").save()
+        CompanyType.withTransaction {
+            if (!CompanyType.findByCode("Agency/Retailer")) {
+                new CompanyType(code: "Agency/Retailer", intCode: 0, description: "Agency/Retailer").save()
+            }
+            if (!CompanyType.findByCode("Carrier")) {
+                new CompanyType(code: "Carrier", intCode: 1, description: "Carrier").save()
+            }
+            if (!CompanyType.findByCode("Reinsurer")) {
+                new CompanyType(code: "Reinsurer", intCode: 2, description: "Reinsurer").save()
+            }
+            if (!CompanyType.findByCode("Wholesaler (MGA, Broker)")) {
+                new CompanyType(code: "Wholesaler (MGA, Broker)", intCode: 3, description: "Wholesaler (MGA, Broker)").save()
+            }
         }
     }
 
