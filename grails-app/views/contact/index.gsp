@@ -64,7 +64,13 @@
 					<div class="field">
 						<label>Title</label>
 						<span id="titleLbl" class="editShow title contactShow"></span>
-						<input type="text" id="title" class="editHide input-mini title contactEdit">
+						<select id="title" class="editHide input-mini title contactEdit">
+							<option value="Mr">Mr</option>
+							<option value="Mrs">Mrs</option>							
+							<option value="Ms">Ms</option>														
+							<option value="Miss">Miss</option>																					
+							<option value="Dr">Dr</option>																					
+						</select>
 					</div>				
 					<div class="field">
 						<label>First Name</label>
@@ -74,17 +80,17 @@
 					<div class="field">
 						<label>Middle Name</label>
 						<span id="middleNameLbl" class="editShow middleName contactShow"></span>						
-						<input type="text" id="middleName" class="editHide contactEdit">
+						<input type="text" id="middleName" class="editHide middleName contactEdit">
 					</div>
 					<div class="field">
 						<label>Last Name</label>
 						<span id="lastNameLbl" class="editShow lastName contactShow"></span>
-						<input type="text" id="lastName" class="editHide contactEdit">
+						<input type="text" id="lastName" class="editHide lastName contactEdit">
 					</div>
 					<div class="field">
 						<label>Initials</label>
 						<span id="initialsLbl" class="editShow initials contactShow"></span>						
-						<input type="text" id="initials" class="editHide input-mini contactEdit">
+						<input type="text" id="initials" class="editHide input-mini initials contactEdit">
 					</div>	
 					<div class="field">
 						<label>Gender</label>
@@ -97,12 +103,12 @@
 					<div class="field">
 						<label>Company Name</label>
 						<span id="companyNameLbl" class="editShow companyName contactShow"></span>						
-						<input type="text" id="companyName" class="editHide contactEdit">
+						<input type="text" id="companyName" class="editHide companyName contactEdit">
 					</div>
 					<div class="field">
 						<label>Job Title</label>
 						<span id="jobTitleLbl" class="editShow jobTitle contactShow"></span>						
-						<input type="text" id="jobTitle" class="editHide contactEdit">
+						<input type="text" id="jobTitle" class="editHide jobTitle contactEdit">
 					</div>   
 					<div class="field">
 						<label>Website</label>
@@ -125,11 +131,32 @@
 			</fieldset>
 			<fieldset id="mailFieldset">
 				<legend>Mailing Addresses</legend>
-				<div class="field">
-					<label>Mailing Address</label>
-					<input type="text" id="mailingAddress_0">
+				<div class="field address template edit">
+					<label class="addressLbl">Mailing Address</label>
+					<input type="text" class="addressOne" placeholder="address line 1">
+					<input type="text" class="addressTwo" placeholder="address line 2">					
+					<input type="text" class="addressThree" placeholder="address line 3">										
+					<input type="text" class="city" placeholder="city">	
+					<div class="stateContainer">
+						<select class="state input-small">
+							<option value="AL">AL</option>
+							<option value="AK">AK</option>
+							<option value="GA">GA</option>							
+						</select>
+					</div>
+					<input type="text" class="zip input-small" placeholder="zipcode">
+					<div class="save">
+						<a class="btn btn-mini btn-primary" href="#" onclick="saveAddress();"><i class="icon-save"></i> Save</a>
+					</div>																	
 				</div>
-				<div class="add">
+				<div class="field address data show">
+					<label class="viewAddressLbl">Mailing Address</label> <a class="btn btn-mini editAddress template" href="#" onclick="editAddress();"><i class="icon-edit"></i> Edit</a>
+					<div class="addressOne">123 Childs st</div>
+					<div class="addressTwo">Ste 213</div>
+					<div class="addressThree"></div>
+					<span class="city">Athens</span>, <span class="state">GA</span> <span class="zipcode">30601</span>															
+				</div>				
+				<div class="add" id="mailAdd">
 					<a class="btn btn-mini add-field" href="#" onclick="addMailingAddressField();"><i class="icon-plus"></i> Add</a>
 				</div>
 			</fieldset>		
