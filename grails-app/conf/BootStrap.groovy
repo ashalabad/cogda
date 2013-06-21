@@ -3,7 +3,11 @@ import com.amazonaws.services.s3.model.GetObjectRequest
 import com.cogda.common.GenderEnum
 import com.cogda.common.MarkupLanguage
 import com.cogda.common.RegistrationStatus
+import com.cogda.domain.Address
 import com.cogda.domain.Contact
+import com.cogda.domain.ContactAddress
+import com.cogda.domain.ContactEmailAddress
+import com.cogda.domain.ContactPhoneNumber
 import com.cogda.domain.admin.AccountType
 import com.cogda.domain.admin.CompanyType
 import com.cogda.domain.admin.NoteType
@@ -17,17 +21,24 @@ import grails.plugin.awssdk.AmazonWebService
 import grails.plugins.springsecurity.SpringSecurityService
 import grails.util.Environment
 import grails.util.GrailsUtil
+import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.springframework.transaction.interceptor.TransactionAspectSupport
 import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.springframework.web.context.WebApplicationContext
 import org.springframework.web.context.support.WebApplicationContextUtils
 
+import java.util.regex.Matcher
+import java.util.regex.Pattern
+
 class BootStrap {
+    private static final log = LogFactory.getLog(this)
+
     CustomerAccountService customerAccountService
     SpringSecurityService springSecurityService
     GrailsApplication grailsApplication
     AmazonWebService amazonWebService
+
     def init = { servletContext ->
 
         /*
@@ -43,18 +54,18 @@ class BootStrap {
         for (sc in ctx.grailsApplication.serviceClasses) {
             def metaClass = sc.clazz.metaClass
             // returns TransactionStatus
-            metaClass.getCurrentTransactionStatus = { ->
+            metaClass.getCurrentTransactionStatus = {->
                 if (!delegate.isTransactionActive()) {
                     return null
                 }
                 TransactionAspectSupport.currentTransactionStatus()
             }
             // void, throws NoTransactionException
-            metaClass.setRollbackOnly = { ->
+            metaClass.setRollbackOnly = {->
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly()
             }
             // returns boolean
-            metaClass.isRollbackOnly = { ->
+            metaClass.isRollbackOnly = {->
                 if (!delegate.isTransactionActive()) {
                     return false
                 }
@@ -62,150 +73,276 @@ class BootStrap {
 
             }
             // returns boolean
-            metaClass.isTransactionActive = { ->
+            metaClass.isTransactionActive = {->
                 TransactionSynchronizationManager.isSynchronizationActive()
             }
         }
         def springContext = WebApplicationContextUtils.getWebApplicationContext(servletContext)
         springContext.getBean("customObjectMarshallers").register()
 
-        if(Environment.current != Environment.TEST){
+        if (Environment.current != Environment.TEST) {
 
-            if(!CompanyType.findByCode("Agency/Retailer")){
-                new CompanyType(code:"Agency/Retailer", intCode:0, description: "Agency/Retailer").save()
-            }
-            if(!CompanyType.findByCode("Carrier")){
-                new CompanyType(code:"Carrier", intCode:1, description: "Carrier").save()
-            }
-            if(!CompanyType.findByCode("Reinsurer")){
-                new CompanyType(code:"Reinsurer", intCode:2, description: "Reinsurer").save()
-            }
-            if(!CompanyType.findByCode("Wholesaler (MGA, Broker)")){
-                new CompanyType(code:"Wholesaler (MGA, Broker)", intCode:3, description: "Wholesaler (MGA, Broker)").save()
-            }
+            // create admin domain classes
+            createNoteTypes()
+            createCompanyTypes()
+            createAccountTypes()
+            createSupportedCountryCodes()
 
-            if(!AccountType.findByCode("Agency")){
-                new AccountType(code:"Agency", intCode:0, description: "Agency").save()
-            }
-            if(!AccountType.findByCode("MGA")){
-                new AccountType(code:"MGA", intCode:1, description: "MGA").save()
-            }
-            if(!AccountType.findByCode("Carrier")){
-                new AccountType(code:"Carrier", intCode:2, description: "Carrier").save()
-            }
-            if(!AccountType.findByCode("Reinsurer")){
-                new AccountType(code:"Reinsurer", intCode:3, description: "Reinsurer").save()
+            createRennaissanceRegistration()
+            def raisRegistration = Registration.findBySubDomain("rais")
+            if(raisRegistration){
+                customerAccountService.onboardCustomerAccount(raisRegistration)
+                createRennaissanceDummyData(raisRegistration)
             }
 
-            if(!NoteType.findByCode("Visit")){
-                new NoteType(code:"Visit", intCode:0, description: "Visit").save()
-            }
-            if(!NoteType.findByCode("Call")){
-                new NoteType(code:"Call", intCode:1, description: "Call").save()
-            }
-            if(!AccountType.findByCode("Other")){
-                new NoteType(code:"Other", intCode:2, description: "Other").save()
+            createLibertyMutualRegistration()
+            def libertyRegistration = Registration.findBySubDomain("libertymutual")
+            if(libertyRegistration){
+                customerAccountService.onboardCustomerAccount(libertyRegistration)
             }
 
-            if(!SupportedCountryCode.findByCountryCode("usa")){
-                new SupportedCountryCode(countryCode:"usa", countryDescription:"United States").save()
-            }
-            if(!SupportedCountryCode.findByCountryCode("can")){
-                new SupportedCountryCode(countryCode:"can", countryDescription:"Canada").save()
-            }
-//        SupportedCountryCode bra = new SupportedCountryCode(countryCode:"bra", countryDescription:"Brazil").save()
+            // Create the email templates
+            createInitialAccountActivationEmail()
+            createReminderAccountActivationEmail()
+            createTimeoutActivationEmail()
+            createNewAccountWelcomeEmail()
+            createVerifiedSuccessfullyEmail()
+            createResetPasswordEmail()
+        }
+    }
+    def destroy = {
+    }
 
-            if(!Registration.findBySubDomain("rais")){
-                Registration registration
-                Registration.withTransaction {
-                    registration = new Registration()
+    def createRennaissanceDummyData(Registration registration){
+        CustomerAccount customerAccount = CustomerAccount.findBySubDomain(registration.subDomain)
 
-                    registration.firstName = "Maria"
-                    registration.lastName = "Schiller"
-                    registration.username = "admin"
-                    registration.emailAddress = "chris@cogda.com"
-                    registration.password = springSecurityService.encodePassword("password")
-                    registration.companyName = "Renaissance Alliance"
-                    registration.companyType = CompanyType.findByCode("Wholesaler (MGA, Broker)")
-                    registration.existingCompany = null
-                    registration.companyTypeOther = null
-                    registration.phoneNumber = "706-255-9087"
-                    registration.streetAddressOne = "1 Press Place"
-                    registration.streetAddressTwo = "Suite 200"
-                    registration.streetAddressThree = "Office #17"
-                    registration.city = "Athens"
-                    registration.state = "GA"
-                    registration.zipcode = "30601"
-                    registration.county = "CLARKE"
-                    registration.registrationStatus = RegistrationStatus.APPROVED
-                    registration.subDomain = "rais"
+        InputStream is = amazonWebService.s3.getObject(new GetObjectRequest("cogda-test", "testingfiles/ContactTestDataBigFile.csv")).getObjectContent()
+        CSVReader reader = new CSVReader(new InputStreamReader(is))
+        String[] nextLine;
+        Integer count = 0;
+        while ((nextLine = reader.readNext()) != null) {
+            // nextLine[] is an array of values from the line
+            Contact contact = new Contact(
+                    firstName: nextLine[0]?.trim(),
+                    middleName: nextLine[1]?.trim(),
+                    lastName: nextLine[2]?.trim(),
+                    birthDate: Date.parse("MM/dd/yyyy", nextLine[3]?.trim()),
+                    gender: (nextLine[4] == "M" ? GenderEnum.MALE : GenderEnum.FEMALE)
+            )
+            customerAccount.withThisTenant {
 
-                    assert registration.save(), "Registration save failed: ${registration.errors}"
-                }
+                Contact.withTransaction {
+                    if(contact.save()){
 
-                customerAccountService.onboardCustomerAccount(registration)
+                        ContactEmailAddress contactEmailAddress = new ContactEmailAddress()
+                        contactEmailAddress.emailAddress = sanitizeEmailAddress(nextLine[5]?.trim())
+                        contactEmailAddress.primaryEmailAddress = Boolean.TRUE
+                        contactEmailAddress.contact = contact
+                        contact.addToContactEmailAddresses(contactEmailAddress)
+                        contactEmailAddress.save()
 
-                CustomerAccount customerAccount = CustomerAccount.findBySubDomain(registration.subDomain)
+                        if(contactEmailAddress.hasErrors()){
+                            println "contactEmailAddress ${contactEmailAddress} failed to save ${contactEmailAddress.errors}"
+                        }
 
+                        ContactEmailAddress contactEmailAddressTwo = new ContactEmailAddress()
+                        contactEmailAddressTwo.emailAddress = sanitizeEmailAddress(nextLine[6]?.trim())
+                        contactEmailAddressTwo.contact = contact
+                        contact.addToContactEmailAddresses(contactEmailAddressTwo)
+                        contactEmailAddressTwo.save()
 
-                customerAccount.withThisTenant {
-                    InputStream is = amazonWebService.s3.getObject(new GetObjectRequest("cogda-test", "testingfiles/ContactTestDataBigFile.csv")).getObjectContent()
-                    CSVReader reader = new CSVReader(new InputStreamReader(is))
-                    String [] nextLine;
-                    Integer count = 0;
-                    while((nextLine = reader.readNext()) != null){
-                        // nextLine[] is an array of values from the line
-                        new Contact(
-                            firstName:nextLine[0]?.trim(),
-                            middleName:nextLine[1]?.trim(),
-                            lastName:nextLine[2]?.trim(),
-                            birthDate:Date.parse("MM/dd/yyyy", nextLine[3]?.trim()),
-                            gender:(nextLine[4] == "M" ? GenderEnum.MALE : GenderEnum.FEMALE)
-                        ).save()
+                        if(contactEmailAddressTwo.hasErrors()){
+                            println "contactEmailAddressTwo ${contactEmailAddressTwo} failed to save ${contactEmailAddressTwo.errors}"
+                        }
+
+                        ContactPhoneNumber contactPhoneNumber = new ContactPhoneNumber()
+                        contactPhoneNumber.phoneNumber = nextLine[7]?.trim()
+                        contactPhoneNumber.primaryPhoneNumber = Boolean.TRUE
+                        contact.addToContactPhoneNumbers(contactPhoneNumber)
+                        contactPhoneNumber.save()
+
+                        if(contactPhoneNumber.hasErrors()){
+                            println "contactPhoneNumber ${contactPhoneNumber} failed to save ${contactPhoneNumber.errors}"
+                        }
+
+                        ContactPhoneNumber contactPhoneNumberTwo = new ContactPhoneNumber()
+                        contactPhoneNumberTwo.phoneNumber = nextLine[8]?.trim()
+                        contact.addToContactPhoneNumbers(contactPhoneNumberTwo)
+                        contactPhoneNumberTwo.save()
+
+                        if(contactPhoneNumberTwo.hasErrors()){
+                            println "contactPhoneNumberTwo ${contactPhoneNumberTwo} failed to save ${contactPhoneNumberTwo.errors}"
+                        }
+
+                        ContactAddress contactAddress = new ContactAddress()
+                        contactAddress.address = new Address()
+                        contactAddress.address.addressOne = nextLine[9]?.trim()
+                        contactAddress.address.addressTwo = nextLine[10]?.trim()
+                        contactAddress.address.addressThree = nextLine[11]?.trim()
+                        contactAddress.addressType = "WORK"
+                        contactAddress.address.city = nextLine[12]?.trim()
+                        contactAddress.address.state = nextLine[13]?.trim()
+                        contactAddress.address.zipcode = nextLine[14]?.trim()
+                        contactAddress.primaryAddress = Boolean.TRUE
+                        contact.addToContactAddresses(contactAddress)
+                        contactAddress.save()
+
+                        if(contactAddress.hasErrors()){
+                            println "contactAddress ${contactAddress} failed to save ${contactAddress.errors}"
+                        }
+
+                    }else{
+                        println "Contact $contact was NOT saved successfully ${contact.errors}"
                     }
                 }
             }
+            count++
+        }
+    }
 
-            if(!Registration.findBySubDomain("libertymutual")){
-                Registration registration
-                Registration.withTransaction {
-                    registration = new Registration()
+    def createSupportedCountryCodes(){
+        if (!SupportedCountryCode.findByCountryCode("usa")) {
+            new SupportedCountryCode(countryCode: "usa", countryDescription: "United States").save()
+        }
+        if (!SupportedCountryCode.findByCountryCode("can")) {
+            new SupportedCountryCode(countryCode: "can", countryDescription: "Canada").save()
+        }
+//        SupportedCountryCode bra = new SupportedCountryCode(countryCode:"bra", countryDescription:"Brazil").save()
+    }
 
-                    registration.firstName = "Bill"
-                    registration.lastName = "Alexander"
-                    registration.username = "administrator"
-                    registration.emailAddress = "chris@cogda.com"
-                    registration.password = springSecurityService.encodePassword("password")
-                    registration.companyName = "Liberty Mutual"
-                    registration.companyType = CompanyType.findByCode("Carrier")
-                    registration.existingCompany = null
-                    registration.companyTypeOther = null
-                    registration.phoneNumber = "706-255-9087"
-                    registration.streetAddressOne = "1 Press Place"
-                    registration.streetAddressTwo = "Suite 200"
-                    registration.streetAddressThree = "Office #17"
-                    registration.city = "Athens"
-                    registration.state = "GA"
-                    registration.zipcode = "30601"
-                    registration.county = "CLARKE"
-                    registration.registrationStatus = RegistrationStatus.APPROVED
-                    registration.subDomain = "libertymutual"
+    def createNoteTypes(){
+        if (!NoteType.findByCode("Visit")) {
+            new NoteType(code: "Visit", intCode: 0, description: "Visit").save()
+        }
+        if (!NoteType.findByCode("Call")) {
+            new NoteType(code: "Call", intCode: 1, description: "Call").save()
+        }
+        if (!AccountType.findByCode("Other")) {
+            new NoteType(code: "Other", intCode: 2, description: "Other").save()
+        }
+    }
 
-                    assert registration.save(), "Registration save failed: ${registration.errors}"
+    def createAccountTypes(){
+        if (!AccountType.findByCode("Agency")) {
+            new AccountType(code: "Agency", intCode: 0, description: "Agency").save()
+        }
+        if (!AccountType.findByCode("MGA")) {
+            new AccountType(code: "MGA", intCode: 1, description: "MGA").save()
+        }
+        if (!AccountType.findByCode("Carrier")) {
+            new AccountType(code: "Carrier", intCode: 2, description: "Carrier").save()
+        }
+        if (!AccountType.findByCode("Reinsurer")) {
+            new AccountType(code: "Reinsurer", intCode: 3, description: "Reinsurer").save()
+        }
+    }
+
+    def createCompanyTypes(){
+        if (!CompanyType.findByCode("Agency/Retailer")) {
+            new CompanyType(code: "Agency/Retailer", intCode: 0, description: "Agency/Retailer").save()
+        }
+        if (!CompanyType.findByCode("Carrier")) {
+            new CompanyType(code: "Carrier", intCode: 1, description: "Carrier").save()
+        }
+        if (!CompanyType.findByCode("Reinsurer")) {
+            new CompanyType(code: "Reinsurer", intCode: 2, description: "Reinsurer").save()
+        }
+        if (!CompanyType.findByCode("Wholesaler (MGA, Broker)")) {
+            new CompanyType(code: "Wholesaler (MGA, Broker)", intCode: 3, description: "Wholesaler (MGA, Broker)").save()
+        }
+    }
+
+    def createRennaissanceRegistration(){
+        if (!Registration.findBySubDomain("rais")) {
+
+            Registration.withTransaction {
+
+                Registration registration = new Registration()
+
+                registration.firstName = "Maria"
+                registration.lastName = "Schiller"
+                registration.username = "admin"
+                registration.emailAddress = "chris@cogda.com"
+                registration.password = springSecurityService.encodePassword("password")
+                registration.companyName = "Renaissance Alliance"
+                registration.companyType = CompanyType.findByCode("Wholesaler (MGA, Broker)")
+                registration.existingCompany = null
+                registration.companyTypeOther = null
+                registration.phoneNumber = "706-255-9087"
+                registration.streetAddressOne = "1 Press Place"
+                registration.streetAddressTwo = "Suite 200"
+                registration.streetAddressThree = "Office #17"
+                registration.city = "Athens"
+                registration.state = "GA"
+                registration.zipcode = "30601"
+                registration.county = "CLARKE"
+                registration.registrationStatus = RegistrationStatus.APPROVED
+                registration.subDomain = "rais"
+
+                registration.validate()
+
+                if(!registration.hasErrors() && registration.save()){
+                    println "Registration ${registration.subDomain} save succeeded!"
+                }else{
+                    registration.errors.each {
+                        println it
+                    }
                 }
-
-                customerAccountService.onboardCustomerAccount(registration)
             }
+        }
+    }
 
+    def createLibertyMutualRegistration(){
 
-            if(!SystemEmailMessageTemplate.findByTitle("INITIAL_ACCOUNT_ACTIVATION_EMAIL")){
-                SystemEmailMessageTemplate accountActivationEmailMessage = new SystemEmailMessageTemplate()
-                accountActivationEmailMessage.markupLanguage = MarkupLanguage.MARKDOWN
-                accountActivationEmailMessage.title = "INITIAL_ACCOUNT_ACTIVATION_EMAIL"
-                accountActivationEmailMessage.description = "The email message that is sent to the User when activating a new account."
-                accountActivationEmailMessage.subject = "Cogda Email Verification"
-                accountActivationEmailMessage.fromEmail = "mail@cogda.com"
-                accountActivationEmailMessage.body = """
+        if (!Registration.findBySubDomain("libertymutual")) {
+
+            Registration.withTransaction {
+
+                Registration registration = new Registration()
+
+                registration.firstName = "Bill"
+                registration.lastName = "Alexander"
+                registration.username = "administrator"
+                registration.emailAddress = "chris@cogda.com"
+                registration.password = springSecurityService.encodePassword("password")
+                registration.companyName = "Liberty Mutual"
+                registration.companyType = CompanyType.findByCode("Carrier")
+                registration.existingCompany = null
+                registration.companyTypeOther = null
+                registration.phoneNumber = "706-255-9087"
+                registration.streetAddressOne = "1 Press Place"
+                registration.streetAddressTwo = "Suite 200"
+                registration.streetAddressThree = "Office #17"
+                registration.city = "Athens"
+                registration.state = "GA"
+                registration.zipcode = "30601"
+                registration.county = "CLARKE"
+                registration.registrationStatus = RegistrationStatus.APPROVED
+                registration.subDomain = "libertymutual"
+
+                registration.validate()
+
+                if(!registration.hasErrors() && registration.save()){
+                    println "Registration ${registration.subDomain} save succeeded!"
+                }else{
+                    println "Registration save failed: ${registration.errors}"
+                    registration.errors.each {
+                        println it
+                    }
+                }
+            }
+        }
+    }
+
+    def createInitialAccountActivationEmail(){
+        if (!SystemEmailMessageTemplate.findByTitle("INITIAL_ACCOUNT_ACTIVATION_EMAIL")) {
+            SystemEmailMessageTemplate accountActivationEmailMessage = new SystemEmailMessageTemplate()
+            accountActivationEmailMessage.markupLanguage = MarkupLanguage.MARKDOWN
+            accountActivationEmailMessage.title = "INITIAL_ACCOUNT_ACTIVATION_EMAIL"
+            accountActivationEmailMessage.description = "The email message that is sent to the User when activating a new account."
+            accountActivationEmailMessage.subject = "Cogda Email Verification"
+            accountActivationEmailMessage.fromEmail = "mail@cogda.com"
+            accountActivationEmailMessage.body = """
     Thank you for your interest in {appName}.  We sincerely look forward to serving you and your company.
 
     Please click the following verification link to activate your new {appName} account.
@@ -217,19 +354,21 @@ class BootStrap {
     Thank you!
 
     {appName} Team"""
-                accountActivationEmailMessage.acceptsParameters = true
-                accountActivationEmailMessage.requiredParameterNames = ['appName', 'activationUrl']
-                accountActivationEmailMessage.save() ?: log.error("Error saving AccountActivationEmailMessage errors -> ${accountActivationEmailMessage.errors}")
-            }
+            accountActivationEmailMessage.acceptsParameters = true
+            accountActivationEmailMessage.requiredParameterNames = ['appName', 'activationUrl']
+            accountActivationEmailMessage.save() ?: log.error("Error saving AccountActivationEmailMessage errors -> ${accountActivationEmailMessage.errors}")
+        }
+    }
 
-            if(!SystemEmailMessageTemplate.findByTitle("REMINDER_ACCOUNT_ACTIVATION_EMAIL")){
-                SystemEmailMessageTemplate accountReminderEmailMessage = new SystemEmailMessageTemplate()
-                accountReminderEmailMessage.markupLanguage = MarkupLanguage.MARKDOWN
-                accountReminderEmailMessage.title = "REMINDER_ACCOUNT_ACTIVATION_EMAIL"
-                accountReminderEmailMessage.description = "The email message that is sent to the User as a reminder to activate their account."
-                accountReminderEmailMessage.subject = "Cogda Account Verification Reminder"
-                accountReminderEmailMessage.fromEmail = "mail@cogda.com"
-                accountReminderEmailMessage.body = """
+    def createReminderAccountActivationEmail(){
+        if (!SystemEmailMessageTemplate.findByTitle("REMINDER_ACCOUNT_ACTIVATION_EMAIL")) {
+            SystemEmailMessageTemplate accountReminderEmailMessage = new SystemEmailMessageTemplate()
+            accountReminderEmailMessage.markupLanguage = MarkupLanguage.MARKDOWN
+            accountReminderEmailMessage.title = "REMINDER_ACCOUNT_ACTIVATION_EMAIL"
+            accountReminderEmailMessage.description = "The email message that is sent to the User as a reminder to activate their account."
+            accountReminderEmailMessage.subject = "Cogda Account Verification Reminder"
+            accountReminderEmailMessage.fromEmail = "mail@cogda.com"
+            accountReminderEmailMessage.body = """
     We recently sent an account activation email to you in response to your request to begin using {appName} at your organization "{organizationName}".
     If you have already activated your account at {appName} then please disregard the following message.
 
@@ -242,19 +381,21 @@ class BootStrap {
     Thank you!
 
     {appName} Team"""
-                accountReminderEmailMessage.acceptsParameters = true
-                accountReminderEmailMessage.requiredParameterNames = ['appName', 'organizationName', 'activationUrl']
-                accountReminderEmailMessage.save() ?: log.error("Error saving accountReminderEmailMessage errors -> ${accountReminderEmailMessage.errors}")
-            }
+            accountReminderEmailMessage.acceptsParameters = true
+            accountReminderEmailMessage.requiredParameterNames = ['appName', 'organizationName', 'activationUrl']
+            accountReminderEmailMessage.save() ?: log.error("Error saving accountReminderEmailMessage errors -> ${accountReminderEmailMessage.errors}")
+        }
+    }
 
-            if(!SystemEmailMessageTemplate.findByTitle("TIMEOUT_ACCOUNT_ACTIVATION_EMAIL")){
-                SystemEmailMessageTemplate accountReminderEmailMessage = new SystemEmailMessageTemplate()
-                accountReminderEmailMessage.markupLanguage = MarkupLanguage.MARKDOWN
-                accountReminderEmailMessage.title = "TIMEOUT_ACCOUNT_ACTIVATION_EMAIL"
-                accountReminderEmailMessage.description = "The email message that is sent to the User to tell them that we have deactivated their request to use Cogda."
-                accountReminderEmailMessage.subject = "Cogda Account Verification Timeout"
-                accountReminderEmailMessage.fromEmail = "mail@cogda.com"
-                accountReminderEmailMessage.body = """
+    def createTimeoutActivationEmail(){
+        if (!SystemEmailMessageTemplate.findByTitle("TIMEOUT_ACCOUNT_ACTIVATION_EMAIL")) {
+            SystemEmailMessageTemplate accountReminderEmailMessage = new SystemEmailMessageTemplate()
+            accountReminderEmailMessage.markupLanguage = MarkupLanguage.MARKDOWN
+            accountReminderEmailMessage.title = "TIMEOUT_ACCOUNT_ACTIVATION_EMAIL"
+            accountReminderEmailMessage.description = "The email message that is sent to the User to tell them that we have deactivated their request to use Cogda."
+            accountReminderEmailMessage.subject = "Cogda Account Verification Timeout"
+            accountReminderEmailMessage.fromEmail = "mail@cogda.com"
+            accountReminderEmailMessage.body = """
     We recently sent an account activation email to you in response to your request to begin using {appName} at your organization "{organizationName}".
 
     Unfortunately we did not hear back from you and we have deactivated your request to use {appName}.
@@ -264,19 +405,21 @@ class BootStrap {
     Sincerely,
 
     {appName} Team"""
-                accountReminderEmailMessage.acceptsParameters = true
-                accountReminderEmailMessage.requiredParameterNames = ['appName', 'organizationName', 'appUrl']
-                accountReminderEmailMessage.save() ?: log.error("Error saving accountReminderEmailMessage errors -> ${accountReminderEmailMessage.errors}")
-            }
+            accountReminderEmailMessage.acceptsParameters = true
+            accountReminderEmailMessage.requiredParameterNames = ['appName', 'organizationName', 'appUrl']
+            accountReminderEmailMessage.save() ?: log.error("Error saving accountReminderEmailMessage errors -> ${accountReminderEmailMessage.errors}")
+        }
+    }
 
-            if(!SystemEmailMessageTemplate.findByTitle("NEW_ACCOUNT_WELCOME_EMAIL")){
-                SystemEmailMessageTemplate accountWelcomeEmailMessage = new SystemEmailMessageTemplate()
-                accountWelcomeEmailMessage.markupLanguage = MarkupLanguage.MARKDOWN
-                accountWelcomeEmailMessage.title = "NEW_ACCOUNT_WELCOME_EMAIL"
-                accountWelcomeEmailMessage.description = "The email message that is sent to the User after they verify their email with us.  Welcoming a new account to Cogda."
-                accountWelcomeEmailMessage.subject = "Welcome to Cogda"
-                accountWelcomeEmailMessage.fromEmail = "mail@cogda.com"
-                accountWelcomeEmailMessage.body = """
+    def createNewAccountWelcomeEmail(){
+        if (!SystemEmailMessageTemplate.findByTitle("NEW_ACCOUNT_WELCOME_EMAIL")) {
+            SystemEmailMessageTemplate accountWelcomeEmailMessage = new SystemEmailMessageTemplate()
+            accountWelcomeEmailMessage.markupLanguage = MarkupLanguage.MARKDOWN
+            accountWelcomeEmailMessage.title = "NEW_ACCOUNT_WELCOME_EMAIL"
+            accountWelcomeEmailMessage.description = "The email message that is sent to the User after they verify their email with us.  Welcoming a new account to Cogda."
+            accountWelcomeEmailMessage.subject = "Welcome to Cogda"
+            accountWelcomeEmailMessage.fromEmail = "mail@cogda.com"
+            accountWelcomeEmailMessage.body = """
     Thanks for validating your account with {appName}!  You are now all set to begin using and enjoying {appName}!
 
     {organizationUrl}
@@ -284,37 +427,41 @@ class BootStrap {
     Thank you!
 
     {appName} Team"""
-                accountWelcomeEmailMessage.acceptsParameters = true
-                accountWelcomeEmailMessage.requiredParameterNames = ['appName', 'organizationUrl']
-                accountWelcomeEmailMessage.save()
-            }
+            accountWelcomeEmailMessage.acceptsParameters = true
+            accountWelcomeEmailMessage.requiredParameterNames = ['appName', 'organizationUrl']
+            accountWelcomeEmailMessage.save()
+        }
+    }
 
-            if(!SystemEmailMessageTemplate.findByTitle("VERIFIED_SUCCESSFULLY_EMAIL")){
-                SystemEmailMessageTemplate verifiedEmailMessage = new SystemEmailMessageTemplate()
-                verifiedEmailMessage.markupLanguage = MarkupLanguage.MARKDOWN
-                verifiedEmailMessage.title = "VERIFIED_SUCCESSFULLY_EMAIL"
-                verifiedEmailMessage.description = "The email message that is sent to the User after they verify their email with us. "
-                verifiedEmailMessage.subject = "Your email has been verified by Cogda"
-                verifiedEmailMessage.fromEmail = "mail@cogda.com"
-                verifiedEmailMessage.body = """
+    def createVerifiedSuccessfullyEmail(){
+        if (!SystemEmailMessageTemplate.findByTitle("VERIFIED_SUCCESSFULLY_EMAIL")) {
+            SystemEmailMessageTemplate verifiedEmailMessage = new SystemEmailMessageTemplate()
+            verifiedEmailMessage.markupLanguage = MarkupLanguage.MARKDOWN
+            verifiedEmailMessage.title = "VERIFIED_SUCCESSFULLY_EMAIL"
+            verifiedEmailMessage.description = "The email message that is sent to the User after they verify their email with us. "
+            verifiedEmailMessage.subject = "Your email has been verified by Cogda"
+            verifiedEmailMessage.fromEmail = "mail@cogda.com"
+            verifiedEmailMessage.body = """
     Thank you for validating your email address with {appName}!
 
     Sincerely,
 
     {appName} Team"""
-                verifiedEmailMessage.acceptsParameters = true
-                verifiedEmailMessage.requiredParameterNames = ['appName', 'organizationUrl']
-                verifiedEmailMessage.save()
-            }
+            verifiedEmailMessage.acceptsParameters = true
+            verifiedEmailMessage.requiredParameterNames = ['appName', 'organizationUrl']
+            verifiedEmailMessage.save()
+        }
+    }
 
-            if(!SystemEmailMessageTemplate.findByTitle("RESET_PASSWORD_EMAIL")){
-                SystemEmailMessageTemplate accountActivationEmailMessage = new SystemEmailMessageTemplate()
-                accountActivationEmailMessage.markupLanguage = MarkupLanguage.MARKDOWN
-                accountActivationEmailMessage.title = "RESET_PASSWORD_EMAIL"
-                accountActivationEmailMessage.description = "The email message that is sent to the User when they are attempting to reset their password."
-                accountActivationEmailMessage.subject = "Cogda Reset Forgotten Password"
-                accountActivationEmailMessage.fromEmail = "mail@cogda.com"
-                accountActivationEmailMessage.body = """
+    def createResetPasswordEmail(){
+        if (!SystemEmailMessageTemplate.findByTitle("RESET_PASSWORD_EMAIL")) {
+            SystemEmailMessageTemplate accountActivationEmailMessage = new SystemEmailMessageTemplate()
+            accountActivationEmailMessage.markupLanguage = MarkupLanguage.MARKDOWN
+            accountActivationEmailMessage.title = "RESET_PASSWORD_EMAIL"
+            accountActivationEmailMessage.description = "The email message that is sent to the User when they are attempting to reset their password."
+            accountActivationEmailMessage.subject = "Cogda Reset Forgotten Password"
+            accountActivationEmailMessage.fromEmail = "mail@cogda.com"
+            accountActivationEmailMessage.body = """
     You are receiving this message because you had completed the Forgot Password form in {appName}.
 
     Please click the following verification link to reset your {appName} password from within {appName}.
@@ -324,12 +471,31 @@ class BootStrap {
     Thank you!
 
     {appName} Team"""
-                accountActivationEmailMessage.acceptsParameters = true
-                accountActivationEmailMessage.requiredParameterNames = ['appName', 'resetPasswordUrl']
-                accountActivationEmailMessage.save() ?: log.error("Error saving accountActivationEmailMessage errors -> ${accountActivationEmailMessage.errors}")
-            }
+            accountActivationEmailMessage.acceptsParameters = true
+            accountActivationEmailMessage.requiredParameterNames = ['appName', 'resetPasswordUrl']
+            accountActivationEmailMessage.save() ?: log.error("Error saving accountActivationEmailMessage errors -> ${accountActivationEmailMessage.errors}")
         }
     }
-    def destroy = {
+
+    /**
+     * The only reason this is here is because the generated data
+     * may have errors in the email address that make the email address
+     * fail during the validation process.
+     * This just takes the email adresses provided and makes sure that the
+     * only characters used in the email address are a-zA-Z0-9@.
+     * @param emailAddress
+     * @return String
+     */
+    def String sanitizeEmailAddress(String emailAddress){
+
+        Pattern pt = Pattern.compile("[^a-zA-Z0-9@.]")
+        Matcher match= pt.matcher(emailAddress)
+        while(match.find())
+        {
+            String s= match.group()
+            emailAddress=emailAddress.replaceAll("\\"+s, "")
+        }
+
+        return emailAddress
     }
 }
