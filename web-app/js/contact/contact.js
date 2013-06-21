@@ -38,6 +38,8 @@ function toggleEdit(){
   $(".contactShow").toggleClass("editShow");
   $(".contactEdit").toggleClass("editShow");  
 }
+
+/*******contact*****/
 function saveContact(){
   toggleEdit();
   var contact = new Object();
@@ -49,16 +51,7 @@ function saveContact(){
   contact.jobTitle = $("#jobtitle").val();        
   contact.companyName = $("#companyName").val();          
   contact.website = $("#website").val();            
-  $.post("/contact/update", JSON.stringify(contact), function(data){updateContact(data)});
-}
-
-
-function addPhoneField(){
-  var count = $("#phoneFieldset div.field").length;  
-  var field = $(document.createElement("div")).addClass("field");
-  $(field).append($(document.createElement("label")).append("Phone"));
-  $(field).append($(document.createElement("input")).attr("id","phone_"+count).val("").attr("type","text"));  
-	$("#phoneFieldset").prepend($(field));
+  $.post("/contact/update/"+contact.id, JSON.stringify(contact), function(data){updateContact(data)});
 }
 
 function updateContact(data){
@@ -159,3 +152,12 @@ function updatePhones(data){
   	$("#phoneFieldset").prepend($(field));
   });
 }
+
+function addPhoneField(){
+  var count = $("#phoneFieldset div.field").length;  
+  var field = $(document.createElement("div")).addClass("field");
+  $(field).append($(document.createElement("label")).append("Phone"));
+  $(field).append($(document.createElement("input")).attr("id","phone_"+count).val("").attr("type","text"));  
+	$("#phoneFieldset").prepend($(field));
+}
+
