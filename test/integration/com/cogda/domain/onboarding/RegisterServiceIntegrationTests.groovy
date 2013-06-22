@@ -94,12 +94,13 @@ class RegisterServiceIntegrationTests extends BaseIntegrationTest {
         assert expectedRegistration, actualRegistration
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     void testSaveInvalidRegistration() {
         def invalidRegistration = createInvalidRegistration()
         expectedException.expect(RegistrationValidationException)
         expectedException.expectMessage("Failed to save registration")
         registerService.save(invalidRegistration)
+        assert invalidRegistration.hasErrors()
     }
 
     @Test
@@ -114,35 +115,23 @@ class RegisterServiceIntegrationTests extends BaseIntegrationTest {
         assert originalVersion + 1, actualRegistration.version
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     void testInvalidUpdate() {
         def registrationToUpdate = Registration.first()
         String originalFirstName = registrationToUpdate.firstName
         registrationToUpdate.firstName = null
-        registerService.update(registrationToUpdate.id, registrationToUpdate)
+        assert registerService.save(registrationToUpdate) == null
+        assert registrationToUpdate.hasErrors()
         Registration actualRegistration = Registration.findByToken(registrationToUpdate.token)
         assert originalFirstName, actualRegistration.firstName
+
     }
 
-    @Test(expected = RegistrationException)
-    void testInvalidIdUpdate() {
-        def registrationToUpdate = Registration.first()
-        String originalFirstName = registrationToUpdate.firstName
-        registerService.update(-5, registrationToUpdate)
-        Registration actualRegistration = Registration.findByToken(registrationToUpdate.token)
-        assert originalFirstName, actualRegistration.firstName
-    }
-
-    @Test(expected = RegistrationException.class)
-    void testNotFoundUpdate() {
-        def registrationToUpdate = createValidRegistration("bananas")
-        registerService.update(-9, registrationToUpdate)
-    }
-
-    @Test(expected = RegistrationException)
+    @Test
     void testApproveNoDomain() {
         Registration registrationToUpdate = Registration.first()
-        registerService.approve(registrationToUpdate.id)
+        registerService.approve(registrationToUpdate)
+        assert registrationToUpdate.hasErrors() || registrationToUpdate.errors.errorCount > 0
     }
 
     @Test
@@ -150,8 +139,8 @@ class RegisterServiceIntegrationTests extends BaseIntegrationTest {
         Registration registrationToUpdate = Registration.first()
         registrationToUpdate.subDomain = "banana"
         registrationToUpdate.registrationStatus = RegistrationStatus.AWAITING_ADMIN_APPROVAL
-        registerService.update(registrationToUpdate.id, registrationToUpdate)
-        registerService.approve(registrationToUpdate.id)
+        registerService.save(registrationToUpdate)
+        registerService.approve(registrationToUpdate)
         Registration actual = Registration.findById(registrationToUpdate.id)
         assert actual.registrationStatus, RegistrationStatus.APPROVED
     }

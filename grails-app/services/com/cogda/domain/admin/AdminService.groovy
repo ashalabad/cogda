@@ -3,8 +3,7 @@ package com.cogda.domain.admin
 import com.cogda.domain.onboarding.RegisterService
 import com.cogda.domain.onboarding.Registration
 import com.cogda.errors.RegistrationException
-import com.cogda.multitenant.CustomerAccount
-import com.cogda.multitenant.CustomerAccountService
+import com.cogda.security.UserService
 import org.springframework.transaction.annotation.Transactional
 
 /**
@@ -14,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional
 class AdminService {
 
     RegisterService registerService
-
+    UserService userService
 
     static transactional = true
 
@@ -40,12 +39,8 @@ class AdminService {
         return registerService.save(registration)
     }
 
-    def updateRegistration(long id, Registration registration) {
-        return registerService.update(id, registration)
-    }
-
-    def approveRegistration(long id) {
-        registerService.approve(id)
+    def approveRegistration(Registration registrationInstance) {
+        registerService.approve(registrationInstance)
     }
 
     def updateSubdomain(Long id, String subDomain) {
@@ -56,5 +51,13 @@ class AdminService {
         registration = registerService.update(id, registration)
         if (registration)
             return registration.subDomain
+    }
+
+    def availableUserName(String userName) {
+        return userService.availableUsername(userName)
+    }
+
+    int registrationCount() {
+        return registerService.count()
     }
 }

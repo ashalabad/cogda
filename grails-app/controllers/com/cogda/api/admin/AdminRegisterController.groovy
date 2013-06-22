@@ -1,21 +1,22 @@
 package com.cogda.api.admin
 
-import com.cogda.common.web.AjaxResponseDto
 import com.cogda.domain.admin.AdminService
 import com.cogda.domain.admin.CompanyType
 import com.cogda.domain.onboarding.Registration
-import com.cogda.errors.RegistrationException
-import com.cogda.security.SecurityService
 import com.cogda.util.ErrorMessageResolverService
-import grails.converters.JSON
 import grails.converters.XML
-import grails.plugins.springsecurity.Secured
+import grails.plugin.gson.converters.GSON
 
-/**                                                                                    lo
+import static grails.plugin.gson.http.HttpConstants.SC_UNPROCESSABLE_ENTITY
+import static grails.plugin.gson.http.HttpConstants.X_PAGINATION_TOTAL
+import static javax.servlet.http.HttpServletResponse.*
+import static org.codehaus.groovy.grails.web.servlet.HttpHeaders.LOCATION
+
+/**
  * AdminRegisterController
  * A controller class handles incoming web requests and performs actions such as redirects, rendering views and so on.
  */
-@Secured('ROLE_ADMINISTRATOR')
+//@Secured('ROLE_ADMINISTRATOR')
 class AdminRegisterController {
 
     static allowedMethods = [list: 'GET',
@@ -33,131 +34,89 @@ class AdminRegisterController {
 
     def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        AjaxResponseDto ajaxResponseDto = new AjaxResponseDto()
-        try {
-            def list = adminService.listRegistrations(params)
-            ajaxResponseDto.success = Boolean.TRUE
-            ajaxResponseDto.modelObject = [registrationList: list]
-            render ajaxResponseDto as JSON
-            return
-        } catch (Exception e) {
-            ajaxResponseDto.success = Boolean.FALSE
-            ajaxResponseDto.errors = [exception: e.message, stackTrace: e.stackTrace.toArrayString()]
-            render ajaxResponseDto as JSON
-            return
+        response.addIntHeader X_PAGINATION_TOTAL, adminService.registrationCount()
+        def registrations = adminService.listRegistrations(params)
+        withFormat {
+            json { render registrations as GSON }
+            xml { render registrations as XML }
         }
     }
 
     def create() {
         Registration registration = new Registration()
-        AjaxResponseDto ajaxResponseDto = new AjaxResponseDto()
-        ajaxResponseDto.success = Boolean.TRUE
-        ajaxResponseDto.modelObject = [registration: registration]
-        render ajaxResponseDto as JSON
-        return
+        withFormat {
+            json { render registration as GSON }
+            xml { render registration as XML }
+        }
     }
 
     def show(long id) {
         def registration = adminService.findRegistrationById(id)
-        def companyTypes = CompanyType.list()
-        if (!registration || !companyTypes) {
-            withFormat {
-                json { response.sendError(404) }
-                xml { response.sendError(404) }
-            }
+        if (!registration) {
+            respondNotFound(id)
             return
         }
-
-        def object = [registrationInstance: registration, companyTypes: companyTypes]
         withFormat {
-            json { render object as JSON }
-            xml { render object as XML }
+            json { render registration as GSON }
+            xml { render registration as XML }
         }
     }
 
     def update(long id) {
-        Registration registration = Registration.get(id)
-        AjaxResponseDto ajaxResponseDto = new AjaxResponseDto()
-        if (!registration) {
-            ajaxResponseDto.success = Boolean.FALSE
-            ajaxResponseDto.errors = [error: message(code: "registration.failure.failedToFind", args: [])]
-            render ajaxResponseDto as JSON
+        if (!requestIsJson()) {
+            respondNotAcceptable()
             return
         }
-        registration.properties = params.registration
-        if (registration.hasErrors()) {
-            ajaxResponseDto.success = Boolean.FALSE
-            ajaxResponseDto.errors = errorMessageResolverService.retrieveErrorStrings(registration)
-            render ajaxResponseDto as JSON
+        Registration registrationInstance = Registration.get(id)
+
+        if (!registrationInstance) {
+            respondNotFound(id)
             return
-        } else {
-            adminService.updateRegistration(id, registration)
-            if (registration.hasErrors()) {
-                ajaxResponseDto.success = Boolean.FALSE
-                ajaxResponseDto.errors = errorMessageResolverService.retrieveErrorStrings(registration)
-                render ajaxResponseDto as JSON
-                return
-            } else {
-                ajaxResponseDto.success = Boolean.TRUE
-                ajaxResponseDto.addMessage(message(code: "registration.update.successful", args: []))
-                ajaxResponseDto.modelObject = [registration: registration]
-                render ajaxResponseDto as JSON
+        }
+
+        if (params.version != null) {
+            if (registrationInstance.version > params.long('version')) {
+                respondConflict(registrationInstance)
                 return
             }
+        }
+
+        registrationInstance.properties = request.GSON
+
+        if (adminService.saveRegistration(registrationInstance)) {
+            respondUpdated(registrationInstance)
+        } else {
+            registrationInstance.discard()
+            respondUnprocessableEntity registrationInstance
+        }
+    }
+
+    def save() {
+        if (!requestIsJson()) {
+            respondNotAcceptable()
+            return
+        }
+
+        def registrationInstance = new Registration(request.GSON)
+        if (adminService.saveRegistration(registrationInstance)) {
+            respondCreated registrationInstance
+        } else {
+            respondUnprocessableEntity registrationInstance
         }
     }
 
     def approve(long id) {
-        AjaxResponseDto ajaxResponseDto = new AjaxResponseDto()
-        ajaxResponseDto.modelObject = [id: id]
-        try {
-            adminService.approveRegistration(id)
-            ajaxResponseDto.success = Boolean.TRUE
-            ajaxResponseDto.messages = [g.message(code: 'registration.status.adminapproved')]
-        } catch (RegistrationException e) {
-            ajaxResponseDto.success = Boolean.FALSE
-            ajaxResponseDto.errors = [error0: g.message(code: 'registration.status.adminapprovedfailed'), error1: e.message]
-        }
-        render ajaxResponseDto as JSON
-    }
-
-    def save() {
-        Registration registration = new Registration(params.registration)
-        AjaxResponseDto ajaxResponseDto = new AjaxResponseDto()
-        if (!registration.validate()) {
-            ajaxResponseDto.success = Boolean.FALSE
-            ajaxResponseDto.errors = errorMessageResolverService.retrieveErrorStrings(registration)
-            render ajaxResponseDto as JSON
+        Registration registrationInstance = Registration.get(id)
+        if (!registrationInstance) {
+            respondNotFound(id)
             return
-        } else {
-            adminService.saveRegistration(registration)
-            if (registration.hasErrors()) {
-                ajaxResponseDto.success = Boolean.FALSE
-                ajaxResponseDto.errors = errorMessageResolverService.retrieveErrorStrings(registration)
-                render ajaxResponseDto as JSON
-                return
-            } else {
-                ajaxResponseDto.success = true
-                ajaxResponseDto.addMessage(message(code: "registration.successful", args: []))
-                ajaxResponseDto.modelObject = [registration: registration]
-                render ajaxResponseDto as JSON
-                return
-            }
         }
-    }
-
-    def updateSubdomain(long id, String subDomain) {
-        AjaxResponseDto ajaxResponseDto = new AjaxResponseDto()
-        String updatedSubDomain = adminService.updateSubdomain(id, subDomain)
-        if (!updatedSubDomain) {
-            ajaxResponseDto.success = Boolean.FALSE
-            ajaxResponseDto.errors = [error: "Failed to update registration"]
+            registrationInstance = adminService.approveRegistration(registrationInstance)
+        if (registrationInstance.hasErrors() || registrationInstance.errors.errorCount > 0) {
+            respondRegistrationApprovalConflict(registrationInstance)
         } else {
-            ajaxResponseDto.success = Boolean.TRUE
-            ajaxResponseDto.modelObject = [subDomain: updatedSubDomain]
-            ajaxResponseDto.addMessage(message(code: "registration.subdomain.successful", args: []))
+            respondUpdated(registrationInstance)
         }
-        render ajaxResponseDto as JSON
     }
 
     def companyTypes() {
@@ -168,10 +127,71 @@ class AdminRegisterController {
                 xml { response.sendError(404) }
             }
         }
-        def model = [companyTypes: companyTypes]
         withFormat {
-            json { render model as JSON }
-            xml { render model as XML }
+            json { render companyTypes as GSON }
+            xml { render companyTypes as XML }
         }
+    }
+
+    private void respondNotFound(id) {
+        def responseBody = [:]
+        responseBody.message = message(code: 'default.not.found.message', args: [message(code: 'registration.label', default: 'Registration'), id])
+        response.status = SC_NOT_FOUND
+        withFormat {
+            json { render responseBody as GSON }
+            xml { render responseBody as XML }
+        }
+    }
+
+    private boolean requestIsJson() {
+        GSON.isJson(request)
+    }
+
+    private void respondNotAcceptable() {
+        response.status = SC_NOT_ACCEPTABLE
+        response.contentLength = 0
+        response.outputStream.flush()
+        response.outputStream.close()
+    }
+
+    private void respondConflict(Registration registrationInstance) {
+        registrationInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
+                [message(code: 'registration.label', default: 'Album')] as Object[],
+                'Another user has updated this Registration while you were editing')
+        def responseBody = [:]
+        responseBody.errors = registrationInstance.errors.allErrors.collect {
+            message(error: it)
+        }
+        response.status = SC_CONFLICT
+        render responseBody as GSON
+    }
+
+    private respondRegistrationApprovalConflict(Registration registrationInstance) {
+        def responseBody = [:]
+        responseBody.errors = registrationInstance.errors.allErrors.collect {
+            message(error: it)
+        }
+        response.status = SC_CONFLICT
+        render responseBody as GSON
+    }
+
+    private void respondUpdated(Registration registrationInstance) {
+        response.status = SC_OK
+        render registrationInstance as GSON
+    }
+
+    private void respondUnprocessableEntity(Registration registrationInstance) {
+        def responseBody = [:]
+        responseBody.errors = registrationInstance.errors.allErrors.collect {
+            message(error: it)
+        }
+        response.status = SC_UNPROCESSABLE_ENTITY
+        render responseBody as GSON
+    }
+
+    private void respondCreated(Registration registrationInstance) {
+        response.status = SC_CREATED
+        response.addHeader LOCATION, createLink(action: 'show', id: registrationInstance.id)
+        render registrationInstance as GSON
     }
 }

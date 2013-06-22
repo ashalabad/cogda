@@ -2,40 +2,54 @@ package com.cogda.api.admin
 
 import com.cogda.BaseIntegrationTest
 import com.cogda.common.RegistrationStatus
-import com.cogda.common.web.AjaxResponseDto
 import com.cogda.domain.admin.AdminService
 import com.cogda.domain.admin.CompanyType
 import com.cogda.domain.onboarding.RegisterService
 import com.cogda.domain.onboarding.Registration
 import com.cogda.util.ErrorMessageResolverService
-import grails.converters.JSON
-import grails.validation.ValidationException
-import org.codehaus.groovy.grails.plugins.springsecurity.AjaxAwareAuthenticationSuccessHandler
-import org.codehaus.groovy.grails.web.json.JSONObject
+import com.google.gson.Gson
+import com.google.gson.JsonElement
+import com.google.gson.JsonObject
+import com.google.gson.JsonPrimitive
+import com.google.gson.reflect.TypeToken
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.springframework.context.MessageSource
+
+import java.lang.reflect.Type
 
 class AdminRegisterControllerIntegrationTests extends BaseIntegrationTest {
 
     AdminService adminService
     RegisterService registerService
     ErrorMessageResolverService errorMessageResolverService
-    MessageSource messageSource
+    def gsonBuilder
+    Gson gson
 
     @Before
     void setUp() {
         // Setup logic here
+        gson = gsonBuilder.create()
         createCompanyTypes()
         for (def i = 0; i < 5; i++)
             createAndSaveValidRegistration(generator((('A'..'Z') + ('0'..'9')).join(), 9))
-
     }
 
     @After
     void tearDown() {
 
+    }
+
+    @Test
+    void testGson() {
+        Registration r = Registration.first()
+        assert r != null
+        def gson = gsonBuilder.create()
+        def gs = gson.toJson(r)
+        println gs
+        Registration z = gson.fromJson(gs, Registration.class)
+        println z
     }
 
     @Test
@@ -46,54 +60,27 @@ class AdminRegisterControllerIntegrationTests extends BaseIntegrationTest {
         adminRegisterController.errorMessageResolverService = errorMessageResolverService
         def expectedRegistrations = Registration.list()
         adminRegisterController.list()
-        def results = adminRegisterController.response.contentAsString
-        AjaxResponseDto actualResultsObj = JSON.parse(results)
-        assert actualResultsObj
-        assert actualResultsObj.success
-        List<JSONObject> actualRegistrations = actualResultsObj.modelObject.registrationList
+        Type listType = new TypeToken<ArrayList<Registration>>() {}.getType()
+        List<Registration> actualRegistrations = gson.fromJson(adminRegisterController.response.json.toString(), listType)
+        assert adminRegisterController.response.status == 200
         assert Registration.count == actualRegistrations.size()
         println "size: " + actualRegistrations.size()
         expectedRegistrations.each { Registration expectedRegistration ->
             assert actualRegistrations.any { actualRegistration ->
-                compareRegistrationToJson(expectedRegistration, actualRegistration)
+                compareRegistrations(expectedRegistration, actualRegistration)
             }
         }
     }
 
-    boolean compareRegistrationToJson(Registration registration, JSONObject json) {
-        compareRegistrationsJSON(JSON.parse(registration.encodeAsJSON()), json)
-    }
-
-    static boolean compareRegistrationsJSON(JSONObject a, JSONObject b) {
-        return a.city == b.city &&
-                a.companyName == b.companyName &&
-                a.companyType == b.companyType &&
-                a.companyTypeOther == b.companyTypeOther &&
-                a.country == b.country &&
-                a.county == b.county &&
-                a.dateCreated == b.dateCreated &&
-                a.emailAddress == b.emailAddress &&
-                a.existingCompany == b.existingCompany &&
-                a.firstName == b.firstName &&
-                a.lastName == b.lastName &&
-                a.phoneNumber == b.phoneNumber &&
-                a.streetAddressOne == b.streetAddressOne &&
-                a.streetAddressTwo == b.streetAddressTwo &&
-                a.streetAddressThree == b.streetAddressThree &&
-                a.zipcode == b.zipcode &&
-                a.state == b.state &&
-                a.newCompany == b.newCompany
-    }
-
-    boolean compareRegistrationsJSONExcludingExistingCompany(JSONObject a, JSONObject b) {
+    static boolean assertRegistrationsEqual(Registration a, Registration b) {
         assert a.city == b.city
         assert a.companyName == b.companyName
-        assert a.companyType.id == b.companyType.id
-        assert a.companyType.intCode == b.companyType.intCode
+        assert a.companyType == b.companyType
         assert a.companyTypeOther == b.companyTypeOther
         assert a.country == b.country
         assert a.county == b.county
         assert a.emailAddress == b.emailAddress
+        assert a.existingCompany == b.existingCompany
         assert a.firstName == b.firstName
         assert a.lastName == b.lastName
         assert a.phoneNumber == b.phoneNumber
@@ -106,7 +93,7 @@ class AdminRegisterControllerIntegrationTests extends BaseIntegrationTest {
         return true
     }
 
-    boolean compareRegistrations(Registration a, Registration b) {
+    static boolean compareRegistrations(Registration a, Registration b) {
         return a.city == b.city &&
                 a.companyName == b.companyName &&
                 a.companyType == b.companyType &&
@@ -127,16 +114,13 @@ class AdminRegisterControllerIntegrationTests extends BaseIntegrationTest {
                 a.newCompany == b.newCompany
     }
 
-
-
     @Test
     void testCreate() {
         def adminRegisterController = new AdminRegisterController()
         adminRegisterController.adminService = adminService
         adminRegisterController.errorMessageResolverService = errorMessageResolverService
         adminRegisterController.create()
-        AjaxResponseDto response = adminRegisterController.response.json
-        assert response.success == true
+        assert adminRegisterController.response.status == 200
     }
 
     @Test
@@ -146,8 +130,9 @@ class AdminRegisterControllerIntegrationTests extends BaseIntegrationTest {
         adminRegisterController.errorMessageResolverService = errorMessageResolverService
         Registration expectedRegistration = Registration.first()
         adminRegisterController.show(expectedRegistration.id)
+        def actualRegistration = gson.fromJson(adminRegisterController.response.json.toString(), Registration)
         assert adminRegisterController.response.status == 200
-        assert compareRegistrationToJson(expectedRegistration, adminRegisterController.response.json.registrationInstance)
+        assertRegistrationsEqual(expectedRegistration, actualRegistration)
     }
 
     @Test
@@ -165,33 +150,29 @@ class AdminRegisterControllerIntegrationTests extends BaseIntegrationTest {
         adminRegisterController.adminService = adminService
         adminRegisterController.errorMessageResolverService = errorMessageResolverService
         Registration registrationToUpdate = Registration.first()
-        def registrationToUpdateJson = JSON.parse(registrationToUpdate.encodeAsJSON())
         def newSubDomain = 'bananaphone'
-        registrationToUpdateJson.subDomain = newSubDomain
-        adminRegisterController.request.json = registrationToUpdateJson
+        adminRegisterController.request.json = getGsonAddProperty(registrationToUpdate, 'subDomain', newSubDomain)
         adminRegisterController.update(registrationToUpdate.id)
-        AjaxResponseDto ajaxResponseDto = adminRegisterController.response.json
-        assert ajaxResponseDto.success == true
-        assert ajaxResponseDto.modelObject.registration.subDomain == newSubDomain
-        assert Registration.get(registrationToUpdateJson.id).subDomain == newSubDomain
+        Registration actualRegistration = gson.fromJson(adminRegisterController.response.json.toString(), Registration)
+        assert adminRegisterController.response.status == 200
+        assert actualRegistration.subDomain == newSubDomain
+        assert Registration.get(registrationToUpdate.id).subDomain == newSubDomain
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     void testUpdateInvalidDomain() {
         def adminRegisterController = new AdminRegisterController()
         adminRegisterController.adminService = adminService
         adminRegisterController.errorMessageResolverService = errorMessageResolverService
         Registration registrationToUpdate = Registration.first()
-        def registrationToUpdateJSON = JSON.parse(registrationToUpdate.encodeAsJSON())
         def newSubDomain = '@@@'
         def originalSubDomain = registrationToUpdate.subDomain
-        registrationToUpdateJSON.subDomain = newSubDomain
-        adminRegisterController.request.json = registrationToUpdateJSON
+        adminRegisterController.request.json = getGsonAddProperty(registrationToUpdate, 'subDomain', newSubDomain)
         adminRegisterController.update(registrationToUpdate.id)
-        AjaxResponseDto ajaxResponseDto = adminRegisterController.response.json
-        assert ajaxResponseDto.success == false
-        assert ajaxResponseDto.modelObject.subDomain == newSubDomain
-        assert Registration.get(registrationToUpdateJSON.id).subDomain == originalSubDomain
+        Registration actualRegistration = gson.fromJson(adminRegisterController.response.json.toString(), Registration)
+        assert adminRegisterController.response.status == 422
+        assert actualRegistration.subDomain != newSubDomain
+        assert Registration.get(registrationToUpdate.id).subDomain == originalSubDomain
     }
 
     @Test
@@ -203,11 +184,8 @@ class AdminRegisterControllerIntegrationTests extends BaseIntegrationTest {
         registrationToApprove.subDomain = 'iliketurtles'
         registrationToApprove.save(failOnError: true)
         adminRegisterController.approve(registrationToApprove.id)
-        AjaxResponseDto ajaxResponseDto = adminRegisterController.response.json
-        assert ajaxResponseDto.success == true
+        assert adminRegisterController.response.status == 200
         assert Registration.get(registrationToApprove.id).registrationStatus == RegistrationStatus.APPROVED
-        assert ajaxResponseDto.messages.size() == 1
-        assert ajaxResponseDto.messages.first() == messageSource.getMessage('registration.status.adminapproved', null, Locale.default)
     }
 
     @Test
@@ -217,8 +195,9 @@ class AdminRegisterControllerIntegrationTests extends BaseIntegrationTest {
         adminRegisterController.errorMessageResolverService = errorMessageResolverService
         Registration registrationToApprove = createAndSaveValidRegistration("pussandboots", RegistrationStatus.AWAITING_ADMIN_APPROVAL)
         adminRegisterController.approve(registrationToApprove.id)
-        AjaxResponseDto ajaxResponseDto = adminRegisterController.response.json
-        validateInvalidRegistration(ajaxResponseDto, registrationToApprove.id)
+        Registration responseRegistration = gson.fromJson(adminRegisterController.response.json.toString(), Registration)
+        assert adminRegisterController.response.status == 409
+        assert responseRegistration.errors != null
     }
 
     @Test
@@ -230,14 +209,9 @@ class AdminRegisterControllerIntegrationTests extends BaseIntegrationTest {
         registrationToApprove.subDomain = 'iliketurtles'
         registrationToApprove.save(failOnError: true)
         adminRegisterController.approve(registrationToApprove.id)
-        AjaxResponseDto ajaxResponseDto = adminRegisterController.response.json
-        validateInvalidRegistration(ajaxResponseDto, registrationToApprove.id)
-    }
-
-    void validateInvalidRegistration(AjaxResponseDto ajaxResponseDto, Long registrationId) {
-        assert ajaxResponseDto.success == false
-        assert ajaxResponseDto.errors.error0 == messageSource.getMessage('registration.status.adminapprovedfailed', null, Locale.default)
-        assert Registration.get(registrationId).registrationStatus != RegistrationStatus.APPROVED
+        Registration responseRegistration = gson.fromJson(adminRegisterController.response.json.toString(), Registration)
+        assert adminRegisterController.response.status == 409
+        assert responseRegistration.errors != null
     }
 
     @Test
@@ -246,50 +220,14 @@ class AdminRegisterControllerIntegrationTests extends BaseIntegrationTest {
         adminService.registerService = registerService
         adminRegisterController.adminService = adminService
         adminRegisterController.errorMessageResolverService = errorMessageResolverService
-        def registrationToSaveJSON = """{
-   "class":"com.cogda.domain.onboarding.Registration",
-   "city":"Athens",
-   "companyName":"Adgoc Solutions, LLC.",
-   "companyType":{
-      "class":"com.cogda.domain.admin.CompanyType",
-      "id":4,
-      "code":"Wholesaler (MGA, Broker)",
-      "description":"Wholesaler (MGA, Broker)",
-      "intCode":3,
-   },
-   "companyTypeOther":null,
-   "country":null,
-   "county":"CLARKE",
-   "dateCreated":null,
-   "emailAddress":"chris@cogda.com",
-   "emailConfirmationLogs":null,
-   "firstName":"Walnut",
-   "lastName":"Banks",
-   "lastUpdated":null,
-   "newCompany":null,
-   "password":"939020kiddko2",
-   "phoneNumber":"706-255-9087",
-   "registrationStatus":{
-      "enumType":"com.cogda.common.RegistrationStatus",
-      "name":"APPROVED"
-   },
-   "state":"GA",
-   "streetAddressOne":"1 Press Place",
-   "streetAddressThree":"Office #17",
-   "streetAddressTwo":"Suite 200",
-   "subDomain":null,
-   "token":"ed6ce98f1e864dcc9a9dd9add8be7824",
-   "username":"whatever",
-   "zipcode":"30601"
-}"""
-        def registrationToSaveJSONObj = JSON.parse(registrationToSaveJSON)
-        registrationToSaveJSONObj.companyType.id = CompanyType.first().id
-        adminRegisterController.request.json = registrationToSaveJSONObj.toString()
+        Registration registrationToSave = createValidRegistration('idcccccc')
+        def registrationToSaveGSON = gson.toJson(registrationToSave)
+        adminRegisterController.request.json = registrationToSaveGSON
         adminRegisterController.save()
-        AjaxResponseDto ajaxResponseDto = adminRegisterController.response.json
-        assert ajaxResponseDto.success == true
-        assert Registration.get(ajaxResponseDto.modelObject.registration.id) != null
-        assert compareRegistrationsJSONExcludingExistingCompany(registrationToSaveJSONObj, ajaxResponseDto.modelObject.registration)
+        Registration responseRegistration = gson.fromJson(adminRegisterController.response.json.toString(), Registration)
+        assert adminRegisterController.response.status == 201
+        assert Registration.get(responseRegistration.id) != null
+        assertRegistrationsEqual(registrationToSave, responseRegistration)
     }
 
     @Test
@@ -300,13 +238,10 @@ class AdminRegisterControllerIntegrationTests extends BaseIntegrationTest {
         Registration registrationToUpdate = Registration.first()
         def originalSubDomain = registrationToUpdate.subDomain
         def newSubDomain = 'doodoodoodoodoo'
-        adminRegisterController.updateSubdomain(registrationToUpdate.id, newSubDomain)
-        AjaxResponseDto ajaxResponseDto = adminRegisterController.response.json
-        assert ajaxResponseDto != null
-        assert ajaxResponseDto.success == true
-        println ajaxResponseDto.modelObject
-        assert ajaxResponseDto.messages.size() == 1
-        assert ajaxResponseDto.messages[0] == messageSource.getMessage("registration.subdomain.successful", null, Locale.default)
+        adminRegisterController.request.json = getGsonAddProperty(registrationToUpdate, 'subDomain', newSubDomain)
+        adminRegisterController.update(registrationToUpdate.id)
+        Registration responseRegistration = gson.fromJson(adminRegisterController.response.json.toString(), Registration)
+        assert adminRegisterController.response.status == 200
         assert Registration.get(registrationToUpdate.id).subDomain != originalSubDomain
         assert Registration.get(registrationToUpdate.id).subDomain == newSubDomain
     }
@@ -347,8 +282,7 @@ class AdminRegisterControllerIntegrationTests extends BaseIntegrationTest {
         return saveRegistration(registration)
     }
 
-    def saveRegistration(Registration registration) {
-        log.debug("Saving Registration Domain Class")
+    static def saveRegistration(Registration registration) {
         assert registration.save(failOnError: true), "Registration save failed: ${registration.errors}"
         return registration
     }
@@ -357,5 +291,47 @@ class AdminRegisterControllerIntegrationTests extends BaseIntegrationTest {
         new Random().with {
             (1..n).collect { alphabet[nextInt(alphabet.length())] }.join()
         }
+    }
+
+    def compareRegistration(JsonObject a, Registration b) {
+        compareItems(a.city, b.city)
+        compareItems(a.companyName, b.companyName)
+        compareItems(a.companyType.id, b.companyType.id)
+        compareItems(a.companyType.intCode, b.companyType.intCode)
+        compareItems(a.companyTypeOther, b.companyTypeOther)
+        compareItems(a.country, b.country)
+        compareItems(a.county, b.county)
+        compareItems(a.emailAddress, b.emailAddress)
+        compareItems(a.firstName, b.firstName)
+        compareItems(a.lastName, b.lastName)
+        compareItems(a.phoneNumber, b.phoneNumber)
+        compareItems(a.streetAddressOne, b.streetAddressOne)
+        compareItems(a.streetAddressTwo, b.streetAddressTwo)
+        compareItems(a.streetAddressThree, b.streetAddressThree)
+        compareItems(a.state, b.state)
+        compareItems(a.newCompany, b.newCompany)
+        return true
+    }
+
+    def compareItems(JsonPrimitive a, def b) {
+        assert getValue(a) == b
+    }
+
+    def getValue(JsonPrimitive jsonPrimitive) {
+        if (jsonPrimitive == null)
+            return null
+        if (jsonPrimitive.isNumber())
+            return jsonPrimitive.getAsNumber()
+        if (jsonPrimitive.isString())
+            return jsonPrimitive.getAsString()
+        if (jsonPrimitive.isBoolean())
+            return jsonPrimitive.getAsBoolean()
+        return jsonPrimitive
+    }
+
+    String getGsonAddProperty(Object objectToAddTo, String propertyName, Object value) {
+        JsonElement registrationGSON = gson.toJsonTree(objectToAddTo)
+        registrationGSON.getAsJsonObject().addProperty(propertyName, value)
+        return registrationGSON.toString()
     }
 }

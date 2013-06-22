@@ -11,41 +11,17 @@ import com.cogda.multitenant.CustomerAccountService
 class RegisterService {
 
     CustomerAccountService customerAccountService
+    def messageSource
 
     /**
      * Save a com.cogda.domain.onboarding.Registration object
      */
     def save(Registration registration) {
-        if (!registration.save(flush: true, failOnError: true)) {
-            registration.errors.each {
-                log.error(it)
-            }
-        }
-        return registration
+        return registration.save(flush:true)
     }
 
     def list(params) {
         Registration.list(params)
-    }
-
-    def update(long id, Registration registration) {
-        def instance = Registration.get(id)
-        if (!instance) {
-            throw new RegistrationException("Registration not found.")
-        } else {
-            instance.setProperties(registration.properties)
-            if (!instance.validate()) {
-                instance.errors.each {
-                    log.error(it)
-                }
-            }
-            if (!instance.save(flush: true, failOnError: true)) {
-                instance.errors.each {
-                    log.error(it)
-                }
-            }
-            return instance
-        }
     }
 
     def findById(Long id) {
@@ -58,27 +34,30 @@ class RegisterService {
         return registration
     }
 
-    def approve(long id) {
-        Registration registration = Registration.get(id)
-        if (!registration) {
-            throw new RegistrationException("Registration not found.")
-        } else if (!registration.registrationStatus) {
-            throw new RegistrationException("Registration status is empty")
-        } else if (registration.registrationStatus != RegistrationStatus.AWAITING_ADMIN_APPROVAL) {
-            throw new RegistrationException("Registration status is not in correct status")
-        } else if (!registration.subDomain) {
-            throw new RegistrationException("Registration must have sub domain before approval")
+    def approve(Registration registrationInstance) {
+        if (!registrationInstance.registrationStatus) {
+            registrationInstance.errors.rejectValue('registrationStatus', 'registration.status.blank',
+                    [messageSource.getMessage('registration.label', null, 'Registration', Locale.default)] as Object[],
+                    'Registration status is empty.')
+        } else if (registrationInstance.registrationStatus != RegistrationStatus.AWAITING_ADMIN_APPROVAL) {
+            registrationInstance.errors.rejectValue('registrationStatus', 'registration.status.incorrectstate',
+                    [messageSource.getMessage('registration.label', null, 'Registration', Locale.default)] as Object[],
+                    'Registration status must be Awaiting Admin Approval')
+        } else if (!registrationInstance.subDomain) {
+            registrationInstance.errors.rejectValue('registrationStatus', 'registration.subdmoain.approval',
+                    [messageSource.getMessage('registration.label', null, 'Registration', Locale.default)] as Object[],
+                    'Registration status must have valid subdomain before approval')
         } else {
-            registration.registrationStatus = RegistrationStatus.APPROVED
-            if (!registration.save(flush: true)) {
-                registration.errors.each {
+            registrationInstance.registrationStatus = RegistrationStatus.APPROVED
+            if (!registrationInstance.save(flush: true)) {
+                registrationInstance.errors.each {
                     log.error(it)
                 }
-            }
-            else {
-                customerAccountService.onboardCustomerAccount(registration)
+            } else {
+                customerAccountService.onboardCustomerAccount(registrationInstance)
             }
         }
+        return registrationInstance
     }
 
     def findByToken(String token, Map params) {
@@ -86,8 +65,12 @@ class RegisterService {
         return registration
     }
 
-    def get(long id){
+    def get(long id) {
         def registration = Registration.get(id)
         return registration
+    }
+
+    int count() {
+        return Registration.count
     }
 }
