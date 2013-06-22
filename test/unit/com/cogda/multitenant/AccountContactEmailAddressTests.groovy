@@ -7,11 +7,11 @@ import grails.test.mixin.domain.DomainClassUnitTestMixin
 /**
  * See the API for {@link grails.test.mixin.domain.DomainClassUnitTestMixin} for usage instructions
  */
-@TestFor(AccountEmailAddress)
+@TestFor(AccountContactEmailAddress)
 @TestMixin(DomainClassUnitTestMixin)
-class AccountEmailAddressTests {
+class AccountContactEmailAddressTests {
 
-    AccountEmailAddress accountEmailAddress
+    AccountContactEmailAddress accountEmailAddress
 
     void setUp() {
         // Setup logic here
@@ -22,21 +22,22 @@ class AccountEmailAddressTests {
     }
 
     void testNullable(){
-        mockDomain(AccountEmailAddress)
+        mockDomain(AccountContactEmailAddress)
 
-        accountEmailAddress = new AccountEmailAddress()
+        accountEmailAddress = new AccountContactEmailAddress()
 
         assertFalse accountEmailAddress.validate()
         //accountEmailAddress.errors.each { println it }
 
         assert "nullable" == accountEmailAddress.errors["emailAddress"].code
-        assert "nullable" == accountEmailAddress.errors["account"].code
+        assert "nullable" == accountEmailAddress.errors["accountContact"].code
         assert !accountEmailAddress.errors["primaryEmailAddress"]
 
     }
 
 
     void testEmailConstraint(){
+
         mockDomain(AccountType, [new AccountType(code:"Agency", intCode:0, description: "Agency")])
 
         Account account = mockDomain(Account)
@@ -45,11 +46,19 @@ class AccountEmailAddressTests {
         account.accountType = AccountType.findByCode("Agency")
         assert account.save(), "Account test domain class was not saved successfully"
 
-        accountEmailAddress = mockDomain(AccountEmailAddress)
-        accountEmailAddress.account = account
+        AccountContact accountContact = mockDomain(AccountContact)
+        accountContact.firstName = "firstName"
+        accountContact.middleName = "middleName"
+        accountContact.lastName = "lastName"
+        accountContact.account = account
+        accountContact.primaryContact = true
+        assert accountContact.save(), "AccountContact test domain class was not saved successfully"
+
+        accountEmailAddress = mockDomain(AccountContactEmailAddress)
+        accountEmailAddress.accountContact = accountContact
         accountEmailAddress.emailAddress = "test@cogda.com"
         accountEmailAddress.primaryEmailAddress = true
-        assert accountEmailAddress.save(),"AccountEmailAddress test domain class was not saved successfully"
+        assert accountEmailAddress.save(),"AccountContactEmailAddress test domain class was not saved successfully"
 
         accountEmailAddress.emailAddress = "@cogda.com"
         assertFalse accountEmailAddress.validate()

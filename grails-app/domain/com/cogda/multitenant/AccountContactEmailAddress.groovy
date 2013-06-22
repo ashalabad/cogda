@@ -3,13 +3,13 @@ package com.cogda.multitenant
 import grails.plugin.multitenant.core.annotation.MultiTenant
 
 /**
- * AccountEmailAddress
+ * AccountContactEmailAddress
  * A domain class describes the data object and it's mapping to the database
  */
 @MultiTenant
-class AccountEmailAddress {
+class AccountContactEmailAddress {
 
-    static belongsTo = [account:Account]
+    static belongsTo	= [accountContact:AccountContact]	// tells GORM to cascade commands: e.g., delete this object if the "parent" is deleted.
 
     /* Default (injected) attributes of GORM */
 	Long	id
@@ -22,7 +22,7 @@ class AccountEmailAddress {
 
     /**
      * boolean primaryEmailAddress
-     * Only one AccountEmailAddress may be marked with the primaryAddress = true
+     * Only one AccountContactEmailAddress may be marked with the primaryAddress = true
      */
     boolean primaryEmailAddress
 

@@ -2,16 +2,15 @@ package com.cogda.multitenant
 
 import grails.test.mixin.*
 import grails.test.mixin.domain.DomainClassUnitTestMixin
-import org.junit.*
 
 /**
  * See the API for {@link grails.test.mixin.domain.DomainClassUnitTestMixin} for usage instructions
  */
-@TestFor(AccountPhoneNumber)
+@TestFor(AccountContactPhoneNumber)
 @TestMixin(DomainClassUnitTestMixin)
-class AccountPhoneNumberTests {
+class AccountContactPhoneNumberTests {
 
-    AccountPhoneNumber accountPhoneNumber
+    AccountContactPhoneNumber accountPhoneNumber
 
     void setUp() {
         // Setup logic here
@@ -22,15 +21,15 @@ class AccountPhoneNumberTests {
     }
 
     void testNullable(){
-        mockDomain(AccountPhoneNumber)
+        mockDomain(AccountContactPhoneNumber)
 
-        accountPhoneNumber = new AccountPhoneNumber()
+        accountPhoneNumber = new AccountContactPhoneNumber()
 
         assertFalse accountPhoneNumber.validate()
         //accountPhoneNumber.errors.each { println it }
 
         assert "nullable" == accountPhoneNumber.errors["phoneNumber"].code
-        assert "nullable" == accountPhoneNumber.errors["account"].code
+        assert "nullable" == accountPhoneNumber.errors["accountContact"].code
 
         assert !accountPhoneNumber.errors["primaryPhoneNumber"]
         assert !accountPhoneNumber.errors["description"]

@@ -4,12 +4,11 @@ import com.cogda.domain.PhoneNumber
 import grails.plugin.multitenant.core.annotation.MultiTenant
 
 /**
- * AccountPhoneNumber
+ * AccountContactPhoneNumber
  * A domain class describes the data object and it's mapping to the database
  */
 @MultiTenant
-class AccountPhoneNumber {
-    Account account
+class AccountContactPhoneNumber {
 
     boolean primaryPhoneNumber
 
@@ -17,7 +16,7 @@ class AccountPhoneNumber {
 
     String phoneNumber
 
-    static belongsTo	= [account:Account]	// tells GORM to cascade commands: e.g., delete this object if the "parent" is deleted.
+    static belongsTo	= [accountContact:AccountContact]	// tells GORM to cascade commands: e.g., delete this object if the "parent" is deleted.
 
     static constraints = {
         primaryPhoneNumber(nullable:true)

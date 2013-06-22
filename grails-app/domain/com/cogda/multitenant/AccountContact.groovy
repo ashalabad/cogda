@@ -1,7 +1,6 @@
 package com.cogda.multitenant
 
 import com.cogda.domain.UserProfile
-import com.cogda.domain.security.User
 
 /**
  * AccountContact
@@ -42,9 +41,9 @@ class AccountContact {
      */
     Boolean primaryContact
 
-    static hasMany = [accountAddresses:AccountAddress,
-            accountEmailAddresses:AccountEmailAddress,
-            accountPhoneNumbers:AccountPhoneNumber]
+    static hasMany = [accountContactAddresses:AccountContactAddress,
+            accountContactEmailAddresses:AccountContactEmailAddress,
+            accountContactPhoneNumbers:AccountContactPhoneNumber]
 
     static transients = ["fullName"]
 

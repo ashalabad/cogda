@@ -37,6 +37,8 @@ class AccountAddressTests {
 
         assert "nullable" == accountAddress.errors["address"].code
         assert "nullable" == accountAddress.errors["account"].code
+        assert "nullable" == accountAddress.errors["accountAddressType"].code
+
         assert !accountAddress.errors["primaryAddress"]
 
     }

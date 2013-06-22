@@ -4,17 +4,21 @@ import com.cogda.domain.Address
 import grails.plugin.multitenant.core.annotation.MultiTenant
 
 /**
- * AccountAddress
+ * AccountContactAddress
  * A domain class describes the data object and it's mapping to the database
  */
 @MultiTenant
-class AccountAddress {
+class AccountContactAddress {
 
     /* Default (injected) attributes of GORM */
 	Long	id
 	Long	version
 
-    AccountAddressType accountAddressType
+    /* Automatic timestamping of GORM */
+	Date	dateCreated
+	Date	lastUpdated
+
+    static belongsTo	= [accountContact:AccountContact]	// tells GORM to cascade commands: e.g., delete this object if the "parent" is deleted.
 
     /**
      * Embedded Address
@@ -27,15 +31,9 @@ class AccountAddress {
      */
     boolean primaryAddress
 
-    /* Automatic timestamping of GORM */
-	Date	dateCreated
-	Date	lastUpdated
-
-	static belongsTo = [account:Account]
-
     static embedded = ["address"]
 
     static constraints = {
-         primaryAddress(nullable:true)
+        primaryAddress(nullable:true)
     }
 }

@@ -56,27 +56,28 @@ class AccountTests {
             account.accountType = AccountType.findByCode("Agency")
         assert account.save(), "Account test domain class was not saved successfully"
 
-        AccountEmailAddress accountEmailAddress1 = mockDomain(AccountEmailAddress)
-            accountEmailAddress1.emailAddress = primaryEmailAddress
-            accountEmailAddress1.primaryEmailAddress = true
-            accountEmailAddress1.account = account
-        assert accountEmailAddress1.save(), "AccountEmailAddress1 test domain class was not saved successfully"
-
-        AccountEmailAddress accountEmailAddress2 = mockDomain(AccountEmailAddress)
-            accountEmailAddress2.emailAddress = "test@cogda.com"
-            accountEmailAddress2.primaryEmailAddress = false
-            accountEmailAddress2.account = account
-        assert accountEmailAddress2.save(), "AccountEmailAddress2 test domain class was not saved successfully"
-
         AccountContact accountContact = mockDomain(AccountContact)
-            accountContact.firstName = "firstName"
-            accountContact.middleName = "middleName"
-            accountContact.lastName = "lastName"
-            accountContact.account = account
-            accountContact.primaryContact = true
-            accountContact.accountEmailAddresses = [accountEmailAddress1,accountEmailAddress2]
+        accountContact.firstName = "firstName"
+        accountContact.middleName = "middleName"
+        accountContact.lastName = "lastName"
+        accountContact.account = account
+        accountContact.primaryContact = true
         assert accountContact.save(), "AccountContact test domain class was not saved successfully"
 
+        AccountContactEmailAddress accountContactEmailAddress1 = mockDomain(AccountContactEmailAddress)
+            accountContactEmailAddress1.emailAddress = primaryEmailAddress
+            accountContactEmailAddress1.primaryEmailAddress = true
+            accountContactEmailAddress1.accountContact = accountContact
+        assert accountContactEmailAddress1.save(), "AccountEmailAddress1 test domain class was not saved successfully"
+
+        AccountContactEmailAddress accountContactEmailAddress2 = mockDomain(AccountContactEmailAddress)
+            accountContactEmailAddress2.emailAddress = "test@cogda.com"
+            accountContactEmailAddress2.primaryEmailAddress = false
+            accountContactEmailAddress2.accountContact = accountContact
+        assert accountContactEmailAddress2.save(), "AccountEmailAddress2 test domain class was not saved successfully"
+
+        accountContact.accountContactEmailAddresses = [accountContactEmailAddress1,accountContactEmailAddress2]
+        accountContact.save()
 
         String emailAddress = account.primaryEmailAddress
         assert emailAddress.equals(primaryEmailAddress)
@@ -98,17 +99,6 @@ class AccountTests {
             account.accountType = AccountType.findByCode("Agency")
         assert account.save(), "Account test domain class was not saved successfully"
 
-        AccountPhoneNumber accountPhoneNumber1 = mockDomain(AccountPhoneNumber)
-            accountPhoneNumber1.phoneNumber = primaryPhoneNumber
-            accountPhoneNumber1.primaryPhoneNumber = true
-            accountPhoneNumber1.account = account
-        assert accountPhoneNumber1.save(), "AccountPhoneNumber1 test domain class was not saved successfully"
-
-        AccountPhoneNumber accountPhoneNumber2 = mockDomain(AccountPhoneNumber)
-            accountPhoneNumber2.phoneNumber = "1-456-245-7890"
-            accountPhoneNumber2.primaryPhoneNumber = false
-            accountPhoneNumber2.account = account
-        assert accountPhoneNumber2.save(), "AccountPhoneNumber2 test domain class was not saved successfully"
 
         AccountContact accountContact = mockDomain(AccountContact)
             accountContact.firstName = "firstName"
@@ -116,9 +106,22 @@ class AccountTests {
             accountContact.lastName = "lastName"
             accountContact.account = account
             accountContact.primaryContact = true
-            accountContact.accountPhoneNumbers = [accountPhoneNumber1,accountPhoneNumber2]
         assert accountContact.save(), "AccountContact test domain class was not saved successfully"
+        
+        AccountContactPhoneNumber accountContactPhoneNumber1 = mockDomain(AccountContactPhoneNumber)
+        accountContactPhoneNumber1.phoneNumber = primaryPhoneNumber
+        accountContactPhoneNumber1.primaryPhoneNumber = true
+        accountContactPhoneNumber1.accountContact = accountContact
+        assert accountContactPhoneNumber1.save(), "AccountPhoneNumber1 test domain class was not saved successfully"
 
+        AccountContactPhoneNumber accountContactPhoneNumber2 = mockDomain(AccountContactPhoneNumber)
+        accountContactPhoneNumber2.phoneNumber = "1-456-245-7890"
+        accountContactPhoneNumber2.primaryPhoneNumber = false
+        accountContactPhoneNumber2.accountContact = accountContact
+        assert accountContactPhoneNumber2.save(), "AccountPhoneNumber2 test domain class was not saved successfully"
+
+        accountContact.accountContactPhoneNumbers = [accountContactPhoneNumber1,accountContactPhoneNumber2]
+        accountContact.save()
 
         String phoneNumber = account.primaryAccountContactPhoneNumberString
         assert phoneNumber.equals(primaryPhoneNumber)

@@ -15,8 +15,9 @@ import com.cogda.domain.admin.SystemEmailMessageTemplate
 import com.cogda.domain.onboarding.Registration
 import com.cogda.multitenant.Account
 import com.cogda.multitenant.AccountContact
-import com.cogda.multitenant.AccountEmailAddress
-import com.cogda.multitenant.AccountPhoneNumber
+import com.cogda.multitenant.AccountContactEmailAddress
+import com.cogda.multitenant.AccountContactEmailAddress
+import com.cogda.multitenant.AccountContactPhoneNumber
 import com.cogda.multitenant.Company
 import com.cogda.multitenant.CustomerAccount
 import com.cogda.domain.admin.SupportedCountryCode
@@ -152,23 +153,38 @@ class BootStrap {
                         else{
                             testAccount.save()
 
-                            def testAccountPhoneNumber = new AccountPhoneNumber(account: testAccount,phoneNumber:nextLine[7]?.trim() ,primaryPhoneNumber: true).save()
-                            def testAccountEmail = new AccountEmailAddress(account: testAccount,emailAddress:nextLine[6]?.trim(),primaryEmailAddress: true).save()
+
 
                             def testAccountContact = new AccountContact(
                                     firstName: nextLine[3]?.trim(),
                                     middleName: nextLine[4]?.trim(),
                                     lastName: nextLine[5]?.trim(),
                                     account: testAccount,
-                                    primaryContact: true,
-                                    accountEmailAddresses: [testAccountEmail],
-                                    accountPhoneNumbers: [testAccountPhoneNumber]
+                                    primaryContact: true
                             )
                             if (testAccountContact.hasErrors() || !testAccountContact.validate() ) {
                                 log.error("Could not import testAccountContact ${testAccountContact.firstName} ${testAccountContact.lastName}  ${testAccountContact.errors}")
                             }
                             else
                             {
+                                testAccountContact.save()
+
+                                def testAccountPhoneNumber = new AccountContactPhoneNumber(accountContact: testAccountContact,phoneNumber:nextLine[7]?.trim() ,primaryPhoneNumber: true)
+                                if (testAccountPhoneNumber.hasErrors() || !testAccountPhoneNumber.validate() ) {
+                                    log.error("Could not import testAccountPhoneNumber ${testAccountPhoneNumber.phoneNumber} ${testAccountPhoneNumber.errors}")
+                                }
+                                else
+                                    testAccountPhoneNumber.save()
+
+                                def testAccountEmail = new AccountContactEmailAddress(accountContact: testAccountContact,emailAddress:nextLine[6]?.trim()?.toString()?.replace(';',''),primaryEmailAddress: true).save()
+                                if (testAccountEmail.hasErrors() || !testAccountEmail.validate() ) {
+                                    log.error("Could not import testAccountEmail ${testAccountEmail.emailAddress} ${testAccountEmail.errors}")
+                                }
+                                else
+                                    testAccountEmail.save()
+
+                                testAccountContact.addToAccountContactEmailAddresses(testAccountEmail)
+                                testAccountContact.addToAccountContactPhoneNumbers(testAccountPhoneNumber)
                                 testAccountContact.save()
 
                                 testAccount.addToAccountContacts(testAccountContact)
@@ -201,7 +217,7 @@ class BootStrap {
                     firstName: nextLine[0]?.trim(),
                     middleName: nextLine[1]?.trim(),
                     lastName: nextLine[2]?.trim(),
-                    birthDate: Date.parse("MM/dd/yyyy", nextLine[3]?.trim()),
+                    dateOfBirth: Date.parse("MM/dd/yyyy", nextLine[3]?.trim()),
                     jobTitle: jobTitles.get(randomIndex),
                     gender: (nextLine[4] == "M" ? GenderEnum.MALE : GenderEnum.FEMALE)
             )

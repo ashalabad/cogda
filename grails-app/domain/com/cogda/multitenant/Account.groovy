@@ -24,7 +24,7 @@ class Account {
     Date	dateCreated
     Date	lastUpdated
 
-    static hasMany = [accountContacts:AccountContact]
+    static hasMany = [accountContacts:AccountContact,accountAddresses:AccountAddress]
 
     static transients = ["primaryEmailAddress", "primaryAccountEmailAddress", "primaryAccountContact", "primaryAccountContactName"]
 
@@ -43,14 +43,14 @@ class Account {
     }
 
     /**
-     * Retrieves the primary account's primary AccountEmailAddress
-     * @return AccountEmailAddress
+     * Retrieves the primary account's primary AccountContactEmailAddress
+     * @return AccountContactEmailAddress
      */
-    public AccountEmailAddress getPrimaryAccountEmailAddress(){
-        AccountEmailAddress accountEmailAddress = this.getPrimaryAccountContact()?.accountEmailAddresses?.find {
+    public AccountContactEmailAddress getPrimaryAccountEmailAddress(){
+        AccountContactEmailAddress accountContactEmailAddress = this.getPrimaryAccountContact()?.accountContactEmailAddresses?.find {
             it.primaryEmailAddress == Boolean.TRUE
         }
-        return accountEmailAddress
+        return accountContactEmailAddress
     }
 
     /**
@@ -74,22 +74,34 @@ class Account {
     }
 
     /**
-     * Retrieves the primary account's primary AccountPhoneNumber
-     * @return AccountPhoneNumber
+     * Retrieves the primary account's primary AccountContactPhoneNumber
+     * @return AccountContactPhoneNumber
      */
-    public AccountPhoneNumber getPrimaryAccountContactPhoneNumber(){
-        AccountPhoneNumber accountPhoneNumber = getPrimaryAccountContact()?.accountPhoneNumbers?.find {
+    public AccountContactPhoneNumber getPrimaryAccountContactPhoneNumber(){
+        AccountContactPhoneNumber accountContactPhoneNumber = getPrimaryAccountContact()?.accountContactPhoneNumbers?.find {
             it.primaryPhoneNumber == Boolean.TRUE
         }
 
-        return accountPhoneNumber
+        return accountContactPhoneNumber
     }
 
     /**
-     * Retrieves the primary account's primary AccountPhoneNumber.phoneNumber
+     * Retrieves the primary account's primary AccountContactPhoneNumber.phoneNumber
      * @return String
      */
     public String getPrimaryAccountContactPhoneNumberString(){
         return getPrimaryAccountContactPhoneNumber()?.phoneNumber
+    }
+
+
+    /**
+     * Retrieves the primary account's primary AccountAddress
+     * @return AccountAddress
+     */
+    public AccountAddress getPrimaryAddress(){
+        AccountAddress accountAddress = this.accountAddresses?.find {
+            it.primaryAddress == Boolean.TRUE
+        }
+        return accountAddress
     }
 }
