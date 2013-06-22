@@ -32,6 +32,10 @@ $(document).ready(function() {
     }); 
 });
 
+function validateWebsite(){
+  
+}
+
 function toggleEdit(){
   $(".contactShow").toggleClass("editHide");
   $(".contactEdit").toggleClass("editHide");
@@ -48,10 +52,16 @@ function saveContact(){
   contact.lastName = $("#lastName").val();  
   contact.middleName = $("#middleName").val();    
   contact.initials = $("#initials").val();      
-  contact.jobTitle = $("#jobtitle").val();        
+  contact.jobTitle = $("#jobT itle").val();        
   contact.companyName = $("#companyName").val();          
   contact.website = $("#website").val();            
-  $.post("/contact/update/"+contact.id, JSON.stringify(contact), function(data){updateContact(data)});
+  $.ajax({
+      url: "/contact/update/"+contact.id,
+      type: "post",
+      dataType: "json",
+      data: JSON.stringify(contact),
+      contentType: "application/json; charset=utf-8"
+  });
 }
 
 function updateContact(data){
