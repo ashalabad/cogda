@@ -1,11 +1,13 @@
 package com.cogda.multitenant
 
 import com.cogda.domain.UserProfile
+import grails.plugin.multitenant.core.annotation.MultiTenant
 
 /**
  * AccountContact
  * A domain class describes the data object and it's mapping to the database
  */
+@MultiTenant
 class AccountContact {
 
     /* Default (injected) attributes of GORM */
