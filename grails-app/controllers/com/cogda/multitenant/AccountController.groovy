@@ -2,10 +2,11 @@ package com.cogda.multitenant
 
 import com.cogda.BaseController
 import com.cogda.common.web.AjaxResponseDto
-import com.cogda.multitenant.Account
-import com.cogda.multitenant.AccountContact
 import com.cogda.util.ErrorMessageResolverService
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import grails.converters.JSON
+import grails.plugin.gson.converters.GSON
 import org.springframework.dao.DataIntegrityViolationException
 
 /**
@@ -15,7 +16,7 @@ import org.springframework.dao.DataIntegrityViolationException
 class AccountController extends BaseController{
 
     ErrorMessageResolverService errorMessageResolverService
-
+    GsonBuilder gsonBuilder
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
     def index() {
@@ -37,11 +38,11 @@ class AccountController extends BaseController{
         dataToRender.aaData = []
         accountInstanceList.each { Account account ->
             Map map = [:]
-            map.id = account.id
+            map.DT_RowId = "row_"+account.id
             map.version = account.version
             map.accountName = account.accountName
             map.accountCode = account.accountCode
-            map.accountType = account.accountType.code
+            map.accountType = account.accountType
             map.primaryContactName = account.primaryAccountContactName
             map.primaryEmailAddress = account.primaryEmailAddress
             map.primaryPhoneNumber = account.primaryAccountContactPhoneNumberString
@@ -51,7 +52,7 @@ class AccountController extends BaseController{
         }
         dataToRender.sEcho = 1
 
-        render dataToRender as JSON
+        render dataToRender as GSON
 
         return
     }
@@ -100,6 +101,9 @@ class AccountController extends BaseController{
             ajaxResponseDto.modelObject = accountInstance
 
         }
+
+        JSON.use('deep')
+        //println ajaxResponseDto as JSON
         render ajaxResponseDto as JSON
         return
     }

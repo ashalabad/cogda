@@ -9,32 +9,7 @@
     <g:set var="layout_nosecondarymenu"	value="${true}" scope="request"/>
     <g:set var="layout_nomainmenu"		value="${true}" scope="request"/>
     <title><g:message code="default.list.label" args="[entityName]" /></title>
-    <r:require module="dataTables"/>
-    <g:javascript>
-
-        /* Table initialisation */
-        $(document).ready(function() {
-            $('#accountList').dataTable(
-            {
-                "bProcessing": true,
-                "sAjaxSource": "${request.contextPath + 'account/list'}",
-                "aoColumns": [
-//                    {"mDataProp":"id"},
-//                    {"mDataProp":"version"},
-                    {"mDataProp":"accountName"},
-                    {"mDataProp":"accountCode"},
-                    {"mDataProp":"accountType"},
-                    {"mDataProp":"primaryContactName"},
-                    {"mDataProp":"primaryEmailAddress"},
-                    {"mDataProp":"primaryPhoneNumber"},
-                    {"mDataProp":"dateCreated"}
-                ],
-                "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
-                "sPaginationType": "bootstrap"
-            }
-            );
-        } );
-    </g:javascript>
+    <r:require module="accountPage"/>
 
 </head>
 
@@ -79,7 +54,7 @@
     </table>
 </section>
 
+<g:render template="/_common/modals/account/add"/>
 
 </body>
-
 </html>

@@ -23,4 +23,20 @@ modules = {
         resource url:'js/pinesNotify/jquery.pnotify.default.css'
         resource url:'js/pinesNotify/jquery.pnotify.js'
     }
+
+    //Account
+    accountPage {
+        dependsOn 'dataTables'
+        resource url:[dir: 'css', file: 'account.css']
+        resource url:[dir: 'js/account', file: 'account.js']
+    }
+
+    //Contact
+    contactPage {
+        dependsOn 'dataTables'
+        resource url:[dir: 'css', file: 'contact.css']
+        resource url:[dir: 'js/contact', file: 'contact.js']
+    }
+
+
 }
