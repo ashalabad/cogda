@@ -1,3 +1,4 @@
+<%@ page import="com.cogda.common.GenderEnum; com.cogda.domain.Contact" %>
 <div class="modal hide fade" id="contactModal">
 	<div class="modal-header">
 	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -13,56 +14,50 @@
 					<div class="field">
 						<label>Title</label>
 						<span id="titleLbl" class="editShow title contactShow"></span>
-						<select id="title" class="editHide input-mini title contactEdit">
-							<option value="Mr">Mr</option>
-							<option value="Mrs">Mrs</option>							
-							<option value="Ms">Ms</option>														
-							<option value="Miss">Miss</option>																					
-							<option value="Dr">Dr</option>																					
-						</select>
+						<g:select name="title" class="editHide input-mini title contactEdit" from="${["Mr", "Mrs", "Ms", "Miss", "Dr"]}" value="${contactInstance?.title}">
+						</g:select>
 					</div>				
 					<div class="field">
 						<label>First Name</label>
 						<span id="firstNameLbl" class="editShow firstName contactShow"></span>
-						<input type="text" id="firstName" class="editHide firstName contactEdit input-xlarge">
+						<input type="text" id="firstName" class="editHide firstName contactEdit input-xlarge" value="${contactInstance?.firstName}">
 					</div>
 					<div class="field">
 						<label>Middle Name</label>
 						<span id="middleNameLbl" class="editShow middleName contactShow"></span>						
-						<input type="text" id="middleName" class="editHide middleName contactEdit input-xlarge">
+						<input type="text" id="middleName" class="editHide middleName contactEdit input-xlarge" value="${contactInstance?.middleName}">
 					</div>
 					<div class="field">
 						<label>Last Name</label>
 						<span id="lastNameLbl" class="editShow lastName contactShow"></span>
-						<input type="text" id="lastName" class="editHide lastName contactEdit input-xlarge">
+						<input type="text" id="lastName" class="editHide lastName contactEdit input-xlarge" value="${contactInstance?.lastName}">
 					</div>
 					<div class="field">
 						<label>Initials</label>
 						<span id="initialsLbl" class="editShow initials contactShow"></span>						
-						<input type="text" id="initials" class="editHide input-mini initials contactEdit">
+						<input type="text" id="initials" class="editHide input-mini initials contactEdit" value="${contactInstance?.initials}">
 					</div>	
 					<div class="field">
 						<label>Gender</label>
-						<span id="genderLbl" class="editShow gender contactShow"></span>						
-						<select id="gender" class="editHide contactEdit">
-							<option value="Male">Male</option>
-							<option value="Female">Female</option>							
-						</select>
+						<span id="genderLbl" class="editShow gender contactShow"></span>
+                        ${contactInstance?.gender}
+						<g:select name="gender" class="editHide contactEdit" value="${contactInstance?.gender}" from="${GenderEnum.values()}">
+						</g:select>
 					</div>									
 					<div class="field">
 						<label>Company Name</label>
 						<span id="companyNameLbl" class="editShow companyName contactShow"></span>						
-						<input type="text" id="companyName" class="editHide companyName contactEdit input-xlarge">
+						<input type="text" id="companyName" class="editHide companyName contactEdit input-xlarge" value="${contactInstance?.companyName}">
 					</div>
 					<div class="field">
 						<label>Job Title</label>
 						<span id="jobTitleLbl" class="editShow jobTitle contactShow"></span>						
-						<input type="text" id="jobTitle" class="editHide jobTitle contactEdit input-xlarge">
+						<input type="text" id="jobTitle" class="editHide jobTitle contactEdit input-xlarge" value="${contactInstance?.jobTitle}">
 					</div>   
 					<div class="field">
 						<label>Website</label>
 						<span id="websiteLbl" class="editShow website contactShow"></span>						
-						<input type="text" id="website" class="editHide website contactEdit input-xlarge">
+						<input type="text" id="website" class="editHide website contactEdit input-xlarge" value="${contactInstance?.website}">
 					</div>					
 
 				</div>
