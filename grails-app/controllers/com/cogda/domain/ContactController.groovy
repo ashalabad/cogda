@@ -265,7 +265,6 @@ class ContactController extends BaseController{
         def contactInstance = Contact.get(params.id)
         if (contactInstance) {
             response.status = SC_OK
-
             render(template:"/_common/modals/contactModal", model:[contactInstance:contactInstance])
             return
         } else {
