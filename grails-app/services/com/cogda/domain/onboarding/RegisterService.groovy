@@ -17,7 +17,7 @@ class RegisterService {
      * Save a com.cogda.domain.onboarding.Registration object
      */
     def save(Registration registration) {
-        return registration.save(flush:true)
+        return registration.save(flush: true)
     }
 
     def list(params) {
@@ -35,18 +35,14 @@ class RegisterService {
     }
 
     def approve(Registration registrationInstance) {
-        if (!registrationInstance.registrationStatus) {
-            registrationInstance.errors.rejectValue('registrationStatus', 'registration.status.blank',
-                    [messageSource.getMessage('registration.label', null, 'Registration', Locale.default)] as Object[],
-                    'Registration status is empty.')
-        } else if (registrationInstance.registrationStatus != RegistrationStatus.AWAITING_ADMIN_APPROVAL) {
+        if (registrationInstance.registrationStatus != RegistrationStatus.AWAITING_ADMIN_APPROVAL) {
             registrationInstance.errors.rejectValue('registrationStatus', 'registration.status.incorrectstate',
                     [messageSource.getMessage('registration.label', null, 'Registration', Locale.default)] as Object[],
-                    'Registration status must be Awaiting Admin Approval')
+                    'Registration status must be Awaiting Admin Approval.')
         } else if (!registrationInstance.subDomain) {
-            registrationInstance.errors.rejectValue('registrationStatus', 'registration.subdmoain.approval',
+            registrationInstance.errors.rejectValue('subDomain', 'registration.subdomain.approval',
                     [messageSource.getMessage('registration.label', null, 'Registration', Locale.default)] as Object[],
-                    'Registration status must have valid subdomain before approval')
+                    'Registration status must have valid subdomain before approval.')
         } else {
             registrationInstance.registrationStatus = RegistrationStatus.APPROVED
             if (!registrationInstance.save(flush: true)) {
@@ -57,7 +53,6 @@ class RegisterService {
                 customerAccountService.onboardCustomerAccount(registrationInstance)
             }
         }
-        return registrationInstance
     }
 
     def findByToken(String token, Map params) {

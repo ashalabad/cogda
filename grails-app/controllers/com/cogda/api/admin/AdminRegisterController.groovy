@@ -6,6 +6,7 @@ import com.cogda.domain.onboarding.Registration
 import com.cogda.util.ErrorMessageResolverService
 import grails.converters.XML
 import grails.plugin.gson.converters.GSON
+import grails.plugins.springsecurity.Secured
 
 import static grails.plugin.gson.http.HttpConstants.SC_UNPROCESSABLE_ENTITY
 import static grails.plugin.gson.http.HttpConstants.X_PAGINATION_TOTAL
@@ -16,7 +17,7 @@ import static org.codehaus.groovy.grails.web.servlet.HttpHeaders.LOCATION
  * AdminRegisterController
  * A controller class handles incoming web requests and performs actions such as redirects, rendering views and so on.
  */
-//@Secured('ROLE_ADMINISTRATOR')
+@Secured('ROLE_ADMINISTRATOR')
 class AdminRegisterController {
 
     static allowedMethods = [list: 'GET',
@@ -111,7 +112,7 @@ class AdminRegisterController {
             respondNotFound(id)
             return
         }
-            registrationInstance = adminService.approveRegistration(registrationInstance)
+        adminService.approveRegistration(registrationInstance)
         if (registrationInstance.hasErrors() || registrationInstance.errors.errorCount > 0) {
             respondRegistrationApprovalConflict(registrationInstance)
         } else {

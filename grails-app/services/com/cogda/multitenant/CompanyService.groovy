@@ -55,4 +55,12 @@ class CompanyService {
 
         return company
     }
+
+    int count() {
+        return Company.count
+    }
+
+    def get(Serializable id) {
+        return Company.get(id)
+    }
 }

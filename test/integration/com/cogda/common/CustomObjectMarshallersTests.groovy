@@ -2,9 +2,9 @@ package com.cogda.common
 
 import com.cogda.BaseIntegrationTest
 import com.cogda.domain.admin.CompanyType
-import com.cogda.domain.admin.EmailConfirmationLog
 import com.cogda.domain.onboarding.Registration
 import grails.converters.JSON
+import grails.plugin.gson.converters.GSON
 import grails.plugins.springsecurity.SpringSecurityService
 import org.junit.Before
 import org.junit.Test
@@ -49,5 +49,17 @@ class CustomObjectMarshallersTests extends BaseIntegrationTest{
         def registrationJSON = registration as JSON
         println "as JSON: " + registrationJSON
         println "encodeAsJSON: " + registration.encodeAsJSON()
+    }
+
+    @Test
+    void testGson() {
+        def registration = new Registration()
+        CompanyType companyType = new CompanyType()
+        companyType.description = 'bananaphone'
+        companyType.intCode = 7
+        companyType.code = '7'
+        companyType.save(failOnError: true)
+        registration.companyType = companyType
+        println registration as GSON
     }
 }
