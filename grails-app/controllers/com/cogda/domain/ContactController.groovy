@@ -5,6 +5,8 @@ import com.cogda.common.web.AjaxResponseDto
 import com.cogda.util.ErrorMessageResolverService
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.gson.JsonElement
+import com.google.gson.JsonParser
 import grails.converters.JSON
 import grails.plugin.gson.converters.GSON
 import org.springframework.dao.DataIntegrityViolationException
@@ -234,7 +236,8 @@ class ContactController extends BaseController{
             }
         }
 
-        contactInstance.properties = request.GSON
+        JsonElement jsonElement = GSON.parse(request)
+        contactInstance.properties = jsonElement
 
         if (contactInstance.save(flush: true)) {
             respondUpdated contactInstance
@@ -270,15 +273,15 @@ class ContactController extends BaseController{
     }
 
     private void respondCreated(Contact contactInstance) {
-        response.status = SC_CREATED
-        response.addHeader LOCATION, createLink(action: 'show', id: contactInstance.id)
+        response.status = SC_CREATED // 201
+        response.addHeader LOCATION, createLink(action: 'get', id: contactInstance.id)
         Gson gson = gsonBuilder.create()
         def gsonRetString = gson.toJsonTree(contactInstance);
         render gsonRetString
     }
 
     private void respondUpdated(Contact contactInstance) {
-        response.status = SC_OK
+        response.status = SC_OK // 200
         Gson gson = gsonBuilder.create()
         def gsonRetString = gson.toJsonTree(contactInstance);
         render gsonRetString
@@ -289,14 +292,14 @@ class ContactController extends BaseController{
         responseBody.errors = contactInstance.errors.allErrors.collect {
             message(error: it)
         }
-        response.status = SC_UNPROCESSABLE_ENTITY
+        response.status = SC_UNPROCESSABLE_ENTITY // 422
         render responseBody as GSON
     }
 
     private void respondNotFound(id) {
         def responseBody = [:]
         responseBody.message = message(code: 'default.not.found.message', args: [message(code: 'contact.label', default: 'Contact'), id])
-        response.status = SC_NOT_FOUND
+        response.status = SC_NOT_FOUND // 404
         render responseBody as GSON
     }
 
@@ -308,26 +311,26 @@ class ContactController extends BaseController{
         responseBody.errors = contactInstance.errors.allErrors.collect {
             message(error: it)
         }
-        response.status = SC_CONFLICT
+        response.status = SC_CONFLICT // 409
         render responseBody as GSON
     }
 
     private void respondDeleted(id) {
         def responseBody = [:]
         responseBody.message = message(code: 'default.deleted.message', args: [message(code: 'contact.label', default: 'Contact'), id])
-        response.status = SC_OK
+        response.status = SC_OK  // 200
         render responseBody as GSON
     }
 
     private void respondNotDeleted(id) {
         def responseBody = [:]
         responseBody.message = message(code: 'default.not.deleted.message', args: [message(code: 'contact.label', default: 'Contact'), id])
-        response.status = SC_INTERNAL_SERVER_ERROR
+        response.status = SC_INTERNAL_SERVER_ERROR  // 500
         render responseBody as GSON
     }
 
     private void respondNotAcceptable() {
-        response.status = SC_NOT_ACCEPTABLE
+        response.status = SC_NOT_ACCEPTABLE  // 406
         response.contentLength = 0
         response.outputStream.flush()
         response.outputStream.close()
