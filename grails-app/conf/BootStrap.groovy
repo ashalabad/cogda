@@ -107,7 +107,7 @@ class BootStrap {
                 if(raisRegistration){
                     customerAccountService.onboardCustomerAccount(raisRegistration)
                     createRennaissanceDummyData(raisRegistration)
-//                    createRennaissanceAccountDummyData(raisRegistration)
+                    createRennaissanceAccountDummyData(raisRegistration)
                 }
             }
 
