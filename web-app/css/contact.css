@@ -8,8 +8,7 @@ label{font-weight: bold;}
   left:450px;
 }
 div.field {padding:2px;clear:both;}
-div.field input {float:left; height:13px;}
-div.field select {height: 23px;}
+div.field input {float:left;}
 fieldset{margin-bottom:20px;}
 .add-field {margin-left:5px;}
 div.add {

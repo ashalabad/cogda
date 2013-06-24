@@ -85,6 +85,9 @@ function updateEmails(data){
     var span = $(document.createElement("span")).attr("id","emailAddress_"+ind);
     $(span).text(elt.emailAddress);
     var radio = $(document.createElement("input")).attr("type","radio").attr("name","primary").addClass("primaryRadio");
+    if(elt.primaryEmailAddress == true){
+      radio.attr("checked","checked");
+    }
     
     $(field).append(span);
     $(field).append(radio);
