@@ -20,10 +20,10 @@ $(document).ready(function() {
             $(nRow).dblclick( function() {
                 var rowId = $(this).attr("id").replace("row_","");
                 $.get("/contact/get/"+rowId, function(data) {
-                    updateContact(data);
-                    updateEmails(data);
-                    updateMailingAddresses(data);      
-                    updatePhones(data);                                        
+                    updateContact(JSON.parse(data));
+                    updateEmails(JSON.parse(data));
+                    updateMailingAddresses(JSON.parse(data));      
+                    updatePhones(JSON.parse(data));
                     $('#contactForm').attr("id","contactForm_"+rowId);
                     $('#contactModal').modal('show');
                 });
@@ -52,7 +52,7 @@ function saveContact(){
   contact.lastName = $("#lastName").val();  
   contact.middleName = $("#middleName").val();    
   contact.initials = $("#initials").val();      
-  contact.jobTitle = $("#jobT itle").val();        
+  contact.jobTitle = $("#jobTitle").val();        
   contact.companyName = $("#companyName").val();          
   contact.website = $("#website").val();            
   $.ajax({
@@ -65,21 +65,21 @@ function saveContact(){
 }
 
 function updateContact(data){
-  $(".title").text(data.modelObject.title).val(data.modelObject.title);                    
-  $(".firstName").text(data.modelObject.firstName).val(data.modelObject.firstName);  
-  $(".middleName").text(data.modelObject.middleName).val(data.modelObject.middleName); 
-  $(".lastName").text(data.modelObject.lastName).val(data.modelObject.lastName);       
-  $(".initials").text(data.modelObject.initials).val(data.modelObject.initials);                      
-  $(".gender").text(data.modelObject.gender);                      
-  $(".companyName").text(data.modelObject.companyName).val(data.modelObject.companyName);                    
-  $(".jobTitle").text(data.modelObject.jobTitle).val(data.modelObject.jobTitle);  
-  $(".website").text(data.modelObject.website).val(data.modelObject.website);    
+  //$(".title").text(data.modelObject.title).val(data.modelObject.title);                    
+  $(".firstName").text(data["firstName"]).val(data["firstName"]);  
+  $(".middleName").text(data.middleName).val(data.middleName); 
+  $(".lastName").text(data.lastName).val(data.lastName);       
+  $(".initials").text(data.initials).val(data.initials);                      
+  $(".gender").text(data.gender);                      
+  $(".companyName").text(data.companyName).val(data.companyName);                    
+  $(".jobTitle").text(data.jobTitle).val(data.jobTitle);  
+  $(".website").text(data.website).val(data.website);    
 }
 
 /******emails******/
 function updateEmails(data){
   $("#emailFieldset .data").remove();
-  $.each(data.modelObject.contactEmailAddresses, function(ind,elt){
+  $.each(data.contactEmailAddresses, function(ind,elt){
     var field = $("#editEmail").clone().removeClass("template").addClass("data");
     $(field).attr("id","emailField_"+elt.id);
     $(field).find(".emailText").text(elt.emailAddress);
@@ -139,7 +139,7 @@ function saveAddress(){
 
 function updateMailingAddresses(data){
   $("#mailFieldset .data").remove();  
-  $.each(data.modelObject.contactAddresses, function(ind,elt){
+  $.each(data.contactAddresses, function(ind,elt){
     var field = $(document.createElement("div")).addClass("field data address");
     $(field).append($(document.createElement("label")).addClass("viewAddressLbl").append("Mailing Address"));
 /*    var button = $(".editAddress").clone().removeClass("template");
@@ -169,22 +169,23 @@ function cancelNewAddress(el){
 /*******phones******/
 function updatePhones(data){
   $("#phoneFieldset .field").remove();  
-  $.each(data.modelObject.contactPhoneNumbers, function(ind,elt){
+  $.each(data.contactPhoneNumbers, function(ind,elt){
     var field = $(document.createElement("div")).addClass("field");
     $(field).append($(document.createElement("label")).append("Phone Number"));
     var span = $(document.createElement("span")).attr("id","phone_"+ind);
     $(span).text(elt.phoneNumber);
     $(field).append(span);    
-  	$("#phoneFieldset").prepend($(field));
+//  	$("#phoneFieldset").prepend($(field));
+	  $(field).insertBefore("#addPhoneBtn");  	
   });
 }
 
 function addPhoneField(){
   var count = $("#phoneFieldset div.field").length;
   var field = $("#editPhone").clone();
-  $(field).removeClass("template").attr("id","emailPhone_"+count).addClass("data");  
-	$("#phoneFieldset").prepend($(field));
-	$(field).insertBefore("#addPhone");
+  $(field).removeClass("template").attr("id","phone_"+count).addClass("data");  
+//	$("#phoneFieldset").prepend($(field));
+	$(field).insertBefore("#addPhoneBtn");
 }
 
 function savePhone(){

@@ -81,8 +81,7 @@
 			</fieldset>
 			<fieldset id="phoneFieldset">
 				<legend>Phone Numbers</legend>
-				<g:render template="/_common/contact/editPhone"/>
-				<div class="add" id="addPhone">
+				<div class="add" id="addPhoneBtn">
 					<a class="btn btn-mini add-field" href="#" onclick="addPhoneField();"><i class="icon-plus"></i> Add</a>
 				</div>
 			</fieldset>			
@@ -109,5 +108,7 @@
 		<a href="#" class="btn btn-primary" data-dismiss="modal">Done</a>
 	</div>
 	<g:render template="/_common/contact/addEmail"/>				
-	<g:render template="/_common/contact/editEmail"/>	
+	<g:render template="/_common/contact/editEmail"/>
+	<g:render template="/_common/contact/addPhone"/>				
+	<g:render template="/_common/contact/editPhone"/>		
 </div>
