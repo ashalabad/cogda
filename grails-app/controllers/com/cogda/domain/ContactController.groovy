@@ -128,11 +128,11 @@ class ContactController extends BaseController{
         }
     }
 
-    def showHtml(){
+    def showForm(){
         def contactInstance = Contact.get(params.id)
         if (contactInstance) {
             response.status = SC_OK
-            render(template:"/_common/modals/contactModal", model:[contactInstance:contactInstance])
+            render(template:"/_common/contact/modalForm", model:[contactInstance:contactInstance])
             return
         } else {
             respondNotFound params.id
