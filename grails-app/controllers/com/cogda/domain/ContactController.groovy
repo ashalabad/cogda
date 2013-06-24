@@ -1,13 +1,16 @@
 package com.cogda.domain
 
 import com.cogda.BaseController
-import com.cogda.common.GenderEnum
 import com.cogda.common.web.AjaxResponseDto
 import com.cogda.util.ErrorMessageResolverService
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import grails.converters.JSON
 import grails.plugin.gson.converters.GSON
-import org.apache.commons.beanutils.BeanUtils
 import org.springframework.dao.DataIntegrityViolationException
+import static javax.servlet.http.HttpServletResponse.*
+import static org.codehaus.groovy.grails.web.servlet.HttpHeaders.*
+import static grails.plugin.gson.http.HttpConstants.*
 
 /**
  * ContactController
@@ -16,6 +19,8 @@ import org.springframework.dao.DataIntegrityViolationException
 class ContactController extends BaseController{
 
     ErrorMessageResolverService errorMessageResolverService
+
+    GsonBuilder gsonBuilder
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
@@ -59,7 +64,7 @@ class ContactController extends BaseController{
      * JSON.
      * @return AjaxResponseDto as JSON
      */
-    def save() {
+    def saveOld() {
         def contactInstance = new Contact(JSON.parse(params.contact))
 
         contactInstance.save(flush: true)
@@ -83,7 +88,7 @@ class ContactController extends BaseController{
      * Retrieves the Contact instance and parses it to JSON.
      * @return AjaxResponseDto as JSON
      */
-    def get(){
+    def getOld(){
         def contactInstance = Contact.get(params.id)
         AjaxResponseDto ajaxResponseDto = new AjaxResponseDto()
         if(!contactInstance){
@@ -98,7 +103,10 @@ class ContactController extends BaseController{
             ajaxResponseDto.modelObject = contactInstance
 
         }
-        render ajaxResponseDto as GSON
+
+        Gson gson = gsonBuilder.create()
+        def gsonRetString = gson.toJsonTree(contactInstance);
+        render gsonRetString
         return
     }
 
@@ -106,7 +114,7 @@ class ContactController extends BaseController{
      * Updates an existing Contact
      * @return AjaxResponseDto as JSON
      */
-    def update() {
+    def updateOld() {
 
         def jsonProperties = JSON.parse(params.contact)
 
@@ -159,7 +167,7 @@ class ContactController extends BaseController{
      * Deletes a Contact
      * @return AjaxResponseDto as JSON
      */
-    def delete() {
+    def deleteOld() {
         def jsonProperties = JSON.parse(params.contact)
 
         Contact contactInstance = Contact.get(jsonProperties.id)
@@ -183,5 +191,146 @@ class ContactController extends BaseController{
         render ajaxResponseDto as JSON
         return
     }
-       
+
+    def save() {
+        if (!requestIsJson()) {
+            respondNotAcceptable()
+            return
+        }
+
+        def contactInstance = new Contact(request.GSON)
+        if (contactInstance.save(flush: true)) {
+            respondCreated contactInstance
+        } else {
+            respondUnprocessableEntity contactInstance
+        }
+    }
+
+    def get() {
+        def contactInstance = Contact.get(params.id)
+        if (contactInstance) {
+            respondFound contactInstance
+        } else {
+            respondNotFound params.id
+        }
+    }
+
+    def update() {
+        if (!requestIsJson()) {
+            respondNotAcceptable()
+            return
+        }
+
+        def contactInstance = Contact.get(params.id)
+        if (!contactInstance) {
+            respondNotFound params.id
+            return
+        }
+
+        if (params.version != null) {
+            if (contactInstance.version > params.long('version')) {
+                respondConflict(contactInstance)
+                return
+            }
+        }
+
+        contactInstance.properties = request.GSON
+
+        if (contactInstance.save(flush: true)) {
+            respondUpdated contactInstance
+        } else {
+            respondUnprocessableEntity contactInstance
+        }
+    }
+
+    def delete() {
+        def contactInstance = Contact.get(params.id)
+        if (!contactInstance) {
+            respondNotFound params.id
+            return
+        }
+
+        try {
+            contactInstance.delete(flush: true)
+            respondDeleted params.id
+        } catch (DataIntegrityViolationException e) {
+            respondNotDeleted params.id
+        }
+    }
+
+    private boolean requestIsJson() {
+        GSON.isJson(request)
+    }
+
+    private void respondFound(Contact contactInstance) {
+        response.status = SC_OK
+        Gson gson = gsonBuilder.create()
+        def gsonRetString = gson.toJsonTree(contactInstance);
+        render gsonRetString
+    }
+
+    private void respondCreated(Contact contactInstance) {
+        response.status = SC_CREATED
+        response.addHeader LOCATION, createLink(action: 'show', id: contactInstance.id)
+        Gson gson = gsonBuilder.create()
+        def gsonRetString = gson.toJsonTree(contactInstance);
+        render gsonRetString
+    }
+
+    private void respondUpdated(Contact contactInstance) {
+        response.status = SC_OK
+        Gson gson = gsonBuilder.create()
+        def gsonRetString = gson.toJsonTree(contactInstance);
+        render gsonRetString
+    }
+
+    private void respondUnprocessableEntity(Contact contactInstance) {
+        def responseBody = [:]
+        responseBody.errors = contactInstance.errors.allErrors.collect {
+            message(error: it)
+        }
+        response.status = SC_UNPROCESSABLE_ENTITY
+        render responseBody as GSON
+    }
+
+    private void respondNotFound(id) {
+        def responseBody = [:]
+        responseBody.message = message(code: 'default.not.found.message', args: [message(code: 'contact.label', default: 'Contact'), id])
+        response.status = SC_NOT_FOUND
+        render responseBody as GSON
+    }
+
+    private void respondConflict(Contact contactInstance) {
+        contactInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
+                [message(code: 'contact.label', default: 'Contact')] as Object[],
+                'Another user has updated this Contact while you were editing')
+        def responseBody = [:]
+        responseBody.errors = contactInstance.errors.allErrors.collect {
+            message(error: it)
+        }
+        response.status = SC_CONFLICT
+        render responseBody as GSON
+    }
+
+    private void respondDeleted(id) {
+        def responseBody = [:]
+        responseBody.message = message(code: 'default.deleted.message', args: [message(code: 'contact.label', default: 'Contact'), id])
+        response.status = SC_OK
+        render responseBody as GSON
+    }
+
+    private void respondNotDeleted(id) {
+        def responseBody = [:]
+        responseBody.message = message(code: 'default.not.deleted.message', args: [message(code: 'contact.label', default: 'Contact'), id])
+        response.status = SC_INTERNAL_SERVER_ERROR
+        render responseBody as GSON
+    }
+
+    private void respondNotAcceptable() {
+        response.status = SC_NOT_ACCEPTABLE
+        response.contentLength = 0
+        response.outputStream.flush()
+        response.outputStream.close()
+    }    
+    
 }
