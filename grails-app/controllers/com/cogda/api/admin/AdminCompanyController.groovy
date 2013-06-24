@@ -38,6 +38,17 @@ class AdminCompanyController {
         }
     }
 
+    def findById(long id) {
+        Company company = adminCompanyService.findById(id, [:])
+        if (!company){
+            respondNotFound(id)
+        }
+        withFormat {
+            json {render company as GSON }
+            xml { render company as XML }
+        }
+    }
+
     def typeahead(){
         String q = params.q
         List returnList = []

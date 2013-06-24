@@ -36,6 +36,15 @@ class AdminCompanyService {
         return company
     }
 
+    def findById(Serializable companyId, Map params){
+        Company company
+        CustomerAccount.withoutTenantRestriction {
+            params.fetch = [companies: "eager"]
+            company = companyService.findById(companyId, params)
+        }
+    }
+
+
     List<Company> find(String qParam) {
         List<Company> companies
         CustomerAccount.withoutTenantRestriction {

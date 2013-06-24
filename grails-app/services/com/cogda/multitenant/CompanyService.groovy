@@ -33,6 +33,10 @@ class CompanyService {
                 [q:qParam, qTwo:qParam])
     }
 
+    Company findById(Serializable id, Map params) {
+        Company.findById(id, params)
+    }
+
     /**
      * Creates a company based on a Registration object.
      * @return Company

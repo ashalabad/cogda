@@ -34,7 +34,7 @@ class RegisterController {
     /**
      * Generates JSON needed for a DataTables table.
      */
-    def dataTablesSource(){
+    def dataTablesSource() {
 
         def propertiesToRender = ['lastName', 'firstName', 'emailAddress', 'companyName', 'companyType.code']
 
@@ -133,7 +133,7 @@ class RegisterController {
                 // Add a success message for this section type
                 ajaxResponseDto.addMessage(message(code: "registration.successful", args: []))
                 ajaxResponseDto.modelObject = [emailAddress: registerCommand.emailAddress]
-                ajaxResponseDto.htmlTemplate = groovyPageRenderer.render(template: "/register/successfulRegistration", model:[registrationInstance:registration])
+                ajaxResponseDto.htmlTemplate = groovyPageRenderer.render(template: "/register/successfulRegistration", model: [registrationInstance: registration])
                 render ajaxResponseDto as JSON
                 return
             }
@@ -224,7 +224,7 @@ class RegisterCommand {
         registration.newCompany = this.newCompany
         registration.companyName = this.companyName
         registration.username = this.username
-        if(this.existingCompanyId && Company.exists(this.existingCompanyId)){
+        if (this.existingCompanyId && Company.exists(this.existingCompanyId)) {
             registration.existingCompany = Company.get(this.existingCompanyId)
         }
 
@@ -244,13 +244,13 @@ class RegisterCommand {
         importFrom Registration, include: ["firstName", "lastName", "emailAddress", "newCompany",
                 "companyName"]
         password(blank: false, minSize: 6, maxSize: 84)
-        passwordTwo(blank:false, minSize: 6, maxSize: 84, validator: { val, obj ->
+        passwordTwo(blank: false, minSize: 6, maxSize: 84, validator: { val, obj ->
             if (!obj.password.equals(val)) {
                 return ['registerCommand.passwordTwo.nomatch']
             }
         })
-        username(nullable:false, blank:false, minSize:2, matches: "[A-Za-z0-9]+", validator: { val, obj ->
-            if(!obj.userService.availableUsername(val)){
+        username(nullable: false, blank: false, minSize: 2, matches: "[A-Za-z0-9]+", validator: { val, obj ->
+            if (!obj.userService.availableUsername(val)) {
                 return ['registration.username.taken']
             }
         })
@@ -282,7 +282,7 @@ class RegisterCommand {
                     return ['registration.zipcode.blank']
                 }
                 // if the country is "usa" then we must validate the city and the state fields.
-                if(obj.country?.equals("usa")){
+                if (obj.country?.equals("usa")) {
                     if (!obj.city?.trim()) {
                         return ['registration.city.blank']
                     }
@@ -294,7 +294,7 @@ class RegisterCommand {
         })
     }
 
-    String toString(){
+    String toString() {
         """
         RegisterCommand:
         firstName: $firstName
