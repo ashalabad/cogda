@@ -14,8 +14,8 @@ class CompanyService {
     /**
      * Lists all Company domain classes in the system.
      */
-    def list() {
-        return Company.list()
+    def list(Map params) {
+        return Company.list(params)
     }
 
     /**
@@ -31,6 +31,10 @@ class CompanyService {
         qParam = "%" + qParam + "%"
         return Company.executeQuery("from Company c where c.companyName like :q or c.doingBusinessAs like :qTwo order by c.companyName",
                 [q:qParam, qTwo:qParam])
+    }
+
+    Company findById(Serializable id, Map params) {
+        Company.findById(id, params)
     }
 
     /**
@@ -54,5 +58,13 @@ class CompanyService {
         company.save()
 
         return company
+    }
+
+    int count() {
+        return Company.count
+    }
+
+    def get(Serializable id) {
+        return Company.get(id)
     }
 }

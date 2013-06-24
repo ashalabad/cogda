@@ -55,7 +55,7 @@ class DomainFilters {
                         return
                     }
 
-                    if (controllerName.equals("adminRegister"))
+                    if (controllerName.startsWith("admin"))
                         return
 
                     redirect(controller:"register",action:"index")

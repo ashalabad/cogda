@@ -8,7 +8,7 @@ class CompanyTypeService {
 
     static transactional = true
 
-    def serviceMethod() {
-
+    def get(long id) {
+        return CompanyType.get(id)
     }
 }
