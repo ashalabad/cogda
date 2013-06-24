@@ -78,9 +78,9 @@ function updateContact(data){
 
 /******emails******/
 function updateEmails(data){
-  $("#emailFieldset .field").remove();
+  $("#emailFieldset .data").remove();
   $.each(data.modelObject.contactEmailAddresses, function(ind,elt){
-    var field = $(document.createElement("div")).addClass("field");
+    var field = $(document.createElement("div")).addClass("field data");
     $(field).append($(document.createElement("label")).append("Email Address"));
     var span = $(document.createElement("span")).attr("id","emailAddress_"+ind);
     $(span).text(elt.emailAddress);
@@ -97,12 +97,9 @@ function updateEmails(data){
 
 function addEmailAddressField(){
   var count = $("#emailFieldset div.field").length;
-  var field = $(document.createElement("div")).addClass("field");
-  $(field).append($(document.createElement("label")).append("Email Address"));
-  $(field).append($(document.createElement("input")).attr("id","emailAddress_"+count).val("").attr("type","text").addClass("input-xlarge"));
-  var saveBtn = $(".saveEmail.template").clone();
-  $(saveBtn).removeClass("template");
-  $(saveBtn).appendTo($(field));
+  var field = $("#editEmail").clone();
+  $(field).removeClass("template").attr("id","emailAddress_"+count).addClass("data");  
+	
 	$("#emailFieldset").prepend($(field));
 	$(field).insertBefore("#addEmail");
 }
@@ -116,7 +113,7 @@ function saveEmail(){
 function addMailingAddressField(){
   var count = $("#mailFieldset div.field").length;  
   var field = $(".address.template").clone();
-  $(field).removeClass("template");
+  $(field).removeClass("template").addClass("data");
   $(field).show();
   $(field).attr("visibility","visible");
   $(field).attr("id","address_"+count);
@@ -171,12 +168,14 @@ function updatePhones(data){
 
 function addPhoneField(){
   var count = $("#phoneFieldset div.field").length;
-  var field = $(document.createElement("div")).addClass("field");
+  var field = $("#editPhone").clone();
+  $(field).removeClass("template").attr("id","emailPhone_"+count).addClass("data");  
+/*  var field = $(document.createElement("div")).addClass("field");
   $(field).append($(document.createElement("label")).append("Phone Number"));
   $(field).append($(document.createElement("input")).attr("id","phone_"+count).val("").attr("type","text").addClass("input-xlarge"));
   var saveBtn = $(".savePhone.template").clone();
   $(saveBtn).removeClass("template");
-  $(saveBtn).appendTo($(field));
+  $(saveBtn).appendTo($(field));*/
 	$("#phoneFieldset").prepend($(field));
 	$(field).insertBefore("#addPhone");
 }
