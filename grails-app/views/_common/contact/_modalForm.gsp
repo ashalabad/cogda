@@ -1,3 +1,4 @@
+<%@ page import="com.cogda.common.GenderEnum; com.cogda.domain.Contact" %>
 <form class="form-inline" id="contactForm">
     <fieldset>
         <div id="contactData">

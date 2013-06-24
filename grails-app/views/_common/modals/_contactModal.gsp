@@ -1,4 +1,3 @@
-<%@ page import="com.cogda.common.GenderEnum; com.cogda.domain.Contact" %>
 <div class="modal hide fade" id="contactModal">
 	<div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
