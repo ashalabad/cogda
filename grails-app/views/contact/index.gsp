@@ -28,7 +28,7 @@
 	</div>
 
 	<section id="list-contact" class="first">
-	    <table class="table table-bordered" id="contactList" width="80%">
+	    <table class="table table-bordered" id="contactList">
 	        <thead>
 	        <tr>
 

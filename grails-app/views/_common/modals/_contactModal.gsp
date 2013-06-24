@@ -74,8 +74,8 @@
 			<fieldset id="emailFieldset">
 				<legend>Email Addresses</legend>
 				<div id="emailPrimary">Primary</div>
-				<g:render template="/_common/contact/editPhone"/>
-				<div class="add" id="addEmail">
+				<div id="emailHeader">Email Address</div>
+				<div class="add" id="addEmailBtn">
 					<a class="btn btn-mini add-field" href="#" onclick="addEmailAddressField();"><i class="icon-plus"></i> Add</a>
 				</div>
 			</fieldset>
@@ -88,9 +88,11 @@
 			</fieldset>			
 			<fieldset id="mailFieldset">
 				<legend>Mailing Addresses</legend>
-				<g:render template="/_common/contact/editMailingAddress"/>											
+				<g:render template="/_common/contact/editMailingAddress"/>
 				<div class="field address data show">
-					<label class="viewAddressLbl">Mailing Address</label> <a class="btn btn-mini editAddress template" href="#" onclick="editAddress();"><i class="icon-edit"></i> Edit</a>
+					<label class="viewAddressLbl">Mailing Address</label> 
+						<a class="btn btn-mini editAddress template" href="#" onclick="editAddress();">
+						<i class="icon-edit"></i> Edit</a>
 					<div class="addressOne"></div>
 					<div class="addressTwo"></div>
 					<div class="addressThree"></div>
@@ -106,4 +108,6 @@
 	<div class="modal-footer">
 		<a href="#" class="btn btn-primary" data-dismiss="modal">Done</a>
 	</div>
+	<g:render template="/_common/contact/addEmail"/>				
+	<g:render template="/_common/contact/editEmail"/>	
 </div>

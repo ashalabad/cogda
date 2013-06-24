@@ -11,28 +11,34 @@ div.field {padding:2px;clear:both;}
 div.field input {float:left;}
 fieldset{margin-bottom:20px;}
 .add-field {margin-left:5px;}
-div.add {
-  clear:both;
-  text-align: right;
-  max-width: 415px;
-}
+div.add {clear:both;}
+
+/******applies to contact data, email and phone*****/
+.editHide {display:none !important;visibility:hidden;}
+.editShow {visibility:visible;}
 
 /******contact data******/
 #contactData span {float:left; height:13px;}
 #contactData label {float:left; width:130px;}
 div.button {margin-left: 20px;}
-.editHide {display:none;visibility:hidden;}
-.editShow {visibility:visible;}
 
 /******emails & phones******/
-.primaryRadio {float:right !important;margin-right:415px !important;}
+.primaryRadio {margin: 0 40px 0 15px !important;}
 #emailFieldset label, #phoneFieldset label {width:130px;float:left;}
+.newEmail {margin-left:67px;clear:both;display:block !important;}
+.hideMe {display:none !important;visibility:hidden;}
+.showMe {visibility:visible;}
+.emailText {width:300px;float:left;}
 #addEmail, #addPhone {padding-top:4px;}
 .saveEmail, .savePhone {margin-left:4px;}
 #emailPrimary {
-  float: right;
-  clear: both !important;
-  margin-right: 397px;
+  float: left;
+  margin-right: 17px;
+  font-weight: bold;
+}
+#emailHeader {
+  float: left;
+  font-weight: bold;  
 }
 
   

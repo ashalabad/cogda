@@ -80,33 +80,46 @@ function updateContact(data){
 function updateEmails(data){
   $("#emailFieldset .data").remove();
   $.each(data.modelObject.contactEmailAddresses, function(ind,elt){
-    var field = $(document.createElement("div")).addClass("field data");
-    $(field).append($(document.createElement("label")).append("Email Address"));
-    var span = $(document.createElement("span")).attr("id","emailAddress_"+ind);
-    $(span).text(elt.emailAddress);
-    var radio = $(document.createElement("input")).attr("type","radio").attr("name","primary").addClass("primaryRadio");
-    if(elt.primaryEmailAddress == true){
-      radio.attr("checked","checked");
-    }
-    
-    $(field).append(span);
-    $(field).append(radio);
-  	$(field).insertBefore("#addEmail");    
+    var field = $("#editEmail").clone().removeClass("template").addClass("data");
+    $(field).attr("id","emailField_"+elt.id);
+    $(field).find(".emailText").text(elt.emailAddress);
+    $(field).find(".emailInput").val(elt.emailAddress);    
+  	$(field).insertBefore("#addEmailBtn");
+
   });
+}
+
+function editEmail(event){
+  var id = $(event.currentTarget).parent().attr("id");
+  $("#"+id+" .showMode").toggleClass("showMe").toggleClass("hideMe");
+  $("#"+id+" .editMode").toggleClass("showMe").toggleClass("hideMe");
 }
 
 function addEmailAddressField(){
   var count = $("#emailFieldset div.field").length;
-  var field = $("#editEmail").clone();
+  var field = $("#addEmail").clone();
   $(field).removeClass("template").attr("id","emailAddress_"+count).addClass("data");  
 	
 	$("#emailFieldset").prepend($(field));
-	$(field).insertBefore("#addEmail");
+	$(field).insertBefore("#addEmailBtn");
 }
 
-function saveEmail(){
+function saveEmail(event){
   // ajax get to email update
   // on success updateEmails
+  var id = $(event.currentTarget).parent().parent().attr("id");
+  $("#"+id+" .showMode").toggleClass("showMe").toggleClass("hideMe");
+  $("#"+id+" .editMode").toggleClass("showMe").toggleClass("hideMe");
+  /*$.ajax({
+      url: "/contact/update/"+contact.id,
+      type: "post",
+      dataType: "json",
+      data: JSON.stringify(contact),
+      contentType: "application/json; charset=utf-8",
+      success: updateEmails(data)
+  });*/
+
+
 }
 
 /*******addresses*******/
@@ -170,12 +183,6 @@ function addPhoneField(){
   var count = $("#phoneFieldset div.field").length;
   var field = $("#editPhone").clone();
   $(field).removeClass("template").attr("id","emailPhone_"+count).addClass("data");  
-/*  var field = $(document.createElement("div")).addClass("field");
-  $(field).append($(document.createElement("label")).append("Phone Number"));
-  $(field).append($(document.createElement("input")).attr("id","phone_"+count).val("").attr("type","text").addClass("input-xlarge"));
-  var saveBtn = $(".savePhone.template").clone();
-  $(saveBtn).removeClass("template");
-  $(saveBtn).appendTo($(field));*/
 	$("#phoneFieldset").prepend($(field));
 	$(field).insertBefore("#addPhone");
 }
