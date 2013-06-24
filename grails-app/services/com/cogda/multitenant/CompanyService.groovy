@@ -14,8 +14,8 @@ class CompanyService {
     /**
      * Lists all Company domain classes in the system.
      */
-    def list() {
-        return Company.list()
+    def list(Map params) {
+        return Company.list(params)
     }
 
     /**

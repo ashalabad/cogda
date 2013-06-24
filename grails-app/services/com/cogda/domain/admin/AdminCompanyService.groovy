@@ -12,10 +12,10 @@ class AdminCompanyService {
     CompanyService companyService
 
     List<Company> listCompanies(params) {
-        params.fetch = [emailConfirmationLogs: "eager"]
+        params.fetch = [companies: "eager"]
         List<Company> companyList
         CustomerAccount.withoutTenantRestriction {
-            companyService.list()
+            companyList = companyService.list(params)
         }
         return companyList
     }
@@ -23,7 +23,7 @@ class AdminCompanyService {
     int companyCount() {
         int companyCount
         CustomerAccount.withoutTenantRestriction {
-            companyCount companyService.count()
+            companyCount = companyService.count()
         }
         return companyCount
     }
