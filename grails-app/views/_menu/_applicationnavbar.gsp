@@ -71,6 +71,33 @@
                                 </li>
                             </ul>
                         </li>
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="/suspect" data-target="#">
+                                <i class="icon-user"></i>
+                                <g:message code="suspect.menu.label"/>
+                                <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li class="">
+                                    <a href="/suspect">
+                                        <i class="icon-folder-open"></i>
+                                        <g:message code = "suspect.menu.list.label"/>
+                                    </a>
+                                </li>
+                                <li class="">
+                                    <a href="/suspect/create">
+                                        <i class="icon-plus-sign"></i>
+                                        <g:message code = "suspect.menu.create.label"/>
+                                    </a>
+                                </li>
+                                <li class="">
+                                    <a href="/suspect/importAccounts">
+                                        <i class="icon-file"></i>
+                                        <g:message code = "suspect.menu.importsuspects.label"/>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
                     </ul>
 
                 </div>
