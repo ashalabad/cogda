@@ -1,12 +1,9 @@
 package com.cogda.domain
 
 import com.cogda.BaseController
-import com.cogda.common.web.AjaxResponseDto
-import com.cogda.util.ErrorMessageResolverService
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
-import com.google.gson.JsonParser
 import grails.converters.JSON
 import grails.plugin.gson.converters.GSON
 import org.springframework.dao.DataIntegrityViolationException
