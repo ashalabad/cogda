@@ -86,6 +86,8 @@ grails.project.dependency.resolution = {
 
         compile ":cloud-bees:0.6.2"
 
+        compile ":rest-client-builder:1.0.2"
+
         test(":spock:0.7") {
             exclude "spock-grails-support"
         }
