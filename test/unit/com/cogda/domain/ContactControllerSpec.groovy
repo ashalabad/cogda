@@ -129,10 +129,8 @@ class ContactControllerSpec extends Specification{
 
         then:
         assert response.status == SC_OK
-        String serializedContact = gson.toJsonTree(contact)
-        String ncontactSerialized = gson.toJsonTree(ncontact)
-        assert response.contentAsString.contains(serializedContact)
-        assert !response.contentAsString.contains(ncontactSerialized)
+        assert !response.contentAsString.contains(ncontact.lastName)
+        assert response.contentAsString.contains(contact.lastName)
     }
 
     def "dataTables list"(){

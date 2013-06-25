@@ -64,7 +64,11 @@ class ContactController extends BaseController{
         params.max = Math.min(max ?: 10, 100)
         response.status = SC_OK
         response.addIntHeader X_PAGINATION_TOTAL, Contact.count()
-        render Contact.listOrderById(params) as GSON
+        List contacts = Contact.listOrderById(params)
+        Gson gson = gsonBuilder.create()
+        def jsonTree = gson.toJsonTree(contacts)
+        render jsonTree
+        return
     }
 
     def save() {
