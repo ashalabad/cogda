@@ -9,7 +9,7 @@
     <g:set var="layout_nosecondarymenu"	value="${true}" scope="request"/>
     <g:set var="layout_nomainmenu"		value="${true}" scope="request"/>
     <title><g:message code="default.list.label" args="[entityName]" /></title>
-    <r:require module="accountPage"/>
+    <r:require module="account"/>
 
 </head>
 
@@ -30,10 +30,6 @@
         <thead>
         <tr>
 
-            %{--<th>${message(code: 'account.id.label', default: 'Id')}</th>--}%
-
-            %{--<th>${message(code: 'account.version.label', default: 'Version')}</th>--}%
-
             <th>${message(code: 'account.accountName.label')}</th>
 
             <th>${message(code: 'account.accountCode.label')}</th>
@@ -53,8 +49,9 @@
         </tbody>
     </table>
 </section>
-
 <g:render template="/_common/modals/account/add"/>
+
+<g:render template="/_common/modals/account/edit"/>
 
 </body>
 </html>

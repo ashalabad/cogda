@@ -109,6 +109,33 @@ class AccountController extends BaseController{
     }
 
     /**
+     * Retrieves the Account instance and parses it to JSON.
+     * @return AjaxResponseDto as JSON
+     */
+    def contactList(){
+        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+
+        def accountInstance = Account.get(params.id)
+
+        def dataToRender = [:]
+
+        dataToRender.aaData = []
+        accountInstance.accountContacts.each { AccountContact accountContact ->
+            Map map = [:]
+            map.DT_RowId = "row_"+accountContact.id
+            map.accountContactName = accountContact.fullName + (accountContact.primaryContact ? ' (Primary)': '')
+            map.accountContactEmail = accountContact.primaryAccountEmailAddress
+            map.accountContactPhone = accountContact.primaryAccountPhoneNumber
+            dataToRender.aaData.add(map)
+        }
+        dataToRender.sEcho = 1
+
+        render dataToRender as GSON
+
+        return
+    }
+
+    /**
      * Updates an existing Account
      * @return AjaxResponseDto as JSON
      */
