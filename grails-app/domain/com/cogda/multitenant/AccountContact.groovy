@@ -47,7 +47,7 @@ class AccountContact {
             accountContactEmailAddresses:AccountContactEmailAddress,
             accountContactPhoneNumbers:AccountContactPhoneNumber]
 
-    static transients = ["fullName"]
+    static transients = ["fullName","primaryEmailAddress","primaryPhoneNumber" ]
 
     /* Automatic timestamping of GORM */
 	Date	dateCreated
@@ -71,4 +71,28 @@ class AccountContact {
     String getFullName(){
         return "${lastName}, ${firstName}"
     }
+
+    /**
+     * Retrieves the primary AccountContactEmailAddress
+     * @return String emailAddress
+     */
+    public String getPrimaryAccountEmailAddress(){
+        AccountContactEmailAddress accountContactEmailAddress = this.accountContactEmailAddresses?.find {
+            it.primaryEmailAddress == Boolean.TRUE
+        }
+        return accountContactEmailAddress.emailAddress
+    }
+
+    /**
+     * Retrieves the primary AccountContactPhoneNumber
+     * @return String phoneNumber
+     */
+    public String getPrimaryAccountPhoneNumber(){
+        AccountContactPhoneNumber accountContactPhoneNumber = this.accountContactPhoneNumbers?.find {
+            it.primaryPhoneNumber == Boolean.TRUE
+        }
+        return accountContactPhoneNumber.phoneNumber
+    }
+
+
 }

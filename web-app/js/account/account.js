@@ -21,20 +21,45 @@ $(document).ready(function() {
             $(nRow).dblclick( function() {
                 var rowId = $(this).attr("id").replace("row_","");
                 $.get("/account/get/"+rowId, function(data) {
-                    //updateAccount(data);
-                    //updateEmails(data);
+                    updateAccount(data);
+                    updateContacts(rowId);
                     //updateMailingAddresses(data);
                     //updatePhones(data);
                     $('#accountForm').attr("id","accountForm_"+rowId);
-                    $('#accountEditModal').modal('show');
+                    $('#accountModal').modal('show');
                 });
             });
         }
     });
     $('#applicationNavBarAccountCreate').bind('click', function() {
-        $('#accountModal').modal('show');
+        $('#accountAddModal').modal('show');
     });
 });
+
+function updateAccount(data){
+    $("#accountHeader > h3").text(data.modelObject.accountName);// + " - " + data.modelObject.accountType.code + " - " + data.modelObject.accountCode );
+    $(".accountName").text(data.modelObject.accountName).val(data.modelObject.accountName);
+    $(".accountCode").text(data.modelObject.accountCode).val(data.modelObject.accountCode);
+    $("#accountType").val(data.modelObject.accountType.id);
+    $("#accountTypeLbl").text(data.modelObject.accountType.code);
+
+}
+
+function updateContacts(rowId){
+    $('#accountContactList').dataTable({
+        "bProcessing": true,
+        "bDestroy": true,
+        "sAjaxSource": "/account/contactList/"+rowId,
+        "aoColumns": [
+            {"mDataProp":"accountContactName"},
+            {"mDataProp":"accountContactEmail"},
+            {"mDataProp":"accountContactPhone"}
+        ],
+        "sPaginationType": "bootstrap"
+    });
+}
+
+
 
 function toggleEdit(){
     $(".accountShow").toggleClass("editHide");
@@ -44,13 +69,7 @@ function toggleEdit(){
 }
 
 
-//function updateAccount(data){
-//    $(".accountName").text(data.modelObject.accountName).val(data.modelObject.accountName);
-//    $(".accountCode").text(data.modelObject.accountCode).val(data.modelObject.accountCode);
-//    $("#accountType").val(data.modelObject.accountType.id);
-//    $("#accountTypeLbl").text(data.modelObject.accountType.code);
-//
-//}
+
 
 ///*******account*****/
 //function saveAccount(){
@@ -109,6 +128,16 @@ function toggleEdit(){
 ///*******addresses*******/
 //function addMailingAddressField(){
 //    var count = $("#mailFieldset div.field").length;
+//    var field = $(".address.template").clone();
+//    $(field).removeClass("template");
+//    $(field).show();
+//    $(field).attr("visibility","visible");
+//    $(field).attr("id","address_"+count);
+//    $(field).insertBefore($("#addMail"));
+//}
+///*******addresses*******/
+//function addContactMailingAddressField(){
+//    var count = $("#contactMailFieldset div.field").length;
 //    var field = $(".address.template").clone();
 //    $(field).removeClass("template");
 //    $(field).show();

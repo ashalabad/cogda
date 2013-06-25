@@ -1,4 +1,6 @@
-<div class="modal hide fade" id="accountModal">
+<r:require module="account"/>
+
+<div class="modal hide fade" id="accountAddModal">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
         <div id="accountHeader">
@@ -21,7 +23,7 @@
                     </div>
                 </div>
             </fieldset>
-            <fieldset id="addressFieldset">
+            <fieldset id="mailFieldset">
                 <legend>Account Mailing Address</legend>
                 <div class="field address">
                     <input type="text" class="addressOne input-xlarge" placeholder="Address Line 1">
@@ -46,19 +48,25 @@
                     <input type="text" id="lastName" class="lastName accountEdit" placeholder="Last Name">
                 </div>
             </fieldset>
-            <fieldset id="contactAddressEmailFieldset">
+            <fieldset id="EmailFieldset">
                 <legend>Contact's Email Address</legend>
                 <div class="field">
                     <input type="text" id="email_0" placeholder="Email Address">
                 </div>
+                <div class="add" id="addEmail">
+                    <a class="btn btn-mini add-field" href="#" onclick="addEmailAddressField();"><i class="icon-plus"></i> Add</a>
+                </div>
             </fieldset>
-            <fieldset id="contactAddressPhoneFieldset">
+            <fieldset id="PhoneFieldset">
                 <legend>Contact's Phone Number</legend>
                 <div class="field">
                     <input type="text" id="phone_0" placeholder="Phone Number">
                 </div>
+                <div class="add" id="addPhone">
+                    <a class="btn btn-mini add-field" href="#" onclick="addPhoneField();"><i class="icon-plus"></i> Add</a>
+                </div>
             </fieldset>
-            <fieldset id="contactAddressFieldset">
+            <fieldset id="contactMailFieldset">
                 <legend>Contact's Mailing Address</legend>
                 <div class="field address">
                     <input type="text" class="addressOne input-xlarge" placeholder="Address Line 1">
@@ -69,6 +77,9 @@
                         <g:select class="tate input-small" name="state" from="${com.cogda.common.UsState.values()}" optionKey="key" noSelection="['': 'State']"/>
                     </div>
                     <input type="text" class="zip input-small" placeholder="Zipcode">
+                </div>
+                <div class="add" id="addMail">
+                    <a class="btn btn-mini add-field" href="#" onclick="addMailingAddressField();"><i class="icon-plus"></i> Add</a>
                 </div>
             </fieldset>
         </form>
