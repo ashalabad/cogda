@@ -10,6 +10,7 @@ import com.cogda.domain.ContactEmailAddress
 import com.cogda.domain.ContactPhoneNumber
 import com.cogda.domain.admin.AccountType
 import com.cogda.domain.admin.CompanyType
+import com.cogda.domain.admin.NaicsCode
 import com.cogda.domain.admin.NoteType
 import com.cogda.domain.admin.SystemEmailMessageTemplate
 import com.cogda.domain.onboarding.Registration
@@ -120,13 +121,16 @@ class BootStrap {
             }
 
 
-            // Create the email templates
+            //Create the email templates
             createInitialAccountActivationEmail()
             createReminderAccountActivationEmail()
             createTimeoutActivationEmail()
             createNewAccountWelcomeEmail()
             createVerifiedSuccessfullyEmail()
             createResetPasswordEmail()
+
+
+            importNaicsCodes()
         }
     }
     def destroy = {
@@ -597,5 +601,33 @@ class BootStrap {
         }
 
         return emailAddress
+    }
+
+
+    def importNaicsCodes() {
+        //Import NAICS Data
+            InputStream is = amazonWebService.s3.getObject(new GetObjectRequest("cogda-test", "testingfiles/NaicsCode.csv")).getObjectContent()
+            CSVReader reader = new CSVReader(new InputStreamReader(is))
+            String[] nextLine;
+            Integer count = 0;
+            while ((nextLine = reader.readNext()) != null) {
+            def code = nextLine[0]?.trim()
+            def desc = nextLine[1]?.trim()
+            if(code && code != ""){
+
+                if(code.length() == 2) //root level
+                    new NaicsCode(code: code,description: desc).save()
+
+                else{
+                    def parentCode = code[0..code.length()-2]
+                    new NaicsCode(
+                        code: code,
+                        description: desc,
+                        parentNaicsCode: NaicsCode.findByCode(parentCode)
+                    ).save()
+                }
+
+            }
+        }
     }
 }
