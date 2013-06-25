@@ -11,6 +11,8 @@ import com.cogda.domain.ContactPhoneNumber
 import com.cogda.domain.admin.AccountType
 import com.cogda.domain.admin.CompanyType
 import com.cogda.domain.admin.NaicsCode
+import com.cogda.domain.admin.LineOfBusiness
+import com.cogda.domain.admin.LineOfBusinessCategory
 import com.cogda.domain.admin.NoteType
 import com.cogda.domain.admin.SystemEmailMessageTemplate
 import com.cogda.domain.onboarding.Registration
@@ -44,6 +46,8 @@ class BootStrap {
     SpringSecurityService springSecurityService
     GrailsApplication grailsApplication
     AmazonWebService amazonWebService
+    DataPopulatorService dataPopulatorService
+
 
     def init = { servletContext ->
 
@@ -100,6 +104,9 @@ class BootStrap {
             }
             if(SupportedCountryCode.count() == 0){
                 createSupportedCountryCodes()
+            }
+            if(LineOfBusiness.count() == 0 && LineOfBusinessCategory.count() == 0){
+                dataPopulatorService.createLinesOfBusiness()
             }
 
             if(!Registration.findBySubDomain("rais")){
