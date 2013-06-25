@@ -30,12 +30,4 @@ class ContactEmailAddress {
         primaryEmailAddress(nullable:true)
         published(nullable:true)
     }
-
-    /*
-     * Methods of the Domain Class
-     */
-    @Override	// Override toString for a nicer / more descriptive UI
-    public String toString() {
-        return "${emailAddress}";
-    }
 }

@@ -17,10 +17,9 @@ import static grails.plugin.gson.http.HttpConstants.*
 /**
  * ContactController
  * A controller class handles incoming web requests and performs actions such as redirects, rendering views and so on.
+ * TODO: Add a ContactService class that will handle the business logic behind the CRUD actions.
  */
 class ContactController extends BaseController{
-
-    ErrorMessageResolverService errorMessageResolverService
 
     GsonBuilder gsonBuilder
 
@@ -61,13 +60,19 @@ class ContactController extends BaseController{
         return
     }
 
+    def jlist(Integer max) {
+        params.max = Math.min(max ?: 10, 100)
+        response.status = SC_OK
+        response.addIntHeader X_PAGINATION_TOTAL, Contact.count()
+        render Contact.listOrderById(params) as GSON
+    }
+
     def save() {
         if (!requestIsJson()) {
             respondNotAcceptable()
             return
         }
-
-        def contactInstance = new Contact(request.GSON)
+        Contact contactInstance = new Contact(request.GSON)
         if (contactInstance.save(flush: true)) {
             respondCreated contactInstance
         } else {
