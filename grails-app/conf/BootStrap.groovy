@@ -129,7 +129,7 @@ class BootStrap {
             createVerifiedSuccessfullyEmail()
             createResetPasswordEmail()
 
-
+            println "Importing NAICS Codes"
             importNaicsCodes()
         }
     }
