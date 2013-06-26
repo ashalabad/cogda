@@ -141,8 +141,11 @@ class BootStrap {
             createVerifiedSuccessfullyEmail()
             createResetPasswordEmail()
 
-            println "Importing NAICS Codes"
-            importNaicsCodes()
+            if(!NaicsCode.list())
+            {
+                println "Importing NAICS Codes"
+                importNaicsCodes()
+            }
         }
     }
     def destroy = {

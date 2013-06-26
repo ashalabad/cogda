@@ -1,0 +1,25 @@
+<r:require module="naicsCodeTree"/>
+
+<div class="modal hide fade" id="naicsCodeModal">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <div id="naicsCodeHeader">
+            <h3>NAICS Codes</h3>
+        </div>
+
+    </div>
+    <div class="modal-body">
+        <div class="form-inline">
+            <input type="text" id="searchtext" placeholder="filter" class="input-small" />
+            <button id="reset" class="btn">Collapse All</button>
+        </div>
+        <br>
+        <div id="jstree"></div>
+        <div id="list"></div>
+    </div>
+    <div class="modal-footer">
+        <a class="btn btn-primary" href="#" data-dismiss="modal" onclick="processChecked();"><i class="icon-save"></i> Save</a>
+    </div>
+</div>
+
+<div class="btn btn-mini" id="naicsModalLauncher">NAICS Codes</div>
