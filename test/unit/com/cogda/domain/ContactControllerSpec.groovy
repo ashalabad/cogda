@@ -300,6 +300,33 @@ class ContactControllerSpec extends Specification{
 
     }
 
+    def "update a contact with no changes to Contact but has changes in children"(){
+        given:
+        def emailAddressSize = contact.contactEmailAddresses.size()
+        ContactEmailAddress updatedContactEmailAddress = contact.contactEmailAddresses.first()
+        assert updatedContactEmailAddress, "The updatedContactEmailAddress was not found"
+        updatedContactEmailAddress.emailAddress = "beratingyourchildren@gmail.com"
+        def addressSize = contact.contactAddresses.size()
+        def phoneNumberSize = contact.contactPhoneNumbers.size()
+
+        request.json = gson.toJson(contact)
+        request.setContentType("application/json")
+
+        when:
+        controller.update()
+
+        then:
+        assert response.status == SC_OK
+        assert response.json.id, "No id found"
+        Contact updatedContact = Contact.get(response.json.id)
+
+        assert updatedContact.contactAddresses.size() == addressSize
+        assert updatedContact.contactEmailAddresses.size() == emailAddressSize
+        assert updatedContact.contactPhoneNumbers.size() == phoneNumberSize
+        assert updatedContact.contactEmailAddresses.find { it.emailAddress.equals(updatedContactEmailAddress.emailAddress) }
+
+    }
+
     def "successfully delete a contact"(){
         given:
         Long contactId = contact.id
