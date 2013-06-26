@@ -10,16 +10,44 @@ class SicCode {
 	Long id
 	Long version
 
-    Long code
+    String code
     String description
 
+    Integer level  // calculate the level based upon the parentSicCode  ~  level = parentSicCode ? parentSicCode.level + 1 : 0
+
+    SicCode parentSicCode
+
+    static hasMany = [childSicCodes: SicCode]
+
+    Boolean active = Boolean.TRUE  //  True-> Available for selection and reporting  | False-> Available for reporting only
+
     /* Automatic timestamping of GORM */
-	Date	dateCreated
-	Date	lastUpdated
+    Date	dateCreated
+    Date	lastUpdated
 
     static constraints = {
-        code(nullable:false, unique:true)
+        code(nullable:false,unique:['parentSicCode'])
         description(nullable:false)
+    }
+
+    def beforeValidate() {
+        level = parentSicCode ? (parentSicCode.level + 1): 0
+    }
+
+    def afterInsert() {
+        if(parentSicCode)
+        {
+            parentSicCode.addToChildSicCodes(this)
+            parentSicCode.save()
+        }
+    }
+
+    def beforeDelete() {
+        if(parentSicCode)
+        {
+            parentSicCode.removeFromChildSicCodes(this)
+            parentSicCode.save()
+        }
     }
 
     /*

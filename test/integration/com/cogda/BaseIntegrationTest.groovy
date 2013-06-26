@@ -13,7 +13,6 @@ import com.cogda.domain.admin.EmailConfirmationLog
 import com.cogda.domain.admin.HtmlFragment
 import com.cogda.domain.admin.NaicsCode
 import com.cogda.domain.admin.SicCode
-import com.cogda.domain.admin.SicCodeDivision
 import com.cogda.domain.admin.SupportedCountryCode
 import com.cogda.domain.admin.SystemEmailMessageTemplate
 import com.cogda.domain.onboarding.Registration
@@ -65,7 +64,6 @@ class BaseIntegrationTest {
         HtmlFragment.executeUpdate("delete from HtmlFragment")
         NaicsCode.executeUpdate("delete from NaicsCode")
         SicCode.executeUpdate("delete from SicCode")
-        SicCodeDivision.executeUpdate("delete from SicCodeDivision")
         SupportedCountryCode.executeUpdate("delete from SupportedCountryCode")
         SystemEmailMessageTemplate.executeUpdate("delete from SystemEmailMessageTemplate")
     }
