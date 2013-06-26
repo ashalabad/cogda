@@ -50,9 +50,23 @@ class BootStrap {
     GrailsApplication grailsApplication
     AmazonWebService amazonWebService
     DataPopulatorService dataPopulatorService
-
+    def messageSource
 
     def init = { servletContext ->
+
+        for (dc in grailsApplication.domainClasses) {
+            dc.metaClass.getErrorStrings = { Locale locale = Locale.getDefault() ->
+                def stringsByField = [:].withDefault { [] }
+                for (fieldErrors in delegate.errors) {
+                    for (error in fieldErrors.allErrors) {
+                        String message = messageSource.getMessage(error, locale)
+                        stringsByField[error.field] << message
+                    }
+                }
+                stringsByField
+            }
+        }
+
 
         /*
          * Add some convenience currentTransactionStatus methods
