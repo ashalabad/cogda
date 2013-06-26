@@ -2,6 +2,7 @@ package com.cogda.util
 
 import au.com.bytecode.opencsv.CSVReader
 import com.amazonaws.services.s3.model.GetObjectRequest
+import com.cogda.domain.admin.BusinessType
 import com.cogda.domain.admin.LineOfBusiness
 import com.cogda.domain.admin.LineOfBusinessCategory
 import grails.plugin.awssdk.AmazonWebService
@@ -13,6 +14,39 @@ import org.apache.commons.lang.StringUtils
  */
 class DataPopulatorService {
     AmazonWebService amazonWebService
+
+    /**
+     * Pulls the BusinessTypes from our testingfiles/ s3 bucket and parses the
+     * csv files and saves BusinessType objects to the database.
+     */
+    def createBusinessTypes(){
+        InputStream is = amazonWebService.s3.getObject(new GetObjectRequest("cogda-test", "testingfiles/BusinessTypes.csv")).getObjectContent()
+        CSVReader reader = new CSVReader(new InputStreamReader(is))
+        String[] nextLine;
+        Integer count = 0;
+
+        while ((nextLine = reader.readNext()) != null) {
+
+            String businessTypeCode = nextLine[0]
+            businessTypeCode = StringUtils.strip(businessTypeCode)
+
+            if(!BusinessType.findByCode(businessTypeCode)){
+                BusinessType businessType = new BusinessType()
+                businessType.code = businessTypeCode
+                businessType.description = businessTypeCode
+                businessType.codeFrom = nextLine[1].toInteger()
+                businessType.codeTo = nextLine[2].toInteger()
+                businessType.intCode = count
+
+                businessType.save(failOnError:true)
+            }
+            count++
+        }
+
+
+    }
+
+
 
     def createLinesOfBusiness(){
         InputStream is = amazonWebService.s3.getObject(new GetObjectRequest("cogda-test", "testingfiles/LinesOfBusinessData.csv")).getObjectContent()

@@ -9,6 +9,7 @@ import com.cogda.domain.ContactAddress
 import com.cogda.domain.ContactEmailAddress
 import com.cogda.domain.ContactPhoneNumber
 import com.cogda.domain.admin.AccountType
+import com.cogda.domain.admin.BusinessType
 import com.cogda.domain.admin.CompanyType
 import com.cogda.domain.admin.NaicsCode
 import com.cogda.domain.admin.LineOfBusiness
@@ -108,6 +109,9 @@ class BootStrap {
             }
             if(LineOfBusiness.count() == 0 && LineOfBusinessCategory.count() == 0){
                 dataPopulatorService.createLinesOfBusiness()
+            }
+            if(BusinessType.count() == 0){
+                dataPopulatorService.createBusinessTypes()
             }
 
             if(!Registration.findBySubDomain("rais")){
