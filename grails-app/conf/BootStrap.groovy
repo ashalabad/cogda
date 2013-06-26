@@ -16,6 +16,7 @@ import com.cogda.domain.admin.LineOfBusiness
 import com.cogda.domain.admin.LineOfBusinessCategory
 import com.cogda.domain.admin.NoteType
 import com.cogda.domain.admin.SicCode
+import com.cogda.domain.admin.SicNaicsCodeCrosswalk
 import com.cogda.domain.admin.SystemEmailMessageTemplate
 import com.cogda.domain.onboarding.Registration
 import com.cogda.multitenant.Account
@@ -156,16 +157,22 @@ class BootStrap {
             createVerifiedSuccessfullyEmail()
             createResetPasswordEmail()
 
-            if(!NaicsCode.list())
+            if(NaicsCode.count() == 0)
             {
                 println "Importing NAICS Codes"
                 importNaicsCodes()
             }
 
-            if(!SicCode.list())
+            if(SicCode.count() == 0)
             {
                 println "Importing SIC Codes"
                 importSicCodes()
+            }
+
+            if(SicNaicsCodeCrosswalk.count() == 0)
+            {
+                println "Building SIC NAICS Crosswalk -- This will take a minute or so"
+                buildSicNaicsCrosswalk()
             }
         }
     }
@@ -680,6 +687,23 @@ class BootStrap {
                     parent = new SicCode(code: code,description: desc,parentSicCode: grandParent).save()
                 else
                     new SicCode(code: code,description: desc,parentSicCode: parent).save()
+            }
+        }
+    }
+
+    def buildSicNaicsCrosswalk(){
+        InputStream is = amazonWebService.s3.getObject(new GetObjectRequest("cogda-test", "testingfiles/SIC_to_NAICS_Crosswalk.csv")).getObjectContent()
+        CSVReader reader = new CSVReader(new InputStreamReader(is))
+        String[] nextLine;
+        SicCode sicCode
+        NaicsCode naicsCode
+        while ((nextLine = reader.readNext()) != null) {
+            SicNaicsCodeCrosswalk.withTransaction {
+                sicCode = SicCode.findByCode(nextLine[0]?.trim())
+                naicsCode = NaicsCode.findByCode(nextLine[1]?.trim())
+                if(sicCode && naicsCode){
+                    SicNaicsCodeCrosswalk.create sicCode, naicsCode, true
+                }
             }
         }
     }
