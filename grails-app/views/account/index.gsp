@@ -15,6 +15,7 @@
 
 <body>
 <g:render template="/_common/modals/naicsCode/naicsCodes"/>
+<g:render template="/_common/modals/sicCode/sicCodes"/>
 
 <content tag="header">
     <!-- Empty Header -->

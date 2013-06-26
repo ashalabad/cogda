@@ -28,7 +28,7 @@ class NaicsCodeController extends BaseController{
                 map.data = naicsCode.toString()
                 map.attr = [:]
                 map.attr.id = naicsCode.id
-                map.children = jsTreeify(naicsCode.childNaicsCodes)
+                map.children = jsTreeify(naicsCode.childNaicsCodes.sort{it.code})
                 dataToRender.add(map)
             }
             return dataToRender
@@ -40,6 +40,6 @@ class NaicsCodeController extends BaseController{
         jsonElement.checked.each {
             println NaicsCode.findById(it.getAsLong()).toString()
         }
-
+        render "done"
     }
 }

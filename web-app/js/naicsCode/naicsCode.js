@@ -1,47 +1,6 @@
-//data = [
-//    {
-//        "data": "Basics",
-//        "state": "closed",
-//        "children": [{
-//            "data": "login",
-//            "state": "closed",
-//            "children": ["login",
-//                {
-//                    "data": "results",
-//                    "state": "closed",
-//                    "attr": {
-//                        "id": "node-123"
-//                    }}]},
-//
-//
-//            {
-//                "data": "Basics",
-//                "state": "closed",
-//                "children": ["login", "something",
-//                    {
-//                        "data": "results",
-//                        "state": "closed",
-//                        "attr": {
-//                            "id": "node-456"
-//                        }}]}]},
-//    {
-//        "data": "All",
-//        "state": "closed",
-//        "children": [{
-//            "data": "AddCustomer",
-//            "state": "closed",
-//            "children": ["login", "Add",
-//                {
-//                    "data": "results",
-//                    "state": "closed",
-//                    "attr": {
-//                        "id": "node-789"
-//                    }}]}]}
-//]
-
 
 $(function() {
-    $("#jstree").jstree({
+    $("#naicsTree").jstree({
         "json_data": {
             "ajax": {
                 "url": "/naicsCode/getActiveNaicsCodes",
@@ -79,11 +38,11 @@ $(document).ready(function () {
         $("#naicsCodeModal").modal('show');
     });
 
-    $("#reset").click(function () {
-        $("#jstree").jstree("clear_search").jstree('close_all');
-        $("#searchtext").val("");
+    $("#resetNaics").click(function () {
+        $("#naicsTree").jstree("clear_search").jstree('close_all');
+        $("#searchNaics").val("");
     });
-    $("#searchtext").bind('keypress', function () {
+    $("#searchNaics").bind('keypress', function () {
 
         var self = $(this);
         if(self.val().length >= 2)
@@ -91,7 +50,7 @@ $(document).ready(function () {
             clearTimeout(self.data('timeout'));
 
             self.data('timeout', setTimeout(function() {
-                $("#jstree").jstree("search",self.val());
+                $("#naicsTree").jstree("search",self.val());
             }, 500));
         }
 
@@ -101,9 +60,9 @@ $(document).ready(function () {
 
 });
 
-function processChecked(){
+function processNaicsChecked(){
     var checked_ids = [];
-    $("#jstree").jstree("get_checked",null,true).each(function(){
+    $("#naicsTree").jstree("get_checked",null,true).each(function(){
         checked_ids.push(this.id);
     });
     var naicsCodes = new Object();
