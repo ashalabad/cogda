@@ -19,7 +19,7 @@ $(document).ready(function() {
             });
             $(nRow).dblclick( function() {
                 var rowId = $(this).attr("id").replace("row_","");
-                $("#contactModalBody").load("http://rais.cogdalocal.com:8090/contact/showForm/"+rowId, function(){
+                $("#contactModalBody").load("/contact/showForm/"+rowId, function(){
                   $('#contactModal').modal('show');               
                 });
             });
@@ -43,6 +43,7 @@ function saveContact(){
   toggleEdit();
   var contact = new Object();
   contact.id = $("form").attr("id").replace("contactForm_","");
+  contact.title = $("#title").val();
   contact.firstName = $("#firstName").val();
   contact.lastName = $("#lastName").val();  
   contact.middleName = $("#middleName").val();    
@@ -81,7 +82,6 @@ function updateEmails(data){
     $(field).find(".emailText").text(elt.emailAddress);
     $(field).find(".emailInput").val(elt.emailAddress);    
   	$(field).insertBefore("#addEmailBtn");
-
   });
 }
 
@@ -100,21 +100,32 @@ function addEmailAddressField(){
 }
 
 function saveEmail(event){
-  // ajax get to email update
-  // on success updateEmails
-  var id = $(event.currentTarget).parent().parent().attr("id");
-  $("#"+id+" .showMode").toggleClass("showMe").toggleClass("hideMe");
-  $("#"+id+" .editMode").toggleClass("showMe").toggleClass("hideMe");
-  /*$.ajax({
+  var contact = new Object();
+  contact.id = $("form").attr("id").replace("contactForm_","");
+  contact.contactEmailAddresses = [];
+  
+  $("#emailFieldset .emailInput").each(function(ind, elt){
+    var email = new Object();
+    if($(elt).attr("id").indexOf("_") < 0){
+      email.emailAddress = $(elt).val();
+      email.primaryEmailAddress = false;      
+    }else{
+      var emailId = $(elt).attr("id").replace("emailAddress_","");
+      email.id = emailId;
+      email.emailAddress = $(elt).val();
+      email.primaryEmailAddress = false;      
+    }
+    contact.contactEmailAddresses.push(email);
+  });
+    
+  $.ajax({
       url: "/contact/update/"+contact.id,
       type: "post",
       dataType: "json",
       data: JSON.stringify(contact),
       contentType: "application/json; charset=utf-8",
-      success: updateEmails(data)
-  });*/
-
-
+      success: updateEmails
+  });
 }
 
 /*******addresses*******/
@@ -182,7 +193,25 @@ function addPhoneField(){
 }
 
 function savePhone(){
-  
+  var fieldId = $(event.currentTarget).parent().parent().attr("id");
+  var phoneId = $(event.currentTarget).parent().parent().attr("id").replace("editPhone_","");
+  var contact = new Object();
+  contact.id = $("form").attr("id").replace("contactForm_","");
+  contact.contactPhoneNumbers = [];
+  var phone = new Object();
+  phone.id = phoneId;
+  phone.phoneNumber = $("#"+fieldId+" .phoneInput").val();
+  phone.primaryPhoneNumber = false;
+  contact.contactPhoneNumbers.push(phone);
+    
+  $.ajax({
+      url: "/contact/update/"+contact.id,
+      type: "post",
+      dataType: "json",
+      data: JSON.stringify(contact),
+      contentType: "application/json; charset=utf-8",
+      success: updateEmails
+  });  
 }
 
 

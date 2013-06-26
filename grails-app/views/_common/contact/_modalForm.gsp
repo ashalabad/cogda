@@ -1,5 +1,5 @@
 <%@ page import="com.cogda.common.GenderEnum; com.cogda.domain.Contact" %>
-<form class="form-inline" id="contactForm">
+<form class="form-inline" id="contactForm_${contactInstance?.id}">
     <fieldset id="contactFieldset">
         <div id="contactData">
             <div class="field">
