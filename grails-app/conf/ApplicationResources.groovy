@@ -40,17 +40,23 @@ modules = {
         resource url:[dir: 'js/contact', file: 'contact.js']
     }
 
-    naicsCodeTree {
+    jstree {
         dependsOn 'jquery,  jquery-ui'
-
-        resource url:[dir: 'js/naicsCode', file: 'naicsCode.js']
         resource url:[dir: 'js/jstree', file: 'jquery.jstree.js']
         resource url:[dir: 'js/jstree/themes/default', file: 'd.png']
         resource url:[dir: 'js/jstree/themes/default', file: 'd.gif']
         resource url:[dir: 'js/jstree/themes/default', file: 'style.css']
         resource url:[dir: 'js/jstree/themes/default', file: 'throbber.gif']
+    }
 
+    naicsCodeTree {
+        dependsOn ' jstree'
+        resource url:[dir: 'js/naicsCode', file: 'naicsCode.js']
+    }
 
+    sicCodeTree {
+        dependsOn ' jstree'
+        resource url:[dir: 'js/sicCode', file: 'sicCode.js']
     }
 
 
