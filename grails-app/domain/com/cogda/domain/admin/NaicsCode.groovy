@@ -17,6 +17,8 @@ class NaicsCode {
 
     NaicsCode parentNaicsCode
 
+    static hasMany = [childNaicsCodes: NaicsCode]
+
     Boolean active = Boolean.TRUE  //  True-> Available for selection and reporting  | False-> Available for reporting only
 
     /* Automatic timestamping of GORM */
@@ -31,6 +33,22 @@ class NaicsCode {
 
     def beforeValidate() {
         level = parentNaicsCode ? (parentNaicsCode.level + 1): 0
+    }
+
+    def afterInsert() {
+        if(parentNaicsCode)
+        {
+            parentNaicsCode.addToChildNaicsCodes(this)
+            parentNaicsCode.save()
+        }
+    }
+
+    def beforeDelete() {
+        if(parentNaicsCode)
+        {
+            parentNaicsCode.removeFromChildNaicsCodes(this)
+            parentNaicsCode.save()
+        }
     }
 
     /*

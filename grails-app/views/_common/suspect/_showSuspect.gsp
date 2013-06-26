@@ -1,21 +1,6 @@
-
-<%@ page import="com.cogda.multitenant.Lead" %>
-<!doctype html>
-<html>
-
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="layout" content="kickstart" />
-    <g:set var="entityName" value="${message(code: 'suspect.label', default: 'Suspect')}" />
-    <g:set var="layout_nosecondarymenu"	value="true" scope="request"/>
-    <g:set var="layout_nomainmenu"		value="true" scope="request"/>
-
-</head>
-
-<body>
-
 <section id="show-suspect" class="first">
-
+    <g:set var="entityName" value="${message(code: 'suspect.label', default: 'Suspect')}" />
+    <h4><g:message code="default.show.label" args="[entityName]" /></h4>
     <table class="table">
         <tbody>
 
@@ -43,7 +28,7 @@
         <tr class="prop">
             <td valign="top" class="name"><g:message code="lead.businessType.label" default="Business Type" /></td>
 
-            <td valign="top" class="value"><g:link controller="businessType" action="show" id="${suspectInstance?.businessType?.id}">${suspectInstance?.businessType?.encodeAsHTML()}</g:link></td>
+            <td valign="top" class="value"><g:link controller="businessType" action="show" id="${suspectInstance?.businessType?.id}">${suspectInstance?.businessType?.description.encodeAsHTML()}</g:link></td>
 
         </tr>
 
@@ -166,17 +151,6 @@
 
         </tr>
 
-        <tr class="prop">
-            <td valign="top" class="name"><g:message code="lead.tenantId.label" default="Tenant Id" /></td>
-
-            <td valign="top" class="value">${fieldValue(bean: suspectInstance, field: "tenantId")}</td>
-
-        </tr>
-
         </tbody>
     </table>
 </section>
-
-</body>
-
-</html>

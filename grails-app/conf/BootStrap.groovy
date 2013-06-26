@@ -15,6 +15,7 @@ import com.cogda.domain.admin.NaicsCode
 import com.cogda.domain.admin.LineOfBusiness
 import com.cogda.domain.admin.LineOfBusinessCategory
 import com.cogda.domain.admin.NoteType
+import com.cogda.domain.admin.SicCode
 import com.cogda.domain.admin.SystemEmailMessageTemplate
 import com.cogda.domain.onboarding.Registration
 import com.cogda.multitenant.Account
@@ -141,8 +142,17 @@ class BootStrap {
             createVerifiedSuccessfullyEmail()
             createResetPasswordEmail()
 
-            println "Importing NAICS Codes"
-            importNaicsCodes()
+            if(!NaicsCode.list())
+            {
+                println "Importing NAICS Codes"
+                importNaicsCodes()
+            }
+
+            if(!SicCode.list())
+            {
+                println "Importing SIC Codes"
+                importSicCodes()
+            }
         }
     }
     def destroy = {
@@ -617,11 +627,9 @@ class BootStrap {
 
 
     def importNaicsCodes() {
-        //Import NAICS Data
             InputStream is = amazonWebService.s3.getObject(new GetObjectRequest("cogda-test", "testingfiles/NaicsCode.csv")).getObjectContent()
             CSVReader reader = new CSVReader(new InputStreamReader(is))
             String[] nextLine;
-            Integer count = 0;
             while ((nextLine = reader.readNext()) != null) {
             def code = nextLine[0]?.trim()
             def desc = nextLine[1]?.trim()
@@ -639,6 +647,25 @@ class BootStrap {
                     ).save()
                 }
 
+            }
+        }
+    }
+
+    def importSicCodes() {
+        InputStream is = amazonWebService.s3.getObject(new GetObjectRequest("cogda-test", "testingfiles/SicCode.csv")).getObjectContent()
+        CSVReader reader = new CSVReader(new InputStreamReader(is))
+        String[] nextLine;
+        SicCode grandParent, parent
+        while ((nextLine = reader.readNext()) != null) {
+            def code = nextLine[0]?.trim()
+            def desc = nextLine[1]?.trim()
+            if(code && code != ""){
+                if(code.length() == 1) //root level
+                    grandParent = new SicCode(code: code,description: desc).save()
+                else if(code[code.length()-1] == "0")
+                    parent = new SicCode(code: code,description: desc,parentSicCode: grandParent).save()
+                else
+                    new SicCode(code: code,description: desc,parentSicCode: parent).save()
             }
         }
     }

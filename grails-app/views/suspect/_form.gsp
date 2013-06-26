@@ -58,7 +58,7 @@
                 </div>
             </div>
 
-            <div class="control-group fieldcontain ${hasErrors(bean: suspectInstance, field: 'country', 'error')} ">
+            <div class="control-group fieldcontain ${hasErrors(bean: suspectInstance, field: 'country', 'error')} required">
                 <label for="country" class="control-label"><g:message code="address.country.label" default="Country" />
                     <span class="required-indicator">*</span>
                 </label>
@@ -71,24 +71,26 @@
                 </div>
             </div>
 
-            <div class="control-group fieldcontain ${hasErrors(bean: suspectInstance, field: 'firstName', 'error')} ">
-                <label for="ownerName" class="control-label"><g:message code="registration.firstName.label" default="First Name" /></label>
+            <div class="control-group fieldcontain ${hasErrors(bean: suspectInstance, field: 'firstName', 'error')} required">
+                <label for="ownerName" class="control-label"><g:message code="registration.firstName.label" default="First Name" />
+                    <span class="required-indicator">*</span></label>
                 <div class="controls">
                     <g:textField name="firstName" value="${suspectInstance?.firstName}"/>
                     <span class="help-inline">${hasErrors(bean: suspectInstance, field: 'firstName', 'error')}</span>
                 </div>
             </div>
 
-            <div class="control-group fieldcontain ${hasErrors(bean: suspectInstance, field: 'lastName', 'error')} ">
-                <label for="ownerName" class="control-label"><g:message code="registration.lastName.label" default="First Name" /></label>
+            <div class="control-group fieldcontain ${hasErrors(bean: suspectInstance, field: 'lastName', 'error')} required">
+                <label for="ownerName" class="control-label"><g:message code="registration.lastName.label" default="Last Name" />
+                    <span class="required-indicator">*</span></label>
                 <div class="controls">
                     <g:textField name="lastName" value="${suspectInstance?.lastName}"/>
                     <span class="help-inline">${hasErrors(bean: suspectInstance, field: 'lastName', 'error')}</span>
                 </div>
             </div>
 
-            <div class="control-group fieldcontain ${hasErrors(bean: suspectInstance, field: 'emailAddress', 'error')} ">
-                <label for="ownerName" class="control-label"><g:message code="registration.emailAddress.label" default="Email Address" /></label>
+            <div class="control-group fieldcontain ${hasErrors(bean: suspectInstance, field: 'emailAddress', 'error')} required">
+                <label for="ownerName" class="control-label"><g:message code="registration.emailAddress.label" default="Email Address" /><span class="required-indicator">*</span></label>
                 <div class="controls">
                     <g:textField name="emailAddress" value="${suspectInstance?.emailAddress}"/>
                     <span class="help-inline">${hasErrors(bean: suspectInstance, field: 'emailAddress', 'error')}</span>
@@ -122,7 +124,7 @@
 			<div class="control-group fieldcontain ${hasErrors(bean: suspectInstance, field: 'businessType', 'error')} ">
 				<label for="businessType" class="control-label"><g:message code="lead.businessType.label" default="Business Type" /></label>
 				<div class="controls">
-					<g:select id="businessType" name="businessType.id" from="${com.cogda.domain.admin.BusinessType.list()}" optionKey="id" value="${suspectInstance?.businessType?.id}" class="many-to-one" noSelection="['null': '']"/>
+					<g:select id="businessType" name="businessType.id" from="${com.cogda.domain.admin.BusinessType.list().sort {it.description}}" optionValue="${{it.description}}" optionKey="id" value="${suspectInstance?.businessType?.id}" class="many-to-one" noSelection="['null': '']"/>
 					<span class="help-inline">${hasErrors(bean: suspectInstance, field: 'businessType', 'error')}</span>
 				</div>
 			</div>
@@ -130,7 +132,7 @@
 			<div class="control-group fieldcontain ${hasErrors(bean: suspectInstance, field: 'naicsCode', 'error')} ">
 				<label for="naicsCode" class="control-label"><g:message code="lead.naicsCode.label" default="Naics Code" /></label>
 				<div class="controls">
-					<g:select id="naicsCode" name="naicsCode.id" from="${com.cogda.domain.admin.NaicsCode.list()}" optionKey="id" value="${suspectInstance?.naicsCode?.id}" class="many-to-one" noSelection="['null': '']"/>
+					<g:select id="naicsCode" name="naicsCode.id" from="${com.cogda.domain.admin.NaicsCode.list()}"  optionKey="id" value="${suspectInstance?.naicsCode?.id}" class="many-to-one" noSelection="['null': '']"/>
 					<span class="help-inline">${hasErrors(bean: suspectInstance, field: 'naicsCode', 'error')}</span>
 				</div>
 			</div>

@@ -2,8 +2,13 @@ package com.cogda.multitenant
 
 import com.cogda.BaseController
 import com.cogda.common.LeadType
+import com.cogda.common.web.AjaxResponseDto
+import com.cogda.domain.admin.BusinessType
+import com.cogda.domain.admin.NaicsCode
+import com.cogda.domain.admin.SicCode
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.gson.JsonElement
 import grails.converters.JSON
 import grails.plugin.gson.converters.GSON
 import org.springframework.dao.DataIntegrityViolationException
@@ -22,6 +27,7 @@ class SuspectController extends BaseController {
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
     GsonBuilder gsonBuilder
+    def errorMessageResolverService
 
     def index() {
     }
@@ -37,7 +43,7 @@ class SuspectController extends BaseController {
             map.DT_RowId = "row_" + suspect.id
             map.version = suspect.version
             map.clientId = suspect.clientId
-            map.businessType = suspect.businessType
+            map.businessType = suspect.businessType.description
             map.owner = suspect.ownerName
             map.createdOn = suspect.dateCreated
             if (suspect.account) {
@@ -52,6 +58,8 @@ class SuspectController extends BaseController {
                 map.phoneNumber = suspect.phoneNumber
                 map.email = suspect.emailAddress
             }
+            map.details = remoteLink([controller: 'suspect', action: 'show', id: suspect.id, onSuccess: 'modalDialogHandler(data)', method: 'GET'], 'Details')
+            map.edit = remoteLink([controller: 'suspect', action: 'edit', id: suspect.id, onSuccess: 'modalDialogHandler(data)', method: 'GET'], 'Edit')
             dataToRender.aaData.add(map)
         }
         dataToRender.sEcho = 1
@@ -83,8 +91,7 @@ class SuspectController extends BaseController {
             redirect(action: "list")
             return
         }
-
-        [suspectInstance: suspectInstance]
+        render(template: '/_common/suspect/showSuspect', model: [suspectInstance: suspectInstance])
     }
 
     def get() {
@@ -103,43 +110,75 @@ class SuspectController extends BaseController {
             redirect(action: "list")
             return
         }
-
-        [suspectInstance: suspectInstance]
+        render(template: '/_common/suspect/editSuspect', model: [suspectInstance: suspectInstance])
     }
 
     def update() {
         def suspectInstance = Lead.get(params.id)
         if (!suspectInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'lead.label', default: 'Lead'), params.id])
-            redirect(action: "list")
-            return
+            respondNotFo
+            und(params.id)
         }
 
-        if (params.version) {
-            def version = params.version.toLong()
-            if (suspectInstance.version > version) {
-                suspectInstance.errors.rejectValue("version", "default.optimistic.locking.failure",
-                        [message(code: 'suspect.label', default: 'Lead')] as Object[],
-                        "Another user has updated this Lead while you were editing")
-                render(view: "edit", model: [suspectInstance: suspectInstance])
+        if (params.version != null) {
+            if (suspectInstance.version > params.long('version')) {
+                respondConflict()
                 return
             }
         }
 
-        suspectInstance.properties = params
+        JsonElement jsonElement = GSON.parse(request)
+        suspectInstance.properties = jsonElement
 
-        if (!suspectInstance.save(flush: true)) {
-            render(view: "edit", model: [suspectInstance: suspectInstance])
-            return
+        if (suspectInstance.save(flush: true)) {
+            respondUpdated(suspectInstance)
+        } else {
+            respondUnprocessableEntity(suspectInstance)
         }
-
-        flash.message = message(code: 'default.updated.message', args: [message(code: 'lead.label', default: 'Lead'), suspectInstance.id])
-        redirect(action: "show", id: suspectInstance.id)
     }
+
+//    def update() {
+//        AjaxResponseDto ajaxResponseDto
+//
+//        def suspectInstance = Lead.get(params.id)
+//        if (!suspectInstance) {
+//            flash.message = message(code: 'default.not.found.message', args: [message(code: 'lead.label', default: 'Lead'), params.id])
+//            redirect(action: "list")
+//            return
+//        }
+//
+//        if (params.version) {
+//            def version = params.version.toLong()
+//            if (suspectInstance.version > version) {
+//                suspectInstance.errors.rejectValue("version", "default.optimistic.locking.failure",
+//                        [message(code: 'suspect.label', default: 'Lead')] as Object[],
+//                        "Another user has updated this Lead while you were editing")
+//                render(view: "edit", model: [suspectInstance: suspectInstance])
+//                return
+//            }
+//        }
+//
+//        suspectInstance.properties = params
+//
+//        if (suspectInstance.hasErrors()) {
+//            ajaxResponseDto.success = Boolean.FALSE
+//            ajaxResponseDto.errors = errorMessageResolverService.retrieveErrorStrings(suspectInstance)
+//            render ajaxResponseDto as JSON
+//            return
+//        }
+//
+//        if (!suspectInstance.save(flush: true)) {
+//            ajaxResponseDto.success = Boolean.FALSE
+//            ajaxResponseDto.errors = errorMessageResolverService.retrieveErrorStrings(suspectInstance)
+//            render ajaxResponseDto as JSON
+//            return
+//        }
+//    }
 
     def delete() {
         def suspectInstance = Lead.get(params.id)
         if (!suspectInstance) {
+
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'lead.label', default: 'Lead'), params.id])
             redirect(action: "list")
             return
@@ -161,6 +200,10 @@ class SuspectController extends BaseController {
         response.status = SC_OK
         response.addIntHeader X_PAGINATION_TOTAL, Lead.count()
         render Lead.listOrderById(params) as GSON
+    }
+
+    private boolean requestIsJson() {
+        GSON.isJson(request)
     }
 
     private void respondFound(Lead leadInstance) {
@@ -233,4 +276,39 @@ class SuspectController extends BaseController {
         response.outputStream.flush()
         response.outputStream.close()
     }
+}
+
+class SuspectCommand {
+    Account account
+    BusinessType businessType
+    NaicsCode naicsCode
+    SicCode sicCode
+    String clientId
+    String ownerName
+    String clientName
+    String address1
+    String address2
+    String city
+    String state
+    String zipCode
+    String county
+    String country
+    String firstName
+    String lastName
+    String emailAddress
+    String phoneNumber
+
+    Date lastUpdated
+    Date dateCreated
+    LeadType leadType
+
+    static constraints = {
+        importFrom Lead
+    }
+
+    Lead getLeadObject() {
+        return new Lead()
+    }
+
+
 }

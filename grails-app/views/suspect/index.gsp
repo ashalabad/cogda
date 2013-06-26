@@ -9,6 +9,7 @@
     <g:set var="layout_nosecondarymenu"	value="true" scope="request"/>
     <g:set var="layout_nomainmenu"		value="true" scope="request"/>
     <g:javascript src="suspect/suspect.js"/>
+    <link rel="stylesheet" type="text/css" href="/css/suspect.css" />
     <title><g:message code="default.list.label" args="[entityName]" /></title>
     <r:require module="dataTables"/>
 </head>
@@ -23,9 +24,12 @@
         &nbsp;
     </div>
 </div>
+<div class="alert alert-error" id="errorMessages" style="display:none">
+    <h4>Errors!</h4>
+</div>
 <section id="list-lead" class="first">
 
-    <table class="table table-bordered" id='leadList'>
+    <table class="table table-bordered" id='suspectList'>
         <thead>
         <tr>
             <th>${message(code: 'lead.clientId.label', default: 'Client Id')} </th>
@@ -36,13 +40,15 @@
             <th>${message(code: 'lead.contactEmailAddress.label', default: 'Email Address')}</th>
             <th>${message(code: 'lead.owner.label', default: 'Owner')}</th>
             <th>${message(code: 'lead.dateCreated.label', default: 'Created')}</th>
+            <th>${message(code: 'lead.details.label', default: 'Details')}</th>
+            <th>${message(code: 'lead.edit.label', default: 'Edit')}</th>
         </tr>
         </thead>
         <tbody>
         </tbody>
     </table>
 </section>
-
+<g:render template="/_common/suspect/suspectModal"/>
 </body>
 
 </html>

@@ -1,0 +1,29 @@
+#suspectList td{cursor: pointer;}
+label{font-weight: bold;}
+.row_selected {background-color: #ccc !important;}
+.row_selected td{background-color: #ccc !important;}
+#suspectHeader {width:300px;}
+div.field {padding:2px;clear:both;}
+div.field input {float:left;}
+fieldset{margin-bottom:20px;}
+.add-field {margin-left:5px;}
+div.add {clear:both;}
+@media (min-width: 1200px) {
+    .modal{
+        width: 960px;
+        margin-left: -480px;}
+}
+
+/* Portrait tablet to landscape and desktop */
+@media (min-width: 768px) and (max-width: 979px) {
+    .modal{
+        width: 760px;
+        margin-left: -380px;}
+}
+
+/* Landscape phones and down */
+@media (max-width: 480px) {
+    .modal{
+        width: 460px;
+        margin-left: -230px;}
+}
