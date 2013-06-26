@@ -171,7 +171,7 @@ class BootStrap {
 
             if(SicNaicsCodeCrosswalk.count() == 0)
             {
-                println "Building SIC NAICS Crosswalk -- This will take a minute or so"
+                println "Building SIC NAICS Crosswalk"
                 buildSicNaicsCrosswalk()
             }
         }
@@ -698,12 +698,16 @@ class BootStrap {
         SicCode sicCode
         NaicsCode naicsCode
         while ((nextLine = reader.readNext()) != null) {
-            SicNaicsCodeCrosswalk.withTransaction {
-                sicCode = SicCode.findByCode(nextLine[0]?.trim())
-                naicsCode = NaicsCode.findByCode(nextLine[1]?.trim())
-                if(sicCode && naicsCode){
-                    SicNaicsCodeCrosswalk.create sicCode, naicsCode, true
-                }
+            sicCode = SicCode.findByCode(nextLine[0]?.trim())
+            naicsCode = NaicsCode.findByCode(nextLine[1]?.trim())
+            if(!sicCode)
+                log.error "Crosswalk SIC CODE ${nextLine[0]?.trim()} was not found"
+
+            if(!naicsCode)
+                log.error "Crosswalk NAICS CODE ${nextLine[1]?.trim()} was not found"
+
+            if(sicCode && naicsCode){
+                SicNaicsCodeCrosswalk.create sicCode, naicsCode
             }
         }
     }
