@@ -16,6 +16,8 @@ modules = {
         resource url:[dir: 'js/dataTables', file: 'jquery.dataTables.js']
         resource url:[dir: 'js/dataTables', file:'dataTables.bootstrap.css']
         resource url:[dir: 'js/dataTables', file:'dataTables.bootstrap.js']
+        resource url:[dir: 'js/dataTables', file:'jquery.dataTables.refresh.js']
+        resource url:[dir: 'js/dataTables', file:'ColReorderWithResize.js']
     }
 
     notifications {

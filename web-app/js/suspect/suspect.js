@@ -1,5 +1,6 @@
+var oTable;
 $(document).ready(function() {
-    $('#suspectList').dataTable(
+    oTable = $('#suspectList').dataTable(
         {
             "bProcessing": true,
             "sAjaxSource": "/suspect/list",
@@ -11,26 +12,36 @@ $(document).ready(function() {
                 {"mDataProp":"phoneNumber"},
                 {"mDataProp":"email"},
                 {"mDataProp":"owner"},
-                {"mDataProp":"createdOn"}
+                {"mDataProp":"createdOn"},
+                {"mDataProp":"details"},
+                {"mDataProp":"edit"}
             ],
-            "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+            "sDom": "Rlfrtip",//"<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
             "sPaginationType": "bootstrap",
             "fnRowCallback": function( nRow, aData, iDisplayIndex ) {
                 $(nRow).click( function() {
                     $('.row_selected').toggleClass('row_selected');
                     $(this).toggleClass('row_selected');
                 });
-//                $(nRow).dblclick( function() {
-//                    var rowId = $(this).attr("id").replace("row_","");
-//                    $.get("/suspect/show/"+rowId, function(data) {
-//                        updateContact(JSON.parse(data));
-//                        updateEmails(JSON.parse(data));
-//                        updateMailingAddresses(JSON.parse(data));
-//                        updatePhones(JSON.parse(data));
-//                        $('#contactForm').attr("id","contactForm_"+rowId);
-//                        $('#contactModal').modal('show');
-//                    });
-//                });
+                $(nRow).dblclick( function() {
+                    var rowId = $(this).attr("id").replace("row_","");
+                    $('#suspectModalBody').load("/suspect/show/"+rowId, function(data) {
+                        $('#suspectModal').modal('show');
+                    });
+                });
             }
         });
+
+    $('#suspectModal').on('hidden', function () {
+        refreshDataTable()
+    });
 });
+
+function refreshDataTable() {
+    oTable.fnReloadAjax()
+}
+
+function modalDialogHandler(data) {
+    $('#suspectModalBody').html(data)
+    $('#suspectModal').modal('show')
+}
