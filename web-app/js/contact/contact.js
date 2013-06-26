@@ -19,13 +19,8 @@ $(document).ready(function() {
             });
             $(nRow).dblclick( function() {
                 var rowId = $(this).attr("id").replace("row_","");
-                $.get("/contact/get/"+rowId, function(data) {
-                    updateContact(JSON.parse(data));
-                    updateEmails(JSON.parse(data));
-                    updateMailingAddresses(JSON.parse(data));      
-                    updatePhones(JSON.parse(data));
-                    $('#contactForm').attr("id","contactForm_"+rowId);
-                    $('#contactModal').modal('show');
+                $("#contactModalBody").load("http://rais.cogdalocal.com:8090/contact/showForm/"+rowId, function(){
+                  $('#contactModal').modal('show');               
                 });
             });
         }                
@@ -60,13 +55,14 @@ function saveContact(){
       type: "post",
       dataType: "json",
       data: JSON.stringify(contact),
+      success: updateContact,
       contentType: "application/json; charset=utf-8"
   });
 }
 
 function updateContact(data){
-  //$(".title").text(data.modelObject.title).val(data.modelObject.title);                    
-  $(".firstName").text(data["firstName"]).val(data["firstName"]);  
+  $(".title").text(data.title).val(data.title);                    
+  $(".firstName").text(data.firstName).val(data.firstName);  
   $(".middleName").text(data.middleName).val(data.middleName); 
   $(".lastName").text(data.lastName).val(data.lastName);       
   $(".initials").text(data.initials).val(data.initials);                      
@@ -99,8 +95,7 @@ function addEmailAddressField(){
   var count = $("#emailFieldset div.field").length;
   var field = $("#addEmail").clone();
   $(field).removeClass("template").attr("id","emailAddress_"+count).addClass("data");  
-	
-	$("#emailFieldset").prepend($(field));
+  var btn = $("#addEmailBtn");
 	$(field).insertBefore("#addEmailBtn");
 }
 
@@ -175,16 +170,14 @@ function updatePhones(data){
     var span = $(document.createElement("span")).attr("id","phone_"+ind);
     $(span).text(elt.phoneNumber);
     $(field).append(span);    
-//  	$("#phoneFieldset").prepend($(field));
 	  $(field).insertBefore("#addPhoneBtn");  	
   });
 }
 
 function addPhoneField(){
   var count = $("#phoneFieldset div.field").length;
-  var field = $("#editPhone").clone();
+  var field = $("#addPhone").clone();
   $(field).removeClass("template").attr("id","phone_"+count).addClass("data");  
-//	$("#phoneFieldset").prepend($(field));
 	$(field).insertBefore("#addPhoneBtn");
 }
 

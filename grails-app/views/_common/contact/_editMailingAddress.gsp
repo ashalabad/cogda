@@ -9,7 +9,7 @@
 	</div>
 	<input type="text" class="zip input-small" placeholder="zipcode">
 	<div class="save">
-		<a href="#" class="btn btn-mini cancel" onclick="cancelNewAddress($(this));">Cancel</a>					
-		<a class="btn btn-mini btn-primary" href="#" onclick="saveAddress();"><i class="icon-save"></i> Save</a>
+		<a href="#" class="btn cancel" onclick="cancelNewAddress($(this));">Cancel</a>					
+		<a class="btn btn-primary" href="#" onclick="saveAddress();"><i class="icon-save"></i> Save</a>
 	</div>
 </div>

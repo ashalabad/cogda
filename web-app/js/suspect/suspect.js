@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    $('#leadList').dataTable(
+    $('#suspectList').dataTable(
         {
             "bProcessing": true,
             "sAjaxSource": "/suspect/list",

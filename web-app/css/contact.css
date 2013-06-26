@@ -20,23 +20,28 @@ div.add {clear:both;}
 /******contact data******/
 #contactData span {float:left; height:13px;}
 #contactData label {float:left; width:130px;}
+#contactFieldset .add {
+  margin-top: 34px;
+  float: right;
+  margin-right: 512px;  
+}
 div.button {margin-left: 20px;}
 
 /******emails & phones******/
-.primaryRadio {margin: 0 40px 0 15px !important;}
+.primaryRadio {margin: 7px 40px 0 15px !important;}
 #emailFieldset label, #phoneFieldset label {width:130px;float:left;}
-.newEmail {margin-left:67px;clear:both;display:block !important;}
+.new {margin-left:69px;clear:both;display:block !important;}
 .hideMe {display:none !important;visibility:hidden;}
 .showMe {visibility:visible;}
-.emailText {width:300px;float:left;}
+.emailText {width:284px;float:left;margin-top:2px;}
 #addEmail, #addPhone {padding-top:4px;}
 .saveEmail, .savePhone {margin-left:4px;}
-#emailPrimary {
+.primaryHeader {
   float: left;
   margin-right: 17px;
   font-weight: bold;
 }
-#emailHeader {
+.labelHeader {
   float: left;
   font-weight: bold;  
 }
@@ -59,5 +64,5 @@ div.address input, div.address select {
 .addressLbl {float:left;}
 .viewAddressLbl {margin-right:55px;}
 input.zip {margin-right:65px;}
-.save {margin-left:180px;clear:both;}
+.save {margin-left:135px;clear:both;}
 div.address {margin-bottom:20px;}

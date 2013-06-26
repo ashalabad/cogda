@@ -1,5 +1,4 @@
-<div class="field template" id="editPhone">
-	<label>Phone Number</label>
+<div class="field new template input-append" id="addPhone">
 	<input id="phone" type="text" class="input-xlarge" placeholder="(123)555-1234">
-	<a class="btn btn-small btn-primary savePhone" href="#" onclick="savePhone();"><i class="icon-save"></i> Save</a>
+	<button class="btn btn-primary savePhone" type="button" onclick="savePhone();"><i class="icon-save"></i> Save</button>
 </div>

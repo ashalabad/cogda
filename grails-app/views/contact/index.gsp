@@ -48,9 +48,7 @@
 	        </tbody>
 	    </table>
 	</section>
-	<g:render template="/_common/modals/contactModal"/>
-
-
+	<g:render template="/_common/contact/contactModal"/>
 </body>
 
 </html>
