@@ -37,6 +37,8 @@ class ContactControllerSpec extends Specification{
     ContactEmailAddress contactEmailAddress
     ContactPhoneNumber contactPhoneNumber
     ContactAddress contactAddress
+
+    Contact contactWithTwoEmailAddresses
     Address address
     Gson gson
     GsonBuilder gsonBuilder
@@ -81,6 +83,13 @@ class ContactControllerSpec extends Specification{
         contact.addToContactPhoneNumbers(contactPhoneNumber)
         contact.addToContactEmailAddresses(contactEmailAddress)
         contact.addToContactAddresses(contactAddress)
+
+
+        contactWithTwoEmailAddresses = new Contact(firstName: "Two Email Adresses First Name", lastName: "Two Email Adresses Last Name", gender:GenderEnum.FEMALE, tenantId:1)
+        contactWithTwoEmailAddresses.addToContactEmailAddresses(new ContactEmailAddress(contact:contactWithTwoEmailAddresses, emailAddress: "123456789@cogda.com", primaryEmailAddress: true, tenantId:1))
+        contactWithTwoEmailAddresses.addToContactEmailAddresses(new ContactEmailAddress(contact:contactWithTwoEmailAddresses, emailAddress: "987654321@cogda.com", primaryEmailAddress: false, tenantId:1))
+        contactWithTwoEmailAddresses.save(failOnError:true)
+
     }
 
     def "can get and serialize Contact"(){
@@ -299,6 +308,66 @@ class ContactControllerSpec extends Specification{
         assert updatedContact.contactEmailAddresses.find { it.emailAddress.equals(newContactEmailAddress.emailAddress) }
 
     }
+
+    def "update a contact with no changes to Contact but has changes in one of the two children email addresses"(){
+        given:
+        def emailAddressSize = contact.contactEmailAddresses.size()  // before the addition of a new ContactEmailAddress
+
+        ContactEmailAddress newContactEmailAddress = new ContactEmailAddress(emailAddress:"jumanji@cogda.com", contact:contact)
+        contact.addToContactEmailAddresses(newContactEmailAddress)
+
+        ContactEmailAddress updatedContactEmailAddress = contact.contactEmailAddresses.first()
+        assert updatedContactEmailAddress, "The updatedContactEmailAddress was not found"
+        updatedContactEmailAddress.emailAddress = "updatingyourchildren@cogda.com"
+
+        def addressSize = contact.contactAddresses.size()
+        def phoneNumberSize = contact.contactPhoneNumbers.size()
+
+        request.json = gson.toJson(contact)
+        println request.getJSON().toString()
+        request.setContentType("application/json")
+
+        when:
+        controller.update()
+
+        then:
+        assert response.status == SC_OK
+        assert response.json.id, "No id found"
+        Contact updatedContact = Contact.get(response.json.id)
+
+        assert updatedContact.contactAddresses.size() == addressSize
+        assert updatedContact.contactEmailAddresses.size() != emailAddressSize
+        assert updatedContact.contactPhoneNumbers.size() == phoneNumberSize
+        assert updatedContact.contactEmailAddresses.find { it.emailAddress.equals(updatedContactEmailAddress.emailAddress) }
+        assert updatedContact.contactEmailAddresses.find { it.emailAddress.equals(newContactEmailAddress.emailAddress) }
+    }
+//    Likely won't ever hit this test condition - but if we need to handle it we will need to adjust the ContactController.update method accordingly
+//    def "update a contact with no changes to Contact but has changes in one of its pre-existing two children email address classes"(){
+//        given:
+//        def emailAddressSize = contactWithTwoEmailAddresses.contactEmailAddresses.size()  // before the update
+//        def addressSize = contact.contactAddresses.size()
+//        def phoneNumberSize = contact.contactPhoneNumbers.size()
+//        params.id = contactWithTwoEmailAddresses.id
+//        String expectedUpdatedEmailAddress = "updatedthehelloutofthis@cogda.com"
+//        String jsonString =   /{"id":${contactWithTwoEmailAddresses.id}, "contactEmailAddresses":[{"id":${contactWithTwoEmailAddresses.contactEmailAddresses.first().id}, "primaryEmailAddress":false, "emailAddress":"updatedthehelloutofthis@cogda.com"}]}/
+//        println ">>>>>>" + jsonString
+//        request.json = jsonString
+//        request.setContentType("application/json")
+//
+//        when:
+//        controller.update()
+//
+//        then:
+//        assert response.status == SC_OK
+//        assert response.json.id, "No id found"
+//        Contact updatedContact = Contact.get(response.json.id)
+//        println ">>>>>>" + response.json.contactEmailAddresses
+//        assert response.json.contactEmailAddresses
+//        assert updatedContact.contactAddresses.size() == addressSize
+//        assert updatedContact.contactEmailAddresses.size() == emailAddressSize
+//        assert updatedContact.contactPhoneNumbers.size() == phoneNumberSize
+//        assert updatedContact.contactEmailAddresses.find { it.emailAddress.equals(expectedUpdatedEmailAddress) }
+//    }
 
     def "successfully delete a contact"(){
         given:
