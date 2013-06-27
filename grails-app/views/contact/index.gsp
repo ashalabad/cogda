@@ -49,6 +49,12 @@
 	    </table>
 	</section>
 	<g:render template="/_common/contact/contactModal"/>
+	<g:render template="/_common/contact/addEmail"/>				
+	<g:render template="/_common/contact/editEmail"/>
+	<g:render template="/_common/contact/addPhone"/>				
+	<g:render template="/_common/contact/editPhone"/>
+	<g:render template="/_common/contact/editMailingAddress"/>	
+	<g:render template="/_common/contact/addMailingAddress"/>		
 </body>
 
 </html>

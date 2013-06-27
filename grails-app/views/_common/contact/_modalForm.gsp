@@ -1,17 +1,17 @@
-<%@ page import="com.cogda.common.GenderEnum; com.cogda.domain.Contact" %>
-<form class="form-inline" id="contactForm_${contactInstance?.id}">
+<%@ page import="com.cogda.common.GenderEnum; com.cogda.common.NamePrefix; com.cogda.domain.Contact" %>
+<form class="form-inline" class="contactForm" id="contactForm_${contactInstance?.id}">
     <fieldset id="contactFieldset">
         <div id="contactData">
             <div class="field">
                 <label>Title</label>
                 <span id="titleLbl" class="editShow title contactShow">${contactInstance?.title}</span>
-                <g:select name="title" class="editHide input-mini title contactEdit" from="${["Mr", "Mrs", "Ms", "Miss", "Dr"]}" value="${contactInstance?.title}">
+                <g:select name="title" class="editHide input-mini title contactEdit" from="${NamePrefix.values()}" value="${contactInstance?.title}">
                 </g:select>
             </div>
             <div class="field">
                 <label>First Name</label>
                 <span id="firstNameLbl" class="editShow firstName contactShow">${contactInstance?.firstName}</span>
-                <input type="text" id="firstName" class="editHide firstName contactEdit input-xlarge" value="${contactInstance?.firstName}">
+                <input type="text" id="firstName" class="editHide required firstName contactEdit input-xlarge" value="${contactInstance?.firstName}">
             </div>
             <div class="field">
                 <label>Middle Name</label>
@@ -21,7 +21,7 @@
             <div class="field">
                 <label>Last Name</label>
                 <span id="lastNameLbl" class="editShow lastName contactShow">${contactInstance?.lastName}</span>
-                <input type="text" id="lastName" class="editHide lastName contactEdit input-xlarge" value="${contactInstance?.lastName}">
+                <input type="text" id="lastName" class="editHide required lastName contactEdit input-xlarge" value="${contactInstance?.lastName}">
             </div>
             <div class="field">
                 <label>Initials</label>
@@ -47,13 +47,13 @@
             <div class="field">
                 <label>Website</label>
                 <span id="websiteLbl" class="editShow website contactShow">${contactInstance?.website}</span>
-                <input type="text" id="website" class="editHide website contactEdit input-xlarge" value="${contactInstance?.website}">
+                <input type="text" id="website" name="website" class="editHide website contactEdit input-xlarge" value="${contactInstance?.website}">
             </div>
 
         </div>
         <div class="add">
             <a class="btn add-field editShow contactShow" href="#" onclick="toggleEdit();"><i class="icon-edit"></i> Edit</a>
-            <a class="btn btn-primary add-field editHide contactEdit" href="#" onclick="saveContact();"><i class="icon-save"></i> Save</a>
+            <a class="btn btn-primary add-field editHide contactEdit" href="#" onclick="saveContactDetails();"><i class="icon-save"></i> Save</a>
         </div>
     </fieldset>
     <fieldset id="emailFieldset">
@@ -80,9 +80,11 @@
     </fieldset>
     <fieldset id="mailFieldset">
         <legend>Mailing Addresses</legend>
+        <div class="primaryHeader">Primary</div>
+        <div class="labelHeader">Mailing Address</div>
         <g:each in="${contactInstance.contactAddresses}" var="address">
 			<g:render template="/_common/contact/contactAddress" model="${[address:address]}"/>
-        </g:each>		
+        </g:each>
 
         <div class="add" id="addMail">
             <a class="btn add-field" href="#" onclick="addMailingAddressField();"><i class="icon-plus"></i> Add</a>

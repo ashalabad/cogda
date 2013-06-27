@@ -33,7 +33,7 @@ div.button {margin-left: 20px;}
 .new {margin-left:69px;clear:both;display:block !important;}
 .hideMe {display:none !important;visibility:hidden;}
 .showMe {visibility:visible;}
-.emailText {width:284px;float:left;margin-top:2px;}
+.savedText {width:284px;float:left;margin-top:2px;}
 #addEmail, #addPhone {padding-top:4px;}
 .saveEmail, .savePhone {margin-left:4px;}
 .primaryHeader {
@@ -48,11 +48,11 @@ div.button {margin-left: 20px;}
 
   
 /******mailing addresses******/
-div.addressOne,div.addressTwo,div.addressThree, span.city {
+div.addressOne,div.addressTwo,div.addressThree {
   margin-left:10px;
   line-height:16px !important;
 }
-div.address input, div.address select {
+div.addressInstance input, div.address select {
   clear:both;
   margin-top:3px;
 }
@@ -61,8 +61,10 @@ div.address input, div.address select {
   display:none;
   visibility:hidden;
 }
+#editAddressBtn {margin-left:357px;}
 .addressLbl {float:left;}
 .viewAddressLbl {margin-right:55px;}
 input.zip {margin-right:65px;}
 .save {margin-left:135px;clear:both;}
 div.address {margin-bottom:20px;}
+.addressLine {clear:both;margin-left:77px !important;}
