@@ -38,8 +38,17 @@ class NaicsCodeController extends BaseController{
     def selectedNaicsCodes(){
         JsonElement jsonElement = GSON.parse(request)
         jsonElement.checked.each {
-            println NaicsCode.findById(it.getAsLong()).toString()
+            def naicsCode = NaicsCode.findById(it.getAsLong())
+            println naicsCode.toString()
+            if(SicNaicsCodeCrosswalk.countByNaicsCode(naicsCode) != 0)
+            {
+                println "\t-----Related SIC Codes-----"
+                SicNaicsCodeCrosswalk.findAllByNaicsCode(naicsCode).each { crosswalk ->
+                    println "\t ${crosswalk.sicCode.toString()}"
+                }
+            }
+
         }
-        render "done"
+        render "TODO"
     }
 }
