@@ -65,25 +65,11 @@ class ContactControllerSpec extends Specification{
         enhancer.enhanceRequest()
 //        controller.gsonBuilder = gsonBuilder
         gson = gsonBuilder.create()
-        contact = new Contact( firstName: "First Name", lastName: "Last Name", gender:GenderEnum.MALE, tenantId:1)
-        contact.save(failOnError: true)
-        contactEmailAddress = new ContactEmailAddress(contact:contact, emailAddress: "chris@cogda.com", primaryEmailAddress: true, tenantId:1)
-        contactEmailAddress.save(failOnError: true)
-        contactPhoneNumber = new ContactPhoneNumber(phoneNumber: "(706) 867-5309", primaryPhoneNumber: true, contact:contact)
-        contactPhoneNumber.save(failOnError: true)
-        contactAddress = new ContactAddress()
 
-        address = new Address(addressOne: "1 Street", addressTwo: "2 Street", addressThree: "3 Street", city:"Athens", state:"GA", zipcode: "30601", country: "usa")
-        contactAddress.primaryAddress = true
-        contactAddress.address = address
-        contactAddress.addressType = "home"
-//        contactAddress.address = new Address()
-        contactAddress.contact = contact
-        contactAddress.save(failOnError: true)
-        contact.addToContactPhoneNumbers(contactPhoneNumber)
-        contact.addToContactEmailAddresses(contactEmailAddress)
-        contact.addToContactAddresses(contactAddress)
-
+        contact = createValidContact()
+        contactEmailAddress = contact.contactEmailAddresses.first()
+        contactPhoneNumber = contact.contactPhoneNumbers.first()
+        contactAddress = contact.contactAddresses.first()
 
         contactWithTwoEmailAddresses = new Contact(firstName: "Two Email Adresses First Name", lastName: "Two Email Adresses Last Name", gender:GenderEnum.FEMALE, tenantId:1)
         contactWithTwoEmailAddresses.addToContactEmailAddresses(new ContactEmailAddress(contact:contactWithTwoEmailAddresses, emailAddress: "123456789@cogda.com", primaryEmailAddress: true, tenantId:1))
@@ -444,4 +430,39 @@ class ContactControllerSpec extends Specification{
         return contact
     }
 
+    /**
+     * Creates a contact with 1 contactPhoneNumber, 1 ContactAddress, and 1 ContactEmailAddress
+     * @return Contact
+     */
+    static protected Contact createValidContact(){
+        Contact contact = new Contact()
+        contact = new Contact( firstName: "First Name", lastName: "Last Name", gender:GenderEnum.MALE, tenantId:1)
+        contact.save(failOnError: true)
+        ContactEmailAddress contactEmailAddress = new ContactEmailAddress()
+        contactEmailAddress = new ContactEmailAddress(contact:contact, emailAddress: "chris@cogda.com", primaryEmailAddress: true, tenantId:1)
+        contactEmailAddress.save(failOnError: true)
+
+        ContactPhoneNumber contactPhoneNumber = new ContactPhoneNumber()
+        contactPhoneNumber = new ContactPhoneNumber(phoneNumber: "(706) 867-5309", primaryPhoneNumber: true, contact:contact)
+        contactPhoneNumber.save(failOnError: true)
+
+        ContactAddress contactAddress = new ContactAddress()
+        contactAddress = new ContactAddress()
+
+        Address address = new Address()
+        address = new Address(addressOne: "1 Street", addressTwo: "2 Street", addressThree: "3 Street", city:"Athens", state:"GA", zipcode: "30601", country: "usa")
+        contactAddress.primaryAddress = true
+        contactAddress.address = address
+        contactAddress.addressType = "home"
+        contactAddress.contact = contact
+        contactAddress.save(failOnError: true)
+
+
+        contact.addToContactPhoneNumbers(contactPhoneNumber)
+        contact.addToContactEmailAddresses(contactEmailAddress)
+        contact.addToContactAddresses(contactAddress)
+
+
+        return contact
+    }
 }

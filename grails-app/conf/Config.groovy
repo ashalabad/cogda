@@ -254,3 +254,14 @@ environments {
         grails.plugin.awssdk.default.bucket = "cogda-production"
     }
 }
+
+// Start: GSON Plugin
+
+environments {
+    development {
+        grails.converters.gson.pretty.print=true
+        grails.converters.default.pretty.print=true
+    }
+}
+
+// End: GSON Plugin

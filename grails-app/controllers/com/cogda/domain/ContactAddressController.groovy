@@ -1,10 +1,14 @@
 package com.cogda.domain
 
+import com.cogda.common.marshallers.JavaUtilSetExclusionStrategy
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
 import grails.plugin.gson.converters.GSON
 import org.springframework.dao.DataIntegrityViolationException
+
+import javax.annotation.PostConstruct
+
 import static javax.servlet.http.HttpServletResponse.*
 import static org.codehaus.groovy.grails.web.servlet.HttpHeaders.*
 import static grails.plugin.gson.http.HttpConstants.*
@@ -112,14 +116,14 @@ class ContactAddressController{
     private void respondCreated(ContactAddress contactAddressInstance) {
         response.status = SC_CREATED // 201
         response.addHeader LOCATION, createLink(action: 'get', id: contactAddressInstance.id)
-        Gson gson = gsonBuilder.create()
-        def gsonRetString = gson.toJsonTree(contactAddressInstance);
+        Gson gson = gsonBuilder.addSerializationExclusionStrategy(new JavaUtilSetExclusionStrategy()).create()
+        def gsonRetString = gson.toJsonTree(contactAddressInstance)
         render gsonRetString
     }
 
     private void respondUpdated(ContactAddress contactAddressInstance) {
         response.status = SC_OK // 200
-        Gson gson = gsonBuilder.create()
+        Gson gson = gsonBuilder.addSerializationExclusionStrategy(new JavaUtilSetExclusionStrategy()).create()
         def gsonRetString = gson.toJsonTree(contactAddressInstance);
         render gsonRetString
     }
