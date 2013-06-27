@@ -38,8 +38,16 @@ class SicCodeController extends BaseController{
     def selectedSicCodes(){
         JsonElement jsonElement = GSON.parse(request)
         jsonElement.checked.each {
-            println SicCode.findById(it.getAsLong()).toString()
+            def sicCode = SicCode.findById(it.getAsLong())
+            println sicCode.toString()
+            if(SicNaicsCodeCrosswalk.countBySicCode(sicCode) != 0)
+            {
+                println "\t-----Related NAICS Codes-----"
+                SicNaicsCodeCrosswalk.findAllBySicCode(sicCode).each { crosswalk ->
+                    println "\t ${crosswalk.naicsCode.toString()}"
+                }
+            }
         }
-        render "done"
+        render "TODO"
     }
 }

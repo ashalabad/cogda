@@ -10,7 +10,7 @@ class NaicsCode {
 	Long	id
 	Long	version
 
-    Long code
+    String code
     String description
 
     Integer level  // calculate the level based upon the parentNaicsCode  ~  level = parentNaicsCode ? parentNaicsCode.level + 1 : 0
