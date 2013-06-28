@@ -38,22 +38,20 @@
 
             <th>${message(code: 'account.accountType.label')}</th>
 
-            <th>${message(code: 'account.primaryContactName.label')}</th>
+            <th>${message(code: 'account.primaryContact.label')}</th>
 
-            <th>${message(code: 'account.primaryEmailAddress.label')}</th>
+            <th></th>
+            <th></th>
 
-            <th>${message(code: 'account.primaryPhoneNumber.label')}</th>
-
-            <th>${message(code: 'account.dateCreated.label')}</th>
         </tr>
         </thead>
         <tbody>
         </tbody>
     </table>
 </section>
-<g:render template="/_common/modals/account/add"/>
 
-<g:render template="/_common/modals/account/edit"/>
+<g:render template="/_common/modals/masterModal" model="[modalLabel:'account',templatePath: 'modals/account',modalHeader:'Account',modalList:[]]"/>
+
 
 </body>
 </html>
