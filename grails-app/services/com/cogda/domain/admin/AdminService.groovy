@@ -19,7 +19,9 @@ class AdminService {
 
     @Transactional(readOnly = true)
     List<Registration> listRegistrations(params) {
-        params.fetch = [emailConfirmationLogs: "eager"]
+        params.fetch = [emailConfirmationLogs: "eager",
+                companyType: "eager",
+                existingCompany: "eager"]
         return registerService.list(params)
     }
 
