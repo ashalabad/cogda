@@ -26,4 +26,8 @@ class AccountType {
         description(nullable:true, maxSize: 255)
     }
 
+    String toString(){
+        code
+    }
+
 }
