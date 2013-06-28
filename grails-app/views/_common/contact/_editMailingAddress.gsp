@@ -28,7 +28,7 @@
 		</div>
 		<span class="zipcode showMe showMode"></span>
 		<div class="hideMe editMode zipcode">
-			<input type="text" class="zip input-small" placeholder="zipcode" value="">
+			<input type="text" class="zipcode input-small" placeholder="zipcode" value="">
 		</div>
 	</div>
 	<a class="btn showMe showMode" onclick="editSaved(event)" id="editAddressBtn"><i class="icon-edit"></i> Edit</a>		

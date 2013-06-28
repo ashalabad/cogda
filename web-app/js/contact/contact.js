@@ -34,7 +34,7 @@ function toggleEdit(){
   $(".contactEdit").toggleClass("editShow");  
 }
 
-/*******contact*****/
+/*******contact details*****/
 function saveContactDetails(){
   toggleEdit();
   var contact = new Object();
@@ -47,7 +47,15 @@ function saveContactDetails(){
   contact.jobTitle = $("#jobTitle").val();        
   contact.companyName = $("#companyName").val();          
   contact.website = $("#website").val();              
-  saveContact(contact, updateContact);
+  
+  $.ajax({
+      url: "/contact/update/"+contact.id,
+      type: "post",
+      dataType: "json",
+      data: JSON.stringify(contact),
+      success: updateContact,
+      contentType: "application/json; charset=utf-8"
+  });
 }
 
 function updateContact(data){
@@ -234,7 +242,6 @@ function addPhoneField(){
 }
 
 function savePhones(){
-  //fieldsetid, replace emailAddress -> phoneNumber
   var contact = new Object();
   contact.id = $("form").attr("id").replace("contactForm_","");
   contact.contactPhoneNumbers = [];

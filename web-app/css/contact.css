@@ -1,3 +1,6 @@
+
+/********datatable stuff******/
+.pageHeader{margin-top:50px;}
 #contactList td{cursor: pointer;}
 label{font-weight: bold;}
 .row_selected {background-color: #ccc !important;}
@@ -65,6 +68,6 @@ div.addressInstance input, div.address select {
 .addressLbl {float:left;}
 .viewAddressLbl {margin-right:55px;}
 input.zip {margin-right:65px;}
-.save {margin-left:135px;clear:both;}
+.save {margin-left:212px;clear:both;}
 div.address {margin-bottom:20px;}
 .addressLine {clear:both;margin-left:77px !important;}

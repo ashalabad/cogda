@@ -6,7 +6,7 @@
 	<div class="stateContainer">
 	    <g:select class="state input-small" name="state" from="${com.cogda.common.UsState.values()}" optionKey="key" noSelection="['': 'State']"/>	
 	</div>
-	<input type="text" class="zip input-small" placeholder="zipcode">
+	<input type="text" class="zipcode input-small" placeholder="zipcode">
 	<div class="save">
 		<a href="#" class="btn cancel" onclick="cancelNewAddress($(this));">Cancel</a>					
 		<a class="btn btn-primary" href="#" onclick="saveAddress();"><i class="icon-save"></i> Save</a>
