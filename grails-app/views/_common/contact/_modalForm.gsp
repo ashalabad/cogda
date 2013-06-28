@@ -1,3 +1,5 @@
+<link rel="stylesheet" type="text/css" href="/css/contact.css" />
+<script type="text/javascript" src="/js/contact/contactDetails.js" ></script>
 <%@ page import="com.cogda.common.GenderEnum; com.cogda.common.NamePrefix; com.cogda.domain.Contact" %>
 <form class="form-inline" class="contactForm" id="contactForm_${contactInstance?.id}">
     <fieldset id="contactFieldset">
@@ -64,7 +66,7 @@
 			<g:render template="/_common/contact/contactEmail" model="${[emailAddress:emailAddress]}"/>
         </g:each>
         <div class="add" id="addEmailBtn">
-            <a class="btn add-field" href="#" onclick="addEmailAddressField();"><i class="icon-plus"></i> Add</a>
+            <a class="btn btn-success add-field" href="#" onclick="addEmailAddressField();"><i class="icon-plus"></i> Add Email Address</a>
         </div>
     </fieldset>
     <fieldset id="phoneFieldset">
@@ -75,7 +77,7 @@
 			<g:render template="/_common/contact/contactPhone" model="${[phone:phone]}"/>
         </g:each>	
         <div class="add" id="addPhoneBtn">
-            <a class="btn add-field" href="#" onclick="addPhoneField();"><i class="icon-plus"></i> Add</a>
+            <a class="btn btn-success add-field" href="#" onclick="addPhoneField();"><i class="icon-plus"></i> Add Phone Number</a>
 		</div>
     </fieldset>
     <fieldset id="mailFieldset">
@@ -87,7 +89,7 @@
         </g:each>
 
         <div class="add" id="addMail">
-            <a class="btn add-field" href="#" onclick="addMailingAddressField();"><i class="icon-plus"></i> Add</a>
+            <a class="btn btn-success add-field" href="#" onclick="addMailingAddressField();"><i class="icon-plus"></i> Add Address</a>
         </div>
     </fieldset>
 

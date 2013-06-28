@@ -145,6 +145,17 @@ class ContactController extends BaseController{
         }
     }
 
+    def showNewForm(){
+        def contactInstance = new Contact()
+        if (contactInstance) {
+            response.status = SC_OK
+            render(template:"/_common/contact/modalForm", model:[contactInstance:contactInstance])
+            return
+        } else {
+            respondNotFound params.id
+        }
+    }
+
 
     private boolean requestIsJson() {
         GSON.isJson(request)

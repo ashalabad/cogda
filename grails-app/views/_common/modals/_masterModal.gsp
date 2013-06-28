@@ -10,8 +10,9 @@
     </div>
     <div class="modal-footer">
         <a href="#" class="btn btn-primary" data-dismiss="modal">Close</a>
+	    <g:each in="${modalList}" var="modalTemplate">
+	        <g:render template="/_common/${templatePath}/${modalTemplate}"/>
+	    </g:each>
     </div>
-    <g:each in="${modalList}" var="modalTemplate">
-        <g:render template="/_common/${modalLabel}/${modalTemplate}"/>
-    </g:each>
+
 </div>

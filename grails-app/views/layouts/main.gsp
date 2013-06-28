@@ -25,4 +25,5 @@
 		<g:javascript library="application"/>
 		<r:layoutResources />
 	</body>
+
 </html>
