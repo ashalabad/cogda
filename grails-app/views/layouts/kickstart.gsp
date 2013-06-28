@@ -62,7 +62,7 @@
     <!-- Insert a modal dialog for registering (for an open site registering is possible on any page) -->
     <g:render template="/_common/modals/registerDialog" model="[item: item]"/>
 </g:else>
-<g:render template="/_common/modals/masterModal" model="[modalLabel:'addContact',templatePath: 'contact',modalHeader:'Contact',modalList:['addEmail','editEmail','editPhone','addPhone','editMailingAddress','addMailingAddress']]"/>
+<g:render template="/_common/modals/masterModal" model="[modalLabel:'addContact',templatePath: 'contact',modalHeader:'New Contact',modalList:['addEmail','editEmail','editPhone','addPhone','editMailingAddress','addMailingAddress']]"/>
 
 <!-- Included Javascript files and other resources -->
 <r:layoutResources/>

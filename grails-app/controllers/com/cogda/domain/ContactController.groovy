@@ -26,6 +26,10 @@ class ContactController extends BaseController{
 
     }
 
+    def create() {
+
+    }
+
     /**
      * Passes back a JSON list of Contacts
      *

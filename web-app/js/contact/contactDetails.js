@@ -15,16 +15,35 @@ function saveContactDetails(){
   contact.initials = $("#initials").val();      
   contact.jobTitle = $("#jobTitle").val();        
   contact.companyName = $("#companyName").val();          
-  contact.website = $("#website").val();              
+  contact.website = $("#website").val(); 
+  
+  contact.contactEmailAddresses = [];
+  var emailAddress = new Object();
+  emailAddress.emailAddress = $("#contactEmailAddress").val();
+  emailAddress.primaryEmailAddress = true;
+  contact.contactEmailAddresses.push(emailAddress);               
+  
+  contact.contactPhoneNumbers = [];
+  var phoneNumber = new Object();
+  phoneNumber.phoneNumber = $("#contactPhoneNumber").val();
+  phoneNumber.primaryPhoneNumber = true;
+  contact.contactPhoneNumbers.push(phoneNumber);
+  $('#addContactModal').modal('hide');      
   
   $.ajax({
       url: "/contact/save/",
       type: "post",
       dataType: "json",
       data: JSON.stringify(contact),
-      success: updateContact,
+      success: showEdit,
       contentType: "application/json; charset=utf-8"
   });
+}
+
+function showEdit(data){
+  $("#contactModalBody").load("/contact/showForm/"+data.id, function(){
+    $('#contactModal').modal('show');               
+  });  
 }
 
 function updateContact(data){

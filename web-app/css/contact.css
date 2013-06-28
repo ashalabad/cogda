@@ -6,6 +6,7 @@ label{font-weight: bold;}
 .row_selected td{background-color: #ccc !important;}
 /********end datatable stuff******/
 
+#contactForm_new .template {display:block;visibility:visible;}
 #contactHeader {width:300px;}
 #contactModal {width:960px;left:450px;}
 div.field {padding:2px;clear:both;}
@@ -24,7 +25,8 @@ div.add {clear:both;margin-top:25px;}
 #contactFieldset .add {
   margin-top: 34px;
   float: right;
-  margin-right: 512px;  
+/*  margin-right: 512px;  */
+  margin-right: 112px;  
 }
 div.button {margin-left: 20px;}
 
