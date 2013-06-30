@@ -24,12 +24,8 @@ $(document).ready(function() {
                 });
             });
         }                
-    }); 
+    });
 });
-
-function validateWebsite(){
-  
-}
 
 function toggleEdit(){
   $(".contactShow").toggleClass("editHide");
@@ -38,8 +34,8 @@ function toggleEdit(){
   $(".contactEdit").toggleClass("editShow");  
 }
 
-/*******contact*****/
-function saveContact(){
+/*******contact details*****/
+function saveContactDetails(){
   toggleEdit();
   var contact = new Object();
   contact.id = $("form").attr("id").replace("contactForm_","");
@@ -50,7 +46,8 @@ function saveContact(){
   contact.initials = $("#initials").val();      
   contact.jobTitle = $("#jobTitle").val();        
   contact.companyName = $("#companyName").val();          
-  contact.website = $("#website").val();            
+  contact.website = $("#website").val();              
+  
   $.ajax({
       url: "/contact/update/"+contact.id,
       type: "post",
@@ -73,65 +70,85 @@ function updateContact(data){
   $(".website").text(data.website).val(data.website);    
 }
 
-/******emails******/
-function updateEmails(data){
-  $("#emailFieldset .data").remove();
-  $.each(data.contactEmailAddresses, function(ind,elt){
-    var field = $("#editEmail").clone().removeClass("template").addClass("data");
-    $(field).attr("id","emailField_"+elt.id);
-    $(field).find(".emailText").text(elt.emailAddress);
-    $(field).find(".emailInput").val(elt.emailAddress);    
-  	$(field).insertBefore("#addEmailBtn");
-  });
-}
-
-function editEmail(event){
+function editSaved(event){
   var id = $(event.currentTarget).parent().attr("id");
   $("#"+id+" .showMode").toggleClass("showMe").toggleClass("hideMe");
   $("#"+id+" .editMode").toggleClass("showMe").toggleClass("hideMe");
 }
 
+function showMode(event){
+  var id = $(event.currentTarget).parent().parent().attr("id");
+  $("#"+id+" .showMode").toggleClass("showMe").toggleClass("hideMe");
+  $("#"+id+" .editMode").toggleClass("showMe").toggleClass("hideMe");
+}
+
+/******emails******/
+function updateEmail(data){
+  var field = $("#editEmail").clone().removeClass("template").addClass("data");
+  if(data.primaryEmailAddress == true){
+    var radio = $(field).find(".primaryRadio");
+    $(radio).attr("checked","checked");
+  }
+  $(field).attr("id","editEmail_"+data.id);
+  $(field).find(".savedText").text(data.emailAddress);
+  $(field).find(".emailInput").val(data.emailAddress).attr("id","emailAddress_"+data.id);    
+  
+  if($("#editEmail_"+data.id).length > 0){
+    var toRemove = $("#editEmail_"+data.id);
+    $(field).insertBefore(toRemove);
+    toRemove.remove();
+  }else{
+    $(field).insertBefore($("#emailFieldset .new")[0]);    
+    $("#emailFieldset .new")[0].remove();
+  }
+}
+
 function addEmailAddressField(){
   var count = $("#emailFieldset div.field").length;
   var field = $("#addEmail").clone();
-  $(field).removeClass("template").attr("id","emailAddress_"+count).addClass("data");  
+  $(field).removeClass("template").attr("id","editEmail_"+count).addClass("data");  
+  $(field).removeClass("template").attr("id","editEmail_"+count).addClass("data");    
   var btn = $("#addEmailBtn");
 	$(field).insertBefore("#addEmailBtn");
 }
 
-function saveEmail(event){
-  var contact = new Object();
-  contact.id = $("form").attr("id").replace("contactForm_","");
-  contact.contactEmailAddresses = [];
-  
-  $("#emailFieldset .emailInput").each(function(ind, elt){
-    var email = new Object();
-    if($(elt).attr("id").indexOf("_") < 0){
-      email.emailAddress = $(elt).val();
-      email.primaryEmailAddress = false;      
+function saveEmail(){
+  var email = new Object();
+  var route = '';
+  if($(event.currentTarget).parent().hasClass("new")){
+    email.emailAddress = $("#"+$(event.currentTarget).parent().attr("id")+" .emailInput").val();
+    email.primaryEmailAddress = false;
+    route = 'save';
+    email.contact = {};
+    email.contact.id = $("form").attr("id").replace("contactForm_","");    
+  }else{
+    var input;
+    if ($(event.currentTarget).hasClass("primaryRadio")){
+      input = $(event.currentTarget).parent().find('.emailInput');      
+      email.primaryEmailAddress = $(event.currentTarget).is(":checked");
     }else{
-      var emailId = $(elt).attr("id").replace("emailAddress_","");
-      email.id = emailId;
-      email.emailAddress = $(elt).val();
-      email.primaryEmailAddress = false;      
+      input = $(event.currentTarget).prev();      
+      email.primaryEmailAddress = $("#"+$(event.currentTarget).parent().parent().attr("id")+" .primaryRadio").is(":checked");
     }
-    contact.contactEmailAddresses.push(email);
-  });
-    
+    email.id = $(input).attr("id").replace("emailAddress_","");
+    email.emailAddress = $(input).val();
+    route = 'update/'+email.id;
+  }
+
   $.ajax({
-      url: "/contact/update/"+contact.id,
-      type: "post",
-      dataType: "json",
-      data: JSON.stringify(contact),
-      contentType: "application/json; charset=utf-8",
-      success: updateEmails
-  });
+    url: "/contactEmailAddress/"+route,
+    type: "post",
+    dataType: "json",
+    data: JSON.stringify(email),
+    success: updateEmail,
+    contentType: "application/json; charset=utf-8"
+  });  
 }
 
 /*******addresses*******/
 function addMailingAddressField(){
   var count = $("#mailFieldset div.field").length;  
-  var field = $(".address.template").clone();
+  var field = $("#addAddress").clone();
   $(field).removeClass("template").addClass("data");
   $(field).show();
   $(field).attr("visibility","visible");
@@ -140,32 +157,76 @@ function addMailingAddressField(){
 }
 
 function saveAddress(){
+  var data = {};
+  var route;
+  var elt;
+  if($(event.currentTarget).hasClass("primaryRadio")){
+    elt = $(event.currentTarget).parent();  
+    data.primaryAddress = $(event.currentTarget).is(":checked");    
+  }else{
+    elt = $(event.currentTarget).parent().parent();  
+    data.primaryAddress = $(elt).find(".primaryRadio").is(":checked");
+  }
   
+  if($(elt).hasClass("new")){
+     data.primaryAddress = false;  
+     route = "save";
+  }else{
+    data.id = $(elt).attr("id").replace("editAddress_","");  
+    route = "update/"+data.id;    
+  }
+  
+  data.address = {};
+  data.address.addressOne = $(elt).find("input.addressOne").val();
+  data.address.addressTwo = $(elt).find("input.addressTwo").val();
+  data.address.addressThree = $(elt).find("input.addressThree").val();          
+  data.address.city = $(elt).find("input.city").val();          
+  data.address.state = $(elt).find("select.state").val();               
+  data.address.zipcode = $(elt).find("input.zipcode").val();
+  data.contact = {};
+  data.contact.id = $("form").attr("id").replace("contactForm_","");
+
+  $.ajax({
+    url: "/contactAddress/"+route,
+    type: "post",
+    dataType: "json",
+    data: JSON.stringify(data),
+    success: updateAddress,
+    contentType: "application/json; charset=utf-8"
+  });  
 }
 
-function updateMailingAddresses(data){
-  $("#mailFieldset .data").remove();  
-  $.each(data.contactAddresses, function(ind,elt){
-    var field = $(document.createElement("div")).addClass("field data address");
-    $(field).append($(document.createElement("label")).addClass("viewAddressLbl").append("Mailing Address"));
-/*    var button = $(".editAddress").clone().removeClass("template");
-    $(field).append(button);*/
-    var add1 = $(document.createElement("div")).addClass("addressOne");
-    $(add1).text(elt.address.addressOne);
-    var add2 = $(document.createElement("div")).addClass("addressTwo");
-    $(add2).text(elt.address.addressTwo);
-    var add3 = $(document.createElement("div")).addClass("addressThree");
-    $(add3).text(elt.address.addressThree);    
-    var city = $(document.createElement("span")).addClass("city");
-    $(city).text(elt.address.city);    
-    var state = $(document.createElement("span")).addClass("state");
-    $(state).text(elt.address.state);
-    var zip = $(document.createElement("span")).addClass("zipcode");
-    $(zip).text(elt.address.zipcode);
-            
-    $(field).append(add1).append(add2).append(add3).append(city).append(", ").append(state).append(" ").append(zip);    
-  	$(field).insertBefore($("#addMail"));  	
-  });
+function updateAddress(data){
+  var field = $("#editAddress").clone().removeClass("template").addClass("data");
+  if(data.primaryAddress == true){
+    var radio = $(field).find(".primaryRadio");
+    $(radio).attr("checked","checked");
+  }
+  $(field).attr("id","editAddress_"+data.id);
+  $(field).find("div.addressOne").text(data.address.addressOne);
+  $(field).find("input.addressOne").val(data.address.addressOne);    
+  $(field).find("div.addressTwo").text(data.address.addressTwo);
+  $(field).find("input.addressTwo").val(data.address.addressTwo);
+  $(field).find("div.addressThree").text(data.address.addressThree);
+  $(field).find("input.addressThree").val(data.address.addressThree);
+  $(field).find("span.city").text(data.address.city);
+  $(field).find("input.city").val(data.address.city);
+  $(field).find("span.state").text(data.address.state);
+  $(field).find("select.state").val(data.address.state);
+  $(field).find("span.zipcode").text(data.address.zipcode);
+  $(field).find("input.zipcode").val(data.address.zipcode);          
+  
+  // if there is already a block with that id, that's the one we saved. 
+  // insert the new data before it and remove the old one.
+  if($("#editAddress_"+data.id).length > 0){
+    var toRemove = $("#editAddress_"+data.id);
+    $(field).insertBefore(toRemove);
+    toRemove.remove();    
+  // else, this was a new address, so append to the bottom and remove the new field (okay, this is not perfect...)
+  }else{
+    $(field).insertBefore($("#mailFieldset .new")[0]);    
+    $("#mailFieldset .new")[0].remove();
+  }  
 }
 
 function cancelNewAddress(el){
@@ -173,18 +234,6 @@ function cancelNewAddress(el){
 }
 
 /*******phones******/
-function updatePhones(data){
-  $("#phoneFieldset .field").remove();  
-  $.each(data.contactPhoneNumbers, function(ind,elt){
-    var field = $(document.createElement("div")).addClass("field");
-    $(field).append($(document.createElement("label")).append("Phone Number"));
-    var span = $(document.createElement("span")).attr("id","phone_"+ind);
-    $(span).text(elt.phoneNumber);
-    $(field).append(span);    
-	  $(field).insertBefore("#addPhoneBtn");  	
-  });
-}
-
 function addPhoneField(){
   var count = $("#phoneFieldset div.field").length;
   var field = $("#addPhone").clone();
@@ -192,26 +241,77 @@ function addPhoneField(){
 	$(field).insertBefore("#addPhoneBtn");
 }
 
-function savePhone(){
-  var fieldId = $(event.currentTarget).parent().parent().attr("id");
-  var phoneId = $(event.currentTarget).parent().parent().attr("id").replace("editPhone_","");
+function savePhones(){
   var contact = new Object();
   contact.id = $("form").attr("id").replace("contactForm_","");
   contact.contactPhoneNumbers = [];
+  
+  $("#phoneFieldset .phoneInput").each(function(ind, elt){
+    var phone = new Object();
+    if($(elt).attr("id").indexOf("_") < 0){
+      phone.phoneNumber = $(elt).val();
+      phone.primaryPhoneNumber = false;      
+    }else{
+      var phoneId = $(elt).attr("id").replace("phone_","");
+      phone.id = phoneId;
+      phone.phoneNumber = $(elt).val();
+      phone.primaryPhoneNumber = false;      
+    }
+    contact.contactPhoneNumbers.push(phone);
+  });
+  saveContact(contact,updatePhones);
+}
+
+function savePhone(){
   var phone = new Object();
-  phone.id = phoneId;
-  phone.phoneNumber = $("#"+fieldId+" .phoneInput").val();
-  phone.primaryPhoneNumber = false;
-  contact.contactPhoneNumbers.push(phone);
-    
+  var route = '';
+  if($(event.currentTarget).parent().hasClass("new")){
+    phone.phoneNumber = $("#"+$(event.currentTarget).parent().attr("id")+" .phoneInput").val();
+    phone.primaryPhoneNumber = false;
+    route = 'save';
+    phone.contact = {};
+    phone.contact.id = $("form").attr("id").replace("contactForm_","");
+  }else{
+    var input;
+    if ($(event.currentTarget).hasClass("primaryRadio")){
+      input = $(event.currentTarget).parent().find('.phoneInput');      
+      phone.primaryPhoneNumber = $(event.currentTarget).is(":checked");
+    }else{
+      input = $(event.currentTarget).prev();      
+      phone.primaryPhoneNumber = $("#"+$(event.currentTarget).parent().parent().attr("id")+" .primaryRadio").is(":checked");
+    }
+    phone.id = $(input).attr("id").replace("phone_","");
+    phone.phoneNumber = $(input).val();
+    route = 'update/'+phone.id;
+  }
+
   $.ajax({
-      url: "/contact/update/"+contact.id,
-      type: "post",
-      dataType: "json",
-      data: JSON.stringify(contact),
-      contentType: "application/json; charset=utf-8",
-      success: updateEmails
+    url: "/contactPhoneNumber/"+route,
+    type: "post",
+    dataType: "json",
+    data: JSON.stringify(phone),
+    success: updatePhone,
+    contentType: "application/json; charset=utf-8"
   });  
 }
 
+function updatePhone(data){
+  var field = $("#editPhone").clone().removeClass("template").addClass("data");
+  if(data.primaryPhoneNumber == true){
+    var radio = $(field).find(".primaryRadio");
+    $(radio).attr("checked","checked");
+  }
+  $(field).attr("id","editPhone_"+data.id);
+  $(field).find(".savedText").text(data.phoneNumber);
+  $(field).find(".phoneInput").val(data.phoneNumber).attr("id","phone_"+data.id);    
+  
+  if($("#editPhone_"+data.id).length > 0){
+    var toRemove = $("#editPhone_"+data.id);
+    $(field).insertBefore(toRemove);
+    toRemove.remove();    
+  }else{
+    $(field).insertBefore($("#phoneFieldset .new")[0]);    
+    $("#phoneFieldset .new")[0].remove();
+  }
+}
 

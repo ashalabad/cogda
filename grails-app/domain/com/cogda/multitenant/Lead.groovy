@@ -1,6 +1,7 @@
 package com.cogda.multitenant
 
 import com.cogda.common.LeadType
+import com.cogda.domain.FileReference
 import com.cogda.domain.admin.BusinessType
 import com.cogda.domain.admin.NaicsCode
 import com.cogda.domain.admin.SicCode
@@ -13,58 +14,104 @@ import grails.plugin.multitenant.core.annotation.MultiTenant
 @MultiTenant
 class Lead {
 
-    Account account
     BusinessType businessType
     NaicsCode naicsCode
     SicCode sicCode
     String clientId
     String ownerName
     String clientName
-    String address1
-    String address2
-    String city
-    String state
-    String zipCode
-    String county
-    String country
-    String firstName
-    String lastName
-    String emailAddress
-    String phoneNumber
 
     Date lastUpdated
     Date dateCreated
     LeadType leadType
 
+    static hasMany = [notes: Note,
+            files: FileReference,
+            leadContacts: LeadContact,
+            leadAddresses: LeadAddress]
 
-    static mapping = {
-    }
+    static transients = ["primaryEmailAddress", "primaryLeadEmailAddress", "primaryLeadContact", "primaryLeadContactName"]
 
     static constraints = {
         clientId(nullable: true)
         ownerName(nullable: true)
-        account(nullable: true)
         businessType(nullable: true)
         naicsCode(nullable: true)
         sicCode(nullable: true)
         leadType(nullable: false)
         clientName(nullable: true)
-        address1(nullable: true)
-        address2(nullable:true)
-        city(nullable:true)
-        state(nullable:true)
-        zipCode(nullable:true)
-        county(nullable:true)
-        country(nullable:true)
-        firstName(nullable:false, blank:false, minSize:1)
-        lastName(nullable:false, blank:false, minSize:1)
-        emailAddress(nullable:false, email:true, blank:false)
-        phoneNumber(nullable:true)
-        businessType(nullable:true)
+        businessType(nullable: true)
     }
 
-    String getFullName(){
-        return "${lastName}, ${firstName}"
+    /**
+     * Get the Primary Email Address for this Lead
+     * @return String
+     */
+    public String getPrimaryEmailAddress(){
+        return getPrimaryLeadEmailAddress()?.emailAddress
+    }
+
+    /**
+     * Retrieves the primary Lead's primary LeadContactEmailAddress
+     * @return LeadContactEmailAddress
+     */
+    public LeadContactEmailAddress getPrimaryLeadEmailAddress(){
+        LeadContactEmailAddress leadContactEmailAddress = this.getPrimaryLeadContact()?.leadContactEmailAddresses?.find {
+            it.primaryEmailAddress == Boolean.TRUE
+        }
+        return leadContactEmailAddress
+    }
+
+    /**
+     * Retrieves the primary Lead contact's name.
+     * @return String
+     */
+    public String getPrimaryLeadContactName(){
+        return getPrimaryLeadContact()?.fullName
+    }
+
+    /**
+     * Retrieves the LeadContact marked as primaryLead
+     * @return LeadContact
+     */
+    public LeadContact getPrimaryLeadContact(){
+        LeadContact leadContact = this.leadContacts?.find {
+            it.primaryContact == Boolean.TRUE
+        }
+
+        return leadContact
+    }
+
+    /**
+     * Retrieves the primary Lead's primary LeadContactPhoneNumber
+     * @return LeadContactPhoneNumber
+     */
+    public LeadContactPhoneNumber getPrimaryLeadContactPhoneNumber(){
+        LeadContactPhoneNumber leadContactPhoneNumber = getPrimaryLeadContact()?.leadContactPhoneNumbers?.find {
+            it.primaryPhoneNumber == Boolean.TRUE
+        }
+
+        return leadContactPhoneNumber
+    }
+
+    /**
+     * Retrieves the primary Lead's primary LeadContactPhoneNumber.phoneNumber
+     * @return String
+     */
+    public String getPrimaryLeadContactPhoneNumberString(){
+        return getPrimaryLeadContactPhoneNumber()?.phoneNumber
+    }
+
+
+    /**
+     * Retrieves the primary Lead's primary LeadAddress
+     * @return LeadAddress
+     */
+    public LeadAddress getPrimaryAddress(){
+        LeadAddress leadAddress = this.leadAddresses?.find {
+            it.primaryAddress == Boolean.TRUE
+        }
+        return leadAddress
     }
 
 }

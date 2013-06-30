@@ -15,7 +15,6 @@
     <link rel="apple-touch-icon" href="assets/ico/apple-touch-icon.png">
     <link rel="apple-touch-icon" href="assets/ico/apple-touch-icon-72x72.png" sizes="72x72">
     <link rel="apple-touch-icon" href="assets/ico/apple-touch-icon-114x114.png" sizes="114x114">
-
     <%-- Manual switch for the skin can be found in /view/_menu/_config.gsp --%>
     <r:require module="jquery"/>
     <r:require module="jquery-ui"/>
@@ -23,7 +22,6 @@
     <r:require module="bootstrap_utils"/>
     <r:require module="application"/>
     <r:require module="notifications"/>
-
     <r:layoutResources/>
     <g:layoutHead/>
 
@@ -64,6 +62,7 @@
     <!-- Insert a modal dialog for registering (for an open site registering is possible on any page) -->
     <g:render template="/_common/modals/registerDialog" model="[item: item]"/>
 </g:else>
+<g:render template="/_common/modals/masterModal" model="[modalLabel:'addContact',templatePath: 'contact',modalHeader:'New Contact',modalList:['addEmail','editEmail','editPhone','addPhone','editMailingAddress','addMailingAddress']]"/>
 
 <!-- Included Javascript files and other resources -->
 <r:layoutResources/>

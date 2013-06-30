@@ -25,7 +25,7 @@
                                     </a>
                                 </li>
                                 <li class="">
-                                    <a href="/contact/create">
+                                    <a href="#" onclick="newContact()">
                                         <i class="icon-plus-sign"></i>
                                         <g:message code = "contact.menu.create.label"/>
                                     </a>

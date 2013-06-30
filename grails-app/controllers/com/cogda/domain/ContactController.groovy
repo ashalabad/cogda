@@ -26,6 +26,10 @@ class ContactController extends BaseController{
 
     }
 
+    def create() {
+
+    }
+
     /**
      * Passes back a JSON list of Contacts
      *
@@ -136,6 +140,17 @@ class ContactController extends BaseController{
 
     def showForm(){
         def contactInstance = Contact.get(params.id)
+        if (contactInstance) {
+            response.status = SC_OK
+            render(template:"/_common/contact/modalForm", model:[contactInstance:contactInstance])
+            return
+        } else {
+            respondNotFound params.id
+        }
+    }
+
+    def showNewForm(){
+        def contactInstance = new Contact()
         if (contactInstance) {
             response.status = SC_OK
             render(template:"/_common/contact/modalForm", model:[contactInstance:contactInstance])

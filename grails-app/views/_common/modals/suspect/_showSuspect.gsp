@@ -19,13 +19,6 @@
         </tr>
 
         <tr class="prop">
-            <td valign="top" class="name"><g:message code="lead.account.label" default="Account" /></td>
-
-            <td valign="top" class="value"><g:link controller="account" action="show" id="${suspectInstance?.account?.id}">${suspectInstance?.account?.encodeAsHTML()}</g:link></td>
-
-        </tr>
-
-        <tr class="prop">
             <td valign="top" class="name"><g:message code="lead.businessType.label" default="Business Type" /></td>
 
             <td valign="top" class="value"><g:link controller="businessType" action="show" id="${suspectInstance?.businessType?.id}">${suspectInstance?.businessType?.description.encodeAsHTML()}</g:link></td>
@@ -61,80 +54,85 @@
         </tr>
 
         <tr class="prop">
-            <td valign="top" class="name"><g:message code="lead.address1.label" default="Address1" /></td>
+            <td valign="top" class="name"><g:message code="lead.addressOne.label" default="AddressOne" /></td>
 
-            <td valign="top" class="value">${fieldValue(bean: suspectInstance, field: "address1")}</td>
+            <td valign="top" class="value">${fieldValue(bean: suspectInstance.primaryAddress, field: "addressOne")}</td>
 
         </tr>
 
         <tr class="prop">
-            <td valign="top" class="name"><g:message code="lead.address2.label" default="Address2" /></td>
+            <td valign="top" class="name"><g:message code="lead.addressTwo.label" default="AddressTwo" /></td>
 
-            <td valign="top" class="value">${fieldValue(bean: suspectInstance, field: "address2")}</td>
+            <td valign="top" class="value">${fieldValue(bean: suspectInstance.primaryAddress, field: "addressTwo")}</td>
 
         </tr>
 
         <tr class="prop">
             <td valign="top" class="name"><g:message code="lead.city.label" default="City" /></td>
 
-            <td valign="top" class="value">${fieldValue(bean: suspectInstance, field: "city")}</td>
+            <td valign="top" class="value">${fieldValue(bean: suspectInstance.primaryAddress, field: "city")}</td>
 
         </tr>
 
         <tr class="prop">
             <td valign="top" class="name"><g:message code="lead.state.label" default="State" /></td>
 
-            <td valign="top" class="value">${fieldValue(bean: suspectInstance, field: "state")}</td>
+            <td valign="top" class="value">${fieldValue(bean: suspectInstance.primaryAddress, field: "state")}</td>
 
         </tr>
 
         <tr class="prop">
             <td valign="top" class="name"><g:message code="lead.zipCode.label" default="Zip Code" /></td>
 
-            <td valign="top" class="value">${fieldValue(bean: suspectInstance, field: "zipCode")}</td>
+            <td valign="top" class="value">${fieldValue(bean: suspectInstance.primaryAddress, field: "zipCode")}</td>
 
         </tr>
 
         <tr class="prop">
             <td valign="top" class="name"><g:message code="lead.county.label" default="County" /></td>
 
-            <td valign="top" class="value">${fieldValue(bean: suspectInstance, field: "county")}</td>
+            <td valign="top" class="value">${fieldValue(bean: suspectInstance.primaryAddress, field: "county")}</td>
 
         </tr>
 
         <tr class="prop">
             <td valign="top" class="name"><g:message code="lead.country.label" default="Country" /></td>
 
-            <td valign="top" class="value">${fieldValue(bean: suspectInstance, field: "country")}</td>
+            <td valign="top" class="value">${fieldValue(bean: suspectInstance.primaryAddress, field: "country")}</td>
 
         </tr>
 
         <tr class="prop">
             <td valign="top" class="name"><g:message code="lead.firstName.label" default="First Name" /></td>
 
-            <td valign="top" class="value">${fieldValue(bean: suspectInstance, field: "firstName")}</td>
+            <td valign="top" class="value">${fieldValue(bean: suspectInstance.primaryLeadContact, field: "firstName")}</td>
 
         </tr>
 
         <tr class="prop">
             <td valign="top" class="name"><g:message code="lead.lastName.label" default="Last Name" /></td>
 
-            <td valign="top" class="value">${fieldValue(bean: suspectInstance, field: "lastName")}</td>
+            <td valign="top" class="value">${fieldValue(bean: suspectInstance.primaryLeadContact, field: "lastName")}</td>
 
         </tr>
 
         <tr class="prop">
             <td valign="top" class="name"><g:message code="lead.emailAddress.label" default="Email Address" /></td>
 
-            <td valign="top" class="value">${fieldValue(bean: suspectInstance, field: "emailAddress")}</td>
+            <td valign="top" class="value">${fieldValue(bean: suspectInstance, field: "primaryLeadEmailAddress")}</td>
 
+        </tr>
+
+        <tr class="prop">
+            <td valign="top" class="name"><g:message code="lead.phoneNumberDescription.label" default="Phone Number Description" /></td>
+
+            <td valign="top" class="value">${fieldValue(bean: suspectInstance.primaryLeadContactPhoneNumber, field: "description")}</td>
         </tr>
 
         <tr class="prop">
             <td valign="top" class="name"><g:message code="lead.phoneNumber.label" default="Phone Number" /></td>
 
-            <td valign="top" class="value">${fieldValue(bean: suspectInstance, field: "phoneNumber")}</td>
-
+            <td valign="top" class="value">${fieldValue(bean: suspectInstance.primaryLeadContactPhoneNumber, field: "phoneNumber")}</td>
         </tr>
 
         <tr class="prop">

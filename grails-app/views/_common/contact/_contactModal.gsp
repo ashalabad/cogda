@@ -11,9 +11,5 @@
 	<div class="modal-footer">
 		<a href="#" class="btn btn-primary" data-dismiss="modal">Done</a>
 	</div>
-	<g:render template="/_common/contact/addEmail"/>				
-	<g:render template="/_common/contact/editEmail"/>
-	<g:render template="/_common/contact/addPhone"/>				
-	<g:render template="/_common/contact/editPhone"/>
-	<g:render template="/_common/contact/editMailingAddress"/>			
+
 </div>

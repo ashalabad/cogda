@@ -53,7 +53,7 @@
                 <div class="field">
                     <input type="text" id="email_0" placeholder="Email Address">
                 </div>
-                <div class="add" id="addEmail">
+                <div class="add" id="addEmailBtn">
                     <a class="btn btn-mini add-field" href="#" onclick="addEmailAddressField();"><i class="icon-plus"></i> Add</a>
                 </div>
             </fieldset>

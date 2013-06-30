@@ -5,9 +5,13 @@ import com.cogda.common.web.AjaxResponseDto
 import com.cogda.util.ErrorMessageResolverService
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.gson.JsonElement
 import grails.converters.JSON
 import grails.plugin.gson.converters.GSON
 import org.springframework.dao.DataIntegrityViolationException
+import static javax.servlet.http.HttpServletResponse.*
+import static org.codehaus.groovy.grails.web.servlet.HttpHeaders.*
+import static grails.plugin.gson.http.HttpConstants.*
 
 /**
  * AccountController
@@ -30,7 +34,6 @@ class AccountController extends BaseController{
      */
     def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-
         List accountInstanceList = Account.list()
 
         def dataToRender = [:]
@@ -43,18 +46,37 @@ class AccountController extends BaseController{
             map.accountName = account.accountName
             map.accountCode = account.accountCode
             map.accountType = account.accountType
-            map.primaryContactName = account.primaryAccountContactName
-            map.primaryEmailAddress = account.primaryEmailAddress
-            map.primaryPhoneNumber = account.primaryAccountContactPhoneNumberString
-            map.dateCreated = account.dateCreated
-
+            map.primaryContact= account.primaryAccountContactName +
+                    "<br>"+account.primaryEmailAddress +
+                    "<br>"+account.primaryAccountContactPhoneNumberString
+            map.details = remoteLink([controller: 'account', action: 'show', id: account.id, onSuccess: 'modalDialogHandler(data)', method: 'GET'], 'Details')
+            map.edit = remoteLink([controller: 'account', action: 'edit', id: account.id, onSuccess: 'modalDialogHandler(data)', method: 'GET'], 'Edit')
             dataToRender.aaData.add(map)
         }
         dataToRender.sEcho = 1
 
-        render dataToRender as GSON
+        render dataToRender as JSON
 
         return
+    }
+    def show() {
+        def accountInstance = Account.get(params.id)
+        if (!accountInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'account.label', default: 'Account'), params.id])
+            redirect(action: "list")
+            return
+        }
+        render(template: '/_common/modals/account/details', model: [accountInstance: accountInstance])
+    }
+
+    def edit() {
+        def accountInstance = Account.get(params.id)
+        if (!accountInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'lead.label', default: 'Account'), params.id])
+            redirect(action: "list")
+            return
+        }
+        render(template: '/_common/modals/account/edit', model: [accountInstance: accountInstance])
     }
 
     /**
@@ -102,8 +124,8 @@ class AccountController extends BaseController{
 
         }
 
-        JSON.use('deep')
-        //println ajaxResponseDto as JSON
+        //JSON.use('deep')
+        println ajaxResponseDto as JSON
         render ajaxResponseDto as JSON
         return
     }
@@ -140,43 +162,32 @@ class AccountController extends BaseController{
      * @return AjaxResponseDto as JSON
      */
     def update() {
-        def jsonProperties = JSON.parse(params.account)
-        Account accountInstance = Account.get(jsonProperties.id)
-        AjaxResponseDto ajaxResponseDto = new AjaxResponseDto()
+        if (!requestIsJson()) {
+            respondNotAcceptable()
+            return
+        }
 
+        def accountInstance = Account.get(params.id)
         if (!accountInstance) {
-            ajaxResponseDto.success = Boolean.FALSE
-            ajaxResponseDto.errors.put("id", message(code: 'account.not.found'))
-            ajaxResponseDto.modelObject = null
+            respondNotFound params.id
+            return
         }
 
-        if (jsonProperties.version) {
-            def version = jsonProperties.version.toLong()
-            if (accountInstance.version > version) {
-                ajaxResponseDto.errors.put("version", message(code:"default.optimistic.locking.failure",
-                        args: [message(code: 'account.label', default: 'Account')] as Object[]))
-
-                ajaxResponseDto.success = Boolean.FALSE
-                ajaxResponseDto.modelObject = null
+        if (params.version != null) {
+            if (accountInstance.version > params.long('version')) {
+                respondConflict(accountInstance)
+                return
             }
         }
 
-        accountInstance.properties = jsonProperties.properties
+        JsonElement jsonElement = GSON.parse(request)
+        accountInstance.properties = jsonElement
 
-        if (!accountInstance.save(flush: true)) {
-            if(accountInstance.hasErrors()){
-                ajaxResponseDto.errors = errorMessageResolverService.retrieveErrorStrings(accountInstance)
-                ajaxResponseDto.success = Boolean.FALSE
-                ajaxResponseDto.modelObject = accountInstance
-            }else{
-                ajaxResponseDto.success = Boolean.TRUE
-                ajaxResponseDto.addMessage(message(code:'account.save.successful'))
-                ajaxResponseDto.modelObject = accountInstance
-            }
+        if (accountInstance.save(flush: true)) {
+            respondUpdated accountInstance
+        } else {
+            respondUnprocessableEntity accountInstance
         }
-
-        render ajaxResponseDto as JSON
-        return
     }
 
     /**
@@ -207,5 +218,92 @@ class AccountController extends BaseController{
         render ajaxResponseDto as JSON
         return
     }
+
+    def showForm(){
+        def accountInstance = Account.get(params.id)
+        if (accountInstance) {
+            response.status = SC_OK
+            render(template:"/_common/modals/account/edit", model:[accountInstance:accountInstance])
+            return
+        } else {
+            respondNotFound params.id
+        }
+    }
+
+    private boolean requestIsJson() {
+        GSON.isJson(request)
+    }
+
+    private void respondFound(Account accountInstance) {
+        response.status = SC_OK
+        Gson gson = gsonBuilder.create()
+        def gsonRetString = gson.toJsonTree(accountInstance);
+        render gsonRetString
+    }
+
+    private void respondCreated(Account accountInstance) {
+        response.status = SC_CREATED // 201
+        response.addHeader LOCATION, createLink(action: 'get', id: accountInstance.id)
+        Gson gson = gsonBuilder.create()
+        def gsonRetString = gson.toJsonTree(accountInstance);
+        render gsonRetString
+    }
+
+    private void respondUpdated(Account accountInstance) {
+        response.status = SC_OK // 200
+        Gson gson = gsonBuilder.create()
+        def gsonRetString = gson.toJsonTree(accountInstance);
+        render gsonRetString
+    }
+
+    private void respondUnprocessableEntity(Account accountInstance) {
+        def responseBody = [:]
+        responseBody.errors = accountInstance.errors.allErrors.collect {
+            message(error: it)
+        }
+        response.status = SC_UNPROCESSABLE_ENTITY // 422
+        render responseBody as GSON
+    }
+
+    private void respondNotFound(id) {
+        def responseBody = [:]
+        responseBody.message = message(code: 'default.not.found.message', args: [message(code: 'account.label', default: 'Account'), id])
+        response.status = SC_NOT_FOUND // 404
+        render responseBody as GSON
+    }
+
+    private void respondConflict(Account accountInstance) {
+        accountInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
+                [message(code: 'account.label', default: 'Account')] as Object[],
+                'Another user has updated this Account while you were editing')
+        def responseBody = [:]
+        responseBody.errors = accountInstance.errors.allErrors.collect {
+            message(error: it)
+        }
+        response.status = SC_CONFLICT // 409
+        render responseBody as GSON
+    }
+
+    private void respondDeleted(id) {
+        def responseBody = [:]
+        responseBody.message = message(code: 'default.deleted.message', args: [message(code: 'account.label', default: 'Account'), id])
+        response.status = SC_OK  // 200
+        render responseBody as GSON
+    }
+
+    private void respondNotDeleted(id) {
+        def responseBody = [:]
+        responseBody.message = message(code: 'default.not.deleted.message', args: [message(code: 'account.label', default: 'Account'), id])
+        response.status = SC_INTERNAL_SERVER_ERROR  // 500
+        render responseBody as GSON
+    }
+
+    private void respondNotAcceptable() {
+        response.status = SC_NOT_ACCEPTABLE  // 406
+        response.contentLength = 0
+        response.outputStream.flush()
+        response.outputStream.close()
+    }
+
 }
 

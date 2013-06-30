@@ -18,14 +18,12 @@
 <body>
 
 	<content tag="header">
-	    <!-- Empty Header -->
+	    <!-- Empty Header -->	
 	</content>
-
-	<div id="MenuRow" class="row">
-	    <div class="span12">
-	        &nbsp;
-	    </div>
+	<div class="pageHeader">
+		<h3>My Contacts</h3>
 	</div>
+
 
 	<section id="list-contact" class="first">
 	    <table class="table table-bordered" id="contactList">
@@ -48,7 +46,7 @@
 	        </tbody>
 	    </table>
 	</section>
-	<g:render template="/_common/contact/contactModal"/>
+<g:render template="/_common/modals/masterModal" model="[modalLabel:'contact',templatePath: 'contact',modalHeader:'Contact',modalList:['addEmail','editEmail','editPhone','addPhone','editMailingAddress','addMailingAddress']]"/>	
 </body>
 
 </html>

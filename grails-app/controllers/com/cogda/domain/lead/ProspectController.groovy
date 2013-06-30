@@ -1,11 +1,8 @@
-package com.cogda.multitenant
+package com.cogda.domain.lead
 
 import com.cogda.BaseController
 import com.cogda.common.LeadType
-import com.cogda.common.web.AjaxResponseDto
-import com.cogda.domain.admin.BusinessType
-import com.cogda.domain.admin.NaicsCode
-import com.cogda.domain.admin.SicCode
+import com.cogda.multitenant.Lead
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
@@ -19,10 +16,10 @@ import static javax.servlet.http.HttpServletResponse.*
 import static org.codehaus.groovy.grails.web.servlet.HttpHeaders.LOCATION
 
 /**
- * SuspectController
+ * ProspectController
  * A controller class handles incoming web requests and performs actions such as redirects, rendering views and so on.
  */
-class SuspectController extends BaseController {
+class ProspectController extends BaseController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
@@ -32,34 +29,36 @@ class SuspectController extends BaseController {
     def index() {
     }
 
+    def detail() {
+        def prospectInstance = Lead.get(params.id)
+        if (!prospectInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'prospect.label', default: 'Lead'), params.id])
+            redirect(action: "list")
+            return
+        }
+        [prospectInstance: prospectInstance]
+    }
+
     def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        List suspectInstanceList = Lead.list()
+        List prospectInstanceList = Lead.list()
 
         def dataToRender = [:]
         dataToRender.aaData = []
-        suspectInstanceList.each { Lead suspect ->
+        prospectInstanceList.each { Lead prospect ->
             Map map = [:]
-            map.DT_RowId = "row_" + suspect.id
-            map.version = suspect.version
-            map.clientId = suspect.clientId
-            map.businessType = suspect.businessType.description
-            map.owner = suspect.ownerName
-            map.createdOn = suspect.dateCreated
-            if (suspect.account) {
-                def primaryContact = suspect.account.accountContacts.find {it.primaryContact}
-                map.clientName = suspect.account.accountName
-                map.contactName = primaryContact.getFullName()
-                map.phoneNumber = primaryContact.getAccountContactPhoneNumbers().find { it.primaryPhoneNumber }
-                map.email = primaryContact.getAccountContactEmailAddresses().find { it.primaryEmailAddress }
-            } else {
-                map.clientName = suspect.clientName
-                map.contactName = suspect.getFullName()
-                map.phoneNumber = suspect.phoneNumber
-                map.email = suspect.emailAddress
-            }
-            map.details = remoteLink([controller: 'suspect', action: 'show', id: suspect.id, onSuccess: 'modalDialogHandler(data)', method: 'GET'], 'Details')
-            map.edit = remoteLink([controller: 'suspect', action: 'edit', id: suspect.id, onSuccess: 'modalDialogHandler(data)', method: 'GET'], 'Edit')
+            map.DT_RowId = "row_" + prospect.id
+            map.version = prospect.version
+            map.clientId = prospect.clientId
+            map.businessType = prospect.businessType.description
+            map.owner = prospect.ownerName
+            map.createdOn = prospect.dateCreated
+            map.clientName = prospect.clientName
+            map.contactName = prospect.primaryLeadContactName
+            map.phoneNumber = prospect.primaryLeadContactPhoneNumber
+            map.email = prospect.primaryEmailAddress
+            map.details = remoteLink([controller: 'prospect', action: 'show', id: prospect.id, onSuccess: 'modalDialogHandler(data)', method: 'GET'], 'Details')
+            map.edit = remoteLink([controller: 'prospect', action: 'edit', id: prospect.id, onSuccess: 'modalDialogHandler(data)', method: 'GET'], 'Edit')
             dataToRender.aaData.add(map)
         }
         dataToRender.sEcho = 1
@@ -68,30 +67,39 @@ class SuspectController extends BaseController {
     }
 
     def create() {
-        [suspectInstance: new Lead(params)]
+//        def prospectAddress = new LeadAddress()
+//        prospectAddress.address = new Address()
+//        def prospectContact = new LeadContact()
+//        def prospectContactAddress = new LeadContactAddress()
+//        def prospectContactEmailAddress = new LeadContactEmailAddress()
+        def prospectInstance = new Lead()
+//        prospectInstance.leadType = LeadType.SUSPECT
+//        prospectInstance.addToLeadContacts(prospectContact)
+//        prospectInstance.addToLeadAddresses(prospectAddress)
+        [prospectInstance: prospectInstance]
     }
 
     def save() {
-        def suspectInstance = new Lead(params)
-        suspectInstance.leadType = LeadType.SUSPECT
-        if (!suspectInstance.save(flush: true)) {
-            render(view: "create", model: [suspectInstance: suspectInstance])
+        def prospectInstance = new Lead(params)
+        prospectInstance.leadType = LeadType.SUSPECT
+        if (!prospectInstance.save(flush: true)) {
+            render(view: "create", model: [prospectInstance: prospectInstance])
             return
         }
 
-        flash.message = message(code: 'default.created.message', args: [message(code: 'suspect.label', default: 'Lead'), suspectInstance.id])
-        String redirectLink = generateRedirectLink("suspect", "show", [id: suspectInstance.id])
-        redirect(url:redirectLink)
+        flash.message = message(code: 'default.created.message', args: [message(code: 'prospect.label', default: 'Lead'), prospectInstance.id])
+        String redirectLink = generateRedirectLink("prospect", "show", [id: prospectInstance.id])
+        redirect(url: redirectLink)
     }
 
     def show() {
-        def suspectInstance = Lead.get(params.id)
-        if (!suspectInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'suspect.label', default: 'Lead'), params.id])
+        def prospectInstance = Lead.get(params.id)
+        if (!prospectInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'prospect.label', default: 'Lead'), params.id])
             redirect(action: "list")
             return
         }
-        render(template: '/_common/suspect/showSuspect', model: [suspectInstance: suspectInstance])
+        render(template: '/_common/prospect/showProspect', model: [prospectInstance: prospectInstance])
     }
 
     def get() {
@@ -104,80 +112,41 @@ class SuspectController extends BaseController {
     }
 
     def edit() {
-        def suspectInstance = Lead.get(params.id)
-        if (!suspectInstance) {
+        def prospectInstance = Lead.get(params.id)
+        if (!prospectInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'lead.label', default: 'Lead'), params.id])
             redirect(action: "list")
             return
         }
-        render(template: '/_common/suspect/editSuspect', model: [suspectInstance: suspectInstance])
+        render(template: '/_common/prospect/editProspect', model: [prospectInstance: prospectInstance])
     }
 
     def update() {
-        def suspectInstance = Lead.get(params.id)
-        if (!suspectInstance) {
-            respondNotFo
-            und(params.id)
+        def prospectInstance = Lead.get(params.id)
+        if (!prospectInstance) {
+            respondNotFound(params.id)
         }
 
         if (params.version != null) {
-            if (suspectInstance.version > params.long('version')) {
+            if (prospectInstance.version > params.long('version')) {
                 respondConflict()
                 return
             }
         }
 
         JsonElement jsonElement = GSON.parse(request)
-        suspectInstance.properties = jsonElement
+        prospectInstance.properties = jsonElement
 
-        if (suspectInstance.save(flush: true)) {
-            respondUpdated(suspectInstance)
+        if (prospectInstance.save(flush: true)) {
+            respondUpdated(prospectInstance)
         } else {
-            respondUnprocessableEntity(suspectInstance)
+            respondUnprocessableEntity(prospectInstance)
         }
     }
 
-//    def update() {
-//        AjaxResponseDto ajaxResponseDto
-//
-//        def suspectInstance = Lead.get(params.id)
-//        if (!suspectInstance) {
-//            flash.message = message(code: 'default.not.found.message', args: [message(code: 'lead.label', default: 'Lead'), params.id])
-//            redirect(action: "list")
-//            return
-//        }
-//
-//        if (params.version) {
-//            def version = params.version.toLong()
-//            if (suspectInstance.version > version) {
-//                suspectInstance.errors.rejectValue("version", "default.optimistic.locking.failure",
-//                        [message(code: 'suspect.label', default: 'Lead')] as Object[],
-//                        "Another user has updated this Lead while you were editing")
-//                render(view: "edit", model: [suspectInstance: suspectInstance])
-//                return
-//            }
-//        }
-//
-//        suspectInstance.properties = params
-//
-//        if (suspectInstance.hasErrors()) {
-//            ajaxResponseDto.success = Boolean.FALSE
-//            ajaxResponseDto.errors = errorMessageResolverService.retrieveErrorStrings(suspectInstance)
-//            render ajaxResponseDto as JSON
-//            return
-//        }
-//
-//        if (!suspectInstance.save(flush: true)) {
-//            ajaxResponseDto.success = Boolean.FALSE
-//            ajaxResponseDto.errors = errorMessageResolverService.retrieveErrorStrings(suspectInstance)
-//            render ajaxResponseDto as JSON
-//            return
-//        }
-//    }
-
     def delete() {
-        def suspectInstance = Lead.get(params.id)
-        if (!suspectInstance) {
+        def prospectInstance = Lead.get(params.id)
+        if (!prospectInstance) {
 
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'lead.label', default: 'Lead'), params.id])
             redirect(action: "list")
@@ -185,7 +154,7 @@ class SuspectController extends BaseController {
         }
 
         try {
-            suspectInstance.delete(flush: true)
+            prospectInstance.delete(flush: true)
             flash.message = message(code: 'default.deleted.message', args: [message(code: 'lead.label', default: 'Lead'), params.id])
             redirect(action: "list")
         }
@@ -276,39 +245,4 @@ class SuspectController extends BaseController {
         response.outputStream.flush()
         response.outputStream.close()
     }
-}
-
-class SuspectCommand {
-    Account account
-    BusinessType businessType
-    NaicsCode naicsCode
-    SicCode sicCode
-    String clientId
-    String ownerName
-    String clientName
-    String address1
-    String address2
-    String city
-    String state
-    String zipCode
-    String county
-    String country
-    String firstName
-    String lastName
-    String emailAddress
-    String phoneNumber
-
-    Date lastUpdated
-    Date dateCreated
-    LeadType leadType
-
-    static constraints = {
-        importFrom Lead
-    }
-
-    Lead getLeadObject() {
-        return new Lead()
-    }
-
-
 }

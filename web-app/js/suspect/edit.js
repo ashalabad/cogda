@@ -1,14 +1,17 @@
+var isNew;
 $(document).ready(function () {
     $('#suspectForm').off('submit');
+    isNew = ($('form').hasClass('new'));
 
     $('#suspectForm').on("submit", function (e) {
         e.preventDefault();
+        var route = isNew ? 'save' : 'update';
         if (validator.valid()) {
             $.ajax(
                 {
                     type: 'POST',
                     data: $(this).serialize(),
-                    url: '/suspect/update',
+                    url: '/suspect/' + route,
                     success: function (data, textStatus, xhr) {
                         suspectHandler(data, textStatus, xhr);
                     },
@@ -36,6 +39,26 @@ $(document).ready(function () {
                     }
                 }
             );
+        }
+    });
+
+    //bind click event on delete buttons using jquery live
+    $('body').on('click', '.del-phone', function (event) {
+        //find the parent div
+        event.preventDefault();
+        var prnt = $(this).parents(".phone-div");
+        //find the deleted hidden input
+        var delInput = prnt.find("input[id$=deleted]");
+        //check if this is still not persisted
+        var newValue = prnt.find("input[id$=new]").attr('value');
+        //if it is new then i can safely remove from dom
+        if (newValue == 'true') {
+            prnt.remove();
+        } else {
+            //set the deletedFlag to true
+            delInput.attr('value', 'true');
+            //hide the div
+            prnt.hide();
         }
     });
 
@@ -68,13 +91,13 @@ $(document).ready(function () {
 });
 
 function suspectHandler(data, textStatus, xhr) {
-
+    var message = isNew ? "Save " : "Update "
     if (xhr.status == 200) {
         var errorMessages = $("#errorMessages");
         errorMessages.html("");
         errorMessages.hide();
         $.pnotify({
-            title: 'Update Successful',
+            title: message + 'Successful',
             type: 'success',
             opacity: 0.8,
             delay: 10000
@@ -90,4 +113,50 @@ function suspectHandler(data, textStatus, xhr) {
         errorMessages.show();
         errorMessages.focus();
     }
+}
+
+var childCount;
+var prefix;
+
+function init(p, count) {
+    childCount = isNaN(count) ? 0 : count;
+    prefix = p;
+}
+
+function addPhone() {
+    var clone = $("#leadContactPhoneNumber_clone").clone()
+    var htmlId = prefix + 'leadContactPhoneNumbers[' + childCount + ']';
+    var phoneDescriptionInput = clone.find("input[id$=description]");
+    var phoneInput = clone.find("input[id$=phoneNumber]");
+    var phonePrimaryInput = clone.find("input[id$=primaryPhoneNumber]");
+    var phonePrimaryHiddenInput = clone.find("input[type=hidden]");
+
+    clone.find("input[id$=id]")
+        .attr('id', htmlId + 'id')
+        .attr('name', htmlId + 'id');
+    clone.find("input[id$=deleted]")
+        .attr('id', htmlId + 'deleted')
+        .attr('name', htmlId + 'deleted');
+    clone.find("input[id$=new]")
+        .attr('id', htmlId + 'new')
+        .attr('name', htmlId + 'new')
+        .attr('value', 'true');
+    updateAttributes(phoneInput, htmlId + '.phoneNumber');
+    updateAttributes(phoneDescriptionInput, htmlId + '.description');
+    updateAttributes(phonePrimaryInput, htmlId + '.primaryPhoneNumber');
+    phonePrimaryHiddenInput.attr('name', htmlId + '.primaryPhoneNumber');
+    clone.find("select[id$=type]")
+        .attr('id', htmlId + 'type')
+        .attr('name', htmlId + 'type');
+
+    clone.attr('id', 'phone' + childCount);
+    $("#childLeadContactPhoneNumbers").append(clone);
+    clone.show();
+    phoneInput.focus();
+    childCount++;
+}
+
+function updateAttributes(attribute, newValue) {
+    attribute.attr('id', newValue)
+        .attr('name', newValue);
 }

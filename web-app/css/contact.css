@@ -1,17 +1,19 @@
+/********datatable stuff******/
+.pageHeader{margin-top:50px;}
 #contactList td{cursor: pointer;}
 label{font-weight: bold;}
 .row_selected {background-color: #ccc !important;}
 .row_selected td{background-color: #ccc !important;}
+/********end datatable stuff******/
+
+#contactForm_new .template {display:block;visibility:visible;}
 #contactHeader {width:300px;}
-#contactModal {
-  width:960px;
-  left:450px;
-}
+#contactModal {width:960px;left:450px;}
 div.field {padding:2px;clear:both;}
 div.field input {float:left;}
-fieldset{margin-bottom:20px;}
+fieldset{margin-bottom:45px;}
 .add-field {margin-left:5px;}
-div.add {clear:both;}
+div.add {clear:both;margin-top:25px;}
 
 /******applies to contact data, email and phone*****/
 .editHide {display:none !important;visibility:hidden;}
@@ -23,17 +25,22 @@ div.add {clear:both;}
 #contactFieldset .add {
   margin-top: 34px;
   float: right;
-  margin-right: 512px;  
+/*  margin-right: 512px;  */
+  margin-right: 112px;  
 }
 div.button {margin-left: 20px;}
 
 /******emails & phones******/
 .primaryRadio {margin: 7px 40px 0 15px !important;}
 #emailFieldset label, #phoneFieldset label {width:130px;float:left;}
-.new {margin-left:69px;clear:both;display:block !important;}
+.new {
+  margin-left:69px;
+  clear:both;
+  display:block !important;
+}
 .hideMe {display:none !important;visibility:hidden;}
 .showMe {visibility:visible;}
-.emailText {width:284px;float:left;margin-top:2px;}
+.savedText {width:284px;float:left;margin-top:2px;}
 #addEmail, #addPhone {padding-top:4px;}
 .saveEmail, .savePhone {margin-left:4px;}
 .primaryHeader {
@@ -41,28 +48,24 @@ div.button {margin-left: 20px;}
   margin-right: 17px;
   font-weight: bold;
 }
-.labelHeader {
-  float: left;
-  font-weight: bold;  
-}
-
+.labelHeader {float: left;font-weight: bold;}
   
 /******mailing addresses******/
-div.addressOne,div.addressTwo,div.addressThree, span.city {
-  margin-left:10px;
-  line-height:16px !important;
-}
-div.address input, div.address select {
-  clear:both;
-  margin-top:3px;
-}
+.addressInstance {margin-top:20px;}
+div.addressOne,div.addressTwo,div.addressThree {margin-left:10px;line-height:16px !important;}
+div.addressInstance input, div.addressInstance select {clear:both;margin-top:3px;}
 .stateContainer {clear:both;}
-.template{
-  display:none;
-  visibility:hidden;
-}
+.template{display:none;visibility:hidden;}
+#editAddressBtn {margin-left:357px;}
 .addressLbl {float:left;}
 .viewAddressLbl {margin-right:55px;}
 input.zip {margin-right:65px;}
-.save {margin-left:135px;clear:both;}
+.save {margin-left:212px;clear:both;}
+.new .save {margin-left:135px;clear:both;}
 div.address {margin-bottom:20px;}
+.addressLine {clear:both;margin-left:77px !important;}
+#mailFieldset .new {
+  margin-left:77px;
+  clear:both;
+  display:block !important;
+}

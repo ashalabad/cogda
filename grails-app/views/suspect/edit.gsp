@@ -23,7 +23,7 @@
 </div>
 <section id="edit-lead" class="first">
     <h2><g:message code="default.edit.label" args="[entityName]" /></h2>
-	<g:hasErrors bean="${leadInstance}">
+	<g:hasErrors bean="${suspectInstance}">
 	<div class="alert alert-error">
 		<g:renderErrors bean="${leadInstance}" as="list" />
 	</div>
@@ -33,7 +33,7 @@
 		<g:hiddenField name="id" value="${leadInstance?.id}" />
 		<g:hiddenField name="version" value="${leadInstance?.version}" />
 		<fieldset class="form">
-			<g:render template="form"/>
+			<g:render template="/lead/form"/>
 		</fieldset>
 		<div class="form-actions">
 			<g:actionSubmit class="btn btn-primary" action="update" value="${message(code: 'default.button.update.label', default: 'Update')}" />

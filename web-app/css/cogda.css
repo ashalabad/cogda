@@ -38,3 +38,4 @@ label.error {
     padding-top: 10px;
     padding-bottom: 10px;
 }
+.modal-footer{max-height:30px;overflow-y:hidden;}

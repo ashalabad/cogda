@@ -34,6 +34,10 @@ class Account {
 
     }
 
+    String toString(){
+        accountName
+    }
+
     /**
      * Get the Primary Email Address for this Account
      * @return String

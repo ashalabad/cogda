@@ -48,7 +48,8 @@
         </tbody>
     </table>
 </section>
-<g:render template="/_common/suspect/suspectModal"/>
+<g:render template="/_common/modals/suspect/suspectModal"/>
+%{--<g:render template="/_common/modals/masterModal" model="[modalLabel: 'suspect', templatePath: 'modals/suspect', modalHeader: 'Account', modalList: ['editSuspect', 'showSuspect']]"/>--}%
 </body>
 
 </html>
