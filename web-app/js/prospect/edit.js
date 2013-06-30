@@ -64,6 +64,10 @@ $(document).ready(function () {
 
     var validator = $("#prospectForm").validate({
         rules: {
+            clientName: {
+                minlength: 1,
+                required: true
+            },
             firstName: {
                 minlength: 1,
                 required: true
@@ -77,7 +81,15 @@ $(document).ready(function () {
                 email: true
             },
             country: {
-                required:true
+                required: true
+            },
+            clientId: {
+                minlength: 1,
+                required: true
+            },
+            ownerName: {
+                minlength: 1,
+                required: true
             }
         },
         highlight: function (element) {

@@ -22,12 +22,12 @@ class LeadAddress {
     Date dateCreated
     Date lastUpdated
 
-    static belongsTo = [lead:Lead]
+    static belongsTo = [lead: Lead]
 
     static embedded = ['address']
 
     static constraints = {
-         primaryAddress(nullable:true)
+        primaryAddress(nullable: true)
         leadAddressType(nullable: true)
     }
 }

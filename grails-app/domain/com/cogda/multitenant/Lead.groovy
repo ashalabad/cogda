@@ -33,13 +33,12 @@ class Lead {
     static transients = ["primaryEmailAddress", "primaryLeadEmailAddress", "primaryLeadContact", "primaryLeadContactName"]
 
     static constraints = {
-        clientId(nullable: true)
-        ownerName(nullable: true)
+        clientId(blank: false, nullable: false)
+        ownerName(blank: false, nullable: false)
         businessType(nullable: true)
         naicsCode(nullable: true)
         sicCode(nullable: true)
-        leadType(nullable: false)
-        clientName(nullable: true)
+        clientName(blank:false, nullable: false)
         businessType(nullable: true)
     }
 
