@@ -59,5 +59,18 @@ modules = {
         resource url:[dir: 'js/sicCode', file: 'sicCode.js']
     }
 
+    //jQuery File Upload - https://github.com/blueimp/jQuery-File-Upload
+    jqueryFileUpload {
+        dependsOn 'jquery'
+        resource url:[dir: 'js/jqueryFileUpload/css',        file:'jquery.fileupload-ui.css']
+//        resource url:[dir: 'js/jqueryFileUpload/css',        file:'jquery.fileupload-ui-noscript.css']
+        resource url:[dir: 'js/jqueryFileUpload/js/vendor',  file:'jquery.ui.widget.js']
+        resource url:[dir: 'js/jqueryFileUpload/js',         file:'jquery.iframe-transport.js']
+
+        resource url:[dir: 'js/jqueryFileUpload/js',         file:'jquery.fileupload.js']
+        resource url:[dir: 'js/jqueryFileUpload/js',         file:'jquery.fileupload-process.js']
+        resource url:[dir: 'js/jqueryFileUpload/js',         file:'jquery.fileupload-validate.js']
+    }
+
 
 }

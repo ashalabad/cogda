@@ -3,6 +3,7 @@ package com.cogda.domain.admin
 import com.cogda.account.EmailSendReasonCode
 import com.cogda.account.EmailSendStatusCode
 import com.cogda.domain.UserProfile
+import com.cogda.domain.security.PendingUser
 import grails.gsp.PageRenderer
 import grails.plugin.mail.MailService
 import org.codehaus.groovy.grails.commons.GrailsApplication
@@ -19,6 +20,43 @@ class CustomerNotificationService {
     MailService mailService
 
     static transactional = true
+
+    public EmailConfirmationLog prepareUserInvitationMessage(PendingUser importedUser, String newUserCreationUrl){
+        SystemEmailMessageTemplate userInvitationMessage = SystemEmailMessageTemplate.findByTitle("USER_INVITATION_EMAIL")
+
+        assert userInvitationMessage, "Reset Password Email Message Was Not Found!"
+
+        Map messageParameters = [:]
+        messageParameters.firstName = importedUser.firstName
+        messageParameters.appName = grailsApplication.config.application.name
+        messageParameters.newUserCreationUrl = newUserCreationUrl
+
+        // Apply the dynamic values to the body of the email template
+        String messageBody = userInvitationMessage.writeMessageOutput(messageParameters)
+
+        String emailBody = groovyPageRenderer.render(view:'/email/confirmationLayout', model:[body:messageBody])
+
+        EmailConfirmationLog confLog = new EmailConfirmationLog()
+        confLog.emailSendReason = EmailSendReasonCode.USER_RESET_PASSWORD
+        confLog.emailTo = importedUser.emailAddress
+        confLog.emailFrom = grailsApplication.config.grails.mail.default.from
+        confLog.emailSubject = userInvitationMessage.subject
+        confLog.emailBody = messageBody
+
+        confLog.save()
+
+        // Fire the sendEmailConfirmation event method asynchronously after the successful
+        // save of EmailConfirmationLog for email processing.
+        event('sendEmailUserInvitation', confLog)
+
+        return confLog
+    }
+
+    @grails.events.Listener(topic="sendEmailUserInvitation")
+    def sendEmailUserInvitation(EventMessage eventMessage){
+        EmailConfirmationLog confLog = (EmailConfirmationLog)eventMessage.data
+        sendMail(confLog)
+    }
 
     /**
      * Send an email confirmation based on the

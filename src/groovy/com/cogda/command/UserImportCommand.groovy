@@ -20,12 +20,12 @@ class UserImportCommand {
     def ctx = SCH.servletContext.getAttribute(GA.APPLICATION_CONTEXT)
     UserService userService = ctx.userService
 
-    String username
     String firstName
     String lastName
     String emailAddress
     String securityRoles
     List<String> parsedSecurityRoles = []
+    Map resolvedErrorsByField = [:]
 
     String suggestedUsername
 
@@ -37,11 +37,6 @@ class UserImportCommand {
 
     static constraints = {
         importFrom Registration, include: ["firstName", "lastName", "emailAddress"]
-        username(nullable:false, blank:false, minSize:2, matches: "[A-Za-z0-9]+", validator: { val, obj ->
-            if(!obj.userService.availableUsername(val)){
-                return ['registration.username.taken']
-            }
-        })
     }
 
     /**
@@ -61,7 +56,6 @@ class UserImportCommand {
      */
     public String toString(){
         def s = """${this.class.name}
-username: $username
 firstName: $firstName
 lastName: $lastName
 emailAddress: $emailAddress

@@ -32,11 +32,10 @@ class UserImportServiceTests extends BaseIntegrationTest {
     }
 
     @Test
-    void testLoadUserData(){
+    void testProcessUserImport(){
         InputStream is = getAmazonTestFile("CogdaUserImportTestFile.csv")  // this is the csv with invalid data
         CustomerAccount customerAccount = new CustomerAccount(subDomain:"fakeSubdomain")
         assert customerAccount.save()
-
 
         List userImports = []
 
@@ -46,13 +45,15 @@ class UserImportServiceTests extends BaseIntegrationTest {
                 assert role.save()
             }
 
-            userImports = userImportService.loadUserData(is)
+            userImports = userImportService.processUserImport(is)
         }
 
         assert userImports, "userImports is null and shouldn't be"
         userImports.each {
             log.debug (it)
             println it
+
+
         }
     }
 
@@ -80,7 +81,7 @@ class UserImportServiceTests extends BaseIntegrationTest {
         assert user.enabled, "User.enabled is false"
         assert !user.accountExpired, "User accountExpired is true"
         assert !user.accountLocked, "User accountLocked is true "
-        assert user.passwordExpired, "User passwordExpired shoulb be true"
+        assert user.passwordExpired, "User passwordExpired should be true"
     }
 
     private InputStream getAmazonTestFile(String fileName){

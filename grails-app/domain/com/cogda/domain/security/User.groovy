@@ -26,7 +26,7 @@ class User {
      */
     boolean encodePassword = true
 
-    static transients = ['bypassEncodePassword']
+    static transients = ['bypassEncodePassword', 'encodePassword']
 
 	static constraints = {
 		username(blank: false, unique: true)

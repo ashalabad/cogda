@@ -24,6 +24,8 @@ import com.cogda.security.SecurityService
 import com.cogda.security.UserRoleService
 import com.cogda.security.UserService
 import grails.plugin.awssdk.AmazonWebService
+import grails.plugin.multitenant.core.CurrentTenant
+import grails.plugin.multitenant.core.MultiTenantDomainClass
 import grails.plugin.multitenant.core.Tenant
 import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.grails.commons.GrailsApplication
@@ -33,6 +35,7 @@ import org.codehaus.groovy.grails.commons.GrailsApplication
  * A service class encapsulates the core business logic of a Grails application
  */
 class CustomerAccountService {
+
     private static final log = LogFactory.getLog(this)
 
     /**
@@ -104,12 +107,6 @@ class CustomerAccountService {
     public static final String ROLE_ADMINISTRATOR = 'ROLE_ADMINISTRATOR'
 
 
-    SecurityService securityService // inject SecurityService into CustomerAccountService
-    UserService userService  // inject UserService into CustomerAccountService
-    UserProfileService userProfileService  // inject UserProfileService into CustomerAccountService
-    CompanyService companyService // inject CompanyService into CustomerAccountService
-    UserRoleService userRoleService  // inject UserRoleService into CustomerAccountService
-    CompanyProfileService companyProfileService // inject CompanyProfileService into CustomerAccountService
     GrailsApplication grailsApplication
     AmazonWebService amazonWebService
 
@@ -376,5 +373,35 @@ class CustomerAccountService {
         userProfile.addToUserProfileEmailAddresses(userProfileEmailAddress)
 
         return user.accountId
+    }
+
+    /**
+     * A method for getting the currently active CurrentTenant's base URL
+     * for the purposes of sending email activation links and invitations to the
+     * cogda system.
+     *
+     * <br>
+     * Returns baseURLs based on the serverURL setting in config with the subdomain
+     * of the CustomerAccount object that is the currentTenant.
+     *
+     * <br>
+     * e.g. http://rais.cogda.com
+     *
+     * @return String
+     */
+    public String getCustomerAccountBaseUrl(Integer tenantId){
+        CustomerAccount customerAccount = CustomerAccount.get(tenantId)
+        String customerAccountBaseUrl = grailsApplication.config.grails.domainURL
+
+        if(customerAccount){
+            customerAccountBaseUrl = customerAccount.subDomain + "." + customerAccountBaseUrl
+        }
+
+        String protocol = grailsApplication.config.grails.serverURL
+        String searchString = "://"
+        Integer end = protocol.indexOf(searchString) + searchString.size()
+        protocol = protocol.substring(0, end)
+        customerAccountBaseUrl = protocol + customerAccountBaseUrl
+        return customerAccountBaseUrl
     }
 }

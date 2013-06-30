@@ -156,6 +156,7 @@ class BootStrap {
             createNewAccountWelcomeEmail()
             createVerifiedSuccessfullyEmail()
             createResetPasswordEmail()
+            createUserInvitationEmail()
 
             if(NaicsCode.count() == 0)
             {
@@ -490,17 +491,17 @@ class BootStrap {
             accountActivationEmailMessage.subject = "Cogda Email Verification"
             accountActivationEmailMessage.fromEmail = "mail@cogda.com"
             accountActivationEmailMessage.body = """
-    Thank you for your interest in {appName}.  We sincerely look forward to serving you and your company.
+Thank you for your interest in {appName}.  We sincerely look forward to serving you and your company.
 
-    Please click the following verification link to activate your new {appName} account.
+Please click the following verification link to activate your new {appName} account.
 
-    {activationUrl}
+{activationUrl}
 
-    Upon successful activation of your account your company information will be verified and your company's account provisioned on {appName}!
+Upon successful activation of your account your company information will be verified and your company's account provisioned on {appName}!
 
-    Thank you!
+Thank you!
 
-    {appName} Team"""
+{appName} Team"""
             accountActivationEmailMessage.acceptsParameters = true
             accountActivationEmailMessage.requiredParameterNames = ['appName', 'activationUrl']
             accountActivationEmailMessage.save() ?: log.error("Error saving AccountActivationEmailMessage errors -> ${accountActivationEmailMessage.errors}")
@@ -516,18 +517,18 @@ class BootStrap {
             accountReminderEmailMessage.subject = "Cogda Account Verification Reminder"
             accountReminderEmailMessage.fromEmail = "mail@cogda.com"
             accountReminderEmailMessage.body = """
-    We recently sent an account activation email to you in response to your request to begin using {appName} at your organization "{organizationName}".
-    If you have already activated your account at {appName} then please disregard the following message.
+We recently sent an account activation email to you in response to your request to begin using {appName} at your organization "{organizationName}".
+If you have already activated your account at {appName} then please disregard the following message.
 
-    Please click the following verification code to activate your new {appName} account.
+Please click the following verification code to activate your new {appName} account.
 
-    {activationUrl}
+{activationUrl}
 
-    Upon successful activation of your account you will be directed to your organization's new {appName} installation!
+Upon successful activation of your account you will be directed to your organization's new {appName} installation!
 
-    Thank you!
+Thank you!
 
-    {appName} Team"""
+{appName} Team"""
             accountReminderEmailMessage.acceptsParameters = true
             accountReminderEmailMessage.requiredParameterNames = ['appName', 'organizationName', 'activationUrl']
             accountReminderEmailMessage.save() ?: log.error("Error saving accountReminderEmailMessage errors -> ${accountReminderEmailMessage.errors}")
@@ -543,15 +544,15 @@ class BootStrap {
             accountReminderEmailMessage.subject = "Cogda Account Verification Timeout"
             accountReminderEmailMessage.fromEmail = "mail@cogda.com"
             accountReminderEmailMessage.body = """
-    We recently sent an account activation email to you in response to your request to begin using {appName} at your organization "{organizationName}".
+We recently sent an account activation email to you in response to your request to begin using {appName} at your organization "{organizationName}".
 
-    Unfortunately we did not hear back from you and we have deactivated your request to use {appName}.
+Unfortunately we did not hear back from you and we have deactivated your request to use {appName}.
 
-    If you would like to establish a new account then please visit us again at {appUrl}.
+If you would like to establish a new account then please visit us again at {appUrl}.
 
-    Sincerely,
+Sincerely,
 
-    {appName} Team"""
+{appName} Team"""
             accountReminderEmailMessage.acceptsParameters = true
             accountReminderEmailMessage.requiredParameterNames = ['appName', 'organizationName', 'appUrl']
             accountReminderEmailMessage.save() ?: log.error("Error saving accountReminderEmailMessage errors -> ${accountReminderEmailMessage.errors}")
@@ -567,15 +568,39 @@ class BootStrap {
             accountWelcomeEmailMessage.subject = "Welcome to Cogda"
             accountWelcomeEmailMessage.fromEmail = "mail@cogda.com"
             accountWelcomeEmailMessage.body = """
-    Thanks for validating your account with {appName}!  You are now all set to begin using and enjoying {appName}!
+Thanks for validating your account with {appName}!  You are now all set to begin using and enjoying {appName}!
 
-    {organizationUrl}
+{organizationUrl}
 
-    Thank you!
+Thank you!
 
-    {appName} Team"""
+{appName} Team"""
             accountWelcomeEmailMessage.acceptsParameters = true
             accountWelcomeEmailMessage.requiredParameterNames = ['appName', 'organizationUrl']
+            accountWelcomeEmailMessage.save()
+        }
+    }
+
+    def createUserInvitationEmail(){
+        if (!SystemEmailMessageTemplate.findByTitle("USER_INVITATION_EMAIL")) {
+            SystemEmailMessageTemplate accountWelcomeEmailMessage = new SystemEmailMessageTemplate()
+            accountWelcomeEmailMessage.markupLanguage = MarkupLanguage.MARKDOWN
+            accountWelcomeEmailMessage.title = "USER_INVITATION_EMAIL"
+            accountWelcomeEmailMessage.description = "The email message that is sent to the User when the admin invites them into the system."
+            accountWelcomeEmailMessage.subject = "Join Cogda - User Invitation"
+            accountWelcomeEmailMessage.fromEmail = "mail@cogda.com"
+            accountWelcomeEmailMessage.body = """
+{firstName},
+
+You have been invited to join {appName}!  Use the following link to create your user account:
+
+{newUserCreationUrl}
+
+Thank you!
+
+{appName} Team"""
+            accountWelcomeEmailMessage.acceptsParameters = true
+            accountWelcomeEmailMessage.requiredParameterNames = ['appName', 'newUserCreationUrl', 'firstName']
             accountWelcomeEmailMessage.save()
         }
     }
@@ -589,11 +614,11 @@ class BootStrap {
             verifiedEmailMessage.subject = "Your email has been verified by Cogda"
             verifiedEmailMessage.fromEmail = "mail@cogda.com"
             verifiedEmailMessage.body = """
-    Thank you for validating your email address with {appName}!
+Thank you for validating your email address with {appName}!
 
-    Sincerely,
+Sincerely,
 
-    {appName} Team"""
+{appName} Team"""
             verifiedEmailMessage.acceptsParameters = true
             verifiedEmailMessage.requiredParameterNames = ['appName', 'organizationUrl']
             verifiedEmailMessage.save()
@@ -609,15 +634,15 @@ class BootStrap {
             accountActivationEmailMessage.subject = "Cogda Reset Forgotten Password"
             accountActivationEmailMessage.fromEmail = "mail@cogda.com"
             accountActivationEmailMessage.body = """
-    You are receiving this message because you had completed the Forgot Password form in {appName}.
+You are receiving this message because you had completed the Forgot Password form in {appName}.
 
-    Please click the following verification link to reset your {appName} password from within {appName}.
+Please click the following verification link to reset your {appName} password from within {appName}.
 
-    {resetPasswordUrl}
+{resetPasswordUrl}
 
-    Thank you!
+Thank you!
 
-    {appName} Team"""
+{appName} Team"""
             accountActivationEmailMessage.acceptsParameters = true
             accountActivationEmailMessage.requiredParameterNames = ['appName', 'resetPasswordUrl']
             accountActivationEmailMessage.save() ?: log.error("Error saving accountActivationEmailMessage errors -> ${accountActivationEmailMessage.errors}")

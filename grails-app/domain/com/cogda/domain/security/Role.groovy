@@ -39,7 +39,7 @@ class Role {
             CustomerAccountService.ROLE_MAREKETING_MANAGER,
             CustomerAccountService.ROLE_SALES_MANAGER,
             CustomerAccountService.ROLE_MARKETER,
-            CustomerAccountService.ROLE_COMPANY_MANAGER]
+            CustomerAccountService.ROLE_COMPANY_MANAGER].sort()
 
 
 

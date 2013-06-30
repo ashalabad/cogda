@@ -37,7 +37,7 @@ class UserImportControllerTests {
     void testImportUserFile(){
         // Mock the userImportService
         def mockUserImportService = mockFor(UserImportService, false)
-        mockUserImportService.demand.loadUserData(0..1) { InputStream inputStream ->
+        mockUserImportService.demand.processUserImport(0..1) { InputStream inputStream ->
             def list = []
             list.add([line:1, success:false, message:"a message"])
             return list
@@ -61,7 +61,7 @@ class UserImportControllerTests {
 
         // Mock the userImportService
         def mockUserImportService = mockFor(UserImportService, false)
-        mockUserImportService.demand.loadUserData(0..1) { InputStream inputStream ->
+        mockUserImportService.demand.processUserImport(0..1) { InputStream inputStream ->
             def list = []
             list.add([line:1, success:false, message:"a message"])
             return list

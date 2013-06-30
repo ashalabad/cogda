@@ -44,9 +44,12 @@ class UserProfile {
                            userProfileAddresses:UserProfileAddress]	// tells GORM to associate other domain objects for a 1-n or n-m mapping
 
     static mapping = {
-        aboutDesc type:'text'
-        businessSpecialtiesDesc type:'text'
-        associationsDesc type:'text'
+        aboutDesc                 type:'text'
+        businessSpecialtiesDesc   type:'text'
+        associationsDesc          type:'text'
+        userProfileEmailAddresses cascade: 'all-delete-orphan'
+        userProfilePhoneNumbers   cascade: 'all-delete-orphan'
+        userProfileAddresses      cascade: 'all-delete-orphan'
     }
 
     static constraints = {

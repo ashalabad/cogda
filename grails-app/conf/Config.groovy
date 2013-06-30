@@ -101,7 +101,15 @@ environments {
                    'org.springframework',
                    'org.hibernate',
                    'net.sf.ehcache.hibernate'
-            debug  'com.cogda'
+            debug  'grails.app.controllers'
+            debug  'grails.app.domain'
+            debug  'grails.app.taglib'
+            debug  'grails.app.conf'
+            debug  'grails.app.filters'
+            debug  'grails.app.taglib'
+            debug  'grails.app.services'
+            debug  'org.codehaus.groovy.grails.plugins'
+
         }
     }
     test {
@@ -212,6 +220,7 @@ grails.plugins.springsecurity.userLookup.userDomainClassName = 'com.cogda.domain
 grails.plugins.springsecurity.userLookup.authorityJoinClassName = 'com.cogda.domain.security.UserRole'
 grails.plugins.springsecurity.authority.className = 'com.cogda.domain.security.Role'
 grails.plugins.springsecurity.logout.afterLogoutUrl = "/"
+grails.plugins.springsecurity.failureHandler.useForward = true
 
 
 // Start: MultiTenant plugin configuration

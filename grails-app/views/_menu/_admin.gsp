@@ -14,6 +14,12 @@
                     <g:message code = "userImport.menu.label"/>
                 </a>
             </li>
+            <li class="">
+                <a href="/pendingUser">
+                    <i class="icon-user"></i>
+                    <g:message code = "pendingUser.menu.label"/>
+                </a>
+            </li>
 			<li class="">
 				<a href="${createLink(uri: '/systeminfo')}">
 					<i class="icon-info-sign"></i>

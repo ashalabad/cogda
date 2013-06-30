@@ -1,16 +1,18 @@
 package com.cogda.security
 
-import au.com.bytecode.opencsv.CSVParser
 import au.com.bytecode.opencsv.CSVReader
 import com.cogda.command.UserImportCommand
-import com.cogda.domain.UserProfile
 import com.cogda.domain.UserProfileService
+import com.cogda.domain.admin.CustomerNotificationService
+import com.cogda.domain.security.PendingUser
 import com.cogda.domain.security.Role
 import com.cogda.domain.security.User
 import com.cogda.domain.security.UserRole
-import com.cogda.errors.RoleNotFoundException
-import com.cogda.multitenant.CustomerAccount
+import com.cogda.multitenant.CustomerAccountService
 import com.cogda.util.ErrorMessageResolverService
+import grails.plugins.springsecurity.SpringSecurityService
+import org.apache.commons.logging.LogFactory
+import org.grails.plugin.platform.events.EventMessage
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.validation.FieldError
 
@@ -19,77 +21,73 @@ import org.springframework.validation.FieldError
  * A service class encapsulates the core business logic of a Grails application
  */
 class UserImportService {
+    private static final log = LogFactory.getLog(this)
 
-    UserProfileService userProfileService
+    SpringSecurityService springSecurityService
     UserService userService
-    ErrorMessageResolverService errorMessageResolverService
 
     /**
-     * Loads users based on the passed in userDataFile
-     * which must be a csv file with the following characteristics.
-     *
-     * Username, First Name, Last Name, Email Address, Security Roles (comma separated)
-     *
-     * @param userDataFile
+     * Validates the User's Import Data
+     * @param inputStream
+     * @return List
      */
-    public List loadUserData(InputStream inputStream) {
+    public List validateUserImportData(InputStream inputStream){
         List list = parseInputStream(inputStream)
         List userImports = []
         list.each { UserImportCommand command ->
             command.validate()
-
-            if(!command.hasErrors()){
-
-                User user = createDefaultUser(command.username)
-                user.validate()
-                if(user.hasErrors()){
-                    if (user.errors.hasErrors())
-                    {
-                        user.errors.allErrors.each { FieldError error ->
-                            final String field = error.field
-                            final String code = "userImportCommand.$field.$error.code"
-                            command.errors.rejectValue(field, code)
-                        }
-                    }
-                }
-                else{
-
-                    try {
-                        user.save(insert:true)
-                    }catch(DataIntegrityViolationException dive){
-                        command.errors.rejectValue("username", "registration.username.taken")
-                        user = null
-                    }
-
-                    if(!command.hasErrors()){
-
-                        log.debug ("Successfully inserted new user -> ${user.username}")
-
-                        List userRoles = []
-                        command.parsedSecurityRoles.each { String securityRole ->
-                            if(Role.ADMIN_ASSIGNABLE_AUTHORITIES.contains(securityRole)){
-                                userRoles.add(Role.findByAuthority(securityRole))
-                            }else{
-                                log.warn("User attempted to load a role that was not found in the Role.ADMIN_ASSIGNABLE_AUTHORITIES list -> ${securityRole}")
-                            }
-                        }
-
-                        if(userRoles){
-                            userRoles.each { Role role ->
-                                UserRole.create(user, role)
-                                log.debug ("Successfully added role -> ${role.authority} to User -> ${user.username}")
-                            }
-                        }
-
-                        userProfileService.createUserProfile(user, command.firstName, command.lastName, command.emailAddress)
-                    }
-                }
-
-
-            }
             userImports.add(command)
         }
         return userImports
+    }
+
+
+    /**
+     * Takes a passed in list of Command objects and stores an
+     * PendingUser in the database.  Returns a list of
+     * PendingUser objects.
+     * @param userImportCommands
+     * @return List
+     */
+    public List createImportedUsers(String username, List userImportCommands){
+        userImportCommands.each { UserImportCommand command ->
+
+            if(!command.hasErrors()){
+                PendingUser pendingUser = new PendingUser()
+                pendingUser.firstName = command.firstName
+                pendingUser.lastName = command.lastName
+                pendingUser.emailAddress = command.emailAddress
+                pendingUser.securityRoles = command.securityRoles
+
+                pendingUser.loadedByUsername = username
+                pendingUser.loadedDate = new Date()
+
+                pendingUser.onboardedSuccessfully = false
+                pendingUser.onboardedDate = null
+
+                pendingUser.save()
+                if(pendingUser.hasErrors()){
+                    pendingUser.errors.allErrors.each { FieldError error ->
+                        final String field = error.field
+                        final String code = "userImportCommand.$field.$error.code"
+                        command.errors.rejectValue(field, code)
+                    }
+                }
+            }
+        }
+        return userImportCommands
+    }
+
+    /**
+     * Processes the import of users from a CSV file.
+     * @param inputStream
+     * @return List of UserImportCommand objects.
+     */
+    public List processUserImport(InputStream inputStream){
+        List userImportCommands = validateUserImportData(inputStream)
+        String loadedByUsername = springSecurityService.currentUser.username
+        createImportedUsers(loadedByUsername, userImportCommands)
+        return userImportCommands
     }
 
     /**
@@ -105,7 +103,7 @@ class UserImportService {
         String [] nextLine;
         Integer count = 0;
         while((nextLine = reader.readNext()) != null){
-            if(nextLine.size() < 5){
+            if(nextLine.size() < 4){
 
                 log.warn ("User attempted to import a line that did not have the proper column length ${nextLine}")
 
@@ -117,11 +115,10 @@ class UserImportService {
                 else {
                     // nextLine[] is an array of values from the line
                     UserImportCommand command = new UserImportCommand()
-                    command.username = nextLine[0]?.trim()
-                    command.firstName = nextLine[1]?.trim()
-                    command.lastName = nextLine[2]?.trim()
-                    command.emailAddress = nextLine[3]?.trim()
-                    command.securityRoles = nextLine[4]?.trim()
+                    command.firstName = nextLine[0]?.trim()
+                    command.lastName = nextLine[1]?.trim()
+                    command.emailAddress = nextLine[2]?.trim()
+                    command.securityRoles = nextLine[3]?.trim()
                     returnList.add(command)
                 }
             }
@@ -149,4 +146,6 @@ class UserImportService {
         user.passwordExpired = Boolean.TRUE
         return user
     }
+
+
 }

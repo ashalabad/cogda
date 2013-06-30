@@ -1,11 +1,14 @@
 package com.cogda.security
 
-import com.cogda.domain.UserProfile
+import com.cogda.domain.UserProfileService
 import com.cogda.domain.onboarding.Registration
+import com.cogda.domain.security.PendingUser
 import com.cogda.domain.security.Role
 import com.cogda.domain.security.User
 import com.cogda.domain.security.UserRole
 import com.cogda.multitenant.CustomerAccount
+import com.cogda.multitenant.CustomerAccountService
+import org.apache.commons.lang.StringUtils
 
 /**
  * UserService
@@ -14,6 +17,70 @@ import com.cogda.multitenant.CustomerAccount
 class UserService {
 
     static transactional = true
+
+    UserProfileService userProfileService
+    PendingUserService pendingUserService
+    /**
+     * Creates a User based on the passed in UserInviteCommand object and
+     * the corresponding PendingUser domain class which it reads in from the
+     * database to determine which Roles to grant the newly created User.
+     *
+     * @param userInviteCommand
+     */
+    public void createFromUserInvite(UserInviteCommand userInviteCommand){
+        User.withTransaction {
+            PendingUser pendingUser = PendingUser.findByToken(userInviteCommand.t)
+            if(pendingUser){
+                // Step 1: Create the User
+                User user = createUser(userInviteCommand.username, userInviteCommand.password)
+                // Step 2: Add the securityRoles from the PendingUser domain class to the newly created User
+                addImportedUserRoles(user, pendingUser)
+                // Step 3: Create the UserProfile for the newly created User
+                userProfileService.createUserProfile(user, pendingUser.firstName, pendingUser.lastName, pendingUser.emailAddress)
+                // Step 4: Update the Status of the PendingUser from PENDING to COMPLETE
+                pendingUserService.onboardPendingUser(pendingUser, user.username)
+            }
+        }
+    }
+
+    /**
+     *
+     * @param user
+     * @param importedUser
+     */
+    public void addImportedUserRoles(User user, PendingUser importedUser){
+        if(importedUser.securityRoles.contains(",")){
+            List securityRoles = importedUser.securityRoles.split(",") as List
+            securityRoles = securityRoles.unique()
+            securityRoles = securityRoles.collect {
+                StringUtils.strip(it)
+            }
+            securityRoles.each { String authority ->
+                Role role = Role.findByAuthority(authority)
+                if(role){
+                    UserRole.create(user, role)
+                }else{
+                    log.warn ("Ignoring the provided authority since it was not found in Role table " + authority)
+                }
+            }
+            if(!securityRoles.contains(CustomerAccountService.ROLE_USER)){
+                Role roleUser = Role.findByAuthority(CustomerAccountService.ROLE_USER)
+                UserRole.create(user, roleUser)
+            }
+        }else{
+            String authority = StringUtils.strip(importedUser.securityRoles)
+            if(authority){
+                Role role = Role.findByAuthority(authority)
+                if(role){
+                    UserRole.create(user, role)
+                }
+            }
+            if(!authority.equals(CustomerAccountService.ROLE_USER)){
+                Role roleUser = Role.findByAuthority(CustomerAccountService.ROLE_USER)
+                UserRole.create(user, roleUser)
+            }
+        }
+    }
 
     /**
      * Creates a User domain class object in the database.
@@ -84,7 +151,7 @@ class UserService {
      * @param encodePassword
      * @return
      */
-    def createUser(String username, String password, boolean encodePassword = false){
+    def createUser(String username, String password, boolean encodePassword = true){
         // Create the user
         User user = new User()
         user.username = username
@@ -93,7 +160,7 @@ class UserService {
         user.accountExpired = false
         user.accountLocked = false
         user.passwordExpired = false
-        user.encodePassword = false  // do not allow the password to be re-encoded
+        user.encodePassword = encodePassword  // do not allow the password to be re-encoded
         user.save() ?: log.error ("Error saving User errors -> ${user.errors}")
         return user
     }
