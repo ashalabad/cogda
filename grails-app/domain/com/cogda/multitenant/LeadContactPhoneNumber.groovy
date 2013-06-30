@@ -18,7 +18,6 @@ class LeadContactPhoneNumber {
     static belongsTo	= [leadContact:LeadContact]
 
     static constraints = {
-        primaryPhoneNumber(nullable:true)
         description(nullable:true)
         phoneNumber(nullable: false, blank:false)
     }

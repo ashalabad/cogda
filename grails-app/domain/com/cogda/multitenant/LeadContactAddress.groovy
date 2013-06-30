@@ -25,7 +25,6 @@ class LeadContactAddress {
     static embedded = ["address"]
 
     static constraints = {
-        primaryAddress(nullable:true)
         address(nullable: true) // since lead contacts won't necessarily have addresses
     }
 }

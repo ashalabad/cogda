@@ -23,6 +23,5 @@ class LeadContactEmailAddress {
 
     static constraints = {
         emailAddress(nullable:false, email:true)
-        primaryEmailAddress(nullable:true)
     }
 }
