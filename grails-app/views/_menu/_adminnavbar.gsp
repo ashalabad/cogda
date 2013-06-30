@@ -1,11 +1,6 @@
 <%--This is the Application Menu that is used by the Administrators to navigate throughout the admin system --%>
-<div id="applicationNavBar" class="navbar ">
-    <div class="navbar-inner" style="">
-        <div class="container">
 
-            <div class="nav-collapse">
-
-                <div class="pull-left">
+                <div class="pull-right">
 
                     <ul class="nav">
                         <%--User Entries--%>
@@ -43,7 +38,3 @@
                         </li>
                     </ul>
                 </div>
-            </div>
-        </div>
-    </div>
-</div>

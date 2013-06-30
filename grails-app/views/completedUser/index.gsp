@@ -53,6 +53,6 @@
 
 
 </section>
-<g:render template="/_common/modals/pendingUser/pendingUserModal"/>
+<g:render template="/pendingUser/pendingUserModal"/>
 </body>
 </html>

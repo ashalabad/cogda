@@ -103,8 +103,14 @@
                 </div>
 
                 <div class="pull-right">
-                    <%--Right-side entries--%>
-
+                    <%--Right-side Admin entries--%>
+                    <g:if test="${!layout_noadminnavbar}">
+                        <mt:hasTenant>
+                            <sec:ifAllGranted roles = "ROLE_ADMINISTRATOR">
+                                <g:render template="/_menu/adminnavbar"/>
+                            </sec:ifAllGranted>
+                        </mt:hasTenant>
+                    </g:if>
                 </div>
 
             </div>

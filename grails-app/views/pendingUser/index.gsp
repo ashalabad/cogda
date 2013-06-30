@@ -9,7 +9,6 @@
     <link rel="stylesheet" type="text/css" href="/css/importedUser.css" />
     <g:set var="layout_nosecondarymenu" value="true" scope="request"/>
     <g:set var="layout_nomainmenu" value="true" scope="request"/>
-    <g:set var="layout_noapplicationnavbar"	value="${true}" scope="request"/>
     <link rel="stylesheet" type="text/css" href="${g.resource(dir: "css", file:"pendingUser.css")}"/>
     <g:javascript src="pendingUser/index.js"/>
     <r:require module="dataTables"/>
