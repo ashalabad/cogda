@@ -18,12 +18,6 @@
     <!-- Empty Header -->
 </content>
 
-<div id="MenuRow" class="row">
-    <div class="span12">
-        &nbsp;
-    </div>
-</div>
-
 <section id="list-pendingUser" class="first">
 
     <h2><g:message code="completedUserAccounts.title" default="Completed User Accounts"/></h2>

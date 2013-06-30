@@ -5,7 +5,6 @@
     <g:set var="layout_nomainmenu"		    value="${true}" scope="request"/>
     <g:set var="layout_nosecondarymenu"	    value="${true}" scope="request"/>
     <g:set var="layout_noflashmessage"	    value="${true}" scope="request"/>
-    <g:set var="layout_noapplicationnavbar"	value="${true}" scope="request"/>
     <r:require module="jqueryFileUpload"></r:require>
     <script src="${resource(dir:"js/userImport", file:'index.js')}" type="text/javascript" ></script>
 </head>
