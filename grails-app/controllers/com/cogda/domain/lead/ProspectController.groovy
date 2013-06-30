@@ -60,7 +60,7 @@ class ProspectController extends BaseController {
             map.createdOn = prospect.dateCreated
             map.clientName = prospect.clientName
             map.contactName = prospect.primaryLeadContactName
-            map.phoneNumber = prospect.primaryLeadContactPhoneNumber
+            map.phoneNumber = prospect.primaryLeadContactPhoneNumber.phoneNumber
             map.email = prospect.primaryEmailAddress
             map.details = remoteLink([controller: 'prospect', action: 'show', id: prospect.id, onSuccess: 'modalDialogHandler(data)', method: 'GET'], 'Details')
             map.edit = remoteLink([controller: 'prospect', action: 'edit', id: prospect.id, onSuccess: 'modalDialogHandler(data)', method: 'GET'], 'Edit')
