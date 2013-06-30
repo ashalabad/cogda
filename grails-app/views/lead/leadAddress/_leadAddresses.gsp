@@ -1,6 +1,6 @@
 <%@ page import="com.cogda.multitenant.Lead" %>
 
-<div id="childList">
+<div id="childLeadAddresses">
     <g:each var="leadAddressInstance" in="${leadInstance?.leadAddresses}" status="i">
         <g:render template='/address/form'
                   model="['addressInstance': leadAddressInstance.address, 'i': i, 'hidden': false, prefix: 'leadAddresses[' + i + '].address.']"/>

@@ -1,6 +1,6 @@
 <%@ page import="com.cogda.multitenant.Lead;com.cogda.multitenant.LeadContact" %>
 
-<div id="childList">
+<div id="childLeadContactEmailAddresses">
     <g:each var="leadContactEmailAddress" in="${leadContactInstance?.leadContactEmailAddresses}" status="i">
 
         <g:render template='/lead/leadContactEmailAddress/form'

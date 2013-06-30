@@ -8,6 +8,7 @@ import com.cogda.domain.Contact
 import com.cogda.domain.ContactAddress
 import com.cogda.domain.ContactEmailAddress
 import com.cogda.domain.ContactPhoneNumber
+import com.cogda.domain.UserProfile
 import com.cogda.domain.admin.AccountType
 import com.cogda.domain.admin.BusinessType
 import com.cogda.domain.admin.CompanyType
@@ -136,7 +137,7 @@ class BootStrap {
                 if(raisRegistration){
                     customerAccountService.onboardCustomerAccount(raisRegistration)
                     createRennaissanceDummyData(raisRegistration)
-                    createRennaissanceAccountDummyData(raisRegistration)
+//                    createRennaissanceAccountDummyData(raisRegistration)
                 }
             }
 
@@ -207,7 +208,8 @@ class BootStrap {
                                     middleName: nextLine[4]?.trim(),
                                     lastName: nextLine[5]?.trim(),
                                     account: testAccount,
-                                    primaryContact: true
+                                    primaryContact: true,
+                                    userProfile: UserProfile.first()
                             )
                             if (testAccountContact.hasErrors() || !testAccountContact.validate() ) {
                                 log.error("Could not import testAccountContact ${testAccountContact.firstName} ${testAccountContact.lastName}  ${testAccountContact.errors}")

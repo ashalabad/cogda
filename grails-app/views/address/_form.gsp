@@ -51,7 +51,7 @@
 </div>
 
 <div class="control-group fieldcontain ${hasErrors(bean: addressInstance, field: 'city', 'error')} ">
-    <label for=${prefix}"city" class="control-label"><g:message code="address.city.label" default="City"/></label>
+    <label for="${prefix}city" class="control-label"><g:message code="address.city.label" default="City"/></label>
 
     <div class="controls">
         <g:textField name="${prefix}city" value="${addressInstance?.city}"/>

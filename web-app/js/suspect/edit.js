@@ -116,14 +116,20 @@ function suspectHandler(data, textStatus, xhr) {
 }
 
 var childCount;
-function setChildCount(count) {
+var prefix;
+
+function init(p, count) {
     childCount = isNaN(count) ? 0 : count;
+    prefix = p;
 }
 
 function addPhone() {
     var clone = $("#leadContactPhoneNumber_clone").clone()
-    var htmlId = 'leadContactPhoneNumbers[' + childCount + '].';
-    var phoneInput = clone.find("input[id$=number]");
+    var htmlId = prefix + 'leadContactPhoneNumbers[' + childCount + ']';
+    var phoneDescriptionInput = clone.find("input[id$=description]");
+    var phoneInput = clone.find("input[id$=phoneNumber]");
+    var phonePrimaryInput = clone.find("input[id$=primaryPhoneNumber]");
+    var phonePrimaryHiddenInput = clone.find("input[type=hidden]");
 
     clone.find("input[id$=id]")
         .attr('id', htmlId + 'id')
@@ -135,16 +141,22 @@ function addPhone() {
         .attr('id', htmlId + 'new')
         .attr('name', htmlId + 'new')
         .attr('value', 'true');
-    phoneInput.attr('id', htmlId + 'number')
-        .attr('name', htmlId + 'number');
+    updateAttributes(phoneInput, htmlId + '.phoneNumber');
+    updateAttributes(phoneDescriptionInput, htmlId + '.description');
+    updateAttributes(phonePrimaryInput, htmlId + '.primaryPhoneNumber');
+    phonePrimaryHiddenInput.attr('name', htmlId + '.primaryPhoneNumber');
     clone.find("select[id$=type]")
         .attr('id', htmlId + 'type')
         .attr('name', htmlId + 'type');
 
     clone.attr('id', 'phone' + childCount);
-    $("#childList").append(clone);
+    $("#childLeadContactPhoneNumbers").append(clone);
     clone.show();
     phoneInput.focus();
     childCount++;
 }
 
+function updateAttributes(attribute, newValue) {
+    attribute.attr('id', newValue)
+        .attr('name', newValue);
+}
