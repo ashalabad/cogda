@@ -60,7 +60,7 @@ class SuspectController extends BaseController {
             map.createdOn = suspect.dateCreated
             map.clientName = suspect.clientName
             map.contactName = suspect.primaryLeadContactName
-            map.phoneNumber = suspect.primaryLeadContactPhoneNumber
+            map.phoneNumber = suspect.primaryLeadContactPhoneNumber?.phoneNumber
             map.email = suspect.primaryEmailAddress
             map.details = remoteLink([controller: 'suspect', action: 'show', id: suspect.id, onSuccess: 'modalDialogHandler(data)', method: 'GET'], 'Details')
             map.edit = remoteLink([controller: 'suspect', action: 'edit', id: suspect.id, onSuccess: 'modalDialogHandler(data)', method: 'GET'], 'Edit')
@@ -101,7 +101,7 @@ class SuspectController extends BaseController {
             redirect(action: "list")
             return
         }
-        render(template: '/_common/suspect/showSuspect', model: [suspectInstance: suspectInstance])
+        render(template: '/_common/modals/suspect/showSuspect', model: [suspectInstance: suspectInstance])
     }
 
     def get() {
@@ -120,7 +120,7 @@ class SuspectController extends BaseController {
             redirect(action: "list")
             return
         }
-        render(template: '/_common/suspect/editSuspect', model: [suspectInstance: suspectInstance])
+        render(template: '/_common/modals/suspect/editSuspect', model: [suspectInstance: suspectInstance])
     }
 
     def update() {

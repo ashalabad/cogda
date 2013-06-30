@@ -1,27 +1,5 @@
 <%@ page import="com.cogda.multitenant.Lead" %>
-<!doctype html>
-<html>
-
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta name="layout" content="kickstart"/>
-    <g:set var="entityName" value="${message(code: 'suspect.label', default: 'Suspect')}"/>
-    <g:set var="layout_nosecondarymenu" value="true" scope="request"/>
-    <g:set var="layout_nomainmenu" value="true" scope="request"/>
-    <title><g:message code="default.create.label" args="[entityName]"/></title>
-    <g:javascript src="suspect/edit.js"/>
-</head>
-
-<body>
-<content tag="header">
-    <!-- Empty Header -->
-</content>
-
-<div id="MenuRow" class="row">
-    <div class="span12">
-        &nbsp;
-    </div>
-</div>
+<g:javascript src="suspect/edit.js"/>
 <section id="create-lead" class="first">
 
     <g:hasErrors bean="${suspectInstance}">
@@ -46,9 +24,5 @@
 
 <div id='newPhoneList'>
     <g:render template='/lead/leadContactPhoneNumber/form'
-              model="[leadContactPhoneNumberInstance: null, i: '_clone', hidden: true, prefix: 'leadContacts[_clone].leadContactPhoneNumbers[_clone].']"/>
+              model="['leadContactPhoneNumberInstance': null, 'i': '_clone', 'hidden': true, 'prefix': 'leadContacts[_clone].leadContactPhoneNumbers[_clone].']"/>
 </div>
-
-</body>
-
-</html>

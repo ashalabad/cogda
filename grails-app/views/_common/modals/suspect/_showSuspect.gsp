@@ -54,14 +54,14 @@
         </tr>
 
         <tr class="prop">
-            <td valign="top" class="name"><g:message code="lead.address1.label" default="Address1" /></td>
+            <td valign="top" class="name"><g:message code="lead.addressOne.label" default="AddressOne" /></td>
 
             <td valign="top" class="value">${fieldValue(bean: suspectInstance.primaryAddress, field: "addressOne")}</td>
 
         </tr>
 
         <tr class="prop">
-            <td valign="top" class="name"><g:message code="lead.address2.label" default="Address2" /></td>
+            <td valign="top" class="name"><g:message code="lead.addressTwo.label" default="AddressTwo" /></td>
 
             <td valign="top" class="value">${fieldValue(bean: suspectInstance.primaryAddress, field: "addressTwo")}</td>
 
@@ -124,10 +124,15 @@
         </tr>
 
         <tr class="prop">
+            <td valign="top" class="name"><g:message code="lead.phoneNumberDescription.label" default="Phone Number Description" /></td>
+
+            <td valign="top" class="value">${fieldValue(bean: suspectInstance.primaryLeadContactPhoneNumber, field: "description")}</td>
+        </tr>
+
+        <tr class="prop">
             <td valign="top" class="name"><g:message code="lead.phoneNumber.label" default="Phone Number" /></td>
 
-            <td valign="top" class="value">${fieldValue(bean: suspectInstance, field: "primaryLeadContactPhoneNumber")}</td>
-
+            <td valign="top" class="value">${fieldValue(bean: suspectInstance.primaryLeadContactPhoneNumber, field: "phoneNumber")}</td>
         </tr>
 
         <tr class="prop">
