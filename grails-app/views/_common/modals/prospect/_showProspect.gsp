@@ -83,7 +83,7 @@
 
 
                     <tr class="prop">
-                        <td valign="top" class="name"><g:message code="lead.firstName.label" default="First Name"/></td>
+                        <td valign="top" class="name"><g:message code="lead.primaryContactFirstName.label" default="Primary Contact First Name"/></td>
 
                         <td valign="top"
                             class="value">${fieldValue(bean: prospectInstance?.primaryLeadContact, field: "firstName")}</td>
@@ -91,7 +91,7 @@
                     </tr>
 
                     <tr class="prop">
-                        <td valign="top" class="name"><g:message code="lead.lastName.label" default="Last Name"/></td>
+                        <td valign="top" class="name"><g:message code="lead.primaryContactLastName.label" default="Primary Contact Last Name"/></td>
 
                         <td valign="top"
                             class="value">${fieldValue(bean: prospectInstance?.primaryLeadContact, field: "lastName")}</td>
@@ -99,25 +99,17 @@
                     </tr>
 
                     <tr class="prop">
-                        <td valign="top" class="name"><g:message code="lead.emailAddress.label"
-                                                                 default="Email Address"/></td>
+                        <td valign="top" class="name"><g:message code="lead.primaryContactEmailAddress.label"
+                                                                 default="Primary Contact Email Address"/></td>
 
                         <td valign="top"
-                            class="value">${fieldValue(bean: prospectInstance, field: "primaryLeadEmailAddress")}</td>
+                            class="value">${fieldValue(bean: prospectInstance?.primaryLeadEmailAddress, field: "emailAddress")}</td>
 
                     </tr>
 
                     <tr class="prop">
-                        <td valign="top" class="name"><g:message code="lead.phoneNumberDescription.label"
-                                                                 default="Phone Number Description"/></td>
-
-                        <td valign="top"
-                            class="value">${fieldValue(bean: prospectInstance?.primaryLeadContactPhoneNumber, field: "description")}</td>
-                    </tr>
-
-                    <tr class="prop">
-                        <td valign="top" class="name"><g:message code="lead.phoneNumber.label"
-                                                                 default="Phone Number"/></td>
+                        <td valign="top" class="name"><g:message code="lead.primaryContactPhoneNumber.label"
+                                                                 default="Primary Contact Phone Number"/></td>
 
                         <td valign="top"
                             class="value">${fieldValue(bean: prospectInstance?.primaryLeadContactPhoneNumber, field: "phoneNumber")}</td>
