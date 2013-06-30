@@ -51,7 +51,7 @@
 
                     <div class="controls">
                         <label class="checkbox">
-                            <g:if test = "${pendingUserInstance?.securityRoles.contains(authority)}">
+                            <g:if test = "${pendingUserInstance?.securityRoles?.contains(authority)}">
                                 <input type="checkbox" name="securityRoles" id = "securityRoles_${authority}" value="${authority}" checked = "checked"> ${authority}
                             </g:if>
                             <g:else>
@@ -63,12 +63,30 @@
             </div>
 
             <div class="form-actions">
-                <button type="button" id="pendingUserUpdateButton" class="btn btn-primary"  >
-                    ${message(code: 'default.button.update.label')}
+
+            <g:if test="${pendingUserInstance?.id}">
+
+                    <button type="button" id="pendingUserUpdateButton" class="btn btn-primary"  >
+                        ${message(code: 'default.button.update.label')}
+                    </button>
+                    <button type="button" id="sendInviteButton" class="btn btn-primary"  >
+                        <i class="icon-envelope"></i>
+                        ${message(code: 'pendingUser.sendInvite.label')}
+                    </button>
+
+                    <button type="button"  id="pendingUserDeleteButton" class="btn btn-danger" >
+                        ${message(code: 'default.button.delete.label')}
+                    </button>
+
+            </g:if>
+            <g:else>
+                <button type="button" id="pendingUserAddButton" class="btn btn-primary"  >
+                    ${message(code: 'default.button.create.label')}
                 </button>
-                <button type="button"  id="pendingUserDeleteButton" class="btn btn-danger" >
-                    ${message(code: 'default.button.delete.label')}
-                </button>
+
+            </g:else>
+
+
             </div>
     </fieldset>
 </form>

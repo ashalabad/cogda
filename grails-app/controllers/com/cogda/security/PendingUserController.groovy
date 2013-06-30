@@ -4,15 +4,15 @@ import com.cogda.domain.security.PendingUser
 import com.cogda.domain.security.Role
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.google.gson.JsonArray
 import com.google.gson.JsonElement
-import com.google.gson.JsonObject
 import grails.plugin.gson.converters.GSON
 import grails.plugins.springsecurity.Secured
+import grails.plugins.springsecurity.SpringSecurityService
 import org.springframework.dao.DataIntegrityViolationException
 
 import static javax.servlet.http.HttpServletResponse.*
 import static grails.plugin.gson.http.HttpConstants.*
+import static org.codehaus.groovy.grails.web.servlet.HttpHeaders.*
 
 /**
  * PendingUserController
@@ -23,7 +23,7 @@ class PendingUserController {
 
     GsonBuilder gsonBuilder
     PendingUserService pendingUserService
-
+    SpringSecurityService springSecurityService
     def index() {
 
     }
@@ -64,6 +64,22 @@ class PendingUserController {
         return
     }
 
+    def save(){
+
+        if(!requestIsJson()){
+            respondNotAcceptable()
+            return
+        }
+
+        PendingUser pendingUserInstance = new PendingUser()
+
+        JsonElement jsonElement = GSON.parse(request)
+        applyFormData(pendingUserInstance, jsonElement)
+
+        createInstance(pendingUserInstance)
+    }
+
+
     def update(){
         if(!requestIsJson()){
             respondNotAcceptable()
@@ -77,28 +93,9 @@ class PendingUserController {
         }
 
         JsonElement jsonElement = GSON.parse(request)
-        pendingUserInstance.firstName = jsonElement.firstName.getAsString()
-        pendingUserInstance.lastName = jsonElement.lastName.getAsString()
-        pendingUserInstance.emailAddress = jsonElement.emailAddress.getAsString()
-        pendingUserInstance.securityRoles = ""
-        if(jsonElement.securityRoles){
-            if(jsonElement.securityRoles.isJsonPrimitive()){
-                pendingUserInstance.securityRoles = jsonElement.securityRoles.getAsString()
-            }else{
-                jsonElement.securityRoles.eachWithIndex { it, i ->
-                    if(i != 0){
-                        pendingUserInstance.securityRoles += ", "
-                    }
-                    pendingUserInstance.securityRoles += it.getAsString()
-                }
-            }
-        }
+        applyFormData(pendingUserInstance, jsonElement)
 
-        if (pendingUserInstance.save(flush: true)) {
-            respondUpdated pendingUserInstance
-        } else {
-            respondUnprocessableEntity pendingUserInstance
-        }
+        updateInstance(pendingUserInstance)
     }
 
     def delete(){
@@ -136,7 +133,7 @@ class PendingUserController {
                 if(!PendingUser.exists(id)){
                     // throw an error that the client must refresh their list
                     // some of the ImportedUsers no longer exist
-                    respondUnprocessableEntity(id)
+                    respondUnprocessableNotifications(id)
                     return
                 }
             }
@@ -176,13 +173,58 @@ class PendingUserController {
         def pendingUserInstance = PendingUser.get(params.id)
         if (pendingUserInstance) {
             response.status = SC_OK
-            render(template:"/_common/pendingUser/modalForm", model:[pendingUserInstance:pendingUserInstance, authorities: Role.ADMIN_ASSIGNABLE_AUTHORITIES])
+            render(template:"/pendingUser/modalForm", model:[pendingUserInstance:pendingUserInstance, authorities: Role.ADMIN_ASSIGNABLE_AUTHORITIES])
             return
         } else {
             respondNotFound params.id
         }
     }
-    
+
+    def addForm(){
+        PendingUser pendingUserInstance = new PendingUser()
+        response.status = SC_OK
+        render(template:"/pendingUser/modalForm", model:[pendingUserInstance:pendingUserInstance, authorities: Role.ADMIN_ASSIGNABLE_AUTHORITIES])
+        return
+    }
+
+    private void updateInstance(instance){
+        if (instance.save(flush: true)) {
+            respondUpdated instance
+        } else {
+            respondUnprocessableEntity instance
+        }
+    }
+
+    private void createInstance(instance){
+        String username = springSecurityService.currentUser.username
+        pendingUserService.createPendingUser(instance, username)
+        if (!instance.hasErrors()) {
+            respondCreated instance
+        } else {
+            respondUnprocessableEntity instance
+        }
+    }
+
+    private void applyFormData(PendingUser pendingUserInstance, JsonElement jsonElement){
+        pendingUserInstance.firstName = jsonElement.firstName.getAsString()
+        pendingUserInstance.lastName = jsonElement.lastName.getAsString()
+        pendingUserInstance.emailAddress = jsonElement.emailAddress.getAsString()
+        pendingUserInstance.securityRoles = ""
+        if(jsonElement.securityRoles){
+            if(jsonElement.securityRoles.isJsonPrimitive()){
+                pendingUserInstance.securityRoles = jsonElement.securityRoles.getAsString()
+            }else{
+                jsonElement.securityRoles.eachWithIndex { it, i ->
+                    if(i != 0){
+                        pendingUserInstance.securityRoles += ", "
+                    }
+                    pendingUserInstance.securityRoles += it.getAsString()
+                }
+            }
+        }
+
+    }
+
     private List collectUserIds(ids){
         List pendingUserIds = []
         if(ids.isJsonPrimitive()){
@@ -193,6 +235,14 @@ class PendingUserController {
             }
         }
         return pendingUserIds
+    }
+
+    private void respondCreated(instance) {
+        response.status = SC_CREATED // 201
+        response.addHeader LOCATION, createLink(action: 'get', id: instance.id)
+        Gson gson = gsonBuilder.create()
+        def gsonRetString = gson.toJsonTree(instance);
+        render gsonRetString
     }
 
     private void respondUpdated(PendingUser pendingUserInstance) {
@@ -234,9 +284,18 @@ class PendingUserController {
         response.outputStream.close()
     }
 
-    private void respondUnprocessableEntity(Long id) {
+    private void respondUnprocessableNotifications(id){
         def responseBody = [:]
         responseBody.errors = [message('pendingUser.sendInvitation.notFound.error')]
+        response.status = SC_UNPROCESSABLE_ENTITY // 422
+        render responseBody as GSON
+    }
+
+    private void respondUnprocessableEntity(instance) {
+        def responseBody = [:]
+        responseBody.errors = instance.errors.allErrors.collect {
+            message(error: it)
+        }
         response.status = SC_UNPROCESSABLE_ENTITY // 422
         render responseBody as GSON
     }

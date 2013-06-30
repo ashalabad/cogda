@@ -21,12 +21,6 @@
     <!-- Empty Header -->
 </content>
 
-<div id="MenuRow" class="row">
-    <div class="span12">
-        &nbsp;
-    </div>
-</div>
-
 <section id="list-pendingUser" class="first">
 
     <g:if test = "${flash.error}">
@@ -48,7 +42,12 @@
     <div class="alert alert-success" style="display: none;" id="messages"></div>
 
     <div id = "actionButtons" class = "row">
-        <div class = "offset8 span4 text-right">
+        <div class = "offset6 span6 text-right">
+            <button class = "btn btn-primary" id="addPendingUser">
+                <i class="icon-plus-sign"></i>
+                <g:message code="pendingUser.addPendingUser.label"/>
+            </button>
+
             <button class = "btn btn-primary" id="sendNotificationsButton">
                 <i class="icon-envelope"></i>
                 <g:message code="pendingUser.sendInvitations.label"/>
@@ -89,6 +88,6 @@
     </form>
 
 </section>
-<g:render template="/_common/pendingUser/pendingUserModal"/>
+<g:render template="/pendingUser/pendingUserModal"/>
 </body>
 </html>

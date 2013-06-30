@@ -1,5 +1,15 @@
 <div id="Content" class="container">
 
+    <g:if test="${!layout_noadminnavbar}">
+
+        <mt:hasTenant>
+            <sec:ifAllGranted roles = "ROLE_ADMINISTRATOR">
+                <g:render template="/_menu/adminnavbar"/>
+                <g:set var = "layout_noapplicationnavbar" value="${true}"/>
+            </sec:ifAllGranted>
+        </mt:hasTenant>
+    </g:if>
+
     <g:if test="${!layout_noapplicationnavbar}">
         <mt:hasTenant>
             <sec:ifLoggedIn>
@@ -7,15 +17,6 @@
             </sec:ifLoggedIn>
         </mt:hasTenant>
     </g:if>
-
-    <g:if test="${!layout_noadminnavbar}">
-        <mt:hasTenant>
-            <sec:ifAllGranted roles = "ROLE_ADMINISTRATOR">
-                <g:render template="/_menu/adminnavbar"/>
-            </sec:ifAllGranted>
-        </mt:hasTenant>
-    </g:if>
-
 
 <!-- Main menu in one row (e.g., controller entry points -->
     <g:if test="${!layout_nomainmenu}">

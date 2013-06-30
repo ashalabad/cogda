@@ -18,6 +18,33 @@ class PendingUserService {
     LinkGenerator grailsLinkGenerator
 
     /**
+     * Creates a Pending user that has been loadedByUsername param username.
+     * @param pendingUser
+     * @param username
+     */
+    public void createPendingUser(PendingUser pendingUser, String username){
+        pendingUser.loadedByUsername = username
+        createPendingUser(pendingUser)
+    }
+
+    /**
+     * Create a pending user by inserting the pendingUser into the database
+     * @param pendingUser
+     */
+    public void createPendingUser(PendingUser pendingUser){
+        pendingUser.loadedDate = new Date()
+
+        pendingUser.onboardedSuccessfully = false
+        pendingUser.onboardedDate = null
+        try {
+            pendingUser.save(insert:true)
+        }catch(ValidationException ve){
+            log.error ("Errors inserting: " + pendingUser.errors.allErrors)
+        }
+
+    }
+
+    /**
      * Onboards the PendingUser by
      * @param importedUser
      */

@@ -98,28 +98,34 @@ $(document).ready(function() {
         }
     });
 
+    function sendInvitations(ids){
+
+        $.ajax(
+            {
+                type:'POST',
+                dataType: "json",
+                data:JSON.stringify(ids),
+                url:'/pendingUser/sendUserInvitations',
+                contentType: "application/json; charset=utf-8",
+                success: successHandler,
+                error:function(XMLHttpRequest,textStatus,errorThrown){
+                    $.pnotify({
+                        title: 'Error',
+                        text: textStatus + " " + errorThrown,
+                        type: 'error',
+                        opacity: 0.8,
+                        delay: 10000
+                    });
+                }
+            }
+        );
+    }
+
+
     $('#sendNotificationsButton').click(function(){
         var checkedValues = getCheckedRowsValues();
         if(checkedValues.length > 0){
-            $.ajax(
-                {
-                    type:'POST',
-                    dataType: "json",
-                    data:JSON.stringify(checkedValues),
-                    url:'/pendingUser/sendUserInvitations',
-                    contentType: "application/json; charset=utf-8",
-                    success: successHandler,
-                    error:function(XMLHttpRequest,textStatus,errorThrown){
-                        $.pnotify({
-                            title: 'Error',
-                            text: textStatus + " " + errorThrown,
-                            type: 'error',
-                            opacity: 0.8,
-                            delay: 10000
-                        });
-                    }
-                }
-            );
+            sendInvitations(checkedValues);
         }else{
             $.pnotify({
                 title: 'Nothing Selected',
@@ -164,37 +170,25 @@ $(document).ready(function() {
         }
     });
 
+    $('#addPendingUser').click(function(e){
+        $('#pendingUserModalBody').load("/pendingUser/addForm", function(data) {
+            applyValidation();
+            $('#pendingUserModal').modal('show');
+        });
+    });
+
+    $('#pendingUserModal').on('click', '#pendingUserAddButton', function(e){
+        e.preventDefault();
+        if($('#pendingUserForm').valid()){
+            addPendingUser();
+        }
+    });
+
     $('#pendingUserModal').on('click', '#pendingUserUpdateButton', function(e){
         e.preventDefault();
         if($('#pendingUserForm').valid()){
-            $.ajax(
-                {
-                    type:'POST',
-                    data:JSON.stringify($('#pendingUserForm').serializeObject()),
-                    url:'/pendingUser/update/'+$('#id').val(),
-                    dataType:'json',
-                    contentType: "application/json; charset=utf-8",
-                    success: function(data, textStatus, request){
-                        successHandler(data, textStatus, request);
-                    },
-                    error:function(request,textStatus,errorThrown){
-                        var data = JSON.parse(request.responseText);
-                        if(textStatus == '422'){
-                            for(i in data.errors){
-                                $.pnotify({
-                                    title: 'Error Saving',
-                                    text: data.errors[i],
-                                    type: 'error',
-                                    opacity: 0.8,
-                                    delay: 4000,
-                                    history:false
-                                });
-                            }
-                        }
-
-                    }
-                }
-            );
+            var id = $('#id');
+            updatePendingUser(id);
         }
     });
 
@@ -205,6 +199,81 @@ $(document).ready(function() {
             deletePendingUser(id);
         }
     });
+
+    $('#pendingUserModal').on('click', '#sendInviteButton', function(e){
+        e.preventDefault();
+        var id = $('#id').val();
+        sendSingleInvite(id);
+    });
+
+    function sendSingleInvite(id){
+        var idArray = new Array();
+        idArray[0] = id;
+        sendInvitations(idArray);
+    }
+
+    function addPendingUser(){
+        $.ajax(
+            {
+                type:'POST',
+                data:JSON.stringify($('#pendingUserForm').serializeObject()),
+                url:'/pendingUser/save',
+                dataType:'json',
+                contentType: "application/json; charset=utf-8",
+                success: function(data, textStatus, request){
+                    addSuccessHandler(data, textStatus, request);
+                },
+                error:function(request,textStatus,errorThrown){
+                    var data = JSON.parse(request.responseText);
+                    if(textStatus == '422'){
+                        for(i in data.errors){
+                            $.pnotify({
+                                title: 'Error Saving',
+                                text: data.errors[i],
+                                type: 'error',
+                                opacity: 0.8,
+                                delay: 4000,
+                                history:false
+                            });
+                        }
+                    }
+
+                }
+            }
+        );
+    }
+
+
+    function updatePendingUser(id){
+        $.ajax(
+            {
+                type:'POST',
+                data:JSON.stringify($('#pendingUserForm').serializeObject()),
+                url:'/pendingUser/update/'+$('#id').val(),
+                dataType:'json',
+                contentType: "application/json; charset=utf-8",
+                success: function(data, textStatus, request){
+                    successHandler(data, textStatus, request);
+                },
+                error:function(request,textStatus,errorThrown){
+                    var data = JSON.parse(request.responseText);
+                    if(textStatus == '422'){
+                        for(i in data.errors){
+                            $.pnotify({
+                                title: 'Error Saving',
+                                text: data.errors[i],
+                                type: 'error',
+                                opacity: 0.8,
+                                delay: 4000,
+                                history:false
+                            });
+                        }
+                    }
+
+                }
+            }
+        );
+    }
 
     function deletePendingUser(id){
         $.ajax(
@@ -272,6 +341,22 @@ $(document).ready(function() {
         $('#pendingUserModal').modal('hide');
         refreshDataTable();
         successHandler(data);
+    }
+
+    function addSuccessHandler(data){
+        $.pnotify({
+            title: 'Success',
+            text: data.message,
+            type: 'success',
+            opacity: 0.8,
+            delay: 1000,
+            history: false
+        });
+
+        $('#pendingUserModalBody').load("/pendingUser/form/"+data.id, function(data) {
+            applyValidation();
+            $('#pendingUserModal').modal('show');
+        });
     }
 
     function successHandler(data){

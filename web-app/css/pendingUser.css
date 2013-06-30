@@ -6,3 +6,7 @@ div.innerDetails {
 div.actionButtons {
     margin-bottom: 3px;
 }
+
+.modal-body {
+    max-height: 768px;
+}
