@@ -1,5 +1,3 @@
-<%@ page import="com.cogda.multitenant.Lead" %>
-
 <div id="childLeadAddresses" class="control-group fieldcontain">
     <g:each var="leadAddressInstance" in="${leadInstance?.leadAddresses}" status="i">
         <g:render template='/address/form'

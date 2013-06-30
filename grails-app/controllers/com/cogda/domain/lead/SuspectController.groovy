@@ -46,8 +46,8 @@ class SuspectController extends BaseController {
 
     def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        List suspectInstanceList = Lead.list()
-
+        def query = Lead.where { leadType == LeadType.SUSPECT }
+        List suspectInstanceList = query.list()
         def dataToRender = [:]
         dataToRender.aaData = []
         suspectInstanceList.each { Lead suspect ->
@@ -85,7 +85,7 @@ class SuspectController extends BaseController {
         def suspectInstance = new Lead(params)
         suspectInstance.leadType = LeadType.SUSPECT
         if (!suspectInstance.save(flush: true)) {
-            render(view: "create", model: [suspectInstance: suspectInstance])
+            respondUnprocessableEntity(suspectInstance)
             return
         }
 

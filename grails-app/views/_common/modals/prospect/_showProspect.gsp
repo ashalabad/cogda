@@ -1,21 +1,21 @@
-<section id="show-suspect" class="first">
-    <g:set var="entityName" value="${message(code: 'suspect.label', default: 'Suspect')}"/>
+<section id="show-prospect" class="first">
+    <g:set var="entityName" value="${message(code: 'prospect.label', default: 'Prospect')}"/>
     <h4><g:message code="default.show.label" args="[entityName]"/></h4>
 
     <div>
-        <ul id="suspectDetails" class="nav nav-tabs">
-            <li class="active"><a href="#suspectDetailTab" data-toggle="tab">Overall</a></li>
+        <ul id="prospectDetails" class="nav nav-tabs">
+            <li class="active"><a href="#prospectDetailTab" data-toggle="tab">Overall</a></li>
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Addresses<b class="caret"></b></a>
                 <ul class="dropdown-menu">
-                    <g:each var="leadAddressInstance" in="${suspectInstance?.leadAddresses}" status="i">
+                    <g:each var="leadAddressInstance" in="${prospectInstance?.leadAddresses}" status="i">
                         <li><a href="#leadAddressInstance${i}" data-toggle="tab">Address #${i + 1}</a></li>
                     </g:each>
                 </ul>
             </li>
             <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Contacts<b class="caret"></b></a>
                 <ul class="dropdown-menu">
-                    <g:each var="leadContactInstance" in="${suspectInstance?.leadContacts}" status="i">
+                    <g:each var="leadContactInstance" in="${prospectInstance?.leadContacts}" status="i">
                         <li><a href="#leadContactInstance${i}" data-toggle="tab">Contact #${i + 1}</a></li>
                     </g:each>
                 </ul>
@@ -23,21 +23,21 @@
         </ul>
 
         <div class="tab-content">
-            <div class="tab-pane active" id="suspectDetailTab">
+            <div class="tab-pane active" id="prospectDetailTab">
                 <table class="table">
                     <tbody>
 
                     <tr class="prop">
                         <td valign="top" class="name"><g:message code="lead.clientId.label" default="Client Id"/></td>
 
-                        <td valign="top" class="value">${fieldValue(bean: suspectInstance, field: "clientId")}</td>
+                        <td valign="top" class="value">${fieldValue(bean: prospectInstance, field: "clientId")}</td>
 
                     </tr>
 
                     <tr class="prop">
                         <td valign="top" class="name"><g:message code="lead.ownerName.label" default="Owner Name"/></td>
 
-                        <td valign="top" class="value">${fieldValue(bean: suspectInstance, field: "ownerName")}</td>
+                        <td valign="top" class="value">${fieldValue(bean: prospectInstance, field: "ownerName")}</td>
 
                     </tr>
 
@@ -46,7 +46,7 @@
                                                                  default="Business Type"/></td>
 
                         <td valign="top" class="value"><g:link controller="businessType" action="show"
-                                                               id="${suspectInstance?.businessType?.id}">${suspectInstance?.businessType?.description.encodeAsHTML()}</g:link></td>
+                                                               id="${prospectInstance?.businessType?.id}">${prospectInstance?.businessType?.description.encodeAsHTML()}</g:link></td>
 
                     </tr>
 
@@ -54,7 +54,7 @@
                         <td valign="top" class="name"><g:message code="lead.naicsCode.label" default="Naics Code"/></td>
 
                         <td valign="top" class="value"><g:link controller="naicsCode" action="show"
-                                                               id="${suspectInstance?.naicsCode?.id}">${suspectInstance?.naicsCode?.encodeAsHTML()}</g:link></td>
+                                                               id="${prospectInstance?.naicsCode?.id}">${prospectInstance?.naicsCode?.encodeAsHTML()}</g:link></td>
 
                     </tr>
 
@@ -62,14 +62,14 @@
                         <td valign="top" class="name"><g:message code="lead.sicCode.label" default="Sic Code"/></td>
 
                         <td valign="top" class="value"><g:link controller="sicCode" action="show"
-                                                               id="${suspectInstance?.sicCode?.id}">${suspectInstance?.sicCode?.encodeAsHTML()}</g:link></td>
+                                                               id="${prospectInstance?.sicCode?.id}">${prospectInstance?.sicCode?.encodeAsHTML()}</g:link></td>
 
                     </tr>
 
                     <tr class="prop">
                         <td valign="top" class="name"><g:message code="lead.leadType.label" default="Lead Type"/></td>
 
-                        <td valign="top" class="value">${suspectInstance?.leadType?.encodeAsHTML()}</td>
+                        <td valign="top" class="value">${prospectInstance?.leadType?.encodeAsHTML()}</td>
 
                     </tr>
 
@@ -77,7 +77,7 @@
                         <td valign="top" class="name"><g:message code="lead.clientName.label"
                                                                  default="Client Name"/></td>
 
-                        <td valign="top" class="value">${fieldValue(bean: suspectInstance, field: "clientName")}</td>
+                        <td valign="top" class="value">${fieldValue(bean: prospectInstance, field: "clientName")}</td>
 
                     </tr>
 
@@ -86,7 +86,7 @@
                         <td valign="top" class="name"><g:message code="lead.firstName.label" default="First Name"/></td>
 
                         <td valign="top"
-                            class="value">${fieldValue(bean: suspectInstance?.primaryLeadContact, field: "firstName")}</td>
+                            class="value">${fieldValue(bean: prospectInstance?.primaryLeadContact, field: "firstName")}</td>
 
                     </tr>
 
@@ -94,7 +94,7 @@
                         <td valign="top" class="name"><g:message code="lead.lastName.label" default="Last Name"/></td>
 
                         <td valign="top"
-                            class="value">${fieldValue(bean: suspectInstance?.primaryLeadContact, field: "lastName")}</td>
+                            class="value">${fieldValue(bean: prospectInstance?.primaryLeadContact, field: "lastName")}</td>
 
                     </tr>
 
@@ -103,7 +103,7 @@
                                                                  default="Email Address"/></td>
 
                         <td valign="top"
-                            class="value">${fieldValue(bean: suspectInstance, field: "primaryLeadEmailAddress")}</td>
+                            class="value">${fieldValue(bean: prospectInstance, field: "primaryLeadEmailAddress")}</td>
 
                     </tr>
 
@@ -112,7 +112,7 @@
                                                                  default="Phone Number Description"/></td>
 
                         <td valign="top"
-                            class="value">${fieldValue(bean: suspectInstance?.primaryLeadContactPhoneNumber, field: "description")}</td>
+                            class="value">${fieldValue(bean: prospectInstance?.primaryLeadContactPhoneNumber, field: "description")}</td>
                     </tr>
 
                     <tr class="prop">
@@ -120,14 +120,14 @@
                                                                  default="Phone Number"/></td>
 
                         <td valign="top"
-                            class="value">${fieldValue(bean: suspectInstance?.primaryLeadContactPhoneNumber, field: "phoneNumber")}</td>
+                            class="value">${fieldValue(bean: prospectInstance?.primaryLeadContactPhoneNumber, field: "phoneNumber")}</td>
                     </tr>
 
                     <tr class="prop">
                         <td valign="top" class="name"><g:message code="lead.dateCreated.label"
                                                                  default="Date Created"/></td>
 
-                        <td valign="top" class="value"><g:formatDate date="${suspectInstance?.dateCreated}"/></td>
+                        <td valign="top" class="value"><g:formatDate date="${prospectInstance?.dateCreated}"/></td>
 
                     </tr>
 
@@ -135,7 +135,7 @@
                         <td valign="top" class="name"><g:message code="lead.lastUpdated.label"
                                                                  default="Last Updated"/></td>
 
-                        <td valign="top" class="value"><g:formatDate date="${suspectInstance?.lastUpdated}"/></td>
+                        <td valign="top" class="value"><g:formatDate date="${prospectInstance?.lastUpdated}"/></td>
 
                     </tr>
 
@@ -143,9 +143,9 @@
                 </table>
             </div>
             <g:render template="/_common/modals/lead/leadAddress/showAddresses"
-                          model="[leadInstance: suspectInstance]"/>
+                          model="[leadInstance: prospectInstance]"/>
             <g:render template="/_common/modals/lead/leadContact/showContacts"
-                      model="[leadInstance: suspectInstance]"/>
+                      model="[leadInstance: prospectInstance]"/>
         </div>
     </div>
 </section>
