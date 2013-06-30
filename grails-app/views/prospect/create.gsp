@@ -22,6 +22,9 @@
         &nbsp;
     </div>
 </div>
+<div class="alert alert-error" id="errorMessages" style="display:none">
+    <h4>Errors!</h4>
+</div>
 <section id="create-lead" class="first">
 
     <g:hasErrors bean="${prospectInstance}">
