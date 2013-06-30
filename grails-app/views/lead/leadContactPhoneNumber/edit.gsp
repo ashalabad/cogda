@@ -1,11 +1,11 @@
-<%@ page import="com.cogda.multitenant.Lead" %>
+<%@ page import="com.cogda.multitenant.LeadContactPhoneNumber" %>
 <!doctype html>
 <html>
 
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<meta name="layout" content="kickstart" />
-	<g:set var="entityName" value="${message(code: 'lead.label', default: 'Lead')}" />
+	<g:set var="entityName" value="${message(code: 'leadContactPhoneNumber.label', default: 'LeadContactPhoneNumber')}" />
     <g:set var="layout_nosecondarymenu"	value="true" scope="request"/>
     <g:set var="layout_nomainmenu"		value="true" scope="request"/>
 	<title><g:message code="default.edit.label" args="[entityName]" /></title>
@@ -21,19 +21,19 @@
         &nbsp;
     </div>
 </div>
-<section id="edit-lead" class="first">
+<section id="edit-leadContactPhoneNumber" class="first">
     <h2><g:message code="default.edit.label" args="[entityName]" /></h2>
-	<g:hasErrors bean="${suspectInstance}">
+	<g:hasErrors bean="${leadContactPhoneNumberInstance}">
 	<div class="alert alert-error">
-		<g:renderErrors bean="${leadInstance}" as="list" />
+		<g:renderErrors bean="${leadContactPhoneNumberInstance}" as="list" />
 	</div>
 	</g:hasErrors>
 
 	<g:form method="post" class="form-horizontal" >
-		<g:hiddenField name="id" value="${leadInstance?.id}" />
-		<g:hiddenField name="version" value="${leadInstance?.version}" />
+		<g:hiddenField name="id" value="${leadContactPhoneNumberInstance?.id}" />
+		<g:hiddenField name="version" value="${leadContactPhoneNumberInstance?.version}" />
 		<fieldset class="form">
-			<g:render template="/lead/form"/>
+			<g:render template="form"/>
 		</fieldset>
 		<div class="form-actions">
 			<g:actionSubmit class="btn btn-primary" action="update" value="${message(code: 'default.button.update.label', default: 'Update')}" />

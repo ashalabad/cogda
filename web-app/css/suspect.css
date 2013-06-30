@@ -27,3 +27,9 @@ div.add {clear:both;}
         width: 460px;
         margin-left: -230px;}
 }
+
+.new {
+    margin-left:69px;
+    clear:both;
+    display:block !important;
+}

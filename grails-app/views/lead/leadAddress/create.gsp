@@ -1,18 +1,14 @@
-<%@ page import="com.cogda.multitenant.Lead" %>
+<%@ page import="com.cogda.multitenant.LeadAddress" %>
 <!doctype html>
 <html>
 
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<meta name="layout" content="kickstart" />
-	<g:set var="entityName" value="${message(code: 'suspect.label', default: 'Suspect')}" />
+	<g:set var="entityName" value="${message(code: 'leadAddress.label', default: 'LeadAddress')}" />
     <g:set var="layout_nosecondarymenu"	value="true" scope="request"/>
     <g:set var="layout_nomainmenu"		value="true" scope="request"/>
 	<title><g:message code="default.create.label" args="[entityName]" /></title>
-    <g:javascript src="suspect/edit.js"/>
-    <g:javascript>
-        setChildCount(${suspectInstance?.leadContacts?.leadContactPhoneNumbers?.count});
-    </g:javascript>
 </head>
 
 <body>
@@ -25,17 +21,19 @@
         &nbsp;
     </div>
 </div>
-<section id="create-lead" class="first">
+<section id="create-leadAddress" class="first">
 
-	<g:hasErrors bean="${suspectInstance}">
+    <h2><g:message code="default.create.label" args="[entityName]" /></h2>
+
+	<g:hasErrors bean="${leadAddressInstance}">
 	<div class="alert alert-error">
-		<g:renderErrors bean="${suspectInstance}" as="list" />
+		<g:renderErrors bean="${leadAddressInstance}" as="list" />
 	</div>
 	</g:hasErrors>
 	
-	<g:form action="save" class="form-horizontal new" name="suspectForm" >
+	<g:form action="save" class="form-horizontal" >
 		<fieldset class="form">
-			<g:render template="/lead/form" model="['leadInstance': suspectInstance]"/>
+			<g:render template="form"/>
 		</fieldset>
 		<div class="form-actions">
 			<g:submitButton name="create" class="btn btn-primary" value="${message(code: 'default.button.create.label', default: 'Create')}" />
