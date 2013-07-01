@@ -37,6 +37,7 @@ div.button {margin-left: 20px;}
 /******emails & phones******/
 .primaryRadio {margin: 7px 40px 0 15px !important;}
 #emailFieldset label, #phoneFieldset label {width:130px;float:left;}
+#emailFieldset label.error, #phoneFieldset label.error {clear:both;padding-top:14px;}
 .new {
   margin-left:69px;
   clear:both;

@@ -9,6 +9,7 @@ if (typeof jQuery !== 'undefined') {
 }
 
 function newContact(){
+  $("#contactModalBody").empty();
   $("#addContactModalBody").load("/contact/showNewForm", function(){
     $('#addContactModal').modal('show');    
     toggleEdit();           

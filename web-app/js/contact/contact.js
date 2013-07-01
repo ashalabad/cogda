@@ -35,6 +35,14 @@ $(document).ready(function() {
                          },
                          website: {
                            url: true
+                         },
+                         emailAddress: {
+                           email: true,
+                           required: true
+                         },
+                         phoneNumber: {
+                           required: true,
+                           phoneUS: true
                          }
                      }                
                    });                             
@@ -61,9 +69,6 @@ $(document).ready(function() {
            }
        }                
      });   
-     
-            
-    
 });
 
 function toggleEdit(){
@@ -113,10 +118,10 @@ function saveNewContact(){
   }
 
   if( $("#contactForm_new [name='firstName']").valid() &&
-  $("#contactForm_new [name='lastName']").valid() &&
-  $("#contactForm_new [name='website']").valid() &&
-  $("#contactForm_new [name='contactEmailAddress']").valid() ){    
-//  if(validator.valid() ==  true){  
+    $("#contactForm_new [name='lastName']").valid() &&
+    $("#contactForm_new [name='website']").valid() &&
+    $("#contactForm_new [name='contactEmailAddress']").valid() ){     
+
     $('#addContactModal').modal('hide');      
   
     $.ajax({
@@ -149,7 +154,30 @@ function buildContactForSave(id){
 function showEdit(data){
   $("#contactModalBody").empty();
   $("#contactModalBody").load("/contact/showForm/"+data.id, function(){
-    $('#contactModal').modal('show');               
+    $('#contactModal').modal('show');    
+    updateValidator = $("#contactForm_"+data.id).validate({
+       rules: {
+           firstName: {
+               minlength: 1,
+               required: true
+           },
+           lastName: {
+               minlength: 1,
+               required: true
+           },
+           website: {
+             url: true
+           },
+           emailAddress: {
+             email: true,
+             required: true
+           },
+           phoneNumber: {
+             required: true,
+             phoneUS: true
+           }
+       }                
+     });               
   });  
 }
 
@@ -208,36 +236,43 @@ function addEmailAddressField(){
 }
 
 function saveEmail(){
-  var email = new Object();
-  var route = '';
-  if($(event.currentTarget).parent().hasClass("new")){
-    email.emailAddress = $("#"+$(event.currentTarget).parent().attr("id")+" .emailInput").val();
-    email.primaryEmailAddress = false;
-    route = 'save';
-    email.contact = {};
-    email.contact.id = $("form").attr("id").replace("contactForm_","");    
+  var emailInput;
+  if($(event.currentTarget).hasClass("primaryRadio")){
+    emailInput = $(event.currentTarget).parent().find('.emailInput');   
   }else{
-    var input;
-    if ($(event.currentTarget).hasClass("primaryRadio")){
-      input = $(event.currentTarget).parent().find('.emailInput');      
-      email.primaryEmailAddress = $(event.currentTarget).is(":checked");
-    }else{
-      input = $(event.currentTarget).prev();      
-      email.primaryEmailAddress = $("#"+$(event.currentTarget).parent().parent().attr("id")+" .primaryRadio").is(":checked");
-    }
-    email.id = $(input).attr("id").replace("emailAddress_","");
-    email.emailAddress = $(input).val();
-    route = 'update/'+email.id;
+    emailInput = $(event.currentTarget).prevAll("[name='emailAddress']");    
   }
+  
+  if( $(emailInput).valid()){
+    var email = new Object();
+    var route = '';
+    if($(event.currentTarget).parent().hasClass("new")){
+      email.emailAddress = $("#"+$(event.currentTarget).parent().attr("id")+" .emailInput").val();
+      email.primaryEmailAddress = false;
+      route = 'save';
+      email.contact = {};
+      email.contact.id = $("form").attr("id").replace("contactForm_","");    
+    }else{
+      if ($(event.currentTarget).hasClass("primaryRadio")){  
+        email.primaryEmailAddress = $(event.currentTarget).is(":checked");
+      }else{
+        email.primaryEmailAddress = $("#"+$(event.currentTarget).parent().parent().attr("id")+" .primaryRadio").is(":checked");
+      }
+      email.id = $(emailInput).attr("id").replace("emailAddress_","");
+      email.emailAddress = $(emailInput).val();
+      route = 'update/'+email.id;
+    }
 
-  $.ajax({
-    url: "/contactEmailAddress/"+route,
-    type: "post",
-    dataType: "json",
-    data: JSON.stringify(email),
-    success: updateEmail,
-    contentType: "application/json; charset=utf-8"
-  });  
+    $.ajax({
+      url: "/contactEmailAddress/"+route,
+      type: "post",
+      dataType: "json",
+      data: JSON.stringify(email),
+      success: updateEmail,
+      contentType: "application/json; charset=utf-8"
+    });    
+  }
+  
 }
 
 /*******addresses*******/
@@ -336,58 +371,43 @@ function addPhoneField(){
 	$(field).insertBefore("#addPhoneBtn");
 }
 
-function savePhones(){
-  var contact = new Object();
-  contact.id = $("form").attr("id").replace("contactForm_","");
-  contact.contactPhoneNumbers = [];
-  
-  $("#phoneFieldset .phoneInput").each(function(ind, elt){
-    var phone = new Object();
-    if($(elt).attr("id").indexOf("_") < 0){
-      phone.phoneNumber = $(elt).val();
-      phone.primaryPhoneNumber = false;      
-    }else{
-      var phoneId = $(elt).attr("id").replace("phone_","");
-      phone.id = phoneId;
-      phone.phoneNumber = $(elt).val();
-      phone.primaryPhoneNumber = false;      
-    }
-    contact.contactPhoneNumbers.push(phone);
-  });
-  saveContact(contact,updatePhones);
-}
-
 function savePhone(){
-  var phone = new Object();
-  var route = '';
-  if($(event.currentTarget).parent().hasClass("new")){
-    phone.phoneNumber = $("#"+$(event.currentTarget).parent().attr("id")+" .phoneInput").val();
-    phone.primaryPhoneNumber = false;
-    route = 'save';
-    phone.contact = {};
-    phone.contact.id = $("form").attr("id").replace("contactForm_","");
+  var phoneInput;
+  if($(event.currentTarget).hasClass("primaryRadio")){
+    phoneInput = $(event.currentTarget).parent().find('.phoneInput');   
   }else{
-    var input;
-    if ($(event.currentTarget).hasClass("primaryRadio")){
-      input = $(event.currentTarget).parent().find('.phoneInput');      
-      phone.primaryPhoneNumber = $(event.currentTarget).is(":checked");
-    }else{
-      input = $(event.currentTarget).prev();      
-      phone.primaryPhoneNumber = $("#"+$(event.currentTarget).parent().parent().attr("id")+" .primaryRadio").is(":checked");
-    }
-    phone.id = $(input).attr("id").replace("phone_","");
-    phone.phoneNumber = $(input).val();
-    route = 'update/'+phone.id;
+    phoneInput = $(event.currentTarget).prevAll("[name='phoneNumber']");    
   }
+  
+  if( $(phoneInput).valid()){  
+    var phone = new Object();
+    var route = '';
+    if($(event.currentTarget).parent().hasClass("new")){
+      phone.phoneNumber = $("#"+$(event.currentTarget).parent().attr("id")+" .phoneInput").val();
+      phone.primaryPhoneNumber = false;
+      route = 'save';
+      phone.contact = {};
+      phone.contact.id = $("form").attr("id").replace("contactForm_","");
+    }else{
+      if ($(event.currentTarget).hasClass("primaryRadio")){ 
+        phone.primaryPhoneNumber = $(event.currentTarget).is(":checked");
+      }else{
+        phone.primaryPhoneNumber = $("#"+$(event.currentTarget).parent().parent().attr("id")+" .primaryRadio").is(":checked");
+      }
+      phone.id = $(phoneInput).attr("id").replace("phone_","");
+      phone.phoneNumber = $(phoneInput).val();
+      route = 'update/'+phone.id;
+    }
 
-  $.ajax({
-    url: "/contactPhoneNumber/"+route,
-    type: "post",
-    dataType: "json",
-    data: JSON.stringify(phone),
-    success: updatePhone,
-    contentType: "application/json; charset=utf-8"
-  });  
+    $.ajax({
+      url: "/contactPhoneNumber/"+route,
+      type: "post",
+      dataType: "json",
+      data: JSON.stringify(phone),
+      success: updatePhone,
+      contentType: "application/json; charset=utf-8"
+    });  
+  }
 }
 
 function updatePhone(data){

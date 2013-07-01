@@ -1,11 +1,10 @@
 <link rel="stylesheet" type="text/css" href="/css/contact.css" />
-<script type="text/javascript" src="/js/contact/contactDetails.js" ></script>
 <%@ page import="com.cogda.common.GenderEnum; com.cogda.common.NamePrefix; com.cogda.domain.Contact; com.cogda.domain.ContactEmailAddress; com.cogda.domain.ContactPhoneNumber" %>
 <g:if test="${contactInstance.id == null }">
-<form class="form-inline" class="contactForm" id="contactForm_new" action="save" method="post">	
+<form class="form-inline" class="contactForm" id="contactForm_new" name="contactForm_new">	
 </g:if>
 <g:else>
-<form class="form-inline" class="contactForm" id="contactForm_${contactInstance?.id}">
+<form class="form-inline" class="contactForm updateContact" id="contactForm_${contactInstance?.id}">
 </g:else>
     <fieldset id="contactFieldset">
         <div id="contactData">
@@ -18,7 +17,7 @@
             <div class="field">
                 <label>First Name</label>
                 <span id="firstNameLbl" class="editShow firstName contactShow">${contactInstance?.firstName}</span>
-                <input type="text" name="firstName" id="firstName" class="editHide required firstName contactEdit input-xlarge" value="${contactInstance?.firstName}">
+                <input type="text" name="firstName" required id="firstName" class="editHide required firstName contactEdit input-xlarge" value="${contactInstance?.firstName}">
             </div>
             <div class="field">
                 <label>Middle Name</label>
@@ -28,7 +27,7 @@
             <div class="field">
                 <label>Last Name</label>
                 <span id="lastNameLbl" class="editShow lastName contactShow">${contactInstance?.lastName}</span>
-                <input type="text" name="lastName" id="lastName" class="editHide required lastName contactEdit input-xlarge" value="${contactInstance?.lastName}">
+                <input type="text" name="lastName" required id="lastName" class="editHide required lastName contactEdit input-xlarge" value="${contactInstance?.lastName}">
             </div>
             <div class="field">
                 <label>Initials</label>
@@ -77,7 +76,12 @@
 
         <div class="add">
             <a class="btn add-field editShow contactShow" href="#" onclick="toggleEdit();"><i class="icon-edit"></i> Edit</a>
-            <a class="btn btn-primary add-field editHide contactEdit" href="#" onclick="saveContactDetails();"><i class="icon-save"></i> Save</a>
+			<g:if test="${contactInstance.id == null }">
+	            <a class="btn btn-primary add-field editHide contactEdit" href="#" id="saveNewContact" onclick="saveNewContact();"><i class="icon-save"></i> Save</a>			
+			</g:if>
+			<g:else>
+	            <a class="btn btn-primary add-field editHide contactEdit" href="#" onclick="saveContactDetails();"><i class="icon-save"></i> Save</a>			
+			</g:else>
         </div>
 
     </fieldset>
