@@ -80,16 +80,14 @@ environments {
 
 // log4j configuration
 
-environments {
-    development {
+//environments {
+//    development {
         log4j = {
             // Example of changing the log pattern for the default console appender:
             //
             appenders {
-                console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
+                console name:'stdout', layout:pattern(conversionPattern: '%d [%t] %-5p %c - %m%n'), threshold: org.apache.log4j.Level.DEBUG
             }
-//            trace 'org.hibernate.type'
-//            debug 'org.hibernate.SQL'
             error  'org.codehaus.groovy.grails.web.servlet',        // controllers
                    'org.codehaus.groovy.grails.web.pages',          // GSP
                    'org.codehaus.groovy.grails.web.sitemesh',       // layouts
@@ -101,92 +99,103 @@ environments {
                    'org.springframework',
                    'org.hibernate',
                    'net.sf.ehcache.hibernate'
-            debug  'grails.app.controllers'
-            debug  'grails.app.domain'
-            debug  'grails.app.taglib'
-            debug  'grails.app.conf'
-            debug  'grails.app.filters'
-            debug  'grails.app.taglib'
-            debug  'grails.app.services'
-            debug  'org.codehaus.groovy.grails.plugins'
 
-        }
-    }
-    test {
-        log4j = {
-            // Example of changing the log pattern for the default console appender:
-            appenders {
-                console name:'stdout', layout:pattern(conversionPattern: '%d [%t] %-5p %c - %m%n'), threshold: org.apache.log4j.Level.DEBUG
-            }
-
-            // trace 'org.hibernate.type'
-            // debug 'org.hibernate.SQL'
-            warn  'org.codehaus.groovy.grails.web.servlet',        // controllers
-                    'org.codehaus.groovy.grails.web.pages',          // GSP
-                    'org.codehaus.groovy.grails.web.sitemesh',       // layouts
-                    'org.codehaus.groovy.grails.web.mapping.filter', // URL mapping
-                    'org.codehaus.groovy.grails.web.mapping',        // URL mapping
-                    'org.codehaus.groovy.grails.commons',            // core / classloading
-                    'org.codehaus.groovy.grails.plugins',            // plugins
-                    'org.codehaus.groovy.grails.orm.hibernate',      // hibernate integration
-                    'org.springframework',
-                    'org.hibernate',
-                    'net.sf.ehcache.hibernate'
-            debug  'grails.app.services.com.cogda'
-            debug  'grails.app.controllers.com.cogda'
-            debug  'grails.app.filters'
-            debug  'grails.app.domain'
-            debug  'grails.app.taglib'
-            debug  'grails.app.conf'
-
-            root {
-                error 'stdout'
-                info 'stdout'
-                warn 'stdout'
-                debug 'stdout'
-                additivity = true
-            }
-        }
-    }
-    production {
-        log4j = {
-            // Example of changing the log pattern for the default console appender:
-            appenders {
-                console name:'stdout', layout:pattern(conversionPattern: '%d [%t] %-5p %c - %m%n'), threshold: org.apache.log4j.Level.DEBUG
-                null name:'stacktrace'
-            }
-
-            error  'org.codehaus.groovy.grails.web.servlet',        // controllers
-                    'org.codehaus.groovy.grails.web.pages',          // GSP
-                    'org.codehaus.groovy.grails.web.sitemesh',       // layouts
-                    'org.codehaus.groovy.grails.web.mapping.filter', // URL mapping
-                    'org.codehaus.groovy.grails.web.mapping',        // URL mapping
-                    'org.codehaus.groovy.grails.commons',            // core / classloading
-                    'org.codehaus.groovy.grails.plugins',            // plugins
-                    'org.codehaus.groovy.grails.orm.hibernate',      // hibernate integration
-                    'org.springframework',
-                    'org.hibernate',
-                    'net.sf.ehcache.hibernate'
-
-            warn   'org.mortbay.log'
-
-            error  'grails.app.services.com.cogda'
             error  'grails.app.controllers.com.cogda'
-            error  'grails.app.filters'
-            error  'grails.app.domain'
+            error  'grails.app.domain.com.cogda'
             error  'grails.app.taglib'
             error  'grails.app.conf'
-
+            debug  'grails.app.filters.cogda'
+            error  'grails.app.taglib'
+            error  'grails.app.services.com.cogda'
+            error  'org.codehaus.groovy.grails.plugins'
+            debug  'java.grails.plugin.multitenant.core'
+            debug  'java.grails.plugin.multitenant.singledb.hibernate'
+//            error  'com.cogda'
+//            error  'cogda'
             root {
                 error 'stdout'
-                info 'stdout'
-                warn 'stdout'
-                debug 'stdout'
+//                info 'stdout'
+//                warn 'stdout'
+//                debug 'stdout'
                 additivity = true
             }
         }
-    }
-}
+//    }
+//    test {
+//        log4j = {
+//            // Example of changing the log pattern for the default console appender:
+//            appenders {
+//                console name:'stdout', layout:pattern(conversionPattern: '%d [%t] %-5p %c - %m%n'), threshold: org.apache.log4j.Level.DEBUG
+//            }
+//
+//            // trace 'org.hibernate.type'
+//            // debug 'org.hibernate.SQL'
+//            warn  'org.codehaus.groovy.grails.web.servlet',        // controllers
+//                    'org.codehaus.groovy.grails.web.pages',          // GSP
+//                    'org.codehaus.groovy.grails.web.sitemesh',       // layouts
+//                    'org.codehaus.groovy.grails.web.mapping.filter', // URL mapping
+//                    'org.codehaus.groovy.grails.web.mapping',        // URL mapping
+//                    'org.codehaus.groovy.grails.commons',            // core / classloading
+//                    'org.codehaus.groovy.grails.plugins',            // plugins
+//                    'org.codehaus.groovy.grails.orm.hibernate',      // hibernate integration
+//                    'org.springframework',
+//                    'org.hibernate',
+//                    'net.sf.ehcache.hibernate'
+//            debug  'grails.app.services.com.cogda'
+//            debug  'grails.app.controllers.com.cogda'
+//            debug  'grails.app.filters'
+//            debug  'grails.app.domain'
+//            debug  'grails.app.taglib'
+//            debug  'grails.app.conf'
+//
+//            root {
+//                error 'stdout'
+//                info 'stdout'
+//                warn 'stdout'
+//                debug 'stdout'
+//                additivity = true
+//            }
+//        }
+//    }
+//    production {
+//        log4j = {
+//            // Example of changing the log pattern for the default console appender:
+//            appenders {
+//                console name:'stdout', layout:pattern(conversionPattern: '%d [%t] %-5p %c - %m%n'), threshold: org.apache.log4j.Level.DEBUG
+//                null name:'stacktrace'
+//            }
+//
+//            error  'org.codehaus.groovy.grails.web.servlet',        // controllers
+//                    'org.codehaus.groovy.grails.web.pages',          // GSP
+//                    'org.codehaus.groovy.grails.web.sitemesh',       // layouts
+//                    'org.codehaus.groovy.grails.web.mapping.filter', // URL mapping
+//                    'org.codehaus.groovy.grails.web.mapping',        // URL mapping
+//                    'org.codehaus.groovy.grails.commons',            // core / classloading
+//                    'org.codehaus.groovy.grails.plugins',            // plugins
+//                    'org.codehaus.groovy.grails.orm.hibernate',      // hibernate integration
+//                    'org.springframework',
+//                    'org.hibernate',
+//                    'net.sf.ehcache.hibernate'
+//
+//            warn   'org.mortbay.log'
+//
+//            debug  'grails.app.services.com.cogda'
+//            debug  'grails.app.controllers.com.cogda'
+//            debug  'grails.app.filters'
+//            debug  'grails.app.domain'
+//            debug  'grails.app.taglib'
+//            debug  'grails.app.conf'
+//
+//            root {
+//                error 'stdout'
+//                info 'stdout'
+//                warn 'stdout'
+//                debug 'stdout'
+//                additivity = true
+//            }
+//        }
+//    }
+//}
 
 grails {
     mail {
