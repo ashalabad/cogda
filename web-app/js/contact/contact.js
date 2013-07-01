@@ -71,6 +71,34 @@ $(document).ready(function() {
      });   
 });
 
+function displayMessages(data){
+  $('#messages').show().html(data.message);
+  $.pnotify({
+      title: data.messageTitle,
+      text: data.message,
+      type: 'success',
+      opacity: 0.8,
+      delay: 10000,
+      history:false
+  });  
+}
+
+function displayErrors(request,textStatus,errorThrown){
+    var data = JSON.parse(request.responseText);
+    if(textStatus == '422'){
+        for(i in data.errors){
+            $.pnotify({
+                title: 'Error Saving',
+                text: data.errors[i],
+                type: 'error',
+                opacity: 0.8,
+                delay: 4000,
+                history:false
+            });
+        }
+    }
+}
+
 function toggleEdit(){
   $(".contactShow").toggleClass("editHide");
   $(".contactEdit").toggleClass("editHide");
@@ -93,6 +121,7 @@ function saveContactDetails(){
         dataType: "json",
         data: JSON.stringify(contact),
         success: updateContact,
+        error: displayErrors,
         contentType: "application/json; charset=utf-8"
     });    
   }
@@ -130,6 +159,7 @@ function saveNewContact(){
         dataType: "json",
         data: JSON.stringify(contact),
         success: showEdit,
+        error: displayErrors,        
         contentType: "application/json; charset=utf-8"
     });
   }
@@ -152,6 +182,7 @@ function buildContactForSave(id){
 }
 
 function showEdit(data){
+  displayMessages(data);
   $("#contactModalBody").empty();
   $("#contactModalBody").load("/contact/showForm/"+data.id, function(){
     $('#contactModal').modal('show');    
@@ -182,6 +213,7 @@ function showEdit(data){
 }
 
 function updateContact(data){
+  displayMessages(data);  
   $(".title").text(data.title).val(data.title);                    
   $(".firstName").text(data.firstName).val(data.firstName);  
   $(".middleName").text(data.middleName).val(data.middleName); 
@@ -207,6 +239,7 @@ function showMode(event){
 
 /******emails******/
 function updateEmail(data){
+  displayMessages(data);
   var field = $("#editEmail").clone().removeClass("template").addClass("data");
   if(data.primaryEmailAddress == true){
     var radio = $(field).find(".primaryRadio");
@@ -269,10 +302,10 @@ function saveEmail(){
       dataType: "json",
       data: JSON.stringify(email),
       success: updateEmail,
+      error: displayErrors,      
       contentType: "application/json; charset=utf-8"
     });    
   }
-  
 }
 
 /*******addresses*******/
@@ -322,11 +355,13 @@ function saveAddress(){
     dataType: "json",
     data: JSON.stringify(data),
     success: updateAddress,
+    error: displayErrors,    
     contentType: "application/json; charset=utf-8"
   });  
 }
 
 function updateAddress(data){
+  displayMessages(data);
   var field = $("#editAddress").clone().removeClass("template").addClass("data");
   if(data.primaryAddress == true){
     var radio = $(field).find(".primaryRadio");
@@ -405,12 +440,14 @@ function savePhone(){
       dataType: "json",
       data: JSON.stringify(phone),
       success: updatePhone,
+      error: displayErrors,      
       contentType: "application/json; charset=utf-8"
     });  
   }
 }
 
 function updatePhone(data){
+  displayMessages(data);
   var field = $("#editPhone").clone().removeClass("template").addClass("data");
   if(data.primaryPhoneNumber == true){
     var radio = $(field).find(".primaryRadio");

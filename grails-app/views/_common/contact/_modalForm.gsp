@@ -1,11 +1,17 @@
 <link rel="stylesheet" type="text/css" href="/css/contact.css" />
 <%@ page import="com.cogda.common.GenderEnum; com.cogda.common.NamePrefix; com.cogda.domain.Contact; com.cogda.domain.ContactEmailAddress; com.cogda.domain.ContactPhoneNumber" %>
+
 <g:if test="${contactInstance.id == null }">
 <form class="form-inline" class="contactForm" id="contactForm_new" name="contactForm_new">	
 </g:if>
 <g:else>
 <form class="form-inline" class="contactForm updateContact" id="contactForm_${contactInstance?.id}">
 </g:else>
+<div class="alert alert-success" id="contactMessages" style="display:none">
+</div>
+
+<div class="alert alert-error" id="errors" style="display:none">
+</div>
     <fieldset id="contactFieldset">
         <div id="contactData">
             <div class="field">
