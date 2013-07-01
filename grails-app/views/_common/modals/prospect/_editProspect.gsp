@@ -1,16 +1,16 @@
 <%@ page import="com.cogda.multitenant.Lead" %>
-<g:javascript src="suspect/edit.js"/>
+<g:javascript src="prospect/edit.js"/>
 <section id="create-lead" class="first">
 
-    <g:hasErrors bean="${suspectInstance}">
+    <g:hasErrors bean="${prospectInstance}">
         <div class="alert alert-error">
-            <g:renderErrors bean="${suspectInstance}" as="list"/>
+            <g:renderErrors bean="${prospectInstance}" as="list"/>
         </div>
     </g:hasErrors>
 
-    <g:form action="save" class="form-horizontal new" name="suspectForm">
+    <g:form action="save" class="form-horizontal new" name="prospectForm">
         <fieldset class="form">
-            <g:render template="/lead/form" model="['leadInstance': suspectInstance]"/>
+            <g:render template="/lead/form" model="['leadInstance': prospectInstance]"/>
         </fieldset>
 
         <div class="form-actions">

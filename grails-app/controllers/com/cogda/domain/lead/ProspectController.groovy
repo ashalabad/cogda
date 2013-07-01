@@ -3,6 +3,11 @@ package com.cogda.domain.lead
 import com.cogda.BaseController
 import com.cogda.common.LeadType
 import com.cogda.multitenant.Lead
+import com.cogda.multitenant.LeadAddress
+import com.cogda.multitenant.LeadContact
+import com.cogda.multitenant.LeadContactAddress
+import com.cogda.multitenant.LeadContactEmailAddress
+import com.cogda.multitenant.LeadContactPhoneNumber
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
@@ -41,8 +46,8 @@ class ProspectController extends BaseController {
 
     def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        List prospectInstanceList = Lead.list()
-
+        def query = Lead.where { leadType == LeadType.PROSPECT }
+        List prospectInstanceList = query.list()
         def dataToRender = [:]
         dataToRender.aaData = []
         prospectInstanceList.each { Lead prospect ->
@@ -55,7 +60,7 @@ class ProspectController extends BaseController {
             map.createdOn = prospect.dateCreated
             map.clientName = prospect.clientName
             map.contactName = prospect.primaryLeadContactName
-            map.phoneNumber = prospect.primaryLeadContactPhoneNumber
+            map.phoneNumber = prospect.primaryLeadContactPhoneNumber.phoneNumber
             map.email = prospect.primaryEmailAddress
             map.details = remoteLink([controller: 'prospect', action: 'show', id: prospect.id, onSuccess: 'modalDialogHandler(data)', method: 'GET'], 'Details')
             map.edit = remoteLink([controller: 'prospect', action: 'edit', id: prospect.id, onSuccess: 'modalDialogHandler(data)', method: 'GET'], 'Edit')
@@ -67,23 +72,20 @@ class ProspectController extends BaseController {
     }
 
     def create() {
-//        def prospectAddress = new LeadAddress()
-//        prospectAddress.address = new Address()
-//        def prospectContact = new LeadContact()
-//        def prospectContactAddress = new LeadContactAddress()
-//        def prospectContactEmailAddress = new LeadContactEmailAddress()
-        def prospectInstance = new Lead()
-//        prospectInstance.leadType = LeadType.SUSPECT
-//        prospectInstance.addToLeadContacts(prospectContact)
-//        prospectInstance.addToLeadAddresses(prospectAddress)
+        def prospectInstance = new Lead(leadType: LeadType.PROSPECT)
+                .addToLeadAddresses(new LeadAddress(primaryAddress: true))
+                .addToLeadContacts(new LeadContact(primaryContact: true)
+                .addToLeadContactAddresses(new LeadContactAddress(primaryAddress: true))
+                .addToLeadContactEmailAddresses(new LeadContactEmailAddress(primaryEmailAddress: true))
+                .addToLeadContactPhoneNumbers(new LeadContactPhoneNumber(primaryPhoneNumber: true)));
         [prospectInstance: prospectInstance]
     }
 
     def save() {
         def prospectInstance = new Lead(params)
-        prospectInstance.leadType = LeadType.SUSPECT
+        prospectInstance.leadType = LeadType.PROSPECT
         if (!prospectInstance.save(flush: true)) {
-            render(view: "create", model: [prospectInstance: prospectInstance])
+            respondUnprocessableEntity(prospectInstance)
             return
         }
 
@@ -99,7 +101,7 @@ class ProspectController extends BaseController {
             redirect(action: "list")
             return
         }
-        render(template: '/_common/prospect/showProspect', model: [prospectInstance: prospectInstance])
+        render(template: '/_common/modals/prospect/showProspect', model: [prospectInstance: prospectInstance])
     }
 
     def get() {
@@ -118,7 +120,7 @@ class ProspectController extends BaseController {
             redirect(action: "list")
             return
         }
-        render(template: '/_common/prospect/editProspect', model: [prospectInstance: prospectInstance])
+        render(template: '/_common/modals/prospect/editProspect', model: [prospectInstance: prospectInstance])
     }
 
     def update() {

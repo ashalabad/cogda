@@ -1,9 +1,9 @@
 var isNew;
 $(document).ready(function () {
-    $('#suspectForm').off('submit');
+    $('#prospectForm').off('submit');
     isNew = ($('form').hasClass('new'));
 
-    $('#suspectForm').on("submit", function (e) {
+    $('#prospectForm').on("submit", function (e) {
         e.preventDefault();
         var route = isNew ? 'save' : 'update';
         if (validator.valid()) {
@@ -11,9 +11,9 @@ $(document).ready(function () {
                 {
                     type: 'POST',
                     data: $(this).serialize(),
-                    url: '/suspect/' + route,
+                    url: '/prospect/' + route,
                     success: function (data, textStatus, xhr) {
-                        suspectHandler(data, textStatus, xhr);
+                        prospectHandler(data, textStatus, xhr);
                     },
                     error: function (XMLHttpRequest, textStatus, errorThrown) {
                         var messages = JSON.parse(XMLHttpRequest.responseText)
@@ -62,7 +62,7 @@ $(document).ready(function () {
         }
     });
 
-    var validator = $("#suspectForm").validate({
+    var validator = $("#prospectForm").validate({
         rules: {
             clientName: {
                 minlength: 1,
@@ -102,7 +102,7 @@ $(document).ready(function () {
     });
 });
 
-function suspectHandler(data, textStatus, xhr) {
+function prospectHandler(data, textStatus, xhr) {
     var message = isNew ? "Save " : "Update "
     if (xhr.status == 200) {
         var errorMessages = $("#errorMessages");

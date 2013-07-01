@@ -5,11 +5,11 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="kickstart"/>
-    <g:set var="entityName" value="${message(code: 'suspect.label', default: 'Suspect')}"/>
+    <g:set var="entityName" value="${message(code: 'prospect.label', default: 'Suspect')}"/>
     <g:set var="layout_nosecondarymenu" value="true" scope="request"/>
     <g:set var="layout_nomainmenu" value="true" scope="request"/>
     <title><g:message code="default.create.label" args="[entityName]"/></title>
-    <g:javascript src="suspect/edit.js"/>
+    <g:javascript src="prospect/edit.js"/>
 </head>
 
 <body>
@@ -27,15 +27,15 @@
 </div>
 <section id="create-lead" class="first">
 
-    <g:hasErrors bean="${suspectInstance}">
+    <g:hasErrors bean="${prospectInstance}">
         <div class="alert alert-error">
-            <g:renderErrors bean="${suspectInstance}" as="list"/>
+            <g:renderErrors bean="${prospectInstance}" as="list"/>
         </div>
     </g:hasErrors>
 
-    <g:form action="save" class="form-horizontal new" name="suspectForm">
+    <g:form action="save" class="form-horizontal new" name="prospectForm">
         <fieldset class="form">
-            <g:render template="/lead/form" model="['leadInstance': suspectInstance]"/>
+            <g:render template="/lead/form" model="['leadInstance': prospectInstance]"/>
         </fieldset>
 
         <div class="form-actions">

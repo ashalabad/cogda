@@ -6,11 +6,11 @@
         <g:render template='/address/form'
                   model="[addressInstance: leadContactAddressInstance.address, i: i, hidden: false, prefix: subPrefix + '.address.']"/>
         <div class="control-group fieldcontain ${hasErrors(bean: leadContactAddressInstance, field: 'primaryAddress', 'error')} ">
-            <label for="${subPrefix}primaryAddress" class="control-label"><g:message code="leadContactAddress.primaryAddress.label"
+            <label for="${subPrefix}.primaryAddress" class="control-label"><g:message code="leadContactAddress.primaryAddress.label"
                                                                          default="Primary Address"/></label>
 
             <div class="controls">
-                <bs:checkBox name="${subPrefix}primaryAddress" value="${leadContactAddressInstance?.primaryAddress}"/>
+                <bs:checkBox name="${subPrefix}.primaryAddress" value="${leadContactAddressInstance?.primaryAddress}"/>
                 <span class="help-inline">${hasErrors(bean: leadContactAddressInstance, field: 'primaryAddress', 'error')}</span>
             </div>
         </div>

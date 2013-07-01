@@ -27,7 +27,6 @@ class ContactEmailAddress {
 
     static constraints = {
         emailAddress(nullable:false, email:true)
-        primaryEmailAddress(nullable:true)
         published(nullable:true)
     }
 }

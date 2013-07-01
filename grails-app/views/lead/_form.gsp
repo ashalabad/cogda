@@ -1,28 +1,35 @@
 <%@ page import="com.cogda.multitenant.Lead" %>
 
-<div class="control-group fieldcontain ${hasErrors(bean: leadInstance, field: 'clientId', 'error')} ">
-    <label for="clientId" class="control-label"><g:message code="lead.clientId.label" default="Client Id"/></label>
+<div class="control-group fieldcontain ${hasErrors(bean: leadInstance, field: 'clientId', 'error')} required">
+    <label for="clientId" class="control-label"><g:message code="lead.clientId.label" default="Client Id"/><span
+            class="required-indicator">*</span></label>
 
     <div class="controls">
-        <g:textField name="clientId" value="${leadInstance?.clientId}"/>
+        <g:textField name="clientId" required="" value="${leadInstance?.clientId}"/>
         <span class="help-inline">${hasErrors(bean: leadInstance, field: 'clientId', 'error')}</span>
     </div>
 </div>
 
-<div class="control-group fieldcontain ${hasErrors(bean: leadInstance, field: 'ownerName', 'error')} ">
-    <label for="ownerName" class="control-label"><g:message code="lead.ownerName.label" default="Owner Name"/></label>
+<div class="control-group fieldcontain ${hasErrors(bean: leadInstance, field: 'ownerName', 'error')} required">
+    <label for="ownerName" class="control-label"><g:message code="lead.ownerName.label" default="Owner Name"/><span
+            class="required-indicator">*</span></label>
 
     <div class="controls">
-        <g:textField name="ownerName" value="${leadInstance?.ownerName}"/>
+        <g:textField name="ownerName" required="" value="${leadInstance?.ownerName}"/>
         <span class="help-inline">${hasErrors(bean: leadInstance, field: 'ownerName', 'error')}</span>
     </div>
 </div>
 
-<div class="control-group fieldcontain ${hasErrors(bean: suspectInstance, field: 'businessType', 'error')} ">
-    <label for="businessType" class="control-label"><g:message code="lead.businessType.label" default="Business Type" /></label>
+<div class="control-group fieldcontain ${hasErrors(bean: leadInstance, field: 'businessType', 'error')} ">
+    <label for="businessType" class="control-label"><g:message code="lead.businessType.label"
+                                                               default="Business Type"/></label>
+
     <div class="controls">
-        <g:select id="businessType" name="businessType.id" from="${com.cogda.domain.admin.BusinessType.list().sort {it.description}}" optionValue="${{it.description}}" optionKey="id" value="${suspectInstance?.businessType?.id}" class="many-to-one" noSelection="['null': '']"/>
-        <span class="help-inline">${hasErrors(bean: suspectInstance, field: 'businessType', 'error')}</span>
+        <g:select id="businessType" name="businessType.id"
+                  from="${com.cogda.domain.admin.BusinessType.list().sort { it.description }}"
+                  optionValue="${{ it.description }}" optionKey="id" value="${leadInstance?.businessType?.id}"
+                  class="many-to-one" noSelection="['null': '']"/>
+        <span class="help-inline">${hasErrors(bean: leadInstance, field: 'businessType', 'error')}</span>
     </div>
 </div>
 
@@ -46,12 +53,12 @@
     </div>
 </div>
 
-<div class="control-group fieldcontain ${hasErrors(bean: leadInstance, field: 'clientName', 'error')} ">
-    <label for="clientName" class="control-label"><g:message code="lead.clientName.label"
-                                                             default="Client Name"/></label>
+<div class="control-group fieldcontain ${hasErrors(bean: leadInstance, field: 'clientName', 'error')} required">
+    <label for="clientName" class="control-label"><g:message code="lead.clientName.label" default="Client Name"/><span
+            class="required-indicator">*</span></label>
 
     <div class="controls">
-        <g:textField name="clientName" value="${leadInstance?.clientName}"/>
+        <g:textField name="clientName" required="" value="${leadInstance?.clientName}"/>
         <span class="help-inline">${hasErrors(bean: leadInstance, field: 'clientName', 'error')}</span>
     </div>
 </div>
