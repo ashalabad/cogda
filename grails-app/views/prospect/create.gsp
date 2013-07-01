@@ -33,7 +33,7 @@
         </div>
     </g:hasErrors>
 
-    <g:form action="save" class="form-horizontal new" name="prospectForm">
+    <g:form action="save" class="form-horizontal new" name="prospectForm" autocomplete="off">
         <fieldset class="form">
             <g:render template="/lead/form" model="['leadInstance': prospectInstance]"/>
         </fieldset>

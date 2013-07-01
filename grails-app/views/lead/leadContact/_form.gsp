@@ -1,6 +1,9 @@
 <%@ page import="com.cogda.multitenant.Lead;com.cogda.multitenant.LeadContact" %>
 <div id="${prefix}">
+
 <fieldset class="embedded"><legend><g:message code="leadContact.label" default="Contact"/></legend>
+    <g:hiddenField name="${prefix}id" value="${leadContactInstance?.id}" />
+    <g:hiddenField name="${prefix}version" value="${leadContactInstance?.version}" />
 
 <div class="control-group fieldcontain ${hasErrors(bean: leadContactInstance, field: 'firstName', 'error')} required">
     <label for="${prefix}firstName" class="control-label"><g:message code="leadContact.firstName.label"

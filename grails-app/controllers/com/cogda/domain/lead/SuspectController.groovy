@@ -57,7 +57,7 @@ class SuspectController extends BaseController {
             map.DT_RowId = "row_" + suspect.id
             map.version = suspect.version
             map.clientId = suspect.clientId
-            map.businessType = suspect.businessType.description
+            map.businessType = suspect.businessType?.description
             map.owner = suspect.ownerName
             map.createdOn = suspect.dateCreated
             map.clientName = suspect.clientName
@@ -89,11 +89,10 @@ class SuspectController extends BaseController {
         if (!suspectInstance.save(flush: true)) {
             respondUnprocessableEntity(suspectInstance)
             return
+        } else {
+            respondCreated suspectInstance
+            return
         }
-
-        flash.message = message(code: 'default.created.message', args: [message(code: 'suspect.label', default: 'Lead'), suspectInstance.id])
-        String redirectLink = generateRedirectLink("suspect", "show", [id: suspectInstance.id])
-        redirect(url: redirectLink)
     }
 
     def show() {

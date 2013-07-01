@@ -1,5 +1,6 @@
 <%@ page import="com.cogda.multitenant.Lead" %>
-
+<g:hiddenField name="id" value="${leadInstance?.id}" />
+<g:hiddenField name="version" value="${leadInstance?.version}" />
 <div class="control-group fieldcontain ${hasErrors(bean: leadInstance, field: 'clientId', 'error')} required">
     <label for="clientId" class="control-label"><g:message code="lead.clientId.label" default="Client Id"/><span
             class="required-indicator">*</span></label>

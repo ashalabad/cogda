@@ -5,7 +5,8 @@
     %{--<g:hiddenField name='leadContactPhoneNumbers[${i}].deleted' value='false'/>--}%
     %{--<g:hiddenField name='leadContactPhoneNumbers[${i}].new' value='false'/>--}%
 
-
+    <g:hiddenField name="${prefix}id" value="${leadContactPhoneNumberInstance?.id}" />
+    <g:hiddenField name="${prefix}version" value="${leadContactPhoneNumberInstance?.version}" />
     <div class="control-group fieldcontain ${hasErrors(bean: leadContactPhoneNumberInstance, field: 'description', 'error')} ">
         <label for="${prefix}description" class="control-label"><g:message
                 code="leadContactPhoneNumber.description.label"
