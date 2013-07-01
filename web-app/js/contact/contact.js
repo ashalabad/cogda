@@ -36,18 +36,10 @@ function toggleEdit(){
 
 /*******contact details*****/
 function saveContactDetails(){
-  toggleEdit();
-  var contact = new Object();
-  contact.id = $("form").attr("id").replace("contactForm_","");
-  contact.title = $("#title").val();
-  contact.firstName = $("#firstName").val();
-  contact.lastName = $("#lastName").val();  
-  contact.middleName = $("#middleName").val();    
-  contact.initials = $("#initials").val();      
-  contact.jobTitle = $("#jobTitle").val();        
-  contact.companyName = $("#companyName").val();          
-  contact.website = $("#website").val();              
-  
+  toggleEdit();             
+  var id = $("form").attr("id").replace("contactForm_","");
+  var contact = buildContactForSave(id);
+    
   $.ajax({
       url: "/contact/update/"+contact.id,
       type: "post",
@@ -56,6 +48,61 @@ function saveContactDetails(){
       success: updateContact,
       contentType: "application/json; charset=utf-8"
   });
+}
+
+function saveNewContact(){
+  toggleEdit();
+  var contact = buildContactForSave(''); 
+  
+  if($.trim($("#contactPhoneNumber").val()).length > 0){
+    contact.contactEmailAddresses = [];
+    var emailAddress = new Object();    
+    emailAddress.emailAddress = $("#contactEmailAddress").val();
+    emailAddress.primaryEmailAddress = true;
+    contact.contactEmailAddresses.push(emailAddress);               
+  }
+  
+  if($.trim($("#contactPhoneNumber").val()).length > 0){
+    contact.contactPhoneNumbers = [];
+    var phoneNumber = new Object();    
+    phoneNumber.phoneNumber = $("#contactPhoneNumber").val();
+    phoneNumber.primaryPhoneNumber = true;
+    contact.contactPhoneNumbers.push(phoneNumber);    
+  }
+
+  $('#addContactModal').modal('hide');      
+  
+  $.ajax({
+      url: "/contact/save/",
+      type: "post",
+      dataType: "json",
+      data: JSON.stringify(contact),
+      success: showEdit,
+      contentType: "application/json; charset=utf-8"
+  });
+}
+
+function buildContactForSave(id){
+  var contact = new Object();
+  if(id != ''){
+    contact.id = id;
+  }
+  contact.title = $("#title").val();
+  contact.firstName = $("#firstName").val();
+  contact.lastName = $("#lastName").val();  
+  contact.middleName = $("#middleName").val();    
+  contact.initials = $("#initials").val();      
+  contact.jobTitle = $("#jobTitle").val();        
+  contact.companyName = $("#companyName").val();          
+  contact.website = $("#website").val();
+  return contact;
+}
+
+function showEdit(data){
+  $("#contactModalBody").empty();
+  $("#contactModalBody").load("/contact/showForm/"+data.id, function(){
+    $('#contactModal').modal('show');               
+  });  
 }
 
 function updateContact(data){

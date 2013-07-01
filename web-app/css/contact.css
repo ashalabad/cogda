@@ -8,7 +8,7 @@ label{font-weight: bold;}
 
 #contactForm_new .template {display:block;visibility:visible;}
 #contactHeader {width:300px;}
-#contactModal {width:960px;left:450px;}
+/*#contactModal {width:960px;left:450px;}*/
 div.field {padding:2px;clear:both;}
 div.field input {float:left;}
 fieldset{margin-bottom:45px;}
