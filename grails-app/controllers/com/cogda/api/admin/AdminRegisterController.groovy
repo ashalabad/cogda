@@ -106,7 +106,9 @@ class AdminRegisterController {
     }
 
     def approve(long id) {
-        Registration registrationInstance = Registration.get(id)
+        Registration registrationInstance = Registration.findById(id, [fetch: [emailConfirmationLogs: "eager",
+                                                                        companyType: "eager",
+                                                                        existingCompany: "eager"]])
         if (!registrationInstance) {
             respondNotFound(id)
             return
