@@ -6,6 +6,10 @@ label{font-weight: bold;}
 .row_selected td{background-color: #ccc !important;}
 /********end datatable stuff******/
 
+label.error {
+  font-size: 12px;
+  margin-top: -15px
+}
 #contactForm_new .template {display:block;visibility:visible;}
 #contactHeader {width:300px;}
 /*#contactModal {width:960px;left:450px;}*/

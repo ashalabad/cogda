@@ -1,3 +1,5 @@
+var newValidator;
+var updateValidator;
 $(document).ready(function() {
     $('#contactList').dataTable(
     {
@@ -20,11 +22,48 @@ $(document).ready(function() {
             $(nRow).dblclick( function() {
                 var rowId = $(this).attr("id").replace("row_","");
                 $("#contactModalBody").load("/contact/showForm/"+rowId, function(){
-                  $('#contactModal').modal('show');               
+                  $('#contactModal').modal('show');    
+                  updateValidator = $("#contactForm_"+rowId).validate({
+                     rules: {
+                         firstName: {
+                             minlength: 1,
+                             required: true
+                         },
+                         lastName: {
+                             minlength: 1,
+                             required: true
+                         },
+                         website: {
+                           url: true
+                         }
+                     }                
+                   });                             
                 });
             });
         }                
-    });
+    });  
+      
+    newValidator = $("#contactForm_new").validate({
+       rules: {
+           firstName: {
+               minlength: 1,
+               required: true
+           },
+           lastName: {
+               minlength: 1,
+               required: true
+           },
+           website: {
+             url: true
+           },
+           contactEmailAddress: {
+             email: true
+           }
+       }                
+     });   
+     
+            
+    
 });
 
 function toggleEdit(){
@@ -35,23 +74,26 @@ function toggleEdit(){
 }
 
 /*******contact details*****/
-function saveContactDetails(){
-  toggleEdit();             
+function saveContactDetails(){         
   var id = $("form").attr("id").replace("contactForm_","");
   var contact = buildContactForSave(id);
-    
-  $.ajax({
-      url: "/contact/update/"+contact.id,
-      type: "post",
-      dataType: "json",
-      data: JSON.stringify(contact),
-      success: updateContact,
-      contentType: "application/json; charset=utf-8"
-  });
+  
+  if( $("#contactForm_"+id+" [name='firstName']").valid() &&
+    $("#contactForm_"+id+" [name='lastName']").valid() &&
+    $("#contactForm_"+id+" [name='website']").valid() ){
+    toggleEdit();          
+    $.ajax({
+        url: "/contact/update/"+contact.id,
+        type: "post",
+        dataType: "json",
+        data: JSON.stringify(contact),
+        success: updateContact,
+        contentType: "application/json; charset=utf-8"
+    });    
+  }
 }
 
 function saveNewContact(){
-  toggleEdit();
   var contact = buildContactForSave(''); 
   
   if($.trim($("#contactPhoneNumber").val()).length > 0){
@@ -70,16 +112,22 @@ function saveNewContact(){
     contact.contactPhoneNumbers.push(phoneNumber);    
   }
 
-  $('#addContactModal').modal('hide');      
+  if( $("#contactForm_new [name='firstName']").valid() &&
+  $("#contactForm_new [name='lastName']").valid() &&
+  $("#contactForm_new [name='website']").valid() &&
+  $("#contactForm_new [name='contactEmailAddress']").valid() ){    
+//  if(validator.valid() ==  true){  
+    $('#addContactModal').modal('hide');      
   
-  $.ajax({
-      url: "/contact/save/",
-      type: "post",
-      dataType: "json",
-      data: JSON.stringify(contact),
-      success: showEdit,
-      contentType: "application/json; charset=utf-8"
-  });
+    $.ajax({
+        url: "/contact/save/",
+        type: "post",
+        dataType: "json",
+        data: JSON.stringify(contact),
+        success: showEdit,
+        contentType: "application/json; charset=utf-8"
+    });
+  }
 }
 
 function buildContactForSave(id){
