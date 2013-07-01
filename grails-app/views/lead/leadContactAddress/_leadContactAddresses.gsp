@@ -3,6 +3,8 @@
 <div id="childLeadContactAddresses" class="control-group fieldcontain">
     <g:each var="leadContactAddressInstance" in="${leadContactInstance.leadContactAddresses}" status="i">
         <g:set var="subPrefix" value="${prefix + 'leadContactAddresses[' + i + ']'}"/>
+        <g:hiddenField name="${subPrefix}.id" value="${leadContactAddressInstance?.id}" />
+        <g:hiddenField name="${subPrefix}.version" value="${leadContactAddressInstance?.version}" />
         <g:render template='/address/form'
                   model="[addressInstance: leadContactAddressInstance.address, i: i, hidden: false, prefix: subPrefix + '.address.']"/>
         <div class="control-group fieldcontain ${hasErrors(bean: leadContactAddressInstance, field: 'primaryAddress', 'error')} ">

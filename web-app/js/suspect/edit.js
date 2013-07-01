@@ -3,6 +3,49 @@ $(document).ready(function () {
     $('#suspectForm').off('submit');
     isNew = ($('form').hasClass('new'));
 
+    var validator = $("#suspectForm").validate({
+        rules: {
+            clientName: {
+                minlength: 1,
+                required: true
+            },
+            firstName: {
+                minlength: 1,
+                required: true
+            },
+            lastName: {
+                minlength: 1,
+                required: true
+            },
+            emailAddress: {
+                required: true,
+                email: true
+            },
+            country: {
+                required: true
+            },
+            clientId: {
+                minlength: 1,
+                required: true
+            },
+            ownerName: {
+                minlength: 1,
+                required: true
+            },
+            phoneNumber: {
+                minlength: 1,
+                required: true
+            }
+        },
+        highlight: function (element) {
+            $(element).closest('.control-group').removeClass('success').addClass('error');
+        },
+        success: function (element) {
+            element.text('OK!').addClass('valid')
+                .closest('.control-group').removeClass('error').addClass('success');
+        }
+    });
+
     $('#suspectForm').on("submit", function (e) {
         e.preventDefault();
         var route = isNew ? 'save' : 'update';
@@ -10,7 +53,7 @@ $(document).ready(function () {
             $.ajax(
                 {
                     type: 'POST',
-                    data: $(this).serialize(),
+                    data: $(this).serialize(),//JSON.stringify($('#suspectForm').serializeObject()),//$(this).serialize(),
                     url: '/suspect/' + route,
                     success: function (data, textStatus, xhr) {
                         suspectHandler(data, textStatus, xhr);
@@ -61,50 +104,11 @@ $(document).ready(function () {
             prnt.hide();
         }
     });
-
-    var validator = $("#suspectForm").validate({
-        rules: {
-            clientName: {
-                minlength: 1,
-                required: true
-            },
-            firstName: {
-                minlength: 1,
-                required: true
-            },
-            lastName: {
-                minlength: 1,
-                required: true
-            },
-            emailAddress: {
-                required: true,
-                email: true
-            },
-            country: {
-                required: true
-            },
-            clientId: {
-                minlength: 1,
-                required: true
-            },
-            ownerName: {
-                minlength: 1,
-                required: true
-            }
-        },
-        highlight: function (element) {
-            $(element).closest('.control-group').removeClass('success').addClass('error');
-        },
-        success: function (element) {
-            element.text('OK!').addClass('valid')
-                .closest('.control-group').removeClass('error').addClass('success');
-        }
-    });
 });
 
 function suspectHandler(data, textStatus, xhr) {
     var message = isNew ? "Save " : "Update "
-    if (xhr.status == 200) {
+    if (xhr.status == 201 || xhr.status == 200) {
         var errorMessages = $("#errorMessages");
         errorMessages.html("");
         errorMessages.hide();
@@ -114,6 +118,9 @@ function suspectHandler(data, textStatus, xhr) {
             opacity: 0.8,
             delay: 10000
         });
+        if (isNew) {
+            window.location.replace("../prospect");
+        }
     } else {
         var errorMessages = $("#errorMessages");
         errorMessages.html("<h4>Errors!</h4>");

@@ -57,12 +57,12 @@ class ProspectController extends BaseController {
             map.DT_RowId = "row_" + prospect.id
             map.version = prospect.version
             map.clientId = prospect.clientId
-            map.businessType = prospect.businessType.description
+            map.businessType = prospect.businessType?.description
             map.owner = prospect.ownerName
             map.createdOn = prospect.dateCreated
             map.clientName = prospect.clientName
             map.contactName = prospect.primaryLeadContactName
-            map.phoneNumber = prospect.primaryLeadContactPhoneNumber.phoneNumber
+            map.phoneNumber = prospect.primaryLeadContactPhoneNumber?.phoneNumber
             map.email = prospect.primaryEmailAddress
             map.details = remoteLink([controller: 'prospect', action: 'show', id: prospect.id, onSuccess: 'modalDialogHandler(data)', method: 'GET'], 'Details')
             map.edit = remoteLink([controller: 'prospect', action: 'edit', id: prospect.id, onSuccess: 'modalDialogHandler(data)', method: 'GET'], 'Edit')
@@ -89,11 +89,10 @@ class ProspectController extends BaseController {
         if (!prospectInstance.save(flush: true)) {
             respondUnprocessableEntity(prospectInstance)
             return
+        } else {
+            respondCreated prospectInstance
+            return
         }
-
-        flash.message = message(code: 'default.created.message', args: [message(code: 'prospect.label', default: 'Lead'), prospectInstance.id])
-        String redirectLink = generateRedirectLink("prospect", "show", [id: prospectInstance.id])
-        redirect(url: redirectLink)
     }
 
     def show() {
@@ -138,8 +137,9 @@ class ProspectController extends BaseController {
             }
         }
 
-        JsonElement jsonElement = GSON.parse(request)
-        prospectInstance.properties = jsonElement
+//        JsonElement jsonElement = GSON.parse(request)
+//        prospectInstance.properties = jsonElement
+        prospectInstance.properties = params
 
         if (prospectInstance.save(flush: true)) {
             respondUpdated(prospectInstance)
