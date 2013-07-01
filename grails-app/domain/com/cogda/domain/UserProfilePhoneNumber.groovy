@@ -11,9 +11,7 @@ class UserProfilePhoneNumber {
     boolean primaryPhoneNumber
     String description
 
-    PhoneNumber phoneNumber
-
-    static embedded = ['phoneNumber']
+    String phoneNumber
 
 	static belongsTo	= [userProfile:UserProfile]	// tells GORM to cascade commands: e.g., delete this object if the "parent" is deleted.
 
@@ -21,6 +19,6 @@ class UserProfilePhoneNumber {
         published(nullable:true)
         primaryPhoneNumber(nullable:true)
         description(nullable:true)
-        phoneNumber(nullable:true)
+        phoneNumber(nullable:false)
     }
 }
