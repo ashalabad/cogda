@@ -96,7 +96,7 @@
 
     </h4>
     <img class="" src="${resource(dir: 'images/kudos', file: 'DownloadCrate.png')}" title="${message(code: "userImport.file.example.download")}"/>
-    <a href = "https://s3-us-west-2.amazonaws.com/cogda-production/cogdaweb/documents/CogdaUserImportFileExample.csv">
+    <a href = "https://s3-us-west-2.amazonaws.com/cogda-production/cogdaweb/documents/CogdaTestUserImport.csv">
         <g:message code = "userImport.file.example.label"/>
     </a>
 </div>
