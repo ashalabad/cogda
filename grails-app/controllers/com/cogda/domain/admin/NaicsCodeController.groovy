@@ -3,12 +3,14 @@ package com.cogda.domain.admin
 import com.cogda.BaseController
 import com.google.gson.JsonElement
 import grails.plugin.gson.converters.GSON
+import grails.plugins.springsecurity.Secured
 
 
 /**
  * ContactController
  * A controller class handles incoming web requests and performs actions such as redirects, rendering views and so on.
  */
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class NaicsCodeController extends BaseController{
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]

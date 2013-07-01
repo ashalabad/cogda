@@ -8,6 +8,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
 import grails.converters.JSON
 import grails.plugin.gson.converters.GSON
+import grails.plugins.springsecurity.Secured
 import org.springframework.dao.DataIntegrityViolationException
 import static javax.servlet.http.HttpServletResponse.*
 import static org.codehaus.groovy.grails.web.servlet.HttpHeaders.*
@@ -17,6 +18,7 @@ import static grails.plugin.gson.http.HttpConstants.*
  * AccountController
  * A controller class handles incoming web requests and performs actions such as redirects, rendering views and so on.
  */
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class AccountController extends BaseController{
 
     ErrorMessageResolverService errorMessageResolverService

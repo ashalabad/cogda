@@ -1,12 +1,14 @@
 package com.cogda.domain.lead
 
 import com.cogda.multitenant.LeadFileReference
+import grails.plugins.springsecurity.Secured
 import org.springframework.dao.DataIntegrityViolationException
 
 /**
  * LeadFileReferenceController
  * A controller class handles incoming web requests and performs actions such as redirects, rendering views and so on.
  */
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class LeadFileReferenceController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]

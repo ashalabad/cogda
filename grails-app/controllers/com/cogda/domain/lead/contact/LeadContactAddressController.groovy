@@ -6,6 +6,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
 import grails.plugin.gson.converters.GSON
+import grails.plugins.springsecurity.Secured
 import org.springframework.dao.DataIntegrityViolationException
 
 import static grails.plugin.gson.http.HttpConstants.SC_UNPROCESSABLE_ENTITY
@@ -17,6 +18,7 @@ import static org.codehaus.groovy.grails.web.servlet.HttpHeaders.LOCATION
  * LeadContactAddressController
  * A controller class handles incoming web requests and performs actions such as redirects, rendering views and so on.
  */
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class LeadContactAddressController{
 
     GsonBuilder gsonBuilder

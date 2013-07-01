@@ -1,12 +1,14 @@
 package com.cogda.domain.lead.contact
 
 import com.cogda.multitenant.LeadContact
+import grails.plugins.springsecurity.Secured
 import org.springframework.dao.DataIntegrityViolationException
 
 /**
  * LeadContactController
  * A controller class handles incoming web requests and performs actions such as redirects, rendering views and so on.
  */
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class LeadContactController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]

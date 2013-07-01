@@ -1,12 +1,14 @@
 package com.cogda.domain.lead
 
 import com.cogda.multitenant.LeadNote
+import grails.plugins.springsecurity.Secured
 import org.springframework.dao.DataIntegrityViolationException
 
 /**
  * LeadNoteController
  * A controller class handles incoming web requests and performs actions such as redirects, rendering views and so on.
  */
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class LeadNoteController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
