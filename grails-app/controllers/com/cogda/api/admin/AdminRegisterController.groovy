@@ -17,7 +17,6 @@ import static org.codehaus.groovy.grails.web.servlet.HttpHeaders.LOCATION
  * AdminRegisterController
  * A controller class handles incoming web requests and performs actions such as redirects, rendering views and so on.
  */
-@Secured('ROLE_ADMINISTRATOR')
 class AdminRegisterController {
 
     static allowedMethods = [list: 'GET',
