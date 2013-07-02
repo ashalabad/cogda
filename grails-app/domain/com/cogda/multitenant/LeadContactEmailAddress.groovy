@@ -22,6 +22,6 @@ class LeadContactEmailAddress {
     Date	lastUpdated
 
     static constraints = {
-        emailAddress(nullable:false, email:true)
+        emailAddress(blank:false, nullable:false, email:true)
     }
 }

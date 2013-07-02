@@ -7,17 +7,21 @@ $(document).ready(function () {
         rules: {
             clientName: {
                 minlength: 1,
+                maxlength: 50,
                 required: true
             },
             firstName: {
                 minlength: 1,
+                maxlength: 50,
                 required: true
             },
             lastName: {
                 minlength: 1,
+                maxlength: 50,
                 required: true
             },
             emailAddress: {
+                minlength: 1,
                 required: true,
                 email: true
             },
@@ -26,10 +30,12 @@ $(document).ready(function () {
             },
             clientId: {
                 minlength: 1,
+                maxlength: 50,
                 required: true
             },
             ownerName: {
                 minlength: 1,
+                maxlength: 50,
                 required: true
             },
             phoneNumber: {
@@ -63,10 +69,10 @@ $(document).ready(function () {
                         var messages;
                         switch (XMLHttpRequest.status) {
                             case 406:
-                                messages = {errors: {error: "JSON not sent to server."}}
+                                messages = {errors: {error: "JSON not sent to server."}};
                                 break;
                             case 500:
-                                messages = {errors: {error: 'Server error. Cannot parse JSON response.'} }
+                                messages = {errors: {error: 'Server error. Cannot parse JSON response.'} };
                                 break;
                             default:
                                 try {
@@ -122,7 +128,7 @@ $(document).ready(function () {
 });
 
 function prospectHandler(data, textStatus, xhr) {
-    var message = isNew ? "Save " : "Update "
+    var message = isNew ? "Save " : "Update ";
     if (xhr.status == 201 || xhr.status == 200) {
         var errorMessages = $("#errorMessages");
         errorMessages.html("");
@@ -140,9 +146,9 @@ function prospectHandler(data, textStatus, xhr) {
         var errorMessages = $("#errorMessages");
         errorMessages.html("<h4>Errors!</h4>");
         errorMessages.append('<ul id="errorsList">');
-        errorMessages.append('<li>')
-        errorMessages.append(data.message)
-        errorMessages.append('</li>')
+        errorMessages.append('<li>');
+        errorMessages.append(data.message);
+        errorMessages.append('</li>');
         errorMessages.append('</ul>');
         errorMessages.show();
         errorMessages.focus();
@@ -158,7 +164,7 @@ function init(p, count) {
 }
 
 function addPhone() {
-    var clone = $("#leadContactPhoneNumber_clone").clone()
+    var clone = $("#leadContactPhoneNumber_clone").clone();
     var htmlId = prefix + 'leadContactPhoneNumbers[' + childCount + ']';
     var phoneDescriptionInput = clone.find("input[id$=description]");
     var phoneInput = clone.find("input[id$=phoneNumber]");

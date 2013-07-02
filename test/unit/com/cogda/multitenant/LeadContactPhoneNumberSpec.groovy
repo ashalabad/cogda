@@ -1,17 +1,31 @@
 package com.cogda.multitenant
 
+import com.cogda.ConstraintUnitSpec
+import grails.test.mixin.TestFor
+import spock.lang.Unroll
 
-
-import grails.test.mixin.*
-import org.junit.*
-
-/**
- * See the API for {@link grails.test.mixin.domain.DomainClassUnitTestMixin} for usage instructions
- */
 @TestFor(LeadContactPhoneNumber)
-class LeadContactPhoneNumberSpec {
+class LeadContactPhoneNumberSpec extends ConstraintUnitSpec {
 
-    void testSomething() {
-        fail "Implement me"
+    def setup() {
+        mockForConstraintsTests(LeadContactPhoneNumber, [new LeadContactPhoneNumber()])
+    }
+
+    @Unroll("test leadContactPhoneNumber #field is #error using #value")
+    def 'test leadContactPhoneNumber all constraints'() {
+        when:
+        def leadContactPhoneNumber = new LeadContactPhoneNumber("$field": value)
+
+        then:
+        validateConstraints(leadContactPhoneNumber, field, error)
+
+        where:
+        error      | field         | value
+        'valid'    | 'description' | null
+        'valid'    | 'description' | ''
+        'nullable' | 'phoneNumber' | null
+        'blank'    | 'phoneNumber' | ''
+        'valid'    | 'phoneNumber' | getLongString(50)
+        'valid'    | 'phoneNumber' | getLongString(1)
     }
 }
