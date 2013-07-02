@@ -48,18 +48,33 @@ $(document).ready(function () {
 
     $('#suspectForm').on("submit", function (e) {
         e.preventDefault();
-        var route = isNew ? 'save' : 'update';
+        var route = isNew ? 'save' : 'update/' + $("#suspectForm input[name='id']").val();
         if (validator.valid()) {
             $.ajax(
                 {
                     type: 'POST',
-                    data: $(this).serialize(),//JSON.stringify($('#suspectForm').serializeObject()),//$(this).serialize(),
+                    data: JSON.stringify(form2js('suspectForm', '.', true)),
+                    contentType: 'application/json; charset=utf-8',
                     url: '/suspect/' + route,
                     success: function (data, textStatus, xhr) {
                         suspectHandler(data, textStatus, xhr);
                     },
                     error: function (XMLHttpRequest, textStatus, errorThrown) {
-                        var messages = JSON.parse(XMLHttpRequest.responseText)
+                        var messages;
+                        switch (XMLHttpRequest.status) {
+                            case 406:
+                                messages = {errors: {error: "JSON not sent to server."}}
+                                break;
+                            case 500:
+                                messages = {errors: {error: 'Server error. Cannot parse JSON response.'} }
+                                break;
+                            default:
+                                try {
+                                    messages = JSON.parse(XMLHttpRequest.responseText)
+                                } catch (e) {
+                                    messages = {errors: {error: 'Unknown error occurred'}}
+                                }
+                        }
                         var errorMessages = $("#errorMessages");
                         errorMessages.html("<h4>Errors!</h4>");
                         errorMessages.append('<ul id="errorsList">');
@@ -119,7 +134,7 @@ function suspectHandler(data, textStatus, xhr) {
             delay: 10000
         });
         if (isNew) {
-            window.location.replace("../prospect");
+            window.location.replace("../suspect");
         }
     } else {
         var errorMessages = $("#errorMessages");

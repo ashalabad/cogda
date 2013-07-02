@@ -6,6 +6,7 @@ modules = {
         resource url:'js/jqueryValidate/jquery.validate.min.js'
         resource url:'js/jqueryValidate/additional-methods.min.js'
         resource url:'js/spin/spin.min.js'
+        resource url:'js/form2js/form2js.js'
         resource url:'css/docs.css'
         resource url:'css/cogda.css'
     }

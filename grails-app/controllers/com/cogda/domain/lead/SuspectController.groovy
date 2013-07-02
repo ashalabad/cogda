@@ -31,7 +31,6 @@ class SuspectController extends BaseController {
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
     GsonBuilder gsonBuilder
-    def errorMessageResolverService
 
     def index() {
     }
@@ -84,7 +83,11 @@ class SuspectController extends BaseController {
     }
 
     def save() {
-        def suspectInstance = new Lead(params)
+        if (!requestIsJson()) {
+            respondNotAcceptable()
+            return
+        }
+        Lead suspectInstance = new Lead(request.GSON)
         suspectInstance.leadType = LeadType.SUSPECT
         if (!suspectInstance.save(flush: true)) {
             respondUnprocessableEntity(suspectInstance)

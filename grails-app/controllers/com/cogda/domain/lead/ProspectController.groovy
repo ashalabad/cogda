@@ -31,7 +31,6 @@ class ProspectController extends BaseController {
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
     GsonBuilder gsonBuilder
-    def errorMessageResolverService
 
     def index() {
     }
@@ -84,7 +83,11 @@ class ProspectController extends BaseController {
     }
 
     def save() {
-        def prospectInstance = new Lead(params)
+        if (!requestIsJson()) {
+            respondNotAcceptable()
+            return
+        }
+        Lead prospectInstance = new Lead(request.GSON)
         prospectInstance.leadType = LeadType.PROSPECT
         if (!prospectInstance.save(flush: true)) {
             respondUnprocessableEntity(prospectInstance)
@@ -132,14 +135,13 @@ class ProspectController extends BaseController {
 
         if (params.version != null) {
             if (prospectInstance.version > params.long('version')) {
-                respondConflict()
+                respondConflict prospectInstance
                 return
             }
         }
 
-//        JsonElement jsonElement = GSON.parse(request)
-//        prospectInstance.properties = jsonElement
-        prospectInstance.properties = params
+        JsonElement jsonElement = GSON.parse(request)
+        prospectInstance.properties = jsonElement
 
         if (prospectInstance.save(flush: true)) {
             respondUpdated(prospectInstance)
