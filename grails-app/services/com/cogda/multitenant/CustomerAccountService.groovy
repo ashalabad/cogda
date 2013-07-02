@@ -344,7 +344,7 @@ class CustomerAccountService {
         user.passwordExpired = false
         user.encodePassword = false  // do not allow the password to be re-encoded
 
-
+        Company company
         customerAccount.withThisTenant {
 
             user.save() ?: log.error ("Error saving User errors -> ${user.errors}")
@@ -356,6 +356,8 @@ class CustomerAccountService {
             // Add the roles to the User
             UserRole.create(user, roleAdministrator)
             UserRole.create(user, roleUser)
+
+            company = Company.retrieveRootCompany()
         }
 
         // Add the UserProfile for this User
@@ -363,6 +365,7 @@ class CustomerAccountService {
         userProfile.user = user
         userProfile.firstName = registration.firstName
         userProfile.lastName = registration.lastName
+        userProfile.company = company
         userProfile.save() ?: log.error ("Error saving UserProfile errors -> ${userProfile.errors}")
 
         UserProfileEmailAddress userProfileEmailAddress = new UserProfileEmailAddress()

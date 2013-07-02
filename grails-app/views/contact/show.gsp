@@ -90,7 +90,7 @@
 			<tr class="prop">
 				<td valign="top" class="name"><g:message code="contact.userProfile.label" default="User Profile" /></td>
 				
-				<td valign="top" class="value"><g:link controller="userProfile" action="show" id="${contactInstance?.userProfile?.id}">${contactInstance?.userProfile?.encodeAsHTML()}</g:link></td>
+				<td valign="top" class="value"><g:link controller="userProfileManager" action="show" id="${contactInstance?.userProfile?.id}">${contactInstance?.userProfile?.encodeAsHTML()}</g:link></td>
 				
 			</tr>
 		

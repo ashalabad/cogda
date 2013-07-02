@@ -17,7 +17,7 @@
                 <b class="caret"></b>
             </a>
             <ul class="dropdown-menu" role="menu">
-                <li class=""><a href="${createLink(controller:"userProfile", action:"edit")}">
+                <li class=""><a href="${createLink(controller:"userProfileManager")}">
                     <i class="icon-user"></i>
                     <g:message code="userProfile.edit.label"/>
                 </a></li>
@@ -36,11 +36,4 @@
         </li>
     </ul>
 
-    <noscript>
-    <ul class="nav pull-right">
-        <li class="">
-            <g:link controller="user" action="show"><g:message code="default.user.unknown.label"/></g:link>
-        </li>
-    </ul>
-    </noscript>
 </mt:hasTenant>
