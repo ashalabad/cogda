@@ -50,6 +50,11 @@ $(document).ready(function () {
             });
     });
 
+    $('body').on("deleteUserProfileAddressRequestEvent", function(event, data) {
+        var id = data.userProfileAddressId;
+        deleteUserProfileAddress(id);
+    });
+
     /**
      * Finds the first element in the given container element object
      * and inserts the HTML(data) before this element.
@@ -72,7 +77,6 @@ $(document).ready(function () {
         openUserProfileAddressEditModal(event);
 
     });
-
 
     // handle the click on the addUserProfileAddressButton
     $('#addUserProfileAddressButton').click(openUserProfileAddressAddModal);
@@ -154,6 +158,68 @@ $(document).ready(function () {
 
     function hideAddressModal(){
         $('#userProfileAddressModal').modal('hide');
+    }
+
+    $('#edit-userProfile').on('click', '.deleteUserProfileAddressButton', function(event) {
+        event.preventDefault();
+        // handle the click of the Delete User Profile Address Button
+        var $deleteButton = $(event.currentTarget);
+        var id = $deleteButton.attr("id").replace("userProfileAddressDeleteButton_", "");
+        deleteUserProfileAddress(id);
+    });
+
+    $('body').on('click', '#userProfileAddressDeleteButton', function(event) {
+        event.preventDefault();
+        // handle the click of the Delete User Profile Address Button
+        var id = document.forms["userProfileAddressForm"].elements["id"].value;
+        deleteUserProfileAddress(id);
+
+    });
+
+
+    /**
+     * Delete the User Profile address
+     * @param id
+     */
+    function deleteUserProfileAddress(id){
+        if(confirm("Are you sure?")){
+            $.ajax(
+                {
+                    type:'POST',
+                    url:'/userProfileAddress/delete/'+id,
+                    contentType: "application/json; charset=utf-8",
+                    success: function(data, textStatus, request){
+                        $('#userProfileAddress_'+id).remove();
+                        $('#userProfileAddressModal').modal('hide');
+                        successHandler(data, textStatus, request);
+                    },
+                    error:function(request,textStatus,errorThrown){
+                        var data = JSON.parse(request.responseText);
+                        for(i in data.errors){
+                            $.pnotify({
+                                title: 'Error Saving',
+                                text: data.errors[i],
+                                type: 'error',
+                                opacity: 0.8,
+                                delay: 4000,
+                                history:false
+                            });
+                        }
+                    }
+                }
+            );
+        }
+    }
+
+    function successHandler(data){
+        $.pnotify({
+            title: 'Success',
+            text: data.message,
+            type: 'success',
+            opacity: 0.8,
+            delay: 1000,
+            history: false
+        });
     }
 
 });

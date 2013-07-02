@@ -80,7 +80,7 @@
                     ${hasErrors(bean: userProfileInstance, field: 'userProfileAddresses', 'error')}
                 </span>
                 <div class="add-button">
-                    <button class="btn btn-success " data-userprofile-id="${userProfileInstance?.id}" id="addUserProfileAddressButton">
+                    <button class="btn btn-success btn-mini " data-userprofile-id="${userProfileInstance?.id}" id="addUserProfileAddressButton">
                         <i class="icon-plus"></i>
                         ${message(code: 'default.add.label', args: [message(code: 'userProfileAddress.label', default: 'UserProfileAddress')])}
                     </button>
@@ -99,7 +99,7 @@
                 </ul>
                 <span class="help-inline">${hasErrors(bean: userProfileInstance, field: 'userProfileEmailAddresses', 'error')}</span>
                 <div class="add-button">
-                    <button class="btn btn-success " data-userprofile-id="${userProfileInstance?.id}" id="addUserProfileEmailAddress">
+                    <button class="btn btn-success btn-mini" data-userprofile-id="${userProfileInstance?.id}" id="addUserProfileEmailAddress">
                         <i class="icon-plus"></i>
                         ${message(code: 'default.add.label', args: [message(code: 'userProfileEmailAddress.label', default: 'UserProfileEmailAddress')])}
                     </button>
@@ -118,7 +118,7 @@
                 </ul>
                 <span class="help-inline">${hasErrors(bean: userProfileInstance, field: 'userProfilePhoneNumbers', 'error')}</span>
                 <div class="add-button">
-                    <button class="btn btn-success " data-userprofile-id="${userProfileInstance?.id}" id="addUserProfilePhoneNumber">
+                    <button class="btn btn-success btn-mini" data-userprofile-id="${userProfileInstance?.id}" id="addUserProfilePhoneNumber">
                         <i class="icon-plus"></i>
                         ${message(code: 'default.add.label', args: [message(code: 'userProfilePhoneNumber.label', default: 'UserProfilePhoneNumber')])}
                     </button>
@@ -127,8 +127,4 @@
         </div>
 
     </fieldset>
-    <div class="form-actions">
-        <g:actionSubmit class="btn btn-primary" action="update" value="${message(code: 'default.button.update.label', default: 'Update')}" />
-        <button class="btn" type="reset"><g:message code="default.button.reset.label" default="Reset" /></button>
-    </div>
 </g:form>

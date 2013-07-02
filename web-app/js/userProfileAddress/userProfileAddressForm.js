@@ -9,7 +9,7 @@ $(document).ready(function () {
     var targetContext = "/userProfileAddress/";     // base context path
     var saveTarget = targetContext + "save"         // create
     var updateTarget = targetContext + "update/"     // update
-    var deleteTarget = targetContext + "delete/"     // delete
+
 
 
     var validator = $("#userProfileAddressForm").validate({
@@ -39,14 +39,6 @@ $(document).ready(function () {
         if($('#userProfileAddressForm').valid()){
             var id = document.forms["userProfileAddressForm"].elements["id"].value;
             updateAddress(id);
-        }
-    });
-
-    $('#userProfileAddressModal').on('click', '#userProfileAddressDeleteButton', function(e){
-        e.preventDefault();
-        var id = $('#id');
-        if(confirm("Are you sure?")){
-            deleteAddress(id);
         }
     });
 
@@ -148,17 +140,6 @@ $(document).ready(function () {
         var updateEvent = jQuery.Event("updateUserProfileAddressSuccessfulEvent");
         updateEvent.userProfileAddress = data;
         $("body").trigger(updateEvent, [data]);
-    }
-
-    /**
-     * Delete the User Profile Address
-     */
-    function deleteAddress(){
-        e.preventDefault();
-        var id = $('#id');
-        if(confirm("Are you sure?")){
-            deletePendingUser(id);
-        }
     }
 
 
