@@ -11,7 +11,34 @@ $(document).ready(function () {
 
     var addUserProfileAddressSuccessfulEvent = "addUserProfileAddressSuccessfulEvent";
     var updateUserProfileAddressSuccessfulEvent = "updateUserProfileAddressSuccessfulEvent";
-
+    var validator = $("#userProfileDetailsForm").validate({
+        rules: {
+            firstName: {
+                minlength: 1,
+                required: true
+            },
+            lastName: {
+                minlength: 1,
+                required: true
+            },
+            aboutDesc: {
+                maxlength: 5000
+            },
+            businessSpecialtiesDesc: {
+                maxlength: 5000
+            },
+            associationsDesc: {
+                maxlength: 5000
+            }
+        },
+        highlight: function(element) {
+            $(element).closest('.control-group').removeClass('success').addClass('error');
+        },
+        success: function(element) {
+            element.text('OK!').addClass('valid')
+                .closest('.control-group').removeClass('error').addClass('success');
+        }
+    });
 
     // Handles the successful add of new data in the Add Modal window
     $('body').on(addUserProfileAddressSuccessfulEvent, function(event, data) {
@@ -222,4 +249,95 @@ $(document).ready(function () {
         });
     }
 
+
+
+    // Edit User Details Button
+    // $('#editUserProfileDetails')
+    // on click show userProfileEditForm
+    $('#edit-userProfile').on('click', '#editUserProfileDetails', function(event) {
+        event.preventDefault();
+        retrieveEditUserProfileDetailsForm();
+    });
+
+    // Cancel Editing Button
+    // $('#cancelEditUserProfileDetails')
+    // on click show userProfileShowForm
+    $('#edit-userProfile').on('click', '.userProfileEditFormCancel', function(event) {
+        event.preventDefault();
+        retrieveShowUserProfileDetailsForm();
+    });
+
+
+    function getUserProfileId(){
+        var id = document.forms["userProfileDetailsForm"].elements["id"].value;
+        return id;
+    }
+
+    function retrieveEditUserProfileDetailsForm(){
+        $('#userProfileDetailsFieldset').load("/userProfileManager/editForm/"+getUserProfileId());
+    }
+
+    function retrieveShowUserProfileDetailsForm(){
+        $('#userProfileDetailsFieldset').load("/userProfileManager/showForm/"+getUserProfileId());
+    }
+
+    $('#edit-userProfile').on('click', '#userProfileEditFormSave', function(event) {
+        event.preventDefault();
+        if($('#userProfileEditFormSave').valid()){
+            updateUserProfileDetails(getUserProfileId());
+        }
+    });
+
+    /**
+     * Update the User Profile Address
+     */
+    function updateUserProfileDetails(id){
+        var json = JSON.stringify(form2js('userProfileDetailsForm', '.', true));
+        $.ajax(
+            {
+                type:'POST',
+                data:json,
+                url:"/userProfileManager/update/"+id,
+                dataType:'json',
+                contentType: "application/json; charset=utf-8",
+                success: function(data, textStatus, request){
+                    updateSuccessHandler(data, textStatus, request);
+                },
+                error:function(request,textStatus,errorThrown){
+                    var data = JSON.parse(request.responseText);
+                    if(textStatus == '422'){
+                        for(i in data.errors){
+                            $.pnotify({
+                                title: 'Error Saving',
+                                text: data.message,
+                                type: 'error',
+                                opacity: 0.8,
+                                delay: 4000,
+                                history:false
+                            });
+                        }
+                    }
+                }
+            }
+        );
+    }
+
+    /**
+     * the success handler for the successful update from updateUserProfileDetails
+     * @param data
+     * @param textStatus
+     * @param request
+     */
+    function updateSuccessHandler(data, textStatus, request){
+        $.pnotify({
+            title: 'Success',
+            text: data.message || "Save Successful",
+            type: 'success',
+            opacity: 0.8,
+            delay: 1000,
+            history: false
+        });
+        retrieveShowUserProfileDetailsForm();
+        window.scrollTo(0,0);
+    }
 });
