@@ -1,10 +1,10 @@
-<%@ page import="com.cogda.domain.Address" %>
+<%@ page import="com.cogda.domain.admin.SupportedCountryCode; com.cogda.common.UsState; com.cogda.domain.Address" %>
 
 
 
 <div class="control-group fieldcontain ${hasErrors(bean: addressInstance, field: 'addressOne', 'error')} ">
     <label for="${prefix}addressOne" class="control-label"><g:message code="address.addressOne.label"
-                                                             default="Address One"/></label>
+                                                                      default="Address One"/></label>
 
     <div class="controls">
         <g:textField name="${prefix}addressOne" value="${addressInstance?.addressOne}"/>
@@ -14,7 +14,7 @@
 
 <div class="control-group fieldcontain ${hasErrors(bean: addressInstance, field: 'addressTwo', 'error')} ">
     <label for="${prefix}addressTwo" class="control-label"><g:message code="address.addressTwo.label"
-                                                             default="Address Two"/></label>
+                                                                      default="Address Two"/></label>
 
     <div class="controls">
         <g:textField name="${prefix}addressTwo" value="${addressInstance?.addressTwo}"/>
@@ -24,7 +24,7 @@
 
 <div class="control-group fieldcontain ${hasErrors(bean: addressInstance, field: 'addressThree', 'error')} ">
     <label for="${prefix}addressThree" class="control-label"><g:message code="address.addressThree.label"
-                                                               default="Address Three"/></label>
+                                                                        default="Address Three"/></label>
 
     <div class="controls">
         <g:textField name="${prefix}addressThree" value="${addressInstance?.addressThree}"/>
@@ -33,7 +33,8 @@
 </div>
 
 <div class="control-group fieldcontain ${hasErrors(bean: addressInstance, field: 'longitude', 'error')} ">
-    <label for="${prefix}longitude" class="control-label"><g:message code="address.longitude.label" default="Longitude"/></label>
+    <label for="${prefix}longitude" class="control-label"><g:message code="address.longitude.label"
+                                                                     default="Longitude"/></label>
 
     <div class="controls">
         <g:field type="number" name="${prefix}longitude" step="any" value="${addressInstance?.longitude}"/>
@@ -42,7 +43,8 @@
 </div>
 
 <div class="control-group fieldcontain ${hasErrors(bean: addressInstance, field: 'latitude', 'error')} ">
-    <label for="${prefix}latitude" class="control-label"><g:message code="address.latitude.label" default="Latitude"/></label>
+    <label for="${prefix}latitude" class="control-label"><g:message code="address.latitude.label"
+                                                                    default="Latitude"/></label>
 
     <div class="controls">
         <g:field type="number" name="${prefix}latitude" step="any" value="${addressInstance?.latitude}"/>
@@ -63,7 +65,8 @@
     <label for="${prefix}state" class="control-label"><g:message code="address.state.label" default="State"/></label>
 
     <div class="controls">
-        <g:textField name="${prefix}state" value="${addressInstance?.state}"/>
+        <g:select class="state input-small" name="${prefix}state" from="${UsState.values()}" optionKey="key"
+                  noSelection="['': 'State']" value="${addressInstance?.state}"/>
         <span class="help-inline">${hasErrors(bean: addressInstance, field: 'state', 'error')}</span>
     </div>
 </div>
@@ -76,8 +79,9 @@
     <div class="controls">
         <g:countrySelect id="${prefix}country"
                          name="${prefix}address.country"
-                         from="${com.cogda.domain.admin.SupportedCountryCode.retrieveSupportedCountryCodes()}"
-                         value="${addressInstance?.country}"/>
+                         from="${SupportedCountryCode.retrieveSupportedCountryCodes()}"
+                         value="${addressInstance?.country}"
+                         noSelection="['': 'Country']"/>
         <span class="help-inline">${hasErrors(bean: addressInstance, field: 'country', 'error')}</span>
     </div>
 </div>
@@ -92,7 +96,8 @@
 </div>
 
 <div class="control-group fieldcontain ${hasErrors(bean: addressInstance, field: 'zipcode', 'error')} ">
-    <label for="${prefix}zipcode" class="control-label"><g:message code="address.zipcode.label" default="Zipcode"/></label>
+    <label for="${prefix}zipcode" class="control-label"><g:message code="address.zipcode.label"
+                                                                   default="Zipcode"/></label>
 
     <div class="controls">
         <g:textField name="${prefix}zipcode" value="${addressInstance?.zipcode}"/>
