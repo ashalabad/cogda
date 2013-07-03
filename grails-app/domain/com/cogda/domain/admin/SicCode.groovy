@@ -7,8 +7,8 @@ package com.cogda.domain.admin
 class SicCode {
 
     /* Default (injected) attributes of GORM */
-	Long id
-	Long version
+    Long id
+    Long version
 
     String code
     String description
@@ -22,29 +22,27 @@ class SicCode {
     Boolean active = Boolean.TRUE  //  True-> Available for selection and reporting  | False-> Available for reporting only
 
     /* Automatic timestamping of GORM */
-    Date	dateCreated
-    Date	lastUpdated
+    Date dateCreated
+    Date lastUpdated
 
     static constraints = {
-        code(nullable:false,unique:['parentSicCode'])
-        description(nullable:false)
+        code(nullable: false, unique: ['parentSicCode'])
+        description(nullable: false)
     }
 
     def beforeValidate() {
-        level = parentSicCode ? (parentSicCode.level + 1): 0
+        level = parentSicCode ? (parentSicCode.level + 1) : 0
     }
 
     def afterInsert() {
-        if(parentSicCode)
-        {
+        if (parentSicCode) {
             parentSicCode.addToChildSicCodes(this)
             parentSicCode.save()
         }
     }
 
     def beforeDelete() {
-        if(parentSicCode)
-        {
+        if (parentSicCode) {
             parentSicCode.removeFromChildSicCodes(this)
             parentSicCode.save()
         }
@@ -53,12 +51,13 @@ class SicCode {
     /*
      * Methods of the Domain Class
      */
-	@Override	// Override toString for a nicer / more descriptive UI
-	public String toString() {
-		return "${code} - ${description}";
-	}
 
-     def aggregateParentIds() {
+    @Override    // Override toString for a nicer / more descriptive UI
+    public String toString() {
+        return "${code} - ${description}";
+    }
+
+    def aggregateParentIds() {
         def parents = []
         def sicToFind = this
         while (sicToFind.parentSicCode != null) {
@@ -67,5 +66,14 @@ class SicCode {
             println sicToFind
         }
         return parents
+    }
+
+    def getAllChildSicCodes() {
+        def children = []
+        children.addAll(childSicCodes)
+        childSicCodes.each {
+            children.addAll(it.getAllChildSicCodes())
+        }
+        return children
     }
 }

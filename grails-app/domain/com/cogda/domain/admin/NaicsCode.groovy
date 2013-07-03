@@ -7,8 +7,8 @@ package com.cogda.domain.admin
 class NaicsCode {
 
     /* Default (injected) attributes of GORM */
-	Long	id
-	Long	version
+    Long id
+    Long version
 
     String code
     String description
@@ -22,30 +22,28 @@ class NaicsCode {
     Boolean active = Boolean.TRUE  //  True-> Available for selection and reporting  | False-> Available for reporting only
 
     /* Automatic timestamping of GORM */
-	Date	dateCreated
-	Date	lastUpdated
+    Date dateCreated
+    Date lastUpdated
 
 
     static constraints = {
-        code(nullable:false, unique:['parentNaicsCode'])
-        description(nullable:false)
+        code(nullable: false, unique: ['parentNaicsCode'])
+        description(nullable: false)
     }
 
     def beforeValidate() {
-        level = parentNaicsCode ? (parentNaicsCode.level + 1): 0
+        level = parentNaicsCode ? (parentNaicsCode.level + 1) : 0
     }
 
     def afterInsert() {
-        if(parentNaicsCode)
-        {
+        if (parentNaicsCode) {
             parentNaicsCode.addToChildNaicsCodes(this)
             parentNaicsCode.save()
         }
     }
 
     def beforeDelete() {
-        if(parentNaicsCode)
-        {
+        if (parentNaicsCode) {
             parentNaicsCode.removeFromChildNaicsCodes(this)
             parentNaicsCode.save()
         }
@@ -54,7 +52,8 @@ class NaicsCode {
     /*
      * Methods of the Domain Class
      */
-    @Override	// Override toString for a nicer / more descriptive UI
+
+    @Override    // Override toString for a nicer / more descriptive UI
     public String toString() {
         return "${code} - ${description}";
     }
@@ -70,4 +69,12 @@ class NaicsCode {
         return parents
     }
 
+    def getAllChildNaicsCodes() {
+        def children = []
+        children.addAll(childNaicsCodes)
+        childNaicsCodes.each {
+            children.addAll(it.getAllChildNaicsCodes())
+        }
+        return children
+    }
 }
