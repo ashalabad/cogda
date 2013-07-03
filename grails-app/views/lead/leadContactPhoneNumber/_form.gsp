@@ -21,8 +21,8 @@
     <div class="control-group fieldcontain ${hasErrors(bean: leadContactPhoneNumberInstance, field: 'phoneNumber', 'error')} required">
         <label for="${prefix}phoneNumber" class="control-label"><g:message
                 code="leadContactPhoneNumber.phoneNumber.label"
-                default="Phone Number"/><span
-                class="required-indicator">*</span></label>
+                default="Phone Number"/>
+            <span class="required-indicator">*</span></label>
 
         <div class="controls">
             <g:textField name="${prefix}phoneNumber" required=""

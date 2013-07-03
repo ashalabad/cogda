@@ -25,9 +25,6 @@ class LeadSpec extends ConstraintUnitSpec {
         'nullable' | 'clientId'   | null
         'blank'    | 'clientId'   | ''
         'size'     | 'clientId'   | getLongString(51)
-        'nullable' | 'ownerName'  | null
-        'blank'    | 'ownerName'  | ''
-        'size'     | 'ownerName'  | getLongString(51)
         'nullable' | 'clientName' | null
         'blank'    | 'clientName' | ''
         'size'     | 'clientName' | getLongString(51)
@@ -48,23 +45,6 @@ class LeadSpec extends ConstraintUnitSpec {
         'size'     | 'clientId' | getLongString(51)
         'valid'    | 'clientId' | getLongString(50)
         'valid'    | 'clientId' | getLongString(1)
-    }
-
-    @Unroll("test lead #field is #error using #value")
-    def 'test lead ownerName constraints'() {
-        when:
-        def lead = new Lead("$field": value)
-
-        then:
-        validateConstraints(lead, field, error)
-
-        where:
-        error      | field       | value
-        'nullable' | 'ownerName' | null
-        'blank'    | 'ownerName' | ''
-        'size'     | 'ownerName' | getLongString(51)
-        'valid'    | 'ownerName' | getLongString(50)
-        'valid'    | 'ownerName' | getLongString(1)
     }
 
     @Unroll("test lead #field is #error using #value")

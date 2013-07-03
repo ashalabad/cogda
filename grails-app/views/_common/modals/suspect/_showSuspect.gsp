@@ -35,13 +35,6 @@
                     </tr>
 
                     <tr class="prop">
-                        <td valign="top" class="name"><g:message code="lead.ownerName.label" default="Owner Name"/></td>
-
-                        <td valign="top" class="value">${fieldValue(bean: suspectInstance, field: "ownerName")}</td>
-
-                    </tr>
-
-                    <tr class="prop">
                         <td valign="top" class="name"><g:message code="lead.businessType.label"
                                                                  default="Business Type"/></td>
 

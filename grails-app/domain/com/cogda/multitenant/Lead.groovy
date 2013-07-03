@@ -1,8 +1,10 @@
 package com.cogda.multitenant
 
+import com.cogda.common.LeadSubType
 import com.cogda.common.LeadType
 import com.cogda.domain.FileReference
 import com.cogda.domain.admin.BusinessType
+import com.cogda.domain.admin.LineOfBusiness
 import com.cogda.domain.admin.NaicsCode
 import com.cogda.domain.admin.SicCode
 import grails.plugin.multitenant.core.annotation.MultiTenant
@@ -18,27 +20,32 @@ class Lead {
     NaicsCode naicsCode
     SicCode sicCode
     String clientId
-    String ownerName
     String clientName
 
     Date lastUpdated
     Date dateCreated
     LeadType leadType
+    LeadSubType subType
+    String customerServiceRepresentative
 
-    static hasMany = [notes: Note,
+    static hasMany = [notes: LeadNote,
             files: FileReference,
             leadContacts: LeadContact,
-            leadAddresses: LeadAddress]
+            leadAddresses: LeadAddress,
+            linesOfBusiness: LineOfBusiness,
+            naicsCodes: NaicsCode,
+            sicCodes: SicCode]
 
     static transients = ["primaryEmailAddress", "primaryLeadEmailAddress", "primaryLeadContact", "primaryLeadContactName"]
 
     static constraints = {
         clientId(blank: false, nullable: false, size: 1..50)
-        ownerName(blank: false, nullable: false, size: 1..50)
         naicsCode(nullable: true)
         sicCode(nullable: true)
         clientName(blank:false, nullable: false, size: 1..50)
-        businessType(nullable: true)
+        businessType(nullable: false)
+        subType(nullable: false)
+        customerServiceRepresentative(nullable: true)
     }
 
     /**

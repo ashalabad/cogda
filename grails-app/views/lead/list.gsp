@@ -32,8 +32,8 @@
 			
 				<g:sortableColumn property="clientId" title="${message(code: 'lead.clientId.label', default: 'Client Id')}" />
 			
-				<g:sortableColumn property="ownerName" title="${message(code: 'lead.ownerName.label', default: 'Owner Name')}" />
-			
+				<g:sortableColumn property="clientName" title="${message(code: 'lead.clientName.label', default: 'Client Name')}" />
+
 				<th><g:message code="lead.businessType.label" default="Business Type" /></th>
 			
 				<th><g:message code="lead.naicsCode.label" default="Naics Code" /></th>
@@ -50,7 +50,7 @@
 			
 				<td><g:link action="show" id="${leadInstance.id}">${fieldValue(bean: leadInstance, field: "clientId")}</g:link></td>
 			
-				<td>${fieldValue(bean: leadInstance, field: "ownerName")}</td>
+				<td>${fieldValue(bean: leadInstance, field: "clientName")}</td>
 			
 				<td>${fieldValue(bean: leadInstance, field: "businessType")}</td>
 			

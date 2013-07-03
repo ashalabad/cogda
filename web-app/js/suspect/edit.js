@@ -32,13 +32,11 @@ $(document).ready(function () {
                 maxlength: 50,
                 required: true
             },
-            ownerName: {
-                minlength: 1,
-                maxlength: 50,
-                required: true
-            },
             phoneNumber: {
                 minlength: 1,
+                required: true
+            },
+            businessTypeId: {
                 required: true
             }
         },
@@ -55,10 +53,28 @@ $(document).ready(function () {
         e.preventDefault();
         var route = isNew ? 'save' : 'update/' + $("#suspectForm input[name='id']").val();
         if (validator.valid()) {
+            var form = form2js('suspectForm', '.', true);
+            var subType = getChecked('subType');
+            var noteType = getChecked('leadNoteInstance[0].noteType');
+            var noteInstance = new Object();
+            if (noteType != null) {
+                noteInstance.noteType = noteType;
+                form.leadNoteInstances = [];
+                form.leadNoteInstances.push(noteInstance);
+            }
+            if (subType != null) {
+                form.subType = subType;
+            }
+            if (naicsCodes != null && naicsCodes.length) {
+                form.naicsCodes = naicsCodes;
+            }
+            if (sicCodes != null && sicCodes.length) {
+                form.sicCodes = sicCodes;
+            }
             $.ajax(
                 {
                     type: 'POST',
-                    data: JSON.stringify(form2js('suspectForm', '.', true)),
+                    data: JSON.stringify(form),
                     contentType: 'application/json; charset=utf-8',
                     url: '/suspect/' + route,
                     success: function (data, textStatus, xhr) {
@@ -198,4 +214,32 @@ function addPhone() {
 function updateAttributes(attribute, newValue) {
     attribute.attr('id', newValue)
         .attr('name', newValue);
+}
+var sicCodes;
+function leadSicChecked(){
+    sicCodes = leadCodeChecked($("#sicTree"));
+}
+
+var naicsCodes;
+
+function leadNaicsChecked(){
+    naicsCodes = leadCodeChecked($("#naicsTree"));
+}
+
+function leadCodeChecked($tree) {
+    var container = [];
+    $tree.jstree("get_checked",null,true).each(function(index, value){
+        var code = new Object()
+        code.id = value.id
+        container.push(code);
+    });
+    return container;
+}
+
+function getChecked(name) {
+    var $checked = $("input[name='" + name + "']:checked");
+    if ($checked.length)
+        return $checked.val();
+    else
+        return null;
 }

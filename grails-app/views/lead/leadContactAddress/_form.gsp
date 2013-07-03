@@ -2,16 +2,19 @@
 
 
 <div id="leadContactAddresses[${i}]"
-<div class="control-group fieldcontain ${hasErrors(bean: leadContactAddressInstance, field: 'primaryAddress', 'error')} ">
-    <label for="primaryAddress" class="control-label"><g:message code="leadContactAddress.primaryAddress.label"
-                                                                 default="Primary Address"/></label>
 
-    <div class="controls">
-        <bs:checkBox name="leadContactAddressInstance[${i}].primaryAddress" value="${leadContactAddressInstance?.primaryAddress}"/>
-        <span class="help-inline">${hasErrors(bean: leadContactAddressInstance, field: 'primaryAddress', 'error')}</span>
-    </div>
-</div>
 <fieldset class="embedded"><legend><g:message code="leadContactAddress.address.label" default="Address"/></legend>
+
+    <div class="control-group fieldcontain ${hasErrors(bean: leadContactAddressInstance, field: 'primaryAddress', 'error')} ">
+        <label for="primaryAddress" class="control-label"><g:message code="leadContactAddress.primaryAddress.label"
+                                                                     default="Primary Address"/></label>
+
+        <div class="controls">
+            <bs:checkBox name="leadContactAddressInstance[${i}].primaryAddress"
+                         value="${leadContactAddressInstance?.primaryAddress}"/>
+            <span class="help-inline">${hasErrors(bean: leadContactAddressInstance, field: 'primaryAddress', 'error')}</span>
+        </div>
+    </div>
 
     <div class="control-group fieldcontain ${hasErrors(bean: leadContactAddressInstance, field: 'address.addressOne', 'error')} ">
         <label for="leadContactAddressInstance[${i}].address.addressOne" class="control-label"><g:message
@@ -28,7 +31,8 @@
                 code="leadContactAddress.address.addressTwo.label" default="Address Two"/></label>
 
         <div class="controls">
-            <g:textField name="leadContactAddressInstance[${i}].address.addressTwo" value="${addressInstance?.addressTwo}"/>
+            <g:textField name="leadContactAddressInstance[${i}].address.addressTwo"
+                         value="${addressInstance?.addressTwo}"/>
             <span class="help-inline">${hasErrors(bean: leadContactAddressInstance, field: 'addressTwo', 'error')}</span>
         </div>
     </div>
@@ -38,7 +42,8 @@
                 code="leadContactAddress.address.addressThree.label" default="Address Three"/></label>
 
         <div class="controls">
-            <g:textField name="leadContactAddressInstance[${i}].address.addressThree" value="${addressInstance?.addressThree}"/>
+            <g:textField name="leadContactAddressInstance[${i}].address.addressThree"
+                         value="${addressInstance?.addressThree}"/>
             <span class="help-inline">${hasErrors(bean: leadContactAddressInstance, field: 'addressThree', 'error')}</span>
         </div>
     </div>
@@ -54,8 +59,9 @@
     </div>
 
     <div class="control-group fieldcontain ${hasErrors(bean: leadContactAddressInstance, field: 'address.country', 'error')} ">
-        <label for="leadContactAddressInstance[${i}].address.country" class="control-label"><g:message code="leadContactAddress.address.country.label"
-                                                                      default="Country"/></label>
+        <label for="leadContactAddressInstance[${i}].address.country" class="control-label"><g:message
+                code="leadContactAddress.address.country.label"
+                default="Country"/></label>
 
         <div class="controls">
             <g:textField name="leadContactAddressInstance[${i}].address.country" value="${addressInstance?.country}"/>
@@ -64,8 +70,9 @@
     </div>
 
     <div class="control-group fieldcontain ${hasErrors(bean: leadContactAddressInstance, field: 'address.county', 'error')} ">
-        <label for="leadContactAddressInstance[${i}].address.county" class="control-label"><g:message code="leadContactAddress.address.county.label"
-                                                                     default="County"/></label>
+        <label for="leadContactAddressInstance[${i}].address.county" class="control-label"><g:message
+                code="leadContactAddress.address.county.label"
+                default="County"/></label>
 
         <div class="controls">
             <g:textField name="leadContactAddressInstance[${i}].address.county" value="${addressInstance?.county}"/>
@@ -74,11 +81,13 @@
     </div>
 
     <div class="control-group fieldcontain ${hasErrors(bean: leadContactAddressInstance, field: 'address.latitude', 'error')} ">
-        <label for="leadContactAddressInstance[${i}].address.latitude" class="control-label"><g:message code="leadContactAddress.address.latitude.label"
-                                                                       default="Latitude"/></label>
+        <label for="leadContactAddressInstance[${i}].address.latitude" class="control-label"><g:message
+                code="leadContactAddress.address.latitude.label"
+                default="Latitude"/></label>
 
         <div class="controls">
-            <g:field type="number" name="leadContactAddressInstance[${i}].address.latitude" step="any" value="${addressInstance.latitude}"/>
+            <g:field type="number" name="leadContactAddressInstance[${i}].address.latitude" step="any"
+                     value="${addressInstance.latitude}"/>
             <span class="help-inline">${hasErrors(bean: leadContactAddressInstance, field: 'latitude', 'error')}</span>
         </div>
     </div>
@@ -123,18 +132,18 @@
             <span class="help-inline">${hasErrors(bean: leadContactAddressInstance, field: 'zipcode', 'error')}</span>
         </div>
     </div>
-</fieldset>
 
-<div class="control-group fieldcontain ${hasErrors(bean: leadContactAddressInstance, field: 'leadContact', 'error')} required">
-    <label for="leadContact" class="control-label"><g:message code="leadContactAddress.leadContact.label"
-                                                              default="Lead Contact"/><span
-            class="required-indicator">*</span></label>
+    <div class="control-group fieldcontain ${hasErrors(bean: leadContactAddressInstance, field: 'leadContact', 'error')} required">
+        <label for="leadContact" class="control-label"><g:message code="leadContactAddress.leadContact.label"
+                                                                  default="Lead Contact"/><span
+                class="required-indicator">*</span></label>
 
-    <div class="controls">
-        <g:select id="leadContact" name="leadContact.id" from="${com.cogda.multitenant.LeadContact.list()}"
-                  optionKey="id" required="" value="${leadContactAddressInstance?.leadContact?.id}"
-                  class="many-to-one"/>
-        <span class="help-inline">${hasErrors(bean: leadContactAddressInstance, field: 'leadContact', 'error')}</span>
+        <div class="controls">
+            <g:select id="leadContact" name="leadContact.id" from="${com.cogda.multitenant.LeadContact.list()}"
+                      optionKey="id" required="" value="${leadContactAddressInstance?.leadContact?.id}"
+                      class="many-to-one"/>
+            <span class="help-inline">${hasErrors(bean: leadContactAddressInstance, field: 'leadContact', 'error')}</span>
+        </div>
     </div>
-</div>
 
+</fieldset>

@@ -24,7 +24,7 @@ class Account {
     Date	dateCreated
     Date	lastUpdated
 
-    static hasMany = [accountContacts:AccountContact,accountAddresses:AccountAddress]
+    static hasMany = [accountContacts:AccountContact,accountAddresses:AccountAddress,accountNotes:AccountNote]
 
     static transients = ["primaryEmailAddress", "primaryAccountEmailAddress", "primaryAccountContact", "primaryAccountContactName"]
 

@@ -51,8 +51,7 @@ class AccountController extends BaseController{
             map.primaryContact= account.primaryAccountContactName +
                     "<br>"+account.primaryEmailAddress +
                     "<br>"+account.primaryAccountContactPhoneNumberString
-            map.details = remoteLink([controller: 'account', action: 'show', id: account.id, onSuccess: 'modalDialogHandler(data)', method: 'GET'], 'Details')
-            map.edit = remoteLink([controller: 'account', action: 'edit', id: account.id, onSuccess: 'modalDialogHandler(data)', method: 'GET'], 'Edit')
+            map.action = ""
             dataToRender.aaData.add(map)
         }
         dataToRender.sEcho = 1
@@ -133,10 +132,10 @@ class AccountController extends BaseController{
     }
 
     /**
-     * Retrieves the Account instance and parses it to JSON.
+     * Retrieves the Account Contacts from the Account instance and parses it to JSON.
      * @return AjaxResponseDto as JSON
      */
-    def contactList(){
+    def getAccountContacts(){
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
 
         def accountInstance = Account.get(params.id)
@@ -146,18 +145,72 @@ class AccountController extends BaseController{
         dataToRender.aaData = []
         accountInstance.accountContacts.each { AccountContact accountContact ->
             Map map = [:]
-            map.DT_RowId = "row_"+accountContact.id
+            map.DT_RowId = "row_" + accountContact.id
             map.accountContactName = accountContact.fullName + (accountContact.primaryContact ? ' (Primary)': '')
             map.accountContactEmail = accountContact.primaryAccountEmailAddress
             map.accountContactPhone = accountContact.primaryAccountPhoneNumber
+            map.action = ""
             dataToRender.aaData.add(map)
         }
         dataToRender.sEcho = 1
 
-        render dataToRender as GSON
-
-        return
+        render dataToRender as JSON
     }
+
+    /**
+     * Retrieves Account Notes from the Account instance and parses it to JSON.
+     * @return AjaxResponseDto as JSON
+     */
+    def getAccountNotes(){
+        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+
+        def accountInstance = Account.get(params.id)
+
+        def dataToRender = [:]
+
+        dataToRender.aaData = []
+        accountInstance.accountNotes.each { AccountNote accountNote ->
+            Map map = [:]
+            map.DT_RowId = "row_" + accountNote.id
+            map.accountNote = accountNote.note.notes
+            map.accountNoteType = accountNote.noteType ? accountNote.noteType.toString() : ""
+            map.accountNoteDate = accountNote.note.dateCreated
+            map.action = ""
+            dataToRender.aaData.add(map)
+        }
+        dataToRender.sEcho = 1
+
+        render dataToRender as JSON
+    }
+
+    /**
+     * Retrieves Account Submissions from the Account instance and parses it to JSON.
+     * @return AjaxResponseDto as JSON
+     */
+    def getSubmissions(){
+        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+
+        def accountInstance = Account.get(params.id)
+
+        def dataToRender = [:]
+
+        dataToRender.aaData = [] //TODO:implement submissions on Account Domain
+//        accountInstance.submissions.each { AccountNote accountNote ->
+            Map map = [:]
+            map.DT_RowId = "row_" + 1
+            map.submissionDate = "date submitted"
+            map.submissionLead = "prospect or suspect"
+            map.submissionLOB = "LOB"
+            map.submissionxDate = "xDate"
+            map.action = ""
+            dataToRender.aaData.add(map)
+//        }
+        dataToRender.sEcho = 1
+
+        render dataToRender as JSON
+    }
+
+
 
     /**
      * Updates an existing Account

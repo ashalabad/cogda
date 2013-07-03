@@ -24,10 +24,12 @@ import com.cogda.multitenant.AccountContact
 import com.cogda.multitenant.AccountContactEmailAddress
 import com.cogda.multitenant.AccountContactEmailAddress
 import com.cogda.multitenant.AccountContactPhoneNumber
+import com.cogda.multitenant.AccountNote
 import com.cogda.multitenant.Company
 import com.cogda.multitenant.CustomerAccount
 import com.cogda.domain.admin.SupportedCountryCode
 import com.cogda.multitenant.CustomerAccountService
+import com.cogda.multitenant.Note
 import com.cogda.util.DataPopulatorService
 import grails.plugin.awssdk.AmazonWebService
 import grails.plugins.springsecurity.SpringSecurityService
@@ -238,6 +240,8 @@ class BootStrap {
                                 testAccount.addToAccountContacts(testAccountContact)
                                 testAccount.save()
                             }
+                                def tempNote = new Note(notes:"This is a sample note").save()
+                                def tempAccountNote = new AccountNote(note: tempNote,account: testAccount,noteType: NoteType.get(1)).save()
                         }
                         log.debug("Importing testAccount  ${testAccount}")
                     }

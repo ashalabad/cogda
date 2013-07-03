@@ -25,4 +25,8 @@ class NoteType {
         code(nullable:false, maxSize: 50, unique:true)
         description(nullable:true, maxSize: 255)
     }
+
+    String toString(){
+        code
+    }
 }

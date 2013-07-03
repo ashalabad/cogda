@@ -1,40 +1,42 @@
-
-$(function() {
+$(function () {
     $("#sicTree").jstree({
         "json_data": {
             "ajax": {
-                "url": "/sicCode/getActiveSicCodes",
-                "data": function(n) {
-                    // get parent / grandparent node
-                    var lists = $(n).parents('ul');
-                    var p = $(lists[0]).prev('a');
-                    var gp = $(lists[1]).prev('a');
-                    // the result is fed to the AJAX request 'data' option
-                    return {
-                        "parent": $.trim(p.text()),
-                        "grandparent": $.trim(gp.text()),
-                        "id": n.attr ? n.attr("id").replace("node-", "") : 1
-                    };
+                "url": function (node) {
+                    return node == -1 ? "/sicCode/getActiveSicCodes" : "/sicCode/getActiveSicCodes?parentId=" + node.attr('id');
+                },
+                "type": "get",
+                "success": function (codes) {
+                    var nodes = [];
+                    for (var i = 0; i < codes.length; i++) {
+                        var code = codes[i];
+                        code.state = "closed";
+                        nodes.push(code);
+                    }
+                    return nodes;
                 }
             }
         },
-        "themes" : {
-            "theme" : "default",
-            "dots" : false,
-            "icons" : false
+        "themes": {
+            "theme": "default",
+            "dots": false,
+            "icons": false
         },
-        "search" : {
-            "case_insensitive" : true,
-            "show_only_matches": true
+        "search": {
+            "case_insensitive": true,
+            "show_only_matches": true,
+            "ajax": {
+                "url": '/sicCode/search'
+            }
         },
 
-        "plugins": ["themes", "json_data","checkbox", "search", "adv_search"]
+        "plugins": ["themes", "json_data", "checkbox", "search", "adv_search"]
     });
 });
 
 $(document).ready(function () {
 
-    $("#sicModalLauncher").click(function(){
+    $("#sicModalLauncher").click(function () {
         $("#sicCodeModal").modal('show');
     });
 
@@ -45,24 +47,22 @@ $(document).ready(function () {
     $("#searchSic").bind('keypress', function () {
 
         var self = $(this);
-        if(self.val().length >= 2)
-        {
+        if (self.val().length >= 2) {
             clearTimeout(self.data('timeout'));
 
-            self.data('timeout', setTimeout(function() {
-                $("#sicTree").jstree("search",self.val());
+            self.data('timeout', setTimeout(function () {
+                $("#sicTree").jstree("search", self.val());
             }, 500));
         }
 
     });
 
 
-
 });
 
-function processSicChecked(){
+function processSicChecked() {
     var checked_ids = [];
-    $("#sicTree").jstree("get_checked",null,true).each(function(){
+    $("#sicTree").jstree("get_checked", null, true).each(function () {
         checked_ids.push(this.id);
     });
     var sicCodes = new Object();

@@ -59,4 +59,15 @@ class NaicsCode {
         return "${code} - ${description}";
     }
 
+    def aggregateParentIds() {
+        def parents = []
+        def naicsToFind = this
+        while (naicsToFind.parentNaicsCode != null) {
+            parents.add(naicsToFind.parentNaicsCode)
+            naicsToFind = naicsToFind.parentNaicsCode
+            println naicsToFind
+        }
+        return parents
+    }
+
 }

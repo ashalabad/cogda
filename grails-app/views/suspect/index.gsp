@@ -38,7 +38,6 @@
             <th>${message(code: 'lead.contactName.label', default: 'Contact Name')}</th>
             <th>${message(code: 'lead.phoneNumber.label', default: 'Phone Number')}</th>
             <th>${message(code: 'lead.contactEmailAddress.label', default: 'Email Address')}</th>
-            <th>${message(code: 'lead.owner.label', default: 'Owner')}</th>
             <th>${message(code: 'lead.dateCreated.label', default: 'Created')}</th>
             <th>${message(code: 'lead.details.label', default: 'Details')}</th>
             <th>${message(code: 'lead.edit.label', default: 'Edit')}</th>
