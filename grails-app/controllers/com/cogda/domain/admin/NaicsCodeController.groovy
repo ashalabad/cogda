@@ -4,6 +4,7 @@ import com.cogda.BaseController
 import com.google.gson.JsonElement
 import grails.plugin.gson.converters.GSON
 import grails.plugins.springsecurity.Secured
+import static javax.servlet.http.HttpServletResponse.*
 
 /**
  * ContactController
@@ -17,7 +18,15 @@ class NaicsCodeController extends BaseController {
 
     def getActiveNaicsCodes() {
         if (params.parentId) {
-            render jsTreeify(NaicsCode.findAllByParentNaicsCodeAndActive(NaicsCode.get(params.parentId), true).sort { it.id }, 1) as GSON
+            def codes = NaicsCode.findAllByParentNaicsCodeAndActive(NaicsCode.get(params.parentId), true).sort { it.id }
+            if (!codes) {
+                respondNotFound(params.parentId)
+                return
+            } else {
+                render jsTreeify(codes, 0) as GSON
+                return
+            }
+
         } else {
             render jsTreeify(NaicsCode.findAllByParentNaicsCodeAndActive(null, true).sort { it.id }, 0) as GSON
         }
@@ -42,6 +51,7 @@ class NaicsCodeController extends BaseController {
                 map.data = naicsCode.toString()
                 map.attr = [:]
                 map.attr.id = naicsCode.id
+                map.hasChildNaicsCodes = naicsCode.childNaicsCodes.any()
                 map.children = jsTreeify(naicsCode.childNaicsCodes.sort { it.code }, depth - 1)
                 dataToRender.add(map)
             }
@@ -79,5 +89,12 @@ class NaicsCodeController extends BaseController {
 
         }
         render "TODO"
+    }
+
+    private void respondNotFound(id) {
+        def responseBody = [:]
+        responseBody.message = message(code: 'default.not.found.message', args: [message(code: 'naicsCode.label', default: 'SicCode'), id])
+        response.status = SC_NOT_FOUND // 404
+        render responseBody as GSON
     }
 }

@@ -4,6 +4,7 @@ import com.cogda.BaseController
 import com.google.gson.JsonElement
 import grails.plugin.gson.converters.GSON
 import grails.plugins.springsecurity.Secured
+import static javax.servlet.http.HttpServletResponse.*
 
 
 /**
@@ -18,9 +19,17 @@ class SicCodeController extends BaseController {
 
     def getActiveSicCodes() {
         if (params.parentId) {
-            render jsTreeify(SicCode.findAllByParentSicCodeAndActive(SicCode.get(params.parentId), true).sort { it.id }, 1) as GSON
+            def codes = SicCode.findAllByParentSicCodeAndActive(SicCode.get(params.parentId), true).sort { it.id }
+            if (!codes) {
+                respondNotFound(params.parentId)
+                return
+            } else {
+                render jsTreeify(codes, 0) as GSON
+                return
+            }
         } else {
             render jsTreeify(SicCode.findAllByParentSicCodeAndActive(null, true).sort { it.id }, 0) as GSON
+            return
         }
     }
 
@@ -43,6 +52,7 @@ class SicCodeController extends BaseController {
                 map.data = sicCode.toString()
                 map.attr = [:]
                 map.attr.id = sicCode.id
+                map.hasChildSicCodes = sicCode.childSicCodes.any()
                 map.children = jsTreeify(sicCode.childSicCodes.sort { it.code }, depth - 1)
                 dataToRender.add(map)
             }
@@ -79,5 +89,12 @@ class SicCodeController extends BaseController {
             }
         }
         render "TODO"
+    }
+
+    private void respondNotFound(id) {
+        def responseBody = [:]
+        responseBody.message = message(code: 'default.not.found.message', args: [message(code: 'sicCode.label', default: 'SicCode'), id])
+        response.status = SC_NOT_FOUND // 404
+        render responseBody as GSON
     }
 }

@@ -10,7 +10,9 @@ $(function () {
                     var nodes = [];
                     for (var i = 0; i < codes.length; i++) {
                         var code = codes[i];
-                        code.state = "closed";
+                        if (code.hasChildSicCodes) {
+                            code.state = "closed";
+                        }
                         nodes.push(code);
                     }
                     return nodes;

@@ -10,7 +10,9 @@ $(function () {
                     var nodes = [];
                     for (var i = 0; i < codes.length; i++) {
                         var code = codes[i];
-                        code.state = "closed";
+                        if (code.hasChildNaicsCodes) {
+                            code.state = "closed";
+                        }
                         nodes.push(code);
                     }
                     return nodes;
@@ -23,7 +25,7 @@ $(function () {
             "icons": false
         },
         "search": {
-            "case_insensitive" : true,
+            "case_insensitive": true,
             "show_only_matches": true,
             "ajax": {
                 "url": '/naicsCode/search'
