@@ -14,8 +14,8 @@
 </head>
 
 <body>
-<g:render template="/_common/modals/naicsCode/naicsCodes"/>
-<g:render template="/_common/modals/sicCode/sicCodes"/>
+%{--<g:render template="/_common/modals/naicsCode/naicsCodes"/>--}%
+%{--<g:render template="/_common/modals/sicCode/sicCodes"/>--}%
 
 <content tag="header">
     <!-- Empty Header -->
@@ -27,28 +27,25 @@
     </div>
 </div>
 
-<section id="list-account" class="first">
-    <table class="table table-bordered" id="accountList">
-        <thead>
-        <tr>
+<table class="table table-bordered" id="accountList">
+    <thead>
+    <tr>
 
-            <th>${message(code: 'account.accountName.label')}</th>
+        <th>${message(code: 'account.accountName.label')}</th>
 
-            <th>${message(code: 'account.accountCode.label')}</th>
+        <th>${message(code: 'account.accountCode.label')}</th>
 
-            <th>${message(code: 'account.accountType.label')}</th>
+        <th>${message(code: 'account.accountType.label')}</th>
 
-            <th>${message(code: 'account.primaryContact.label')}</th>
+        <th>${message(code: 'account.primaryContact.label')}</th>
 
-            <th></th>
-            <th></th>
+        <th><div class="span1"></div></th>
 
-        </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
-</section>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
 
 <g:render template="/_common/modals/masterModal" model="[modalLabel:'account',templatePath: 'modals/account',modalHeader:'Account',modalList:[]]"/>
 
