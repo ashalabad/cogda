@@ -57,4 +57,15 @@ class SicCode {
 	public String toString() {
 		return "${code} - ${description}";
 	}
+
+     def aggregateParentIds() {
+        def parents = []
+        def sicToFind = this
+        while (sicToFind.parentSicCode != null) {
+            parents.add(sicToFind.parentSicCode)
+            sicToFind = sicToFind.parentSicCode
+            println sicToFind
+        }
+        return parents
+    }
 }
