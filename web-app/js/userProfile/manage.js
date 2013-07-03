@@ -349,6 +349,29 @@ $(document).ready(function () {
  * User Profile Email Address Stuff
  *
  **********************************************************************************************************************/
+
+    /**
+     * handle the delete of a user profile email address
+     */
+    $('#edit-userProfile').on('click', '.deleteUserProfileEmailAddressButton', function(event) {
+        event.preventDefault();
+        // handle the click of the Delete User Profile Address Button
+        var $deleteButton = $(event.currentTarget);
+        var id = $deleteButton.attr("id").replace("userProfileEmailAddressDeleteButton_", "");
+        deleteUserProfileEmailAddress(id);
+    });
+
+    /**
+     * handle the edit request from the container of email addresses
+     */
+    $('#edit-userProfile').on('click', '.editUserProfileEmailAddressButton', function(event) {
+        event.preventDefault();
+        // handle the click of the Delete User Profile Address Button
+        var $deleteButton = $(event.currentTarget);
+        var id = $deleteButton.attr("id").replace("userProfileEmailAddressEditButton_", "");
+        retrieveEmailAddressModalForEdit(id);
+    });
+
     /**
      * Handle the Event that is triggered when a new UserProfileEmailAddress is added.
      * addUserProfileEmailAddressSuccessfulEvent
@@ -384,6 +407,13 @@ $(document).ready(function () {
             });
     });
 
+    $('body').on("deleteUserProfileEmailAddressRequestEvent", function(event, data) {
+        var id = data.userProfileAddressId;
+        deleteUserProfileAddress(id);
+        deleteUserProfileEmailAddress(id);
+
+    });
+
     /**
      * Handle the click on the addUserProfileEmailAddress button
      */
@@ -391,6 +421,42 @@ $(document).ready(function () {
         event.preventDefault();
         openUserProfileEmailAddressAddModal(event)
     });
+
+    $('body').on('click', '#userProfileEmailAddressDeleteButton', function(event) {
+        event.preventDefault();
+        // handle the click of the Delete User Profile Address Button
+        var id = document.forms["userProfileEmailAddressForm"].elements["id"].value;
+        deleteUserProfileEmailAddress(id);
+    });
+
+    /**
+     * Retrieves the Address Modal for an Edit based on the passed
+     * in userProfileAddressId
+     * @param userProfileAddressId
+     */
+    function retrieveEmailAddressModalForEdit(userProfileEmailAddressId){
+        $.ajax(
+            {
+                type:'POST',
+                dataType: "text",  // the data coming back from the server is text or html
+                url:'/userProfileEmailAddress/form/'+userProfileEmailAddressId,
+                contentType: "application/json; charset=utf-8",
+                success: function(data, textStatus, request){
+                    $('#userProfileEmailAddressModalBody').html(data);
+                    showEmailAddressModal();
+                },
+                error:function(request, textStatus, errorThrown){
+                    $.pnotify({
+                        title: 'Error',
+                        text: textStatus + " " + errorThrown,
+                        type: 'error',
+                        opacity: 0.8,
+                        delay: 10000
+                    });
+                }
+            }
+        );
+    }
 
     /**
      * Opens the User Profile Address Modal for an Add
@@ -439,6 +505,38 @@ $(document).ready(function () {
         $('#userProfileEmailAddressModal').modal('hide');
     }
 
-
+    /**
+     * Delete the User Profile address
+     * @param id
+     */
+    function deleteUserProfileEmailAddress(id){
+        if(confirm("Are you sure?")){
+            $.ajax(
+                {
+                    type:'POST',
+                    url:'/userProfileEmailAddress/delete/'+id,
+                    contentType: "application/json; charset=utf-8",
+                    success: function(data, textStatus, request){
+                        $('#userProfileEmailAddress_'+id).remove();
+                        $('#userProfileEmailAddressModal').modal('hide');
+                        successHandler(data, textStatus, request);
+                    },
+                    error:function(request,textStatus,errorThrown){
+                        var data = JSON.parse(request.responseText);
+                        for(i in data.errors){
+                            $.pnotify({
+                                title: 'Error Saving',
+                                text: data.errors[i],
+                                type: 'error',
+                                opacity: 0.8,
+                                delay: 4000,
+                                history:false
+                            });
+                        }
+                    }
+                }
+            );
+        }
+    }
 
 });
