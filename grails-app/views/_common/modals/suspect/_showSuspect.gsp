@@ -44,22 +44,6 @@
                     </tr>
 
                     <tr class="prop">
-                        <td valign="top" class="name"><g:message code="lead.naicsCode.label" default="Naics Code"/></td>
-
-                        <td valign="top" class="value"><g:link controller="naicsCode" action="show"
-                                                               id="${suspectInstance?.naicsCode?.id}">${suspectInstance?.naicsCode?.encodeAsHTML()}</g:link></td>
-
-                    </tr>
-
-                    <tr class="prop">
-                        <td valign="top" class="name"><g:message code="lead.sicCode.label" default="Sic Code"/></td>
-
-                        <td valign="top" class="value"><g:link controller="sicCode" action="show"
-                                                               id="${suspectInstance?.sicCode?.id}">${suspectInstance?.sicCode?.encodeAsHTML()}</g:link></td>
-
-                    </tr>
-
-                    <tr class="prop">
                         <td valign="top" class="name"><g:message code="lead.leadType.label" default="Lead Type"/></td>
 
                         <td valign="top" class="value">${suspectInstance?.leadType?.encodeAsHTML()}</td>

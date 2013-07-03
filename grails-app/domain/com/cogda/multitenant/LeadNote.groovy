@@ -16,6 +16,9 @@ class LeadNote {
 
     NoteType noteType
 
+    Date dateCreated
+    Date lastUpdated
+
     static belongsTo = [lead: Lead]
     static embedded = ['note']
 

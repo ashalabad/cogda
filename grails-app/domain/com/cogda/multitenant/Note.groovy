@@ -13,10 +13,6 @@ class Note {
 	Long	id
 	Long	version
 
-    /* Automatic timestamping of GORM */
-	Date	dateCreated
-	Date	lastUpdated
-
     String notes
 
     static mapping = {

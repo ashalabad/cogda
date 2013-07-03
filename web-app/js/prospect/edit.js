@@ -56,12 +56,9 @@ $(document).ready(function () {
         if (validator.valid()) {
             var form = form2js('prospectForm', '.', true);
             var subType = getChecked('subType');
-            var noteType = getChecked('leadNoteInstance[0].noteType');
-            var noteInstance = new Object();
-            if (noteType != null) {
-                noteInstance.noteType = noteType;
-                form.leadNoteInstances = [];
-                form.leadNoteInstances.push(noteInstance);
+            var noteTypeId = getChecked('leadNotes[0].noteType');
+            if (noteTypeId != null && form.leadNotes != null && form.leadNotes[0] != null) {
+                form.leadNotes[0].noteType = { id: noteTypeId };
             }
             if (subType != null) {
                 form.subType = subType;

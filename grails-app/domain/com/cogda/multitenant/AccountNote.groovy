@@ -20,6 +20,10 @@ class AccountNote {
      */
     Note note
 
+    /* Automatic timestamping of GORM */
+    Date dateCreated
+    Date lastUpdated
+
     /**
      * NoteType noteType
      */
