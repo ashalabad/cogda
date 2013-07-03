@@ -58,7 +58,6 @@
                         <g:render template="/userProfileEmailAddress/showUserProfileEmailAddress" model="${['userProfileEmailAddressInstance':userProfileEmailAddressInstance]}"/>
                     </g:each>
                     </ul>
-                    <span class="help-inline">${hasErrors(bean: userProfileInstance, field: 'userProfileEmailAddresses', 'error')}</span>
                 </div>
             </div>
         </fieldset>
@@ -78,16 +77,15 @@
             </legend>
 
 
-            <div class="control-group fieldcontain ${hasErrors(bean: userProfileInstance, field: 'userProfilePhoneNumbers', 'error')} ">
+            <div class="control-group fieldcontain ">
                 <label class="control-label"><g:message code="userProfile.userProfilePhoneNumbers.label" default="User Profile Phone Numbers" /></label>
                 <div class="controls">
 
-                    <ul class="one-to-many">
-                        <g:each in="${userProfileInstance?.userProfilePhoneNumbers?}" var="u">
-                            <li><g:link controller="userProfilePhoneNumber" action="show" id="${u.id}">${u?.encodeAsHTML()}</g:link></li>
+                    <ul class = "unstyled" id="userProfilePhoneNumberContainer">
+                        <g:each in="${userProfileInstance?.userProfilePhoneNumbers?}" var="userProfilePhoneNumberInstance">
+                            <g:render template="/userProfilePhoneNumber/showUserProfilePhoneNumber" model="${['userProfilePhoneNumberInstance':userProfilePhoneNumberInstance]}"/>
                         </g:each>
                     </ul>
-                    <span class="help-inline">${hasErrors(bean: userProfileInstance, field: 'userProfilePhoneNumbers', 'error')}</span>
                 </div>
             </div>
         </fieldset>

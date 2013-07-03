@@ -48,11 +48,14 @@
 
 <g:render template="/userProfileAddress/addressModal"/>
 <g:render template="/userProfileEmailAddress/emailAddressModal"/>
+<g:render template="/userProfilePhoneNumber/phoneNumberModal"/>
 
 
 <g:javascript src = "userProfile/manage.js"/>
 <g:javascript src = "userProfileAddress/userProfileAddressForm.js"/>
 <g:javascript src = "userProfileEmailAddress/userProfileEmailAddressForm.js"/>
+<g:javascript src = "userProfilePhoneNumber/userProfilePhoneNumberForm.js"/>
+
 </body>
 
 </html>

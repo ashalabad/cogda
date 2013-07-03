@@ -89,6 +89,55 @@ class UserProfilePhoneNumberController {
         }
     }
 
+    def formAdd(){
+        if (!requestIsJson()) {
+            respondNotAcceptable()
+            return
+        }
+
+        UserProfilePhoneNumber userProfilePhoneNumberInstance = new UserProfilePhoneNumber(request.GSON)
+
+        if(!userProfilePhoneNumberInstance.userProfile){
+            respondUserProfileNotFound()
+        }
+
+        Map uProfile = [
+                id:null,
+                userProfile: [id:userProfilePhoneNumberInstance.userProfile.id]
+        ]
+
+        userProfilePhoneNumberInstance.userProfile.discard()
+        userProfilePhoneNumberInstance.userProfile = null
+        userProfilePhoneNumberInstance.discard()
+        userProfilePhoneNumberInstance = null
+
+        response.status = SC_OK
+        render(template:"userProfilePhoneNumberForm", model:[userProfilePhoneNumberInstance:uProfile])
+        return
+    }
+
+    def form(){
+        def userProfilePhoneNumberInstance = UserProfilePhoneNumber.get(params.id)
+        if (userProfilePhoneNumberInstance) {
+            response.status = SC_OK
+            render(template:"userProfilePhoneNumberForm", model:[userProfilePhoneNumberInstance:userProfilePhoneNumberInstance])
+            return
+        } else {
+            respondNotFound params.id
+        }
+    }
+
+
+    def show(){
+        UserProfilePhoneNumber userProfilePhoneNumberInstance = UserProfilePhoneNumber.get(params.id)
+        if(!userProfilePhoneNumberInstance){
+            respondNotFound params.id
+            return
+        }
+
+        render(template:"/userProfilePhoneNumber/showUserProfilePhoneNumber", model:[userProfilePhoneNumberInstance: userProfilePhoneNumberInstance])
+        return
+    }
 
     private boolean requestIsJson() {
         GSON.isJson(request)
@@ -163,5 +212,12 @@ class UserProfilePhoneNumberController {
         response.contentLength = 0
         response.outputStream.flush()
         response.outputStream.close()
+    }
+
+    private void respondUserProfileNotFound(id){
+        def responseBody = [:]
+        responseBody.message = message(code: 'default.not.found.message', args: [message(code: 'userProfile.label', default: 'UserProfile'), id])
+        response.status = SC_NOT_FOUND // 404
+        render responseBody as GSON
     }
 }

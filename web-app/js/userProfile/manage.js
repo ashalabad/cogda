@@ -411,7 +411,6 @@ $(document).ready(function () {
         var id = data.userProfileAddressId;
         deleteUserProfileAddress(id);
         deleteUserProfileEmailAddress(id);
-
     });
 
     /**
@@ -539,4 +538,196 @@ $(document).ready(function () {
         }
     }
 
+    /**********************************************************************************************************************
+     * User Profile Phone Number Stuff
+     *
+     **********************************************************************************************************************/
+
+    /**
+     * handle the delete of a user profile email address
+     */
+    $('#edit-userProfile').on('click', '.deleteUserProfilePhoneNumberButton', function(event) {
+        event.preventDefault();
+        // handle the click of the Delete User Profile Address Button
+        var $deleteButton = $(event.currentTarget);
+        var id = $deleteButton.attr("id").replace("userProfilePhoneNumberDeleteButton_", "");
+        deleteUserProfilePhoneNumber(id);
+    });
+
+    /**
+     * handle the edit request from the container of email addresses
+     */
+    $('#edit-userProfile').on('click', '.editUserProfilePhoneNumberButton', function(event) {
+        event.preventDefault();
+        // handle the click of the Delete User Profile Address Button
+        var $deleteButton = $(event.currentTarget);
+        var id = $deleteButton.attr("id").replace("userProfilePhoneNumberEditButton_", "");
+        retrievePhoneNumberModalForEdit(id);
+    });
+
+    /**
+     * Handle the Event that is triggered when a new UserProfilePhoneNumber is added.
+     * addUserProfilePhoneNumberSuccessfulEvent
+     */
+    $('body').on("addUserProfilePhoneNumberSuccessfulEvent", function(event, data) {
+        var userProfilePhoneNumber = event.userProfilePhoneNumber;
+        $.ajax({
+            type:'GET',
+            url:'/userProfilePhoneNumber/show/'+userProfilePhoneNumber.id,
+            dataType: "text"
+        }).success(function(data) {
+                findFirstAndInsertBefore($('#userProfilePhoneNumberContainer'), data);
+            });
+    });
+
+    // updateUserProfilePhoneNumberSuccessfulEvent
+    $('body').on("updateUserProfilePhoneNumberSuccessfulEvent", function(event, data) {
+        var userProfilePhoneNumber = event.userProfilePhoneNumber;
+        $.ajax({
+            type:'GET',
+            url:'/userProfilePhoneNumber/show/'+userProfilePhoneNumber.id,
+            dataType: "text"
+        }).success(function(htmlData) {
+                // Find the proper UserProfilePhoneNumber in the #userProfilePhoneNumberContainer
+                // and update its contents.
+                var elementId = "#userProfilePhoneNumber_"+userProfilePhoneNumber.id;
+                var $updateLi = $(elementId);
+                if($updateLi.length != 0){
+                    $updateLi.html(htmlData);
+                }else{
+                    findFirstAndInsertBefore($('#userProfilePhoneNumberContainer'), data);
+                }
+            });
+    });
+
+    $('body').on("deleteUserProfilePhoneNumberRequestEvent", function(event, data) {
+        var id = data.userProfileAddressId;
+        deleteUserProfilePhoneNumber(id);
+        deleteUserProfilePhoneNumber(id);
+    });
+
+    /**
+     * Handle the click on the addUserProfilePhoneNumber button
+     */
+    $('#edit-userProfile').on('click', '#addUserProfilePhoneNumber', function(event) {
+        event.preventDefault();
+        openUserProfilePhoneNumberAddModal(event)
+    });
+
+    $('body').on('click', '#userProfilePhoneNumberDeleteButton', function(event) {
+        event.preventDefault();
+        // handle the click of the Delete User Profile Address Button
+        var id = document.forms["userProfilePhoneNumberForm"].elements["id"].value;
+        deleteUserProfilePhoneNumber(id);
+    });
+
+    /**
+     * Retrieves the Address Modal for an Edit based on the passed
+     * in userProfileAddressId
+     * @param userProfileAddressId
+     */
+    function retrievePhoneNumberModalForEdit(userProfilePhoneNumberId){
+        $.ajax(
+            {
+                type:'POST',
+                dataType: "text",  // the data coming back from the server is text or html
+                url:'/userProfilePhoneNumber/form/'+userProfilePhoneNumberId,
+                contentType: "application/json; charset=utf-8",
+                success: function(data, textStatus, request){
+                    $('#userProfilePhoneNumberModalBody').html(data);
+                    showPhoneNumberModal();
+                },
+                error:function(request, textStatus, errorThrown){
+                    $.pnotify({
+                        title: 'Error',
+                        text: textStatus + " " + errorThrown,
+                        type: 'error',
+                        opacity: 0.8,
+                        delay: 10000
+                    });
+                }
+            }
+        );
+    }
+
+    /**
+     * Opens the User Profile Address Modal for an Add
+     * @param event
+     */
+    function openUserProfilePhoneNumberAddModal(){
+        retrievePhoneNumberModalForAdd(getUserProfileId());
+    }
+
+    function retrievePhoneNumberModalForAdd(userProfileId){
+        var obj = new Object();
+        obj.userProfile = {id: userProfileId};
+        obj.id = null;
+        var jsonData = JSON.stringify(obj);
+
+        $.ajax(
+            {
+                type:'POST',
+                dataType: "text",  // the data coming back from the server is text or html
+                data:jsonData,
+                url:'/userProfilePhoneNumber/formAdd',
+                contentType: "application/json; charset=utf-8",
+                success: function(data, textStatus, request){
+                    $('#userProfilePhoneNumberModalBody').html(data);
+                    showPhoneNumberModal();
+                },
+                error:function(request, textStatus, errorThrown){
+                    $.pnotify({
+                        title: 'Error',
+                        text: textStatus + " " + errorThrown,
+                        type: 'error',
+                        opacity: 0.8,
+                        delay: 10000
+                    });
+                }
+            }
+        );
+    }
+
+    function showPhoneNumberModal(){
+        $('#userProfilePhoneNumberModal').modal('show');
+        $("#userProfilePhoneNumberForm :input:visible:enabled:first").focus();
+    }
+
+    function hidePhoneNumberModal(){
+        $('#userProfilePhoneNumberModal').modal('hide');
+    }
+
+    /**
+     * Delete the User Profile address
+     * @param id
+     */
+    function deleteUserProfilePhoneNumber(id){
+        if(confirm("Are you sure?")){
+            $.ajax(
+                {
+                    type:'POST',
+                    url:'/userProfilePhoneNumber/delete/'+id,
+                    contentType: "application/json; charset=utf-8",
+                    success: function(data, textStatus, request){
+                        $('#userProfilePhoneNumber_'+id).remove();
+                        $('#userProfilePhoneNumberModal').modal('hide');
+                        successHandler(data, textStatus, request);
+                    },
+                    error:function(request,textStatus,errorThrown){
+                        var data = JSON.parse(request.responseText);
+                        for(i in data.errors){
+                            $.pnotify({
+                                title: 'Error Saving',
+                                text: data.errors[i],
+                                type: 'error',
+                                opacity: 0.8,
+                                delay: 4000,
+                                history:false
+                            });
+                        }
+                    }
+                }
+            );
+        }
+    }
 });
