@@ -19,11 +19,6 @@
 
 <section id="edit-userProfile" class="first">
     <h2><g:message code="userProfile.manage.label" args="[entityName]" /></h2>
-	<g:hasErrors bean="${userProfileInstance}">
-        <div class="alert alert-error">
-            <g:renderErrors bean="${userProfileInstance}" as="list" />
-        </div>
-	</g:hasErrors>
 
     <div class = "row">
         <div class = "span3">
@@ -33,7 +28,7 @@
                 </a>
             </p>
             <p>
-                <a class="btn btn-primary" id="userProfileEditLink">
+                <a class="btn btn-primary" id="addUserProfileImage">
                     Add Image
                 </a>
             </p>
@@ -42,8 +37,6 @@
             <g:render template="userProfileForm"/>
         </div>
     </div>
-
-
 </section>
 
 <g:render template="/userProfileAddress/addressModal"/>

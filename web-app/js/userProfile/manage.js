@@ -40,6 +40,11 @@ $(document).ready(function () {
         }
     });
 
+    $('#addUserProfileImage').click(function(event){
+        alert("No working yet...");
+    });
+
+
     // Handles the successful add of new data in the Add Modal window
     $('body').on(addUserProfileAddressSuccessfulEvent, function(event, data) {
         var userProfileAddress = event.userProfileAddress;
