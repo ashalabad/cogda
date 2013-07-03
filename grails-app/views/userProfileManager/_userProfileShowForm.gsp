@@ -13,7 +13,7 @@
 <div class="control-group fieldcontain ${hasErrors(bean: userProfileInstance, field: 'published', 'error')} ">
     <label class="control-label"><g:message code="userProfile.published.label" default="Published" /></label>
     <div class="controls">
-        <g:formatBoolean boolean="${userProfileInstance?.published}" />
+        <g:formatBoolean boolean="${userProfileInstance?.published}" true="Yes" false="No"/>
         <span class="help-inline">${hasErrors(bean: userProfileInstance, field: 'published', 'error')}</span>
     </div>
 </div>

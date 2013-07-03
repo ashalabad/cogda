@@ -7,7 +7,7 @@
     </fieldset>
 </g:form>
 
-<form id = "upaForm">
+<form id = "upaForm" class="form-horizontal">
         <fieldset class="embedded">
             <legend class="embedded">
                 <g:message code="userProfileAddress.label"/>
@@ -37,7 +37,7 @@
             </div>
         </fieldset>
 </form>
-<form id = "upeaForm">
+<form id = "upeaForm" class="form-horizontal">
         <fieldset class="embedded">
             <legend >
                 <g:message code="userProfileEmailAddress.label"/>
@@ -53,10 +53,10 @@
                 <label class="control-label"><g:message code="userProfile.userProfileEmailAddresses.label" default="User Profile Email Addresses" /></label>
                 <div class="controls">
 
-                    <ul class="one-to-many">
-                        <g:each in="${userProfileInstance?.userProfileEmailAddresses?}" var="u">
-                            <li><g:link controller="userProfileEmailAddress" action="show" id="${u.id}">${u?.encodeAsHTML()}</g:link></li>
-                        </g:each>
+                    <ul class = "unstyled" id="userProfileEmailAddressContainer">
+                    <g:each in="${userProfileInstance?.userProfileEmailAddresses?}" var="userProfileEmailAddressInstance">
+                        <g:render template="/userProfileEmailAddress/showUserProfileEmailAddress" model="${['userProfileEmailAddressInstance':userProfileEmailAddressInstance]}"/>
+                    </g:each>
                     </ul>
                     <span class="help-inline">${hasErrors(bean: userProfileInstance, field: 'userProfileEmailAddresses', 'error')}</span>
                 </div>
@@ -64,7 +64,7 @@
         </fieldset>
 </form>
 
-<form id = "uppnForm">
+<form id = "uppnForm" class="form-horizontal">
         <fieldset class="embedded">
             <legend>
                 <g:message code="userProfilePhoneNumber.label"/>

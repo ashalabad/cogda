@@ -48,12 +48,7 @@ $(document).ready(function () {
             url:'/userProfileAddress/show/'+userProfileAddress.id,
             dataType: "text"
         }).success(function(data) {
-//            var $firstDiv = $('#userProfileAddressContainer').children().first();
-//            if($firstDiv.length != 0){
-//                $(data).insertBefore($firstDiv);
-//            }else{
-//                $('#userProfileAddressContainer').html(data);
-//            }
+
               findFirstAndInsertBefore($('#userProfileAddressContainer'), data);
         });
     });
@@ -116,6 +111,10 @@ $(document).ready(function () {
     }
 
 
+    /**
+     * Opens the User Profile Address Modal for an Add
+     * @param event
+     */
     function openUserProfileAddressAddModal(event){
         event.preventDefault();
         var $addButton = $(event.currentTarget);
@@ -124,6 +123,11 @@ $(document).ready(function () {
         retrieveAddressModalForAdd(userProfileId);
     }
 
+    /**
+     * Retrieves the Address Modal for an Edit based on the passed
+     * in userProfileAddressId
+     * @param userProfileAddressId
+     */
     function retrieveAddressModalForEdit(userProfileAddressId){
         $.ajax(
             {
@@ -340,4 +344,101 @@ $(document).ready(function () {
         retrieveShowUserProfileDetailsForm();
         window.scrollTo(0,0);
     }
+
+/**********************************************************************************************************************
+ * User Profile Email Address Stuff
+ *
+ **********************************************************************************************************************/
+    /**
+     * Handle the Event that is triggered when a new UserProfileEmailAddress is added.
+     * addUserProfileEmailAddressSuccessfulEvent
+     */
+    $('body').on("addUserProfileEmailAddressSuccessfulEvent", function(event, data) {
+        var userProfileEmailAddress = event.userProfileEmailAddress;
+        $.ajax({
+            type:'GET',
+            url:'/userProfileEmailAddress/show/'+userProfileEmailAddress.id,
+            dataType: "text"
+        }).success(function(data) {
+            findFirstAndInsertBefore($('#userProfileEmailAddressContainer'), data);
+        });
+    });
+
+    // updateUserProfileEmailAddressSuccessfulEvent
+    $('body').on("updateUserProfileEmailAddressSuccessfulEvent", function(event, data) {
+        var userProfileEmailAddress = event.userProfileEmailAddress;
+        $.ajax({
+            type:'GET',
+            url:'/userProfileEmailAddress/show/'+userProfileEmailAddress.id,
+            dataType: "text"
+        }).success(function(htmlData) {
+                // Find the proper UserProfileAddress in the #userProfileEmailAddressContainer
+                // and update its contents.
+                var elementId = "#userProfileEmailAddress_"+userProfileEmailAddress.id;
+                var $updateLi = $(elementId);
+                if($updateLi.length != 0){
+                    $updateLi.html(htmlData);
+                }else{
+                    findFirstAndInsertBefore($('#userProfileEmailAddressContainer'), data);
+                }
+            });
+    });
+
+    /**
+     * Handle the click on the addUserProfileEmailAddress button
+     */
+    $('#edit-userProfile').on('click', '#addUserProfileEmailAddress', function(event) {
+        event.preventDefault();
+        openUserProfileEmailAddressAddModal(event)
+    });
+
+    /**
+     * Opens the User Profile Address Modal for an Add
+     * @param event
+     */
+    function openUserProfileEmailAddressAddModal(){
+        retrieveEmailAddressModalForAdd(getUserProfileId());
+    }
+
+    function retrieveEmailAddressModalForAdd(userProfileId){
+        var obj = new Object();
+        obj.userProfile = {id: userProfileId};
+        obj.id = null;
+        var jsonData = JSON.stringify(obj);
+
+        $.ajax(
+            {
+                type:'POST',
+                dataType: "text",  // the data coming back from the server is text or html
+                data:jsonData,
+                url:'/userProfileEmailAddress/formAdd',
+                contentType: "application/json; charset=utf-8",
+                success: function(data, textStatus, request){
+                    $('#userProfileEmailAddressModalBody').html(data);
+                    showEmailAddressModal();
+                },
+                error:function(request, textStatus, errorThrown){
+                    $.pnotify({
+                        title: 'Error',
+                        text: textStatus + " " + errorThrown,
+                        type: 'error',
+                        opacity: 0.8,
+                        delay: 10000
+                    });
+                }
+            }
+        );
+    }
+
+    function showEmailAddressModal(){
+        $('#userProfileEmailAddressModal').modal('show');
+        $("#userProfileEmailAddressForm :input:visible:enabled:first").focus();
+    }
+
+    function hideEmailAddressModal(){
+        $('#userProfileEmailAddressModal').modal('hide');
+    }
+
+
+
 });
