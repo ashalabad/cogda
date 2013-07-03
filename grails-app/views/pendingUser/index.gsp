@@ -10,7 +10,7 @@
     <g:set var="layout_nosecondarymenu" value="true" scope="request"/>
     <g:set var="layout_nomainmenu" value="true" scope="request"/>
     <link rel="stylesheet" type="text/css" href="${g.resource(dir: "css", file:"pendingUser.css")}"/>
-    <g:javascript src="${g.resource(dir: "js/pendingUser", file:"index.js")}"/>
+    <g:javascript src="pendingUser/index.js"/>
     <r:require module="dataTables"/>
     <r:require module="notifications"/>
 </head>
