@@ -8,6 +8,7 @@ import com.cogda.multitenant.LeadContact
 import com.cogda.multitenant.LeadContactAddress
 import com.cogda.multitenant.LeadContactEmailAddress
 import com.cogda.multitenant.LeadContactPhoneNumber
+import com.cogda.multitenant.LeadNote
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
@@ -57,9 +58,8 @@ class ProspectController extends BaseController {
             map.version = prospect.version
             map.clientId = prospect.clientId
             map.businessType = prospect.businessType?.description
-            map.owner = prospect.ownerName
-            map.createdOn = prospect.dateCreated
             map.clientName = prospect.clientName
+            map.createdOn = prospect.dateCreated
             map.contactName = prospect.primaryLeadContactName
             map.phoneNumber = prospect.primaryLeadContactPhoneNumber?.phoneNumber
             map.email = prospect.primaryEmailAddress
@@ -74,9 +74,9 @@ class ProspectController extends BaseController {
 
     def create() {
         def prospectInstance = new Lead(leadType: LeadType.PROSPECT)
+                .addToNotes(new LeadNote())
                 .addToLeadAddresses(new LeadAddress(primaryAddress: true))
                 .addToLeadContacts(new LeadContact(primaryContact: true)
-                .addToLeadContactAddresses(new LeadContactAddress(primaryAddress: true))
                 .addToLeadContactEmailAddresses(new LeadContactEmailAddress(primaryEmailAddress: true))
                 .addToLeadContactPhoneNumbers(new LeadContactPhoneNumber(primaryPhoneNumber: true)));
         [prospectInstance: prospectInstance]

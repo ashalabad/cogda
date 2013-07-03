@@ -46,7 +46,7 @@
 			
 				<td><g:link action="show" id="${leadInstance.id}">${fieldValue(bean: leadInstance, field: "clientId")}</g:link></td>
 			
-				<td>${fieldValue(bean: leadInstance, field: "ownerName")}</td>
+				<td>${fieldValue(bean: leadInstance, field: "clientName")}</td>
 			
 				<td>${fieldValue(bean: leadInstance, field: "account")}</td>
 			

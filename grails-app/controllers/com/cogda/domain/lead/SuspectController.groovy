@@ -8,6 +8,7 @@ import com.cogda.multitenant.LeadContact
 import com.cogda.multitenant.LeadContactAddress
 import com.cogda.multitenant.LeadContactEmailAddress
 import com.cogda.multitenant.LeadContactPhoneNumber
+import com.cogda.multitenant.LeadNote
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
@@ -57,7 +58,7 @@ class SuspectController extends BaseController {
             map.version = suspect.version
             map.clientId = suspect.clientId
             map.businessType = suspect.businessType?.description
-            map.owner = suspect.ownerName
+            map.owner = suspect.clientName
             map.createdOn = suspect.dateCreated
             map.clientName = suspect.clientName
             map.contactName = suspect.primaryLeadContactName
@@ -74,11 +75,11 @@ class SuspectController extends BaseController {
 
     def create() {
         def suspectInstance = new Lead(leadType: LeadType.SUSPECT)
+                .addToNotes(new LeadNote())
                 .addToLeadAddresses(new LeadAddress(primaryAddress: true))
                 .addToLeadContacts(new LeadContact(primaryContact: true)
-                                    .addToLeadContactAddresses(new LeadContactAddress(primaryAddress: true))
-                                    .addToLeadContactEmailAddresses(new LeadContactEmailAddress(primaryEmailAddress: true))
-                                    .addToLeadContactPhoneNumbers(new LeadContactPhoneNumber(primaryPhoneNumber: true)));
+                .addToLeadContactEmailAddresses(new LeadContactEmailAddress(primaryEmailAddress: true))
+                .addToLeadContactPhoneNumbers(new LeadContactPhoneNumber(primaryPhoneNumber: true)));
         [suspectInstance: suspectInstance]
     }
 

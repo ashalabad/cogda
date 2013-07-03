@@ -27,9 +27,9 @@
 			</tr>
 		
 			<tr class="prop">
-				<td valign="top" class="name"><g:message code="lead.ownerName.label" default="Owner Name" /></td>
+				<td valign="top" class="name"><g:message code="lead.clientName.label" default="Client Name" /></td>
 				
-				<td valign="top" class="value">${fieldValue(bean: leadInstance, field: "ownerName")}</td>
+				<td valign="top" class="value">${fieldValue(bean: leadInstance, field: "clientName")}</td>
 				
 			</tr>
 		

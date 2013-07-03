@@ -11,7 +11,6 @@ $(document).ready(function() {
                 {"mDataProp":"contactName"},
                 {"mDataProp":"phoneNumber"},
                 {"mDataProp":"email"},
-                {"mDataProp":"owner"},
                 {"mDataProp":"createdOn"},
                 {"mDataProp":"details"},
                 {"mDataProp":"edit"}
