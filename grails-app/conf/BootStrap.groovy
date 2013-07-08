@@ -30,7 +30,7 @@ import com.cogda.multitenant.Company
 import com.cogda.multitenant.CustomerAccount
 import com.cogda.domain.admin.SupportedCountryCode
 import com.cogda.multitenant.CustomerAccountService
-import com.cogda.multitenant.Note
+import com.cogda.domain.Note
 import com.cogda.util.DataPopulatorService
 import grails.plugin.awssdk.AmazonWebService
 import grails.plugins.springsecurity.SpringSecurityService

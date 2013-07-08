@@ -1,5 +1,6 @@
 package com.cogda.multitenant
 
+import com.cogda.domain.Note
 import com.cogda.domain.admin.NoteType
 import grails.plugin.multitenant.core.annotation.MultiTenant
 

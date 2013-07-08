@@ -1,12 +1,9 @@
-package com.cogda.multitenant
-
-import grails.plugin.multitenant.core.annotation.MultiTenant
+package com.cogda.domain
 
 /**
  * Note
  * A domain class describes the data object and it's mapping to the database
  */
-@MultiTenant
 class Note {
 
     /* Default (injected) attributes of GORM */
