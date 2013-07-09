@@ -11,6 +11,25 @@ modules = {
         resource url:'css/cogda.css'
     }
 
+    angular {
+        dependsOn 'jquery'
+        resource url:'js/bundles/angular/ng-grid.css'
+        resource url:'js/bundles/toastr/toastr.css'
+        resource url:'js/bundles/angular/angular.js'
+        resource url:'js/bundles/angular/angular-resource.js'
+        resource url:'js/bundles/angular/ng-grid-2.0.7.debug.js'
+        resource url:'js/angular/resources/restApi.js'
+        resource url:'js/bundles/toastr/toastr.js'
+        resource url:'js/angular/resources/logger.js'
+        resource url:'js/angular/common/helperFuncs.js'
+    }
+
+    company {
+        dependsOn 'angular', 'bootstrap'
+        resource url:'js/angular/company/company.js'
+        resource url:'js/angular/company/company.css'
+    }
+
     dataTables {
         dependsOn 'jquery,  jquery-ui'
         resource url:[dir: 'js/dataTables/css', file: 'jquery.dataTables.css']
