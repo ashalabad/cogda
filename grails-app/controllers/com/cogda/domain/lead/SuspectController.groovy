@@ -75,7 +75,7 @@ class SuspectController extends BaseController {
 
     def create() {
         def suspectInstance = new Lead(leadType: LeadType.SUSPECT)
-                .addToNotes(new LeadNote())
+                .addToLeadNotes(new LeadNote())
                 .addToLeadAddresses(new LeadAddress(primaryAddress: true))
                 .addToLeadContacts(new LeadContact(primaryContact: true)
                 .addToLeadContactEmailAddresses(new LeadContactEmailAddress(primaryEmailAddress: true))

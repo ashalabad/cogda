@@ -9,21 +9,21 @@
         </label>
 
         <div class="controls">
-            <g:radioGroup values="${NoteType.list().collect { it.code }}" name="${prefix}noteType"
+            <g:radioGroup values="${NoteType.list().collect { it.id }}" name="${prefix}noteType"
                           labels="${NoteType.list().collect { it.description }}"
-                          value="${leadNoteInstance?.note?.description}">
+                          value="${leadNoteInstance?.noteType}">
                 <label class="radio inline">${it.label}${it.radio}</label>
             </g:radioGroup>
 
         </div>
     </div>
     <div class="control-group fieldcontain ${hasErrors(bean: leadNoteInstance, field: 'note.notes', 'error')} ">
-        <label for="${prefix}notes" class="control-label"><g:message code="leadNote.note.notes.label"
+        <label for="${prefix}note.notes" class="control-label"><g:message code="leadNote.note.notes.label"
                                                                  default="Notes"/></label>
 
         <div class="controls">
-            <g:textArea name="${prefix}notes" cols="40" rows="5" maxlength="500" value="${noteInstance?.notes}"/>
-            <span class="help-inline">${hasErrors(bean: leadNoteInstance, field: 'notes', 'error')}</span>
+            <g:textArea name="${prefix}note.notes" cols="40" rows="5" maxlength="500" value="${leadNoteInstance?.note?.notes}"/>
+            <span class="help-inline">${hasErrors(bean: leadNoteInstance?.note, field: 'description', 'error')}</span>
         </div>
     </div>
 

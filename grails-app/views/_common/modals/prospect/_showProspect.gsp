@@ -39,23 +39,7 @@
                                                                  default="Business Type"/></td>
 
                         <td valign="top" class="value"><g:link controller="businessType" action="show"
-                                                               id="${prospectInstance?.businessType?.id}">${prospectInstance?.businessType?.description.encodeAsHTML()}</g:link></td>
-
-                    </tr>
-
-                    <tr class="prop">
-                        <td valign="top" class="name"><g:message code="lead.naicsCode.label" default="Naics Code"/></td>
-
-                        <td valign="top" class="value"><g:link controller="naicsCode" action="show"
-                                                               id="${prospectInstance?.naicsCode?.id}">${prospectInstance?.naicsCode?.encodeAsHTML()}</g:link></td>
-
-                    </tr>
-
-                    <tr class="prop">
-                        <td valign="top" class="name"><g:message code="lead.sicCode.label" default="Sic Code"/></td>
-
-                        <td valign="top" class="value"><g:link controller="sicCode" action="show"
-                                                               id="${prospectInstance?.sicCode?.id}">${prospectInstance?.sicCode?.encodeAsHTML()}</g:link></td>
+                                                               id="${prospectInstance?.businessType?.id}">${prospectInstance?.businessType?.description?.encodeAsHTML()}</g:link></td>
 
                     </tr>
 

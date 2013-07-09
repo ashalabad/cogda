@@ -174,7 +174,7 @@ class AccountController extends BaseController{
             map.DT_RowId = "row_" + accountNote.id
             map.accountNote = accountNote.note.notes
             map.accountNoteType = accountNote.noteType ? accountNote.noteType.toString() : ""
-            map.accountNoteDate = accountNote.note.dateCreated
+            map.accountNoteDate = accountNote.dateCreated
             map.action = ""
             dataToRender.aaData.add(map)
         }

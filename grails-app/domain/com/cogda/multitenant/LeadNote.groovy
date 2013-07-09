@@ -1,5 +1,6 @@
 package com.cogda.multitenant
 
+import com.cogda.domain.Note
 import com.cogda.domain.admin.NoteType
 import grails.plugin.multitenant.core.annotation.MultiTenant
 
@@ -15,6 +16,9 @@ class LeadNote {
     Note note
 
     NoteType noteType
+
+    Date dateCreated
+    Date lastUpdated
 
     static belongsTo = [lead: Lead]
     static embedded = ['note']

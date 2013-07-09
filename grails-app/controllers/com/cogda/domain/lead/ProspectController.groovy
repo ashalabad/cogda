@@ -74,7 +74,7 @@ class ProspectController extends BaseController {
 
     def create() {
         def prospectInstance = new Lead(leadType: LeadType.PROSPECT)
-                .addToNotes(new LeadNote())
+                .addToLeadNotes(new LeadNote())
                 .addToLeadAddresses(new LeadAddress(primaryAddress: true))
                 .addToLeadContacts(new LeadContact(primaryContact: true)
                 .addToLeadContactEmailAddresses(new LeadContactEmailAddress(primaryEmailAddress: true))

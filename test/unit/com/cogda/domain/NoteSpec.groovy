@@ -1,6 +1,5 @@
 package com.cogda.domain
 
-import com.cogda.multitenant.Note
 import grails.test.mixin.*
 
 /**

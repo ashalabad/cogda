@@ -20,6 +20,7 @@ import com.cogda.domain.admin.SicNaicsCodeCrosswalk
 import com.cogda.domain.admin.SystemEmailMessageTemplate
 import com.cogda.domain.onboarding.Registration
 import com.cogda.multitenant.Account
+import com.cogda.multitenant.AccountCompanyOwner
 import com.cogda.multitenant.AccountContact
 import com.cogda.multitenant.AccountContactEmailAddress
 import com.cogda.multitenant.AccountContactEmailAddress
@@ -29,7 +30,7 @@ import com.cogda.multitenant.Company
 import com.cogda.multitenant.CustomerAccount
 import com.cogda.domain.admin.SupportedCountryCode
 import com.cogda.multitenant.CustomerAccountService
-import com.cogda.multitenant.Note
+import com.cogda.domain.Note
 import com.cogda.util.DataPopulatorService
 import grails.plugin.awssdk.AmazonWebService
 import grails.plugins.springsecurity.SpringSecurityService
@@ -131,6 +132,15 @@ class BootStrap {
             if(BusinessType.count() == 0){
                 dataPopulatorService.createBusinessTypes()
             }
+            if(NaicsCode.count() == 0){
+                importNaicsCodes()
+            }
+            if(SicCode.count() == 0){
+                importSicCodes()
+            }
+            if(SicNaicsCodeCrosswalk.count() == 0){
+                buildSicNaicsCrosswalk()
+            }
 
             if(!Registration.findBySubDomain("rais")){
                 createRennaissanceRegistration()
@@ -160,23 +170,7 @@ class BootStrap {
             createResetPasswordEmail()
             createUserInvitationEmail()
 
-            if(NaicsCode.count() == 0)
-            {
-                println "Importing NAICS Codes"
-                importNaicsCodes()
-            }
 
-            if(SicCode.count() == 0)
-            {
-                println "Importing SIC Codes"
-                importSicCodes()
-            }
-
-            if(SicNaicsCodeCrosswalk.count() == 0)
-            {
-                println "Building SIC NAICS Crosswalk"
-                buildSicNaicsCrosswalk()
-            }
         }
     }
     def destroy = {
@@ -188,6 +182,7 @@ class BootStrap {
         CSVReader reader = new CSVReader(new InputStreamReader(is))
         String[] nextLine;
         Integer count = 0;
+        Company company = Company.first()
         while ((nextLine = reader.readNext()) != null) {
             if(nextLine[0]?.trim() != "accountName"){
                 customerAccount.withThisTenant {
@@ -202,8 +197,6 @@ class BootStrap {
                         }
                         else{
                             testAccount.save()
-
-
 
                             def testAccountContact = new AccountContact(
                                     firstName: nextLine[3]?.trim(),
@@ -242,8 +235,10 @@ class BootStrap {
                             }
                                 def tempNote = new Note(notes:"This is a sample note").save()
                                 def tempAccountNote = new AccountNote(note: tempNote,account: testAccount,noteType: NoteType.get(1)).save()
+
+                            log.debug("Importing testAccount  ${testAccount}")
+                            AccountCompanyOwner.create testAccount, company, true
                         }
-                        log.debug("Importing testAccount  ${testAccount}")
                     }
                 }
             }

@@ -17,8 +17,6 @@ import grails.plugin.multitenant.core.annotation.MultiTenant
 class Lead {
 
     BusinessType businessType
-    NaicsCode naicsCode
-    SicCode sicCode
     String clientId
     String clientName
 
@@ -28,7 +26,7 @@ class Lead {
     LeadSubType subType
     String customerServiceRepresentative
 
-    static hasMany = [notes: LeadNote,
+    static hasMany = [leadNotes: LeadNote,
             files: FileReference,
             leadContacts: LeadContact,
             leadAddresses: LeadAddress,
@@ -40,8 +38,6 @@ class Lead {
 
     static constraints = {
         clientId(blank: false, nullable: false, size: 1..50)
-        naicsCode(nullable: true)
-        sicCode(nullable: true)
         clientName(blank:false, nullable: false, size: 1..50)
         businessType(nullable: false)
         subType(nullable: false)
