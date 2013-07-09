@@ -20,24 +20,24 @@ $(document).ready(function() {
                 "fnCreatedCell" : function(nTd, sData, oData, iRow, iCol){
                     var rowId = iRow + 1
                     var edit = $('<div class="btn btn-mini"><i class="icon-edit"></i> Edit</div>');
-                    var details = $('<div class="btn btn-mini"><i class="icon-eye-open"></i> Details</div>');
+                    var show = $('<div class="btn btn-mini"><i class="icon-eye-open"></i> Show</div>');
                     edit.button();
-                    details.button();
+                    show.button();
                     edit.on('click',function(){
                         $("#accountModalBody").load("/account/edit/"+rowId, function(){
                             $('#accountModal').modal('show');
                         });
                     });
-                    details.on('click',function(){
+                    show.on('click',function(){
                         $("#accountModalBody").load("/account/show/"+rowId, function(){
-                            updateContacts(rowId);
-                            updateNotes(rowId);
-                            updateSubmissions(rowId);
+                            refreshAccountContacts(rowId);
+                            refreshAccountNotes(rowId);
+                            refreshAccountSubmissions(rowId);
                             $('#accountModal').modal('show');
                         });
                     });
                     $(nTd).empty();
-                    $(nTd).prepend(details);
+                    $(nTd).prepend(show);
                     $(nTd).prepend(edit);
                 }
             }
@@ -55,16 +55,199 @@ $(document).ready(function() {
 
 });
 
-//function modalDialogHandler(data) {
-//    $('#accountModalBody').html(data)
-//    $('#accountModal').modal('show')
-//}
+function refreshAccountContacts(rowId){
+    $('#accountContactList').dataTable({
+        "bProcessing": true,
+        "bDestroy": true,
+        "sAjaxSource": "/account/getAccountContacts/"+rowId,
+        "aoColumns": [
+            {"mDataProp":"accountContactName"},
+            {"mDataProp":"accountContactEmail"},
+            {"mDataProp":"accountContactPhone"},
+            {"mDataProp":"action"}
+        ],
+        "aoColumnDefs" : [
+            {
+                'bSortable' : false,
+                'aTargets' : [3] //remove sorting on action rows
+            },
+            {
+                "aTargets": [3],
+                "fnCreatedCell" : function(nTd, sData, oData, iRow, iCol){
+                    var rowId = iRow + 1;
+                    var edit = $('<div class="btn btn-mini accountContactEditButton"><i class="icon-edit"></i> Edit</div>');
+                    var show = $('<div class="btn btn-mini accountContactShowButton"><i class="icon-eye-open"></i> Show</div>');
+                    edit.button();
+                    show.button();
+                    edit.on('click',function(){
+                        accountContactEditTab(rowId);
+                    });
+                    show.on('click',function(){
+                        accountContactShowTab(rowId);
+                    });
+                    $(nTd).empty();
+                    $(nTd).prepend(show);
+                    $(nTd).prepend(edit);
+                }
+            }
+        ],
+        "sPaginationType": "bootstrap"
+    });
+
+    $("#createContactButton").click(function() {
+
+        $.get("/accountContact/add/"+rowId, function(data){
+            $('#accountContactTabsContent').append(data);
+        });
+
+        setTimeout(function() {
+            $("#accountContactTabs").append('<li><a id="createContactsTab" href="#createContactsContent" active- data-toggle="tab">Add Contact</a></li>');
+            $("#createContactButton").hide();
+            $("#closeCreateContactTab").click(function(){
+                removeTab("#createContactsTab","#createContactsContent");
+                $("#createContactButton").show();
+                $("#accountContactTabs a:first").tab('show'); // Select first tab
+            });
+            $("#accountContactTabs a:last").tab('show'); // Select last tab
+        }, 250);
+    });
+
+    $("#addContactButton").click(function() {
+        $.get("/accountContact/addExisting/"+rowId, function(data){
+            $('#accountContactTabsContent').append(data);
+        });
+
+        setTimeout(function() {
+            $("#accountContactTabs").append('<li><a id="addContactsTab" href="#addContactsContent" active- data-toggle="tab">Add Existing Contact</a></li>');
+            $("#addContactButton").hide();
+            $("#closeAddContactTab").click(function(){
+                removeTab("#addContactsTab","#addContactsContent");
+                $("#addContactButton").show();
+                $("#accountContactTabs a:first").tab('show'); // Select first tab
+            });
+            $("#accountContactTabs a:last").tab('show'); // Select last tab
+        }, 250);
+    });
+}
+
+function refreshAccountNotes(rowId){
+    $('#accountNoteList').dataTable({
+        "bProcessing": true,
+        "bDestroy": true,
+        "sAjaxSource": "/account/getAccountNotes/"+rowId,
+        "aoColumns": [
+            {"mDataProp":"accountNoteType"},
+            {"mDataProp":"accountNote"},
+            {"mDataProp":"accountNoteDate"},
+            {"mDataProp":"action"}
+        ],
+        "aoColumnDefs" : [
+            {
+                'bSortable' : false,
+                'aTargets' : [3] //remove sorting on action rows
+            },
+            {
+                "aTargets": [3],
+                "fnCreatedCell" : function(nTd, sData, oData, iRow, iCol){
+                    var rowId = iRow + 1;
+                    var edit = $('<div class="btn btn-mini accountNoteEditButton"><i class="icon-edit"></i> Edit</div>');
+                    var show = $('<div class="btn btn-mini accountNoteShowButton"><i class="icon-eye-open"></i> Show</div>');
+                    edit.button();
+                    show.button();
+                    edit.on('click',function(){
+                        accountNoteEditTab(rowId);
+                    });
+                    show.on('click',function(){
+                        accountNoteShowTab(rowId);
+                    });
+                    $(nTd).empty();
+                    $(nTd).prepend(show);
+                    $(nTd).prepend(edit);
+                }
+            }
+        ],
+        "sPaginationType": "bootstrap"
+    });
+
+
+    $("#addNoteButton").click(function() {
+        $.get("/accountNote/add/"+rowId, function(data){
+            $('#accountNoteTabsContent').append(data);
+        });
+
+        setTimeout(function() {
+            $("#accountNoteTabs").append('<li><a id="addNotesTab" href="#addNotesContent" active- data-toggle="tab">Add Note</a></li>');
+
+
+            $("#addNoteButton").hide();
+            $("#closeAddNoteTab").click(function(){
+                removeTab("#addNotesTab","#addNotesContent");
+                $("#addNoteButton").show();
+                $("#accountNoteTabs a:first").tab('show'); // Select first tab
+            });
+            $("#accountNoteTabs a:last").tab('show'); // Select last tab
+        }, 250);
+    });
+}
+
+function refreshAccountSubmissions(rowId){
+    $('#submissionsList').dataTable({
+        "bProcessing": true,
+        "bDestroy": true,
+        "sAjaxSource": "/account/getSubmissions/"+rowId,
+        "aoColumns": [
+            {"mDataProp":"submissionDate"},
+            {"mDataProp":"submissionLead"},
+            {"mDataProp":"submissionLOB"},
+            {"mDataProp":"submissionxDate"},
+            {"mDataProp":"action"}
+        ],
+        "aoColumnDefs" : [
+            {
+                'bSortable' : false,
+                'aTargets' : [4] //remove sorting on action rows
+            },
+            {
+                "aTargets": [4],
+                "fnCreatedCell" : function(nTd, sData, oData, iRow, iCol){
+                    var rowId = iRow + 1;
+                    var edit = $('<div class="btn btn-mini accountNoteEditButton"><i class="icon-edit"></i> Edit</div>');
+                    var show = $('<div class="btn btn-mini accountNoteShowButton"><i class="icon-eye-open"></i> Show</div>');
+                    edit.button();
+                    show.button();
+                    edit.on('click',function(){
+                        submissionEditTab(rowId);
+                    });
+                    show.on('click',function(){
+                        submissionShowTab(rowId);
+                    });
+                    $(nTd).empty();
+                    $(nTd).prepend(show);
+                    $(nTd).prepend(edit);
+                }
+            }
+        ],
+        "sPaginationType": "bootstrap"
+    });
+
+    $("#addSubmissionButton").click(function() {
+        alert("TBA"); //TODO: addSubmissionButton
+    });
+
+}
 
 function toggleEdit(){
     $(".accountShow").toggleClass("editHide");
     $(".accountEdit").toggleClass("editHide");
     $(".accountShow").toggleClass("editShow");
     $(".accountEdit").toggleClass("editShow");
+}
+
+function updateAccount(data){
+    $(".accountName").text(data.accountName).val(data.accountName);
+    $(".accountCode").text(data.accountCode).val(data.accountCode);
+    $("#accountType").val(data.accountType.id);
+    $("#accountTypeLbl").text(data.accountType.code);
 }
 
 function saveAccount(){
@@ -86,219 +269,109 @@ function saveAccount(){
     });
 }
 
-function updateAccount(data){
-    $(".accountName").text(data.accountName).val(data.accountName);
-    $(".accountCode").text(data.accountCode).val(data.accountCode);
-    $("#accountType").val(data.accountType.id);
-    $("#accountTypeLbl").text(data.accountType.code);
-}
-
-
-
-
-function updateContacts(rowId){
-    $('#accountContactList').dataTable({
-        "bProcessing": true,
-        "bDestroy": true,
-        "sAjaxSource": "/account/getAccountContacts/"+rowId,
-        "aoColumns": [
-            {"mDataProp":"accountContactName"},
-            {"mDataProp":"accountContactEmail"},
-            {"mDataProp":"accountContactPhone"},
-            {"mDataProp":"action"}
-        ],
-        "aoColumnDefs" : [
-            {
-                'bSortable' : false,
-                'aTargets' : [3] //remove sorting on action rows
-            },
-            {
-                "aTargets": [3],
-                "fnCreatedCell" : function(nTd, sData, oData, iRow, iCol){
-                    var rowId = iRow + 1;
-                    var edit = $('<div class="btn btn-mini"><i class="icon-edit"></i> Edit</div>');
-                    var details = $('<div class="btn btn-mini"><i class="icon-eye-open"></i> Details</div>');
-                    edit.button();
-                    details.button();
-                    edit.on('click',function(){
-                        alert("account contact edit clicked");
-//                        $("#accountModalBody").load("/account/edit/"+rowId, function(){
-//                            $('#accountModal').modal('show');
-//                        });
-                    });
-                    details.on('click',function(){
-                        alert("account contact details clicked");
-//                        $("#accountModalBody").load("/account/show/"+rowId, function(){
-//                            updateContacts(rowId);
-//                            updateNotes(rowId)
-//                            $('#accountModal').modal('show');
-//                        });
-                    });
-                    $(nTd).empty();
-                    $(nTd).prepend(details);
-                    $(nTd).prepend(edit);
-                }
-            }
-        ],
-        "sPaginationType": "bootstrap"
-    });
-
-    $("#createContactButton").click(function() {
-        $("#createContactButton").hide();
-        var tabs = $("#myTabs");
-        tabs.append('<li><a id="createContactTab" href="#createContactContent" active- data-toggle="tab">Creating Contact</a></li>');
-        var tabsContent = $('#myTabsContent');
-        tabsContent.append('<div class="tab-pane" id="createContactContent"><div class="btn" id="closeCreateContactTab"><i class="icon-remove-circle"></i></div></div>')
-        $("#myTabs a:last").tab('show'); // Select last tab
-        $("#closeCreateContactTab").click(function(){
-            removeTab("#createContactTab","#createContactContent");
-            $("#createContactButton").show();
-        })
-    });
-
-    $("#addContactButton").click(function() {
-        $("#addContactButton").hide();
-        var tabs = $("#myTabs");
-        tabs.append('<li><a id="addContactTab" href="#addContactContent" active- data-toggle="tab">Adding Existing Contact</a></li>');
-        var tabsContent = $('#myTabsContent');
-        tabsContent.append('<div class="tab-pane" id="addContactContent"><div class="btn" id="closeAddContactTab"><i class="icon-remove-circle"></i></div></div>')
-        $("#myTabs a:last").tab('show'); // Select last tab
-        $("#closeAddContactTab").click(function(){
-            removeTab("#addContactTab","#addContactContent");
-            $("#addContactButton").show();
-        })
+function saveAccountNote(){
+    var note = new Object();
+    note.account = new Object();
+    note.account.id = $("#accountId").val();
+    note.noteType = $("#noteType").val();
+    note.note = new Object();
+    note.note.notes = $("#note.notes").val();
+    alert("here");
+    $.ajax({
+        url: "/accountNote/save",
+        type: "post",
+        dataType: "json",
+        data: JSON.stringify(note),
+        success: updateNotes,
+        contentType: "application/json; charset=utf-8"
     });
 }
 
-function updateNotes(rowId){
-    $('#accountNoteList').dataTable({
-        "bProcessing": true,
-        "bDestroy": true,
-        "sAjaxSource": "/account/getAccountNotes/"+rowId,
-        "aoColumns": [
-            {"mDataProp":"accountNoteType"},
-            {"mDataProp":"accountNote"},
-            {"mDataProp":"accountNoteDate"},
-            {"mDataProp":"action"}
-        ],
-        "aoColumnDefs" : [
-            {
-                'bSortable' : false,
-                'aTargets' : [3] //remove sorting on action rows
-            },
-            {
-                "aTargets": [3],
-                "fnCreatedCell" : function(nTd, sData, oData, iRow, iCol){
-                    var rowId = iRow + 1;
-                    var edit = $('<div class="btn btn-mini"><i class="icon-edit"></i> Edit</div>');
-                    var details = $('<div class="btn btn-mini"><i class="icon-eye-open"></i> Details</div>');
-                    edit.button();
-                    details.button();
-                    edit.on('click',function(){
-                        alert("account notes edit clicked");
-//                        $("#accountModalBody").load("/account/edit/"+rowId, function(){
-//                            $('#accountModal').modal('show');
-//                        });
-                    });
-                    details.on('click',function(){
-                        alert("account notes details clicked");
-//                        $("#accountModalBody").load("/account/show/"+rowId, function(){
-//                            updateContacts(rowId);
-//                            updateNotes(rowId)
-//                            $('#accountModal').modal('show');
-//                        });
-                    });
-                    $(nTd).empty();
-                    $(nTd).prepend(details);
-                    $(nTd).prepend(edit);
-                }
-            }
-        ],
-        "sPaginationType": "bootstrap"
+function accountContactEditTab(rowId){
+    $(".accountContactEditButton").hide();
+
+    $.get("/accountContact/edit/"+rowId, function(data){
+        $('#accountContactTabsContent').append(data);
     });
 
-
-    $("#addNoteButton").click(function() {
-        $("#addNoteButton").hide();
-        var tabs = $("#myTabs");
-        tabs.append('<li><a id="addNotesTab" href="#addNotesContent" active- data-toggle="tab">Adding Notes</a></li>');
-        var tabsContent = $('#myTabsContent');
-        tabsContent.append('<div class="tab-pane" id="addNotesContent"><div class="btn" id="closeAddNoteTab"><i class="icon-remove-circle"></i></div></div>')
-        $("#myTabs a:last").tab('show'); // Select last tab
-        $("#closeAddNoteTab").click(function(){
-            removeTab("#addNotesTab","#addNotesContent");
-            $("#addNoteButton").show();
-        })
-    });
+    setTimeout(function() {
+        $("#accountContactTabs").append('<li><a id="editContactsTab" href="#editContactsContent" active- data-toggle="tab">Edit Contact</a></li>');
+        $("#closeEditContactTab").click(function(){
+            removeTab("#editContactsTab","#editContactsContent");
+            $(".accountContactEditButton").show();
+            $("#accountContactTabs a:first").tab('show'); // Select first tab
+        });
+        $("#accountContactTabs a:last").tab('show'); // Select last tab
+    }, 500);
 
 }
 
-function updateSubmissions(rowId){
-    $('#submissionsList').dataTable({
-        "bProcessing": true,
-        "bDestroy": true,
-        "sAjaxSource": "/account/getSubmissions/"+rowId,
-        "aoColumns": [
-            {"mDataProp":"submissionDate"},
-            {"mDataProp":"submissionLead"},
-            {"mDataProp":"submissionLOB"},
-            {"mDataProp":"submissionxDate"},
-            {"mDataProp":"action"}
-        ],
-        "aoColumnDefs" : [
-            {
-                'bSortable' : false,
-                'aTargets' : [4] //remove sorting on action rows
-            },
-            {
-                "aTargets": [4],
-                "fnCreatedCell" : function(nTd, sData, oData, iRow, iCol){
-                    var rowId = iRow + 1;
-                    var edit = $('<div class="btn btn-mini"><i class="icon-edit"></i> Edit</div>');
-                    var details = $('<div class="btn btn-mini"><i class="icon-eye-open"></i> Details</div>');
-                    edit.button();
-                    details.button();
-                    edit.on('click',function(){
-                        alert("account submissions edit clicked");
-//                        $("#accountModalBody").load("/account/edit/"+rowId, function(){
-//                            $('#accountModal').modal('show');
-//                        });
-                    });
-                    details.on('click',function(){
-                        alert("account submissions details clicked");
-//                        $("#accountModalBody").load("/account/show/"+rowId, function(){
-//                            updateContacts(rowId);
-//                            updateNotes(rowId)
-//                            $('#accountModal').modal('show');
-//                        });
-                    });
-                    $(nTd).empty();
-                    $(nTd).prepend(details);
-                    $(nTd).prepend(edit);
-                }
-            }
-        ],
-        "sPaginationType": "bootstrap"
+function accountContactShowTab(rowId){
+    $(".accountContactShowButton").hide();
+
+    $.get("/accountContact/show/"+rowId, function(data){
+        $('#accountContactTabsContent').append(data);
     });
 
+    setTimeout(function() {
+        $("#accountContactTabs").append('<li><a id="showContactsTab" href="#showContactsContent" active- data-toggle="tab">Show Contact</a></li>');
+        $("#closeShowContactTab").click(function(){
+            removeTab("#showContactsTab","#showContactsContent");
+            $(".accountContactShowButton").show();
+            $("#accountContactTabs a:first").tab('show'); // Select first tab
+        });
+        $("#accountContactTabs a:last").tab('show'); // Select last tab
+    }, 500);
 
-    $("#addSubmissionButton").click(function() {
-        $("#addSubmissionButton").hide();
-        var tabs = $("#myTabs");
-        tabs.append('<li><a id="addSubmissionsTab" href="#addSubmissionsContent" active- data-toggle="tab">Adding Submission</a></li>');
-        var tabsContent = $('#myTabsContent');
-        tabsContent.append('<div class="tab-pane" id="addSubmissionsContent"><div class="btn" id="closeAddSubmissionsTab"><i class="icon-remove-circle"></i></div></div>')
-        $("#myTabs a:last").tab('show'); // Select last tab
-        $("#closeAddSubmissionsTab").click(function(){
-            removeTab("#addSubmissionsTab","#addSubmissionsContent");
-            $("#addSubmissionButton").show();
-        })
+}
+
+function accountNoteEditTab(rowId){
+    $(".accountNoteEditButton").hide();
+
+    $.get("/accountNote/edit/"+rowId, function(data){
+        $('#accountNoteTabsContent').append(data);
     });
 
+    setTimeout(function() {
+        $("#accountNoteTabs").append('<li><a id="editNotesTab" href="#editNotesContent" active- data-toggle="tab">Edit Note</a></li>');
+        $("#closeEditNoteTab").click(function(){
+            removeTab("#editNotesTab","#editNotesContent");
+            $(".accountNoteEditButton").show();
+            $("#accountNoteTabs a:first").tab('show'); // Select first tab
+        });
+        $("#accountNoteTabs a:last").tab('show'); // Select last tab
+    }, 500);
+
+}
+
+function accountNoteShowTab(rowId){
+    $(".accountNoteShowButton").hide();
+
+    $.get("/accountNote/show/"+rowId, function(data){
+        $('#accountNoteTabsContent').append(data);
+    });
+
+    setTimeout(function() {
+        $("#accountNoteTabs").append('<li><a id="showNotesTab" href="#showNotesContent" active- data-toggle="tab">Show Note</a></li>');
+        $("#closeShowNoteTab").click(function(){
+            removeTab("#showNotesTab","#showNotesContent");
+            $(".accountNoteShowButton").show();
+            $("#accountNoteTabs a:first").tab('show'); // Select first tab
+        });
+        $("#accountNoteTabs a:last").tab('show'); // Select last tab
+    }, 500);
+
+}
+
+function submissionEditTab(rowId){
+    alert("TBA");// TODO: submissionEditTab
+}
+
+function submissionShowTab(rowId){
+    alert("TBA"); //TODO: submissionShowTab
 }
 
 function removeTab(tab,content) {
     $(tab).remove(); //remove li of tab
-    $('#myTab a:last').tab('show'); // Select first tab
     $(content).remove(); //remove respective tab content
 }

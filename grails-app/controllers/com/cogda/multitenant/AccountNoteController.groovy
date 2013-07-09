@@ -22,7 +22,7 @@ class AccountNoteController extends BaseController{
 
     GsonBuilder gsonBuilder
 
-    static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
+    static allowedMethods = [save: "POST", update: "POST", delete: "POST",add:"GET"]
 
     def index() {
 
@@ -30,6 +30,35 @@ class AccountNoteController extends BaseController{
 
     def create() {
 
+    }
+
+    def add() {
+        def accountInstance = Account.get(params.id)
+        if (!accountInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'account.label', default: 'Account'), params.id])
+            return
+        }
+        render(template: '/_common/modals/accountNoteTabs/add', model: [accountInstance: accountInstance])
+    }
+
+    def show() {
+        def accountNoteInstance = AccountNote.get(params.id)
+        if (!accountNoteInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'accountNote.label', default: 'Account Note'), params.id])
+            redirect(action: "list")
+            return
+        }
+        render(template: '/_common/modals/accountNoteTabs/show', model: [accountNoteInstance: accountNoteInstance])
+    }
+
+    def edit() {
+        def accountNoteInstance = AccountNote.get(params.id)
+        if (!accountNoteInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'accountNote.label', default: 'Account Note'), params.id])
+            redirect(action: "list")
+            return
+        }
+        render(template: '/_common/modals/accountNoteTabs/edit', model: [accountNoteInstance: accountNoteInstance])
     }
 
     /**

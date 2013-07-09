@@ -67,7 +67,7 @@ class AccountController extends BaseController{
             redirect(action: "list")
             return
         }
-        render(template: '/_common/modals/account/details', model: [accountInstance: accountInstance])
+        render(template: '/_common/modals/account/show', model: [accountInstance: accountInstance])
     }
 
     def edit() {
@@ -196,14 +196,14 @@ class AccountController extends BaseController{
 
         dataToRender.aaData = [] //TODO:implement submissions on Account Domain
 //        accountInstance.submissions.each { AccountNote accountNote ->
-            Map map = [:]
-            map.DT_RowId = "row_" + 1
-            map.submissionDate = "date submitted"
-            map.submissionLead = "prospect or suspect"
-            map.submissionLOB = "LOB"
-            map.submissionxDate = "xDate"
-            map.action = ""
-            dataToRender.aaData.add(map)
+        Map map = [:]
+        map.DT_RowId = "row_" + 1
+        map.submissionDate = "date submitted"
+        map.submissionLead = "prospect or suspect"
+        map.submissionLOB = "LOB"
+        map.submissionxDate = "xDate"
+        map.action = ""
+        dataToRender.aaData.add(map)
 //        }
         dataToRender.sEcho = 1
 
