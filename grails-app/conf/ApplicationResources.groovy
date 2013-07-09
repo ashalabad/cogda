@@ -13,19 +13,20 @@ modules = {
 
     angular {
         dependsOn 'jquery'
-        resource url:'js/bundles/angular/ng-grid.css'
-        resource url:'js/bundles/toastr/toastr.css'
-        resource url:'js/bundles/angular/angular.js'
-        resource url:'js/bundles/angular/angular-resource.js'
-        resource url:'js/bundles/angular/ng-grid-2.0.7.debug.js'
-        resource url:'js/angular/resources/restApi.js'
-        resource url:'js/bundles/toastr/toastr.js'
-        resource url:'js/angular/resources/logger.js'
-        resource url:'js/angular/common/helperFuncs.js'
+        resource url:'js/bundles/angular/ng-grid.css', disposition: 'head'
+        resource url:'js/bundles/toastr/toastr.css', disposition: 'head'
+        resource url:'css/cogda.css', disposition: 'head'
+        resource url:'js/bundles/angular/angular.js', disposition: 'head'
+        resource url:'js/bundles/angular/angular-resource.js', disposition: 'head'
+        resource url:'js/bundles/angular/ng-grid-2.0.7.debug.js', disposition: 'head'
+        resource url:'js/bundles/toastr/toastr.js', disposition: 'head'
+        resource url:'js/angular/resources/restApi.js', disposition: 'head'
+        resource url:'js/angular/resources/logger.js', disposition: 'head'
+        resource url:'js/angular/common/helperFuncs.js', disposition: 'head'
     }
 
     company {
-        dependsOn 'angular', 'bootstrap'
+        dependsOn 'bootstrap', 'bootstrap_utils', 'angular'
         resource url:'js/angular/company/company.js'
         resource url:'js/angular/company/company.css'
     }

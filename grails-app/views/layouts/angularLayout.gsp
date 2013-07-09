@@ -3,7 +3,9 @@
 <html lang="${session.'org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE'}">
 
 <head>
-    <title><g:layoutTitle default="${meta(name: 'app.name')}"/></title>
+    <title>
+        <g:layoutTitle default="${meta(name: 'app.name')}"/>
+    </title>
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,12 +18,9 @@
     %{--<link rel="apple-touch-icon" href="assets/ico/apple-touch-icon-72x72.png" sizes="72x72">--}%
     %{--<link rel="apple-touch-icon" href="assets/ico/apple-touch-icon-114x114.png" sizes="114x114">--}%
     <%-- Manual switch for the skin can be found in /view/_menu/_config.gsp --%>
-    <r:require module="jquery"/>
-    <r:require module="jquery-ui"/>
+    <r:require module="angular"/>
     <r:require module="bootstrap" />
     <r:require module="bootstrap_utils"/>
-    <r:require module="application"/>
-    <r:require module="notifications"/>
     <r:layoutResources/>
     <g:layoutHead/>
 
@@ -33,7 +32,7 @@
     <%-- For Javascript see end of body --%>
 </head>
 
-<body>
+<body data-base-url="${pageProperty(name:'body.data-base-url', default:createLink(uri:''))}">
 <g:render template="/_menu/navbar"/>
 
 <!-- Enable to overwrite Header by individual page -->
@@ -65,19 +64,19 @@
 <mt:hasTenant>
     <script type="text/javascript" src="//assets.zendesk.com/external/zenbox/v2.6/zenbox.js"></script>
     <style type="text/css" media="screen, projection">
-            @import url(//assets.zendesk.com/external/zenbox/v2.6/zenbox.css);
-            </style>
-                <script type="text/javascript">
-                if (typeof(Zenbox) !== "undefined") {
-                        Zenbox.init({
-                            dropboxID:   "20194568",
-                            url:         "https://cogda.zendesk.com",
-                            tabTooltip:  "Support",
-                            tabImageURL: "https://assets.zendesk.com/external/zenbox/images/tab_support.png",
-                            tabColor:    "black",
-                            tabPosition: "Left"
-                        });
-                }
+    @import url(//assets.zendesk.com/external/zenbox/v2.6/zenbox.css);
+    </style>
+    <script type="text/javascript">
+        if (typeof(Zenbox) !== "undefined") {
+            Zenbox.init({
+                dropboxID:   "20194568",
+                url:         "https://cogda.zendesk.com",
+                tabTooltip:  "Support",
+                tabImageURL: "https://assets.zendesk.com/external/zenbox/images/tab_support.png",
+                tabColor:    "black",
+                tabPosition: "Left"
+            });
+        }
     </script>
 </mt:hasTenant>
 </body>

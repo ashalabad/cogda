@@ -27,7 +27,9 @@ angular.module('companyApp', ['resources.restApi', 'common.helperFuncs', 'resour
             // RestApi knows based on where this page is right now based on the page's data-base-url where to route the get() request
             $scope.companies = [];
             $scope.gridOptions = { data: 'companies' };
-            RestApi.list($routeParams, function(list, headers) {
+            var baseUrl = '/company/';
+            var Company = RestApi.getRest(baseUrl);
+            Company.list($routeParams, function(list, headers) {
                 $scope.companies = list;
                 $scope.total = parseInt(headers('X-Pagination-Total'));
             }, angular.noop());
