@@ -27,6 +27,7 @@ import grails.plugin.awssdk.AmazonWebService
 import grails.plugin.multitenant.core.CurrentTenant
 import grails.plugin.multitenant.core.MultiTenantDomainClass
 import grails.plugin.multitenant.core.Tenant
+import grails.validation.ValidationException
 import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.grails.commons.GrailsApplication
 
@@ -143,17 +144,24 @@ class CustomerAccountService {
 
         String customerAccountUuid = customerAccount.accountId
 
-        // Create the First Company and that Company's Company Profile
-        String companyAccountId = createFirstCompany(customerAccount, registration)
+        // Create the First Company
+        Company company = createFirstCompany(customerAccount, registration)
+
+        // Create the First Company Profile
+        CompanyProfile companyProfile = createFirstCompanyProfile(customerAccount, registration, company)
 
         // Create the Customer Account Security Profile
         customerAccountSecuritySetup(customerAccount)
 
-        // Create the First User and the Corresponding UserProfile and the UserProfile's primaryEmailAddress
-        String userAccountId = createFirstUser(customerAccount, registration)
+        // Create the First User
+        User user = createFirstUser(customerAccount, registration)
+
+        // Create the First UserProfile and associate it with the User and the Company
+        // and the Corresponding UserProfile and the UserProfile's primaryEmailAddress
+        UserProfile userProfile = createFirstUserProfile(registration, user, company)
 
         // sets up the customerAccount file system
-        provisionCustomerAccountAmazonFileSystem(customerAccountUuid, companyAccountId, userAccountId)
+        provisionCustomerAccountAmazonFileSystem(customerAccountUuid, company.accountId, user.accountId)
     }
 
     /**
@@ -274,27 +282,45 @@ class CustomerAccountService {
     }
 
     /**
-     *
+     * Creates the first company for the purposes of onboarding the
+     * new CustomerAccount.
      * @param customerAccount
      * @param registration
      * @return Company
      */
-    String createFirstCompany(CustomerAccount customerAccount, registration){
-
-        Company company = new Company()
-
-        company.companyName = registration.companyName
-        company.doingBusinessAs = registration.companyName
-        company.parentCompany = null
-        company.intCode = 0
-
+    Company createFirstCompany(CustomerAccount customerAccount, registration){
         customerAccount.withThisTenant {
-            company.save() ?: log.error ("Save of Company failed with errors ${company.errors}")
+            Company company = new Company()
+            company.companyName = registration.companyName
+            company.doingBusinessAs = registration.companyName
+            company.parentCompany = null
+            company.intCode = 0
+            company.companyType = registration.companyType
+
+            try {
+                company.save(flush:true, failOnError:true)
+            }catch(ValidationException ve){
+                log.error("Save of Company failed with errors ${company.errors}")
+                log.error(ve.errors.allErrors)
+            }catch(Exception e){
+                log.error("Save of Company failed due to unknown errors: " + e.message)
+                e.printStackTrace()
+            }
+            return company
         }
+    }
+
+    /**
+     * Creates the first company profile which is considered the root company from the
+     * information provided on the registration map or the actual Registration domain class.
+     * @param customerAccount
+     * @param registration
+     * @return Company
+     */
+    CompanyProfile createFirstCompanyProfile(CustomerAccount customerAccount, registration, Company company){
 
         CompanyProfile companyProfile = new CompanyProfile()
         companyProfile.company = company
-        companyProfile.companyType = CompanyType.get(registration.companyType.ident())
 
         // Save the Company Profile
         companyProfile.save() ?: log.error ("Error saving CompanyProfile errors -> ${companyProfile.errors}")
@@ -324,7 +350,7 @@ class CustomerAccountService {
 
         companyProfile.addToCompanyProfilePhoneNumbers(companyProfilePhoneNumber)
 
-        return company.accountId
+        return companyProfile
     }
 
     /**
@@ -333,7 +359,7 @@ class CustomerAccountService {
      * @param registration
      * @return User
      */
-    String createFirstUser(CustomerAccount customerAccount, registration){
+    User createFirstUser(CustomerAccount customerAccount, registration){
         // create the user based on the passed in registration parameters
         User user = new User()
         user.username = registration.username
@@ -344,38 +370,59 @@ class CustomerAccountService {
         user.passwordExpired = false
         user.encodePassword = false  // do not allow the password to be re-encoded
 
-        Company company
         customerAccount.withThisTenant {
 
-            user.save() ?: log.error ("Error saving User errors -> ${user.errors}")
+            try {
+                user.save(failOnError:true)
+            }catch(ValidationException ve){
+                log.error ("Error saving User errors -> ${user.errors}")
+            }
 
             // add the user roles for the host_administrator and user_role
             Role roleAdministrator = Role.findByAuthority(CustomerAccountService.ROLE_ADMINISTRATOR)
+            assert roleAdministrator, "roleAdministrator CustomerAccountService.ROLE_ADMINISTRATOR was not found - fix this"
             Role roleUser = Role.findByAuthority(CustomerAccountService.ROLE_USER)
+            assert roleUser, "roleUser CustomerAccountService.ROLE_USER was not found - fix this "
 
             // Add the roles to the User
             UserRole.create(user, roleAdministrator)
             UserRole.create(user, roleUser)
-
-            company = Company.retrieveRootCompany()
         }
 
+        return user
+    }
+    /**
+     * Creates the first UserProfile
+     * @param registration
+     * @param user
+     * @param company
+     * @return UserProfile
+     */
+    UserProfile createFirstUserProfile(registration, User user, Company company){
         // Add the UserProfile for this User
         UserProfile userProfile = new UserProfile()
         userProfile.user = user
         userProfile.firstName = registration.firstName
         userProfile.lastName = registration.lastName
         userProfile.company = company
-        userProfile.save() ?: log.error ("Error saving UserProfile errors -> ${userProfile.errors}")
+
+        try {
+            userProfile.save(failOnError: true)
+        }catch(ValidationException ve){
+            log.error ("Error saving UserProfile errors -> ${userProfile.errors}")
+        }
 
         UserProfileEmailAddress userProfileEmailAddress = new UserProfileEmailAddress()
         userProfileEmailAddress.emailAddress = registration.emailAddress
         userProfileEmailAddress.primaryEmailAddress = Boolean.TRUE
         userProfileEmailAddress.userProfile = userProfile
-
-        userProfile.addToUserProfileEmailAddresses(userProfileEmailAddress)
-
-        return user.accountId
+        try {
+            userProfileEmailAddress.save(failOnError:true)
+            userProfile.addToUserProfileEmailAddresses(userProfileEmailAddress)
+        }catch(ValidationException ve){
+            log.error ("Error saving UserProfileEmailAddress errors -> ${userProfileEmailAddress.errors}")
+        }
+        return userProfile
     }
 
     /**
