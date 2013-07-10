@@ -90,28 +90,17 @@ class BaseIntegrationTest {
     }
 
     public void createCompanyTypes(){
-        CompanyType agency = new CompanyType(code:"Agency/Retailer", intCode:0, description: "Agency/Retailer")
-        if(!agency.save()){
-            agency.errors.each {
-                log.debug it
-            }
-        }
-        CompanyType carrier = new CompanyType(code:"Carrier", intCode:1, description: "Carrier")
-        if(!carrier.save()){
-            carrier.errors.each {
-                log.debug it
-            }
-        }
-        CompanyType reinsurer = new CompanyType(code:"Reinsurer", intCode:2, description: "Reinsurer")
-        if(!reinsurer.save()){
-            reinsurer.errors.each {
-                log.debug it
-            }
-        }
-        CompanyType wholesaler = new CompanyType(code:"Wholesaler (MGA, Broker)", intCode:3, description: "Wholesaler (MGA, Broker)")
-        if(!wholesaler.save()){
-            wholesaler.errors.each {
-                log.debug it
+
+        List codes = ["Agency/Retailer", "Carrier", "Reinsurer", "Wholesaler (MGA, Broker)"]
+
+        codes.eachWithIndex { String code, int i ->
+            if(!CompanyType.findByCode(code)){
+                CompanyType companyType = new CompanyType(code:code, intCode:i.toInteger(), description: code)
+                if(!companyType.save(flush:true)){
+                    companyType.errors.each {
+                        log.debug it
+                    }
+                }
             }
         }
     }
