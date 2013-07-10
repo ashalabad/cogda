@@ -111,6 +111,12 @@ class BootStrap {
         def springContext = WebApplicationContextUtils.getWebApplicationContext(servletContext)
         springContext.getBean("customObjectMarshallers").register()
 
+        if (Environment.current == Environment.TEST) {
+            createCompanyTypes()
+        }
+
+
+
         if (Environment.current != Environment.TEST) {
 
             // create admin domain classes
@@ -378,23 +384,6 @@ class BootStrap {
             }
             if (!AccountType.findByCode("Reinsurer")) {
                 new AccountType(code: "Reinsurer", intCode: 3, description: "Reinsurer").save()
-            }
-        }
-    }
-
-    def createCompanyTypes(){
-        CompanyType.withTransaction {
-            if (!CompanyType.findByCode("Agency/Retailer")) {
-                new CompanyType(code: "Agency/Retailer", intCode: 0, description: "Agency/Retailer").save()
-            }
-            if (!CompanyType.findByCode("Carrier")) {
-                new CompanyType(code: "Carrier", intCode: 1, description: "Carrier").save()
-            }
-            if (!CompanyType.findByCode("Reinsurer")) {
-                new CompanyType(code: "Reinsurer", intCode: 2, description: "Reinsurer").save()
-            }
-            if (!CompanyType.findByCode("Wholesaler (MGA, Broker)")) {
-                new CompanyType(code: "Wholesaler (MGA, Broker)", intCode: 3, description: "Wholesaler (MGA, Broker)").save()
             }
         }
     }
@@ -732,6 +721,22 @@ Thank you!
 
             if(sicCode && naicsCode){
                 SicNaicsCodeCrosswalk.create sicCode, naicsCode
+            }
+        }
+    }
+
+    def createCompanyTypes(){
+
+        List codes = ["Agency/Retailer", "Carrier", "Reinsurer", "Wholesaler (MGA, Broker)"]
+
+        codes.eachWithIndex { String code, int i ->
+            if(!CompanyType.findByCode(code)){
+                CompanyType companyType = new CompanyType(code:code, intCode:i.toInteger(), description: code)
+                if(!companyType.save(flush:true)){
+                    companyType.errors.each {
+                        log.debug it
+                    }
+                }
             }
         }
     }
