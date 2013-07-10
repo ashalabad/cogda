@@ -85,7 +85,6 @@ class CompanyProfileSpec extends Specification{
 
         expect:
             CompanyProfile.rootCompanyProfile == companyProfile
-
-
+            Company.findAllByParentCompany(rootCompany).size() == 5
     }
 }
