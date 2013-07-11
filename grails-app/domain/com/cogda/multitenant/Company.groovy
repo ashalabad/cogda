@@ -21,9 +21,15 @@ class Company {
      */
     Company parentCompany
 
+    CompanyType companyType
+
     String companyName
 
     String doingBusinessAs
+
+    String federalIdNumber
+
+    String amBestNumber
 
     /**
      * Indicates which level in the hierarchy this Company is.
@@ -34,7 +40,15 @@ class Company {
      */
     Integer intCode
 
+    /**
+     * The public profile for the Company
+     */
     CompanyProfile companyProfile
+
+    /**
+     * The settings for this Company
+     */
+    CompanySettings companySettings
 
     String accountId = UUID.randomUUID().toString().replaceAll('-', '')
 
@@ -46,13 +60,16 @@ class Company {
     static hasMany		= [companies:Company]	// tells GORM to associate other domain objects for a 1-n or n-m mapping
     static mappedBy     = [companies:'parentCompany']
 
-
     static constraints = {
         parentCompany(nullable:true)
         companyName(nullable:false)  // TODO: Add a validator that checks for the company name if this has a ParentCompany - the name should be unique within the company
         doingBusinessAs(nullable:true)
         intCode(nullable:true, size:0..100)
         accountId(nullable:false, blank:false, unique:true)
+        federalIdNumber(nullable:true)
+        amBestNumber(nullable:true)
+        companySettings(nullable:true)
+        companyType(nullable:false)
     }
 
     /*

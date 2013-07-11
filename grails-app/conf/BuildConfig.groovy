@@ -48,9 +48,11 @@ grails.project.dependency.resolution = {
         runtime 'org.apache.httpcomponents:httpcore:4.1'
         runtime 'org.apache.httpcomponents:httpclient:4.1'
         test "org.spockframework:spock-grails-support:0.7-groovy-2.0"
+        compile 'com.google.code.gson:gson:2.2.4'
     }
 
     plugins {
+
         runtime ":hibernate:$grailsVersion"
         runtime ":jquery:1.8.3"
         runtime ":resources:1.1.6"
@@ -58,7 +60,7 @@ grails.project.dependency.resolution = {
 
         compile ":jquery-ui:1.8.24"
 
-        compile ':gson:1.1.4'
+        // compile ':gson:1.1.4'
         // Uncomment these (or add new ones) to enable additional resources capabilities
         //runtime ":zipped-resources:1.0"
         //runtime ":cached-resources:1.0"
@@ -92,4 +94,6 @@ grails.project.dependency.resolution = {
             exclude "spock-grails-support"
         }
     }
+
+    grails.plugin.location.'grails-gson' = "../grails-gson"
 }

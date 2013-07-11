@@ -343,7 +343,7 @@ class CustomerAccountService {
 
         CompanyProfilePhoneNumber companyProfilePhoneNumber = new CompanyProfilePhoneNumber()
         companyProfilePhoneNumber.companyProfile = companyProfile
-        companyProfilePhoneNumber.phoneNumber = new PhoneNumber(phoneNumber:registration.phoneNumber)
+        companyProfilePhoneNumber.phoneNumber = registration.phoneNumber
         companyProfilePhoneNumber.primaryPhoneNumber = true
 
         companyProfilePhoneNumber.validate() ?: log.error ("Error saving CompanyProfilePhoneNumber errors -> ${companyProfilePhoneNumber.errors}")

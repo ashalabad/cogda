@@ -15,38 +15,40 @@ class CompanyProfile {
 	Long	id
 	Long	version
 
-    CompanyType companyType
-
     Boolean published
 
     String companyDescription
 
+    String businessSpecialties
+
+    String associations
+
     String companyWebsite
-
-    Date yearFounded
-
-    String amBestNumber
 
     /* Automatic timestamping of GORM */
 	Date	dateCreated
 	Date	lastUpdated
 
+    static transients = ['rootCompanyProfile']
 	static belongsTo = [company:Company]	// tells GORM to cascade commands: e.g., delete this object if the "parent" is deleted.
     static hasMany = [companyProfileAddresses:CompanyProfileAddress,
                       companyProfileEmailAddresses:CompanyProfileEmailAddress,
-                      companyProfilePhoneNumbers:CompanyProfilePhoneNumber]
+                      companyProfilePhoneNumbers:CompanyProfilePhoneNumber,
+                      companyProfileContacts:CompanyProfileContact]
 
     static mapping = {
         companyDescription type:'text'
+        businessSpecialties type:'text'
+        associations type:'text'
     }
 
     static constraints = {
         companyDescription(nullable:true)
         companyWebsite(nullable:true, url:true)
-        yearFounded(nullable:true)
-        amBestNumber(nullable:true)
         published(nullable:true)
-        companyType(nullable:false)
+        companyDescription(nullable:true, maxSize:15000)
+        businessSpecialties(nullable:true, maxSize:15000)
+        associations(nullable:true, maxSize:15000)
     }
 
     /**
@@ -58,5 +60,13 @@ class CompanyProfile {
         List companyProfileAddresses = CompanyProfileAddress.executeQuery("from CompanyProfileAddress cpa where cpa.primaryAddress = :primaryAddress " +
                 " and cpa.companyProfile = :companyProfile", [primaryAddress:true, companyProfile:this])
         return companyProfileAddresses?.first()
+    }
+
+    /**
+     * Retrieves the Root Company's Company Profile
+     * @return CompanyProfile
+     */
+    static CompanyProfile getRootCompanyProfile(){
+        Company.retrieveRootCompany().companyProfile
     }
 }

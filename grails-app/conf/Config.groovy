@@ -1,4 +1,5 @@
 import com.cogda.multitenant.CustomerAccount
+import grails.plugin.multitenant.core.ast.MultiTenantAST
 
 // locations to search for config files that get merged into the main config;
 // config files can be ConfigSlurper scripts, Java properties files, or classes
@@ -281,5 +282,10 @@ environments {
         grails.converters.default.pretty.print=true
     }
 }
+// CAUTION: the grails.converters.gson.exclusionStrategies.serialization has no effect on the gsonBuilder when applied to Domain Classes
+grails.converters.gson.exclusionStrategies.serialization = [new com.cogda.security.SecuritySerializationExclusionStrategy()]
+
+// The following applies a rudimentary serialization exclusion strategy for properties in our Domain Classes
+grails.converters.gson.serialization.excludedPropertyNames = [MultiTenantAST.TENANT_ID_FIELD_NAME, "accountId"]
 
 // End: GSON Plugin

@@ -2,6 +2,7 @@ package com.cogda.domain
 
 import com.cogda.GsonBaseController
 import grails.plugin.gson.converters.GSON
+import grails.plugins.springsecurity.Secured
 import org.springframework.dao.DataIntegrityViolationException
 import static grails.plugin.gson.http.HttpConstants.*
 
@@ -9,6 +10,7 @@ import static grails.plugin.gson.http.HttpConstants.*
  * CompanyProfileController
  * A controller class handles incoming web requests and performs actions such as redirects, rendering views and so on.
  */
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class CompanyProfileController extends GsonBaseController{
 
     final static String COMPANY_PROFILE_LABEL = "companyProfile.label"
@@ -19,6 +21,10 @@ class CompanyProfileController extends GsonBaseController{
 
     def showPartial(){
         render (view:'showPartial')
+    }
+
+    def editPartial(){
+        render (view:'editPartial')
     }
 
     def list(Integer max) {
@@ -42,7 +48,7 @@ class CompanyProfileController extends GsonBaseController{
     }
 
     def get() {
-        CompanyProfile companyProfileInstance = CompanyProfile.rootCompanyProfile()
+        CompanyProfile companyProfileInstance = CompanyProfile.rootCompanyProfile
         if (companyProfileInstance) {
             respondFound companyProfileInstance
         } else {

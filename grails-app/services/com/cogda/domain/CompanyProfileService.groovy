@@ -19,7 +19,6 @@ class CompanyProfileService {
     CompanyProfile createCompanyProfile(Company company, Registration registration){
         CompanyProfile companyProfile = new CompanyProfile()
         companyProfile.company = company
-        companyProfile.companyType = registration.companyType
 
         // Save the Company Profile
         companyProfile.save() ?: log.error ("Error saving CompanyProfile errors -> ${companyProfile.errors}")
@@ -42,7 +41,7 @@ class CompanyProfileService {
 
         CompanyProfilePhoneNumber companyProfilePhoneNumber = new CompanyProfilePhoneNumber()
         companyProfilePhoneNumber.companyProfile = companyProfile
-        companyProfilePhoneNumber.phoneNumber = new PhoneNumber(phoneNumber:registration.phoneNumber)
+        companyProfilePhoneNumber.phoneNumber = registration.phoneNumber
         companyProfilePhoneNumber.primaryPhoneNumber = true
 
         companyProfilePhoneNumber.validate() ?: log.error ("Error saving CompanyProfilePhoneNumber errors -> ${companyProfilePhoneNumber.errors}")

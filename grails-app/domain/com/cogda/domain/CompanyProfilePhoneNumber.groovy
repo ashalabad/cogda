@@ -10,14 +10,13 @@ class CompanyProfilePhoneNumber {
     boolean published
     boolean primaryPhoneNumber
 
-    PhoneNumber phoneNumber
-
-    static embedded = ['phoneNumber']
+    String phoneNumber
 
 	static belongsTo	= [companyProfile:CompanyProfile]	// tells GORM to cascade commands: e.g., delete this object if the "parent" is deleted.
 
     static constraints = {
         published(nullable:true)
         primaryPhoneNumber(nullabel:true)
+        phoneNumber(nullable:false)
     }
 }
