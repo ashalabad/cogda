@@ -262,7 +262,7 @@ class CustomerAccountServiceTests extends BaseIntegrationTest{
         assert companyProfile.companyProfilePhoneNumbers.size() == 1
         CompanyProfilePhoneNumber companyProfilePhoneNumber = companyProfile.companyProfilePhoneNumbers.first()
         assert companyProfilePhoneNumber.primaryPhoneNumber == Boolean.TRUE
-        assert companyProfilePhoneNumber.phoneNumber.phoneNumber.equals(registration.phoneNumber)
+        assert companyProfilePhoneNumber.phoneNumber.equals(registration.phoneNumber)
 
 
         // Test that the Amazon s3 folders were created successfully
