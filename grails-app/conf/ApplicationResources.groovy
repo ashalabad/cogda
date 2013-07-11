@@ -31,6 +31,12 @@ modules = {
         resource url:'js/angular/company/company.css'
     }
 
+    companyProfile {
+        dependsOn 'bootstrap', 'bootstrap_utils', 'angular'
+        resource url:'js/angular/companyProfile/companyProfile.js'
+        resource url:'js/angular/companyProfile/companyProfile.css'
+    }
+
     dataTables {
         dependsOn 'jquery,  jquery-ui'
         resource url:[dir: 'js/dataTables/css', file: 'jquery.dataTables.css']
