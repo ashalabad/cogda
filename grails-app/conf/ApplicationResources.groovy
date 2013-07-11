@@ -18,6 +18,7 @@ modules = {
         resource url:'css/cogda.css', disposition: 'head'
         resource url:'js/bundles/angular/angular.js', disposition: 'head'
         resource url:'js/bundles/angular/angular-resource.js', disposition: 'head'
+        resource url:'js/bundles/angular/ui-bootstrap-tpls-0.4.0.min.js', disposition: 'head'
         resource url:'js/bundles/angular/ng-grid-2.0.7.debug.js', disposition: 'head'
         resource url:'js/bundles/toastr/toastr.js', disposition: 'head'
         resource url:'js/angular/resources/restApi.js', disposition: 'head'
@@ -47,7 +48,6 @@ modules = {
         resource url:'js/pinesNotify/jquery.pnotify.js'
     }
 
-    //Account
     account {
         dependsOn 'dataTables'
         resource url:[dir: 'css', file: 'account.css']
