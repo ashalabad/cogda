@@ -50,12 +50,13 @@ angular.module('resources.logger', []).factory('Logger', function () {
         log("Warning: " + message);
     };
 
-    function messageBuilder(response, $scope){
+    function messageBuilder(response){
         switch (response.status) {
             case 200:
                 if(response.data.message){
                     success(response.data.message, "Success");
                 }else{
+                    success("Success", "Successful Operation");
                     log("Successful Read Update or Delete", "Success");
                 }
                 break;
@@ -79,6 +80,9 @@ angular.module('resources.logger', []).factory('Logger', function () {
             case 406: // optimistic locking failure - display error message on the page
                 error("Unable to process your request", "Error");
                 break;
+            case 500:
+                error("Unable to process request", "This was due to an issue on the server - please file a support ticket")
+                break;
             default: // TODO: general error handling
         }
     }
@@ -95,7 +99,7 @@ angular.module('resources.logger', []).factory('Logger', function () {
                 }
                 break;
             default:
-                error("Undhandled Error Thrown", "Error " + response.status);
+                error("Unhandled Error Thrown", "Error " + response.status);
         }
     }
 

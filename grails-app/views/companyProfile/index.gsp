@@ -20,7 +20,9 @@
     <!-- Empty Header -->
 </content>
 <div class="pageHeader">
-    <h3>Company Profile Manager</h3>
+    <h3>
+        <g:message code="companyProfile.label"/>
+    </h3>
 </div>
 
 <section id="list-companyProfile" class="first" data-ng-app="companyProfileApp" data-base-url="${createLink(uri:'companyProfile')}">
