@@ -11,61 +11,63 @@ import org.apache.commons.lang.StringUtils
  */
 public enum UsState {
 
-    Alabama("AL"),
-    Alaska("AK"),
-    Arizona("AZ"),
-    Arkansas("AR"),
-    California("CA"),
-    Colorado("CO"),
-    Connecticut("CT"),
-    Delaware("DE"),
-    Florida("FL"),
-    Georgia("GA"),
-    Hawaii("HI"),
-    Idaho("ID"),
-    Illinois("IL"),
-    Indiana("IN"),
-    Iowa("IA"),
-    Kansas("KS"),
-    Kentucky("KY"),
-    Louisiana("LA"),
-    Maine("ME"),
-    Maryland("MD"),
-    Massachusetts("MA"),
-    Michigan("MI"),
-    Minnesota("MN"),
-    Mississippi("MS"),
-    Missouri("MO"),
-    Montana("MT"),
-    Nebraska("NE"),
-    Nevada("NV"),
-    NewHampshire("NH"),
-    NewJersey("NJ"),
-    NewMexico("NM"),
-    NewYork("NY"),
-    NorthCarolina("NC"),
-    NorthDakota("ND"),
-    Ohio("OH"),
-    Oklahoma("OK"),
-    Oregon("OR"),
-    Pennsylvania("PA"),
-    RhodeIsland("RI"),
-    SouthCarolina("SC"),
-    SouthDakota("SD"),
-    Tennessee("TN"),
-    Texas("TX"),
-    Utah("UT"),
-    Vermont("VT"),
-    Virginia("VA"),
-    Washington("WA"),
-    WestVirginia("WV"),
-    Wisconsin("WI"),
-    Wyoming("WY")
+    Alabama("AL", "Alabama"),
+    Alaska("AK", "Alaska"),
+    Arizona("AZ", "Arizona"),
+    Arkansas("AR", "Arkansas"),
+    California("CA", "California"),
+    Colorado("CO", "Colorado"),
+    Connecticut("CT", "Connecticut"),
+    Delaware("DE", "Delaware"),
+    Florida("FL", "Florida"),
+    Georgia("GA", "Georgia"),
+    Hawaii("HI", "Hawaii"),
+    Idaho("ID", "Idaho"),
+    Illinois("IL", "Illinois"),
+    Indiana("IN", "Indiana"),
+    Iowa("IA", "Iowa"),
+    Kansas("KS", "Kansas"),
+    Kentucky("KY", "Kentucky"),
+    Louisiana("LA", "Louisiana"),
+    Maine("ME", "Maine"),
+    Maryland("MD", "Maryland"),
+    Massachusetts("MA", "Massachusetts"),
+    Michigan("MI", "Michigan"),
+    Minnesota("MN", "Minnesota"),
+    Mississippi("MS", "Mississippi"),
+    Missouri("MO", "Missouri"),
+    Montana("MT", "Montana"),
+    Nebraska("NE", "Nebraska"),
+    Nevada("NV", "Nevada"),
+    NewHampshire("NH", "New Hampshire"),
+    NewJersey("NJ", "New Jersey"),
+    NewMexico("NM", "New Mexico"),
+    NewYork("NY", "New York"),
+    NorthCarolina("NC", "North Carolina"),
+    NorthDakota("ND", "North Dakota"),
+    Ohio("OH", "Ohio"),
+    Oklahoma("OK", "Oklahoma"),
+    Oregon("OR", "Oregon"),
+    Pennsylvania("PA", "Pennsylvania"),
+    RhodeIsland("RI", "Rhode Island"),
+    SouthCarolina("SC", "South Carolina"),
+    SouthDakota("SD", "South Dakota"),
+    Tennessee("TN", "Tennessee"),
+    Texas("TX", "Texas"),
+    Utah("UT", "Utah"),
+    Vermont("VT", "Vermont"),
+    Virginia("VA", "Virginia"),
+    Washington("WA", "Washington"),
+    WestVirginia("WV", "West Virginia"),
+    Wisconsin("WI", "Wisconsin"),
+    Wyoming("WY", "Wyoming")
 
     final String value
+    final String description
 
-    UsState(String value) {
+    UsState(String value, String description) {
         this.value = value
+        this.description = description
     }
 
     /**
@@ -74,7 +76,7 @@ public enum UsState {
      * @return String
      */
     String toString() {
-        value
+        value + " " + description
     }
 
     /**
@@ -146,7 +148,7 @@ public enum UsState {
 
         List<UsState> usStates = UsState.findByKeyOrValue(q)
         usStates.each{ UsState usState ->
-            matches.put(usState.value, usState.key)
+            matches.put(usState.value, usState.description)
         }
 
         return matches
@@ -182,5 +184,20 @@ public enum UsState {
             usState = usStates.first()
         }
         return usState
+    }
+
+    /**
+     * Returns a Map that consists of the following:
+     * <br/>
+     * key:   State Abbreviation e.g. NY
+     * value: State description e.g. New York
+     * @return
+     */
+    public static Map getUsStatesMap(){
+        Map<String, String> usStatesMap = [:]
+        for(UsState usState : values()){
+            usStatesMap.put(usState.value, usState.description)
+        }
+        return usStatesMap
     }
 }
