@@ -110,7 +110,7 @@ class UsStateSpec extends spock.lang.Specification {
 
     def "findByValue(value)"(){
         expect:
-        UsState.findByKey(value) == usStates
+        UsState.findByValue(value) == usStates
 
         where:
         value                     | usStates
