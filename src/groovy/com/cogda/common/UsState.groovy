@@ -62,7 +62,14 @@ public enum UsState {
     Wisconsin("WI", "Wisconsin"),
     Wyoming("WY", "Wyoming")
 
+    /**
+     * The State Abbreviation   e.g. RI
+     */
     final String value
+
+    /**
+     * The State Name e.g. Rhode Island
+     */
     final String description
 
     UsState(String value, String description) {
