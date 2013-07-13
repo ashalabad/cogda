@@ -33,9 +33,9 @@ class UsStateSpec extends spock.lang.Specification {
 
         where:
         q        | usStates
-        "G"      | ["GA":"Georgia", "MI":"Michigan", "OR":"Oregon", "VA":"Virginia", "WA":"Washington", "WV":"WestVirginia", "WY":"Wyoming"]
+        "G"      | ["GA":"Georgia", "MI":"Michigan", "OR":"Oregon", "VA":"Virginia", "WA":"Washington", "WV":"West Virginia", "WY":"Wyoming"]
         "GA"     | ["GA":"Georgia", "MI":"Michigan"]
-        "g"      | ["GA":"Georgia", "MI":"Michigan", "OR":"Oregon", "VA":"Virginia", "WA":"Washington", "WV":"WestVirginia", "WY":"Wyoming"]
+        "g"      | ["GA":"Georgia", "MI":"Michigan", "OR":"Oregon", "VA":"Virginia", "WA":"Washington", "WV":"West Virginia", "WY":"Wyoming"]
         "gA"     | ["GA":"Georgia", "MI":"Michigan"]
         "ga"     | ["GA":"Georgia", "MI":"Michigan"]
         "Ga"     | ["GA":"Georgia", "MI":"Michigan"]
@@ -123,5 +123,64 @@ class UsStateSpec extends spock.lang.Specification {
         "WV"                      | [UsState.WestVirginia]
         "WY"                      | [UsState.Wyoming]
         "NotGoingToBeFound"       | []
+    }
+
+    def "getUsStatesMap()"(){
+        given:
+        Map usStates = ["AL":"Alabama",
+                        "AK":"Alaska",
+                        "AZ":"Arizona",
+                        "AR":"Arkansas",
+                        "CA":"California",
+                        "CO":"Colorado",
+                        "CT":"Connecticut",
+                        "DE":"Delaware",
+                        "FL":"Florida",
+                        "GA":"Georgia",
+                        "HI":"Hawaii",
+                        "ID":"Idaho",
+                        "IL":"Illinois",
+                        "IN":"Indiana",
+                        "IA":"Iowa",
+                        "KS":"Kansas",
+                        "KY":"Kentucky",
+                        "LA":"Louisiana",
+                        "ME":"Maine",
+                        "MD":"Maryland",
+                        "MA":"Massachusetts",
+                        "MI":"Michigan",
+                        "MN":"Minnesota",
+                        "MS":"Mississippi",
+                        "MO":"Missouri",
+                        "MT":"Montana",
+                        "NE":"Nebraska",
+                        "NV":"Nevada",
+                        "NH":"New Hampshire",
+                        "NJ":"New Jersey",
+                        "NM":"New Mexico",
+                        "NY":"New York",
+                        "NC":"North Carolina",
+                        "ND":"North Dakota",
+                        "OH":"Ohio",
+                        "OK":"Oklahoma",
+                        "OR":"Oregon",
+                        "PA":"Pennsylvania",
+                        "RI":"Rhode Island",
+                        "SC":"South Carolina",
+                        "SD":"South Dakota",
+                        "TN":"Tennessee",
+                        "TX":"Texas",
+                        "UT":"Utah",
+                        "VT":"Vermont",
+                        "VA":"Virginia",
+                        "WA":"Washington",
+                        "WV":"West Virginia",
+                        "WI":"Wisconsin",
+                        "WY":"Wyoming"]
+
+        expect:
+        UsState.getUsStatesMap() == usStates
+
+
     }
 }
