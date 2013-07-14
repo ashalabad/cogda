@@ -2,6 +2,7 @@ package com.cogda.domain.lead
 
 import com.cogda.BaseController
 import com.cogda.common.LeadType
+import com.cogda.common.marshallers.HibernateProxyTypeAdapter
 import com.cogda.multitenant.Lead
 import com.cogda.multitenant.LeadAddress
 import com.cogda.multitenant.LeadContact
@@ -15,7 +16,10 @@ import com.google.gson.JsonElement
 import grails.converters.JSON
 import grails.plugin.gson.converters.GSON
 import grails.plugins.springsecurity.Secured
+import org.hibernate.FetchMode
 import org.springframework.dao.DataIntegrityViolationException
+
+import java.lang.reflect.Modifier
 
 import static grails.plugin.gson.http.HttpConstants.SC_UNPROCESSABLE_ENTITY
 import static grails.plugin.gson.http.HttpConstants.X_PAGINATION_TOTAL
@@ -37,7 +41,8 @@ class SuspectController extends BaseController {
     }
 
     def detail() {
-        def suspectInstance = Lead.get(params.id)
+//        def suspectInstance = Lead.get(params.id)
+        def suspectInstance = Lead.findById(params.id, [fetch: [businessType: "eager"]])
         if (!suspectInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'suspect.label', default: 'Lead'), params.id])
             redirect(action: "list")
@@ -46,15 +51,33 @@ class SuspectController extends BaseController {
         [suspectInstance: suspectInstance]
     }
 
+    def listPartial(){
+        render (view:'listPartial')
+    }
+
+    def editPartial() {
+        render (view:'editPartial')
+    }
+
+    def createPartial() {
+        render (view:'createPartial')
+    }
+
+    def showPartial() {
+        render (view:'showPartial')
+    }
+
     def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        def query = Lead.where { leadType == LeadType.SUSPECT }
-        List suspectInstanceList = query.list()
-        def dataToRender = [:]
-        dataToRender.aaData = []
+        response.addIntHeader X_PAGINATION_TOTAL, Lead.countByLeadType(LeadType.SUSPECT) as int
+        def criteria = Lead.createCriteria()
+        def suspectInstanceList = criteria.list(params) {
+            eq('leadType', LeadType.SUSPECT)
+        }
+        def dataToRender = []
         suspectInstanceList.each { Lead suspect ->
             Map map = [:]
-            map.DT_RowId = "row_" + suspect.id
+            map.id = suspect.id
             map.version = suspect.version
             map.clientId = suspect.clientId
             map.businessType = suspect.businessType?.description
@@ -64,13 +87,9 @@ class SuspectController extends BaseController {
             map.contactName = suspect.primaryLeadContactName
             map.phoneNumber = suspect.primaryLeadContactPhoneNumber?.phoneNumber
             map.email = suspect.primaryEmailAddress
-            map.details = remoteLink([controller: 'suspect', action: 'show', id: suspect.id, onSuccess: 'modalDialogHandler(data)', method: 'GET'], 'Details')
-            map.edit = remoteLink([controller: 'suspect', action: 'edit', id: suspect.id, onSuccess: 'modalDialogHandler(data)', method: 'GET'], 'Edit')
-            dataToRender.aaData.add(map)
+            dataToRender.add(map)
         }
-        dataToRender.sEcho = 1
-        render dataToRender as JSON
-        return
+        render dataToRender as GSON
     }
 
     def create() {
@@ -110,7 +129,7 @@ class SuspectController extends BaseController {
     }
 
     def get() {
-        def leadInstance = Lead.get(params.id)
+        def leadInstance = Lead.findById(params.id, [fetch: [businessType: "eager"]])
         if (leadInstance) {
             respondFound leadInstance
         } else {
@@ -184,33 +203,44 @@ class SuspectController extends BaseController {
 
     private void respondFound(Lead leadInstance) {
         response.status = SC_OK
-        Gson gson = gsonBuilder.create()
+        Gson gson = gsonBuilder.registerTypeAdapterFactory(HibernateProxyTypeAdapter.FACTORY).create()
         def gsonRetString = gson.toJsonTree(leadInstance);
         render gsonRetString
+//        render leadInstance as GSON
     }
 
     private void respondCreated(Lead leadInstance) {
         response.status = SC_CREATED // 201
         response.addHeader LOCATION, createLink(action: 'get', id: leadInstance.id)
-        Gson gson = gsonBuilder.create()
+        Gson gson = gsonBuilder.registerTypeAdapterFactory(HibernateProxyTypeAdapter.FACTORY).create()
         def gsonRetString = gson.toJsonTree(leadInstance);
         render gsonRetString
     }
 
     private void respondUpdated(Lead leadInstance) {
         response.status = SC_OK // 200
-        Gson gson = gsonBuilder.create()
+        Gson gson = gsonBuilder.registerTypeAdapterFactory(HibernateProxyTypeAdapter.FACTORY).create()
         def gsonRetString = gson.toJsonTree(leadInstance);
         render gsonRetString
     }
 
-    private void respondUnprocessableEntity(Lead leadInstance) {
-        def responseBody = [:]
-        responseBody.errors = leadInstance.errors.allErrors.collect {
-            message(error: it)
+    private Map getErrorStringsByField(instance){
+        Map stringsByField = [:].withDefault { [] }
+        for(fieldErrors in instance.errors){
+            for(error in fieldErrors.allErrors){
+                String message = message(error:error)
+                stringsByField[error.field] << message
+            }
         }
+        return stringsByField
+    }
+
+    private void respondUnprocessableEntity(instance) {
+        def responseBody = [:]
+        responseBody.errors = getErrorStringsByField(instance)
         response.status = SC_UNPROCESSABLE_ENTITY // 422
         render responseBody as GSON
+        return
     }
 
     private void respondNotFound(id) {

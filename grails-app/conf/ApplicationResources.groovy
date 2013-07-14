@@ -44,6 +44,22 @@ modules = {
         resource url:'js/angular/companyProfile/companyProfile.css'
     }
 
+    lead {
+        dependsOn 'bootstrap', 'bootstrap_utils', 'angular'
+        resource url: 'js/angular/resources/LeadSubTypes.js'
+        resource url: 'js/angular/resources/unitedStates.js'
+        resource url: 'js/angular/resources/SupportedCountryCodes.js'
+        resource url: 'js/angular/resources/NoteType.js'
+        resource url: 'js/angular/resources/businessTypes.js'
+    }
+
+    suspect {
+        dependsOn 'bootstrap', 'bootstrap_utils', 'angular', 'lead'
+        resource url: 'js/angular/resources/Suspect.js'
+        resource url: 'js/angular/lead/suspect/suspect.js'
+        resource url: 'css/suspect.css'
+    }
+
     dataTables {
         dependsOn 'jquery,  jquery-ui'
         resource url:[dir: 'js/dataTables/css', file: 'jquery.dataTables.css']

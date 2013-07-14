@@ -28,5 +28,6 @@ class LeadAddress {
 
     static constraints = {
         leadAddressType(nullable: true)
+        address(nullable:true)
     }
 }

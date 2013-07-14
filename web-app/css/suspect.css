@@ -1,33 +1,73 @@
-#suspectList td{cursor: pointer;}
-label{font-weight: bold;}
-.row_selected {background-color: #ccc !important;}
-.row_selected td{background-color: #ccc !important;}
-#suspectHeader {width:300px;}
-div.field {padding:2px;clear:both;}
-div.field input {float:left;}
-div.add {clear:both;}
+#suspectList td {
+    cursor: pointer;
+}
+
+.row_selected {
+    background-color: #ccc !important;
+}
+
+.row_selected td {
+    background-color: #ccc !important;
+}
+
+#suspectHeader {
+    width: 300px;
+}
+
+div.field {
+    padding: 2px;
+    clear: both;
+}
+
+div.field input {
+    float: left;
+}
+
+div.add {
+    clear: both;
+}
+
 @media (min-width: 1200px) {
-    .modal{
+    .modal {
         width: 960px;
-        margin-left: -480px;}
+        margin-left: -480px;
+    }
 }
 
- /*Portrait tablet to landscape and desktop*/
+/*Portrait tablet to landscape and desktop*/
 @media (min-width: 768px) and (max-width: 979px) {
-    .modal{
+    .modal {
         width: 760px;
-        margin-left: -380px;}
+        margin-left: -380px;
+    }
 }
 
- /*Landscape phones and down*/
+/*Landscape phones and down*/
 @media (max-width: 480px) {
-    .modal{
+    .modal {
         width: 460px;
-        margin-left: -230px;}
+        margin-left: -230px;
+    }
 }
 
 .new {
-    margin-left:69px;
-    clear:both;
-    display:block !important;
+    margin-left: 69px;
+    clear: both;
+    display: block !important;
+}
+
+@media (min-height: 768px) and (max-height: 979px) {
+    .gridStyle {
+        border: 1px solid rgb(212, 212, 212);
+        /*width: 600px;*/
+        height: 500px
+    }
+}
+
+@media (min-height: 1024px) {
+    .gridStyle {
+        border: 1px solid rgb(212, 212, 212);
+        /*width: 600px;*/
+        height: 700px
+    }
 }

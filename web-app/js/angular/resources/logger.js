@@ -10,7 +10,8 @@ angular.module('resources.logger', []).factory('Logger', function () {
         warning: warning,
         log: log, // straight to console; bypass toast
         messageBuilder:messageBuilder,
-        formValidationMessageBuilder: formValidationMessageBuilder
+        formValidationMessageBuilder: formValidationMessageBuilder,
+        formsValidationMessageBuilder: formsValidationMessageBuilder
     };
 
     /**
@@ -103,9 +104,38 @@ angular.module('resources.logger', []).factory('Logger', function () {
         }
     }
 
+    function formsValidationMessageBuilder(response, $scope, forms){
+        switch (response.status) {
+            case 422: // validation error - display errors alongside form fields
+                $scope.errors = response.data.errors;
+                applyFormsErrorValidity($scope, response.data.errors, forms);
+                if(response.data.message){
+                    error(response.data.message, "Error");
+                }else{
+                    error("Errors", "Error");
+                }
+                break;
+            default:
+                error("Unhandled Error Thrown", "Error " + response.status);
+        }
+    }
+
+    function applyFormsErrorValidity($scope, errors, forms){
+        form.$setValidity("", false);
+        for(var i in errors){
+            console.log(i);
+            for (var j in forms){
+                if (j[i] !== undefined) {
+                    j[i].$setValidity(i, false);
+                }
+            }
+        }
+    }
+
     function applyFormErrorValidity($scope, errors, form){
         form.$setValidity("", false);
         for(var i in errors){
+            console.log(i)
             form[i].$setValidity(i, false);
         }
     }
