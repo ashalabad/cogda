@@ -69,7 +69,7 @@ class AccountContact {
      * @return String
      */
     String getFullName(){
-        return "${lastName}, ${firstName}"
+        return "${lastName}, ${firstName} ${middleName}"
     }
 
     /**
