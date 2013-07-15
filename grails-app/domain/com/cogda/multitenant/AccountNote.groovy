@@ -34,7 +34,7 @@ class AccountNote {
     static embedded = ['note']
 
     static constraints = {
-        noteType(nullable:true)
+        noteType(nullable:false)
         note(nullable:false)
     }
 
