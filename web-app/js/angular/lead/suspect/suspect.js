@@ -383,22 +383,22 @@ angular.module('suspectApp', ['resources.restApi', 'common.helperFuncs', 'resour
         }
     }])
     .controller('EditLeadContactPhoneNumberController', ['$scope', function ($scope) {
-        $scope.editingContact = false;
+        $scope.editingContactPhoneNumber = false;
 
-        $scope.editContact = function () {
-            $scope.editingContact = true;
+        $scope.editContactPhoneNumber = function () {
+            $scope.editingContactPhoneNumber = true;
         }
 
-        $scope.cancelEditContact = function () {
-            $scope.editingContact = false;
+        $scope.cancelEditContactPhoneNumber = function () {
+            $scope.editingContactPhoneNumber = false;
         }
 
-        $scope.updateContact = function (contact) {
+        $scope.updateContactPhoneNumber = function (contactPhoneNumber) {
             // console.log("update address against persistent store" + address);
             $scope.cancelEditContact();
         }
 
-        $scope.deleteContact = function (contact, idx) {
+        $scope.deleteContactPhoneNumber = function (contactPhoneNumber, idx) {
             // toss the actual address off to the API to delete
             $scope.$parent.lead.leadContacts.splice(idx);
         }

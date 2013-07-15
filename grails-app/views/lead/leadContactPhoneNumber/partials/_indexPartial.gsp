@@ -4,18 +4,18 @@
             <g:render template="/lead/leadContactPhoneNumber/partials/showPartial"/>
         </div>
 
-        <div class="well" data-ng-show="editingContactPhoneNumber" data-ng-form="ContactPhoneNumberForm">
+        <div class="well" data-ng-show="editingContactPhoneNumber" data-ng-form="contactPhoneNumberForm">
             <g:render template="/lead/leadContactPhoneNumber/partials/editPartial"/>
             <div class="form-actions">
                 <button type="submit"
                         class="btn btn-primary"
-                        data-ng-click="updateContactPhoneNumber(ContactPhoneNumber)">
+                        data-ng-click="updateContactPhoneNumber(contactPhoneNumber)">
                     <i class="icon-pencil icon-white"></i>
                     Update Contact Phone Number
                 </button>
                 <button class="btn btn-danger"
                         type="button"
-                        data-ng-click="deleteContactPhoneNumber(ContactPhoneNumber, $index)">
+                        data-ng-click="deleteContactPhoneNumber(contactPhoneNumber, $index)">
                     <i class="icon-remove icon-white"></i>
                     Delete Contact Phone Number
                 </button>
@@ -46,7 +46,7 @@
 
 <div data-ng-controller="AddContactPhoneNumberController">
     <div class="well" data-ng-show="addingContactPhoneNumber">
-        <div data-ng-form="ContactPhoneNumberForm" class="form-horizontal">
+        <div data-ng-form="contactPhoneNumberForm" class="form-horizontal">
             <fieldset class="embedded">
                 <legend>
                     Add Contact Phone Number

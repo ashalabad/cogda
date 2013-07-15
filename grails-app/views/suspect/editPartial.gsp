@@ -175,7 +175,7 @@
         <fieldset class="embedded">
             <legend>Contact Phone Numbers</legend>
 
-            <div data-ng-repeat="leadContactPhoneNumber in contact.leadContactPhoneNumbers">
+            <div data-ng-repeat="contactPhoneNumber in contact.leadContactPhoneNumbers">
                 <g:render template="/lead/leadContactPhoneNumber/partials/indexPartial"/>
             </div>
         </fieldset>
