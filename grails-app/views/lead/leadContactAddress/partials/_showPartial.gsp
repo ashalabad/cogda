@@ -1,5 +1,5 @@
 <address>
-    <span data-ng-show="leadContactAddress.primaryAddress">
+    <span data-ng-show="address.primaryAddress">
         <br/>
         <span class="label label-info">Primary</span>
     </span>

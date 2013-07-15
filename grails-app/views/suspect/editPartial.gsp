@@ -136,7 +136,7 @@
                 <g:render template="/lead/leadContactAddress/partials/indexPartial"/>
             </div>
 
-            <div data-ng-controller="AddContactAddressController">
+            <div data-ng-controller="AddLeadContactAddressController">
                 <div class="well" data-ng-show="addingContactAddress">
                     <div data-ng-form="contactAddressForm" class="form-horizontal">
                         <fieldset class="embedded">
@@ -189,7 +189,7 @@
         </fieldset>
     </div>
 
-    <div data-ng-controller="AddContactController">
+    <div data-ng-controller="AddLeadContactController">
         <div class="well" data-ng-show="addingContact">
             <div data-ng-form="contactForm" class="form-horizontal">
                 <fieldset class="embedded">

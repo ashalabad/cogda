@@ -58,7 +58,7 @@ class SuspectController extends BaseController {
     }
 
     def editPartial() {
-        render (view:'editPartial')
+        render (view:'tabbedEditPartial')
     }
 
     def createPartial() {

@@ -1,4 +1,4 @@
-angular.module('suspectApp', ['resources.restApi', 'common.helperFuncs', 'resources.logger', 'ngGrid', 'resources.suspect', 'resources.unitedStates', 'resources.SupportedCountryCodes', 'resources.leadSubTypes', 'resources.noteType', 'resources.businessTypes', 'resources.leadAddress', 'resources.leadService'])
+angular.module('suspectApp', ['ui.bootstrap','resources.restApi', 'common.helperFuncs', 'resources.logger', 'ngGrid', 'resources.suspect', 'resources.unitedStates', 'resources.SupportedCountryCodes', 'resources.leadSubTypes', 'resources.noteType', 'resources.businessTypes', 'resources.leadAddress', 'resources.leadService'])
 
     .config(function ($routeProvider) {
         $routeProvider.
@@ -11,8 +11,8 @@ angular.module('suspectApp', ['resources.restApi', 'common.helperFuncs', 'resour
     .controller('ListSuspectCtrl', ['$scope', '$routeParams', '$location', 'RestApi', 'Logger',
         function ($scope, $routeParams, $location, RestApi, Logger) {
             $scope.suspects = [];
-            $scope.showDetails = '<div class="ngCellText"><button id="showBtn" type="button" class="btn-mini btn-primary" ng-click="show(row.entity)" >Details</button></div>';
-            $scope.editDetails = '<div class="ngCellText"><button id="editBtn" type="button" class="btn-mini btn-primary" ng-click="edit(row.entity)" >Edit</button></div>';
+            $scope.showDetails = '<div class="ngCellText"><button id="showBtn" type="button" class="btn-mini btn-primary" ng-click="show(row.entity)" ><i class="icon-eye-open"></i>Details</button></div>';
+            $scope.editDetails = '<div class="ngCellText"><button id="editBtn" type="button" class="btn-mini btn-primary" ng-click="edit(row.entity)" ><i class="icon-edit"></i>Edit</button></div>';
             $scope.rowTemplate = '<div ng-style="{\'cursor\': row.cursor, \'z-index\': col.zIndex() }" ng-repeat="col in renderedColumns" ng-class="col.colIndex()" data-ng-dblclick="edit(row)" class="ngCell {{col.cellClass}}" ng-cell></div>'
             $scope.selectedSuspects = []
             $scope.pagingOptions = {
@@ -25,7 +25,7 @@ angular.module('suspectApp', ['resources.restApi', 'common.helperFuncs', 'resour
             };
 
             $scope.show = function (item) {
-                $location.path('/show/' + item.id);
+                $location.path('/edit/' + item.id);
             };
 
             $scope.filteringText = '';
@@ -118,6 +118,18 @@ angular.module('suspectApp', ['resources.restApi', 'common.helperFuncs', 'resour
                 $scope.lead.leadContacts[LeadService.parentIdx].leadContactPhoneNumbers.push(LeadService.entityToBroadCast);
                 $scope.updateLead($scope.lead);
             });
+
+            $scope.$on('addContactAddress', function() {
+                if ($scope.lead.leadContacts[LeadService.parentIdx].leadContactAddresses === undefined) {
+                    $scope.lead.leadContacts[LeadService.parentIdx].leadContactAddresses = [];
+                }
+                $scope.lead.leadContacts[LeadService.parentIdx].leadContactAddresses.push(LeadService.entityToBroadCast);
+                $scope.updateLead($scope.lead);
+            });
+
+            $scope.clearSearch = function clearSearch(){
+                $scope.searchString = "";
+            };
 
             var updateSuccessCallback = function (response) {
                 Logger.success("Suspect Updated Successfully", "Success");
@@ -257,8 +269,8 @@ angular.module('suspectApp', ['resources.restApi', 'common.helperFuncs', 'resour
 
 
     }])
-    .controller('AddContactAddressController', ['$scope', function ($scope) {
-        $scope.address = {};
+    .controller('AddLeadContactAddressController', ['$scope', 'LeadService', function ($scope, LeadService) {
+        $scope.contactAddress = {};
 
         $scope.addingContactAddress = false;
 
@@ -270,21 +282,21 @@ angular.module('suspectApp', ['resources.restApi', 'common.helperFuncs', 'resour
             $scope.addingContactAddress = false;
         }
 
-        $scope.saveContactAddress = function (contact) {
-            $scope.$parent.contact.leadContactsAddress.push(contact);
+        $scope.saveContactAddress = function (contactAddress) {
+            LeadService.addEntityBroadcast(contactAddress, 'addContactAddress', $scope.$parent.$index);
             $scope.contactAddress = {}; // clear the address after the save
             $scope.addingContactAddress = false;
         }
     }])
-    .controller('EditContactAddressController', ['$scope', function ($scope) {
-        $scope.editingContact = false;
+    .controller('EditLeadContactAddressController', ['$scope', function ($scope) {
+        $scope.editingContactAddress = false;
 
         $scope.editContact = function () {
-            $scope.editingContact = true;
+            $scope.editingContactAddress = true;
         }
 
         $scope.cancelEditContact = function () {
-            $scope.editingContact = false;
+            $scope.editingContactAddress = false;
         }
 
         $scope.updateContact = function (contact) {
@@ -297,7 +309,7 @@ angular.module('suspectApp', ['resources.restApi', 'common.helperFuncs', 'resour
             $scope.$parent.lead.leadContacts.splice(idx);
         }
     }])
-    .controller('AddContactController', ['$scope', function ($scope) {
+    .controller('AddLeadContactController', ['$scope', function ($scope) {
         $scope.contact = {};
 
         $scope.addingContact = false;
@@ -393,7 +405,7 @@ angular.module('suspectApp', ['resources.restApi', 'common.helperFuncs', 'resour
         $scope.saveContactPhoneNumber = function (contactPhoneNumber) {
             LeadService.addEntityBroadcast(contactPhoneNumber, $scope.$parent.$index, 'addContactPhoneNumber');
             $scope.contactPhoneNumber = {}; // clear the address after the save
-            $scFope.addingContactPhoneNumber = false;
+            $scope.addingContactPhoneNumber = false;
         }
     }])
     .controller('EditLeadContactPhoneNumberController', ['$scope', 'LeadService', function ($scope, LeadService) {
@@ -415,5 +427,24 @@ angular.module('suspectApp', ['resources.restApi', 'common.helperFuncs', 'resour
         $scope.deleteContactPhoneNumber = function (contactPhoneNumber, idx) {
             // toss the actual address off to the API to delete
             $scope.$parent.lead.leadContacts.splice(idx);
+        }
+    }])
+    .controller('AddLeadNoteController', ['$scope', 'LeadService', function ($scope, LeadService) {
+        $scope.leadNote = {};
+
+        $scope.addingLeadNote = false;
+
+        $scope.addLeadNote = function () {
+            $scope.addingLeadNote = true;
+        }
+
+        $scope.cancelAddLeadNote = function () {
+            $scope.addingLeadNote = false;
+        }
+
+        $scope.saveLeadNote = function (leadNote) {
+            LeadService.addEntityBroadcast(leadNote, $scope.$parent.$index, 'addLeadNote');
+            $scope.leadNote = {};
+            $scope.addingLeadNote = false;
         }
     }]);
