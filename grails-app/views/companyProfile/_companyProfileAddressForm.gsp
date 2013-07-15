@@ -37,8 +37,7 @@
                data-ng-model="companyProfileAddress.address.addressOne"
                name="address.addressOne"
                required
-               placeholder="${message(code:'companyProfileAddress.address.addressOne')}"
-               autofocus />
+               placeholder="${message(code:'companyProfileAddress.address.addressOne')}" />
         <span class="help-inline error" data-ng-show="errors.address.addressOne "> {{ errors.address.addressOne }}</span>
         <span class="label label-important" ng-show="companyProfileAddressForm['address.addressOne'].$invalid"> ${message(code:'default.invalid.message')} </span>
         <span class="label label-success" ng-show="companyProfileAddressForm['address.addressOne'].$valid"> ${message(code:'default.valid.message')} </span>
@@ -134,7 +133,10 @@
         ${message(code:'companyProfileAddress.address.country')}
     </label>
     <div class="controls">
-        <g:countrySelect name="address.country" data-ng-model="companyProfileAddress.address.country" from="${com.cogda.domain.admin.SupportedCountryCode.retrieveSupportedCountryCodes()}"/>
+        <g:countrySelect name="address.country"
+                         data-ng-model="companyProfileAddress.address.country"
+                         from="${com.cogda.domain.admin.SupportedCountryCode.retrieveSupportedCountryCodes()}"
+                         required="required" />
         <span class="help-inline" data-ng-show="errors.address.country ">{{ errors.address.country }}</span>
         <span class="label label-important" ng-show="companyProfileAddressForm['address.country'].$invalid"> ${message(code:'default.invalid.message')} </span>
         <span class="label label-success" ng-show="companyProfileAddressForm['address.country'].$valid"> ${message(code:'default.valid.message')} </span>

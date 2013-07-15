@@ -27,6 +27,10 @@ class CompanyProfileController extends GsonBaseController{
         render (view:'editPartial')
     }
 
+    def addAddressPartial(){
+        render (view:'addAddressPartial')
+    }
+
     def list(Integer max) {
         params.max = Math.min(max ?: 10, 100)
         response.addIntHeader X_PAGINATION_TOTAL, CompanyProfile.count()
