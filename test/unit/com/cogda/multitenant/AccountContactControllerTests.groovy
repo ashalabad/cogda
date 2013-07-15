@@ -13,9 +13,11 @@ import grails.test.mixin.*
 @Mock(AccountContact)
 class AccountContactControllerTests {
 
-      void testSomething() {
-          assert 1==1
-      }
+
+    def void testSomething(){
+        assert(1==1)
+    }
+
 //    def populateValidParams(params) {
 //        assert params != null
 //        // TODO: Populate valid properties like...
