@@ -1,4 +1,5 @@
 <fieldset class="embedded"><legend><g:message code="lead.contact.label" default="Contact"/></legend>
+<fieldset class="embedded"><legend><g:message code="lead.contact.label" default="Contact"/></legend>
 
     <div data-ng-repeat="contact in lead.leadContacts">
         <input type="hidden" data-ng-value="lead.leadContacts[0].primaryContact" value="true"

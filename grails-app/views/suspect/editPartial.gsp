@@ -182,7 +182,7 @@
         <fieldset class="embedded">
             <legend>Contact Email Addresses</legend>
 
-            <div data-ng-repeat="leadContactEmailAddress in contact.leadContactEmailAddresses">
+            <div data-ng-repeat="contactEmailAddress in contact.leadContactEmailAddresses">
                 <g:render template="/lead/leadContactEmailAddress/partials/indexPartial"/>
             </div>
         </fieldset>

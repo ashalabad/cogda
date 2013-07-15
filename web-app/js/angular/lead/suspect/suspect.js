@@ -324,7 +324,7 @@ angular.module('suspectApp', ['resources.restApi', 'common.helperFuncs', 'resour
         }
     }])
     .controller('AddContactEmailAddressController', ['$scope', function ($scope) {
-        $scope.emailAddress = {};
+        $scope.contactEmailAddress = {};
 
         $scope.addingContactEmailAddress = false;
 
@@ -336,29 +336,29 @@ angular.module('suspectApp', ['resources.restApi', 'common.helperFuncs', 'resour
             $scope.addingContactEmailAddress = false;
         }
 
-        $scope.saveContactEmailAddress = function (contact) {
-            $scope.$parent.lead.leadContacts.push(contact);
-            $scope.contact = {}; // clear the address after the save
+        $scope.saveContactEmailAddress = function (contactEmailAddress) {
+            $scope.$parent.lead.leadContacts.push(contactEmailAddress);
+            $scope.contactEmailAddress = {}; // clear the address after the save
             $scope.addingContactEmailAddress = false;
         }
     }])
     .controller('EditLeadContactEmailAddressController', ['$scope', function ($scope) {
-        $scope.editingContact = false;
+        $scope.editingContactEmailAddress = false;
 
-        $scope.editContact = function () {
-            $scope.editingContact = true;
+        $scope.editContactEmailAddress = function () {
+            $scope.editingContactEmailAddress = true;
         }
 
-        $scope.cancelEditContact = function () {
-            $scope.editingContact = false;
+        $scope.cancelEditContactEmailAddress = function () {
+            $scope.editingContactEmailAddress = false;
         }
 
-        $scope.updateContact = function (contact) {
+        $scope.updateContactEmailAddress = function (contact) {
             // console.log("update address against persistent store" + address);
             $scope.cancelEditContact();
         }
 
-        $scope.deleteContact = function (contact, idx) {
+        $scope.deleteContactEmailAddress = function (contact, idx) {
             // toss the actual address off to the API to delete
             $scope.$parent.lead.leadContacts.splice(idx);
         }

@@ -4,18 +4,18 @@
             <g:render template="/lead/leadContactEmailAddress/partials/showPartial"/>
         </div>
 
-        <div class="well" data-ng-show="editingContactEmailAddress" data-ng-form="ContactEmailAddressForm">
+        <div class="well" data-ng-show="editingContactEmailAddress" data-ng-form="contactEmailAddressForm">
             <g:render template="/lead/leadContactEmailAddress/partials/editPartial"/>
             <div class="form-actions">
                 <button type="submit"
                         class="btn btn-primary"
-                        data-ng-click="updateContactEmailAddress(ContactEmailAddress)">
+                        data-ng-click="updateContactEmailAddress(contactEmailAddress)">
                     <i class="icon-pencil icon-white"></i>
                     Update Contact Email Address
                 </button>
                 <button class="btn btn-danger"
                         type="button"
-                        data-ng-click="deleteContactEmailAddress(ContactEmailAddress, $index)">
+                        data-ng-click="deleteContactEmailAddress(contactEmailAddress, $index)">
                     <i class="icon-remove icon-white"></i>
                     Delete Contact Email Address
                 </button>
@@ -35,7 +35,7 @@
         </button>
         <button class="btn btn-danger"
                 type="button"
-                data-ng-click="deleteContactEmailAddress(ContactEmailAddress)"
+                data-ng-click="deleteContactEmailAddress(contactEmailAddress)"
                 data-ng-hide="editingContactEmailAddress">
             <i class="icon-remove icon-white"></i>
             Delete Contact Email Address
@@ -46,7 +46,7 @@
 
 <div data-ng-controller="AddContactEmailAddressController">
     <div class="well" data-ng-show="addingContactEmailAddress">
-        <div data-ng-form="ContactEmailAddressForm" class="form-horizontal">
+        <div data-ng-form="contactEmailAddressForm" class="form-horizontal">
             <fieldset class="embedded">
                 <legend>
                     Add Contact Email Address
@@ -56,7 +56,7 @@
                 <div class="form-actions">
                     <button type="submit"
                             class="btn btn-primary"
-                            data-ng-click="saveContactEmailAddress(ContactEmailAddress)">
+                            data-ng-click="saveContactEmailAddress(contactEmailAddress)">
                         <i class="icon-plus icon-white"></i>
                         Add Contact Email Address</button>
                     <button type="button"

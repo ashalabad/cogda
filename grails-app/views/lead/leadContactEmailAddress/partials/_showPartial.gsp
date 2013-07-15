@@ -1,9 +1,9 @@
 <div class="control-group fieldcontain">
-    <label class="control-label" for="leadContactEmailAddress.primaryEmailAddress"></label>
+    <label class="control-label" for="contactEmailAddress.primaryEmailAddress"></label>
 
     <div class="controls readonly">
-        <span data-ng-show="leadContactEmailAddress.primaryEmailAddress"
-              id="leadContactEmailAddress.primaryEmailAddress">
+        <span data-ng-show="contactEmailAddress.primaryEmailAddress"
+              id="contactEmailAddress.primaryEmailAddress">
             <br/>
             <span class="label label-info">Primary</span>
         </span>
@@ -11,12 +11,12 @@
 </div>
 
 <div class="control-group fieldcontain">
-    <label class="control-label" for="leadContactEmailAddress.emailAddress">
+    <label class="control-label" for="contactEmailAddress.emailAddress">
         <g:message code="leadContactEmailAddress.emailAddress.label" default="Email Address"/>:
     </label>
 
     <div class="controls readonly">
 
-        <span data-ng-bind="leadContactEmailAddress.emailAddress" id="leadContactEmailAddress.emailAddress"></span>
+        <span data-ng-bind="contactEmailAddress.emailAddress" id="contactEmailAddress.emailAddress"></span>
     </div>
 </div>
