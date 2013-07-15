@@ -14,6 +14,11 @@
     width: 300px;
 }
 
+.controls.readonly
+{
+    padding-top: 5px;
+}
+
 div.field {
     padding: 2px;
     clear: both;

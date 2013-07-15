@@ -5,7 +5,7 @@ angular.module('suspectApp', ['resources.restApi', 'common.helperFuncs', 'resour
             when('/list', {templateUrl: '/suspect/listPartial', controller: 'ListSuspectCtrl'}).
             when('/edit/:id', {templateUrl: '/suspect/editPartial', controller: 'EditSuspectCtrl' }).
             when('/create', {templateUrl: '/suspect/createPartial', controller: 'CreateSuspectCtrl' }).
-            when('/show/:id', {templateUrl: '/suspect/showPartial', controller: 'ShowCtrl' }).
+            when('/show/:id', {templateUrl: '/suspect/showPartial', controller: 'ShowSuspectCtrl' }).
             otherwise({ redirectTo: '/list' });
     })
     .controller('ListSuspectCtrl', ['$scope', '$routeParams', '$location', 'RestApi', 'Logger',
@@ -70,30 +70,73 @@ angular.module('suspectApp', ['resources.restApi', 'common.helperFuncs', 'resour
 //            }, Logger.messageBuilder.curry($scope));
             }, angular.noop());
         }])
-    .controller('EditSuspectCtrl', ['$scope', '$routeParams', '$location', 'RestApi',
-        function ($scope, $routeParams, $location, RestApi) {
+    .controller('EditSuspectCtrl', ['$scope', '$routeParams', '$location', 'Suspect', 'Logger', 'UnitedStates', 'SupportedCountryCodes', 'LeadSubTypes', 'NoteType', 'BusinessTypes',
+        function ($scope, $routeParams, $location, Suspect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes) {
+            $scope.editingLead = false;
+            $scope.message = '';
+            $scope.errors = [];
+            var original = {};
+            $scope.lead = {};
+            $scope.lead.leadAddresses = [];
+            $scope.lead.leadContacts =[];
+            $scope.states = UnitedStates.list();
+            $scope.countryCodes = SupportedCountryCodes.list();
+            $scope.leadSubTypes = LeadSubTypes.list();
+            $scope.noteTypes = NoteType.list();
+            $scope.businessTypes = BusinessTypes.list();
 
+            Suspect.get($routeParams, function (data) {
+                $scope.lead = data;
+            }, function () {
+                Logger.error("Resource Not Found", "Error");
+            });
+
+            $scope.updateLead = function (lead) {
+                Suspect.update(lead).$then(updateSuccessCallback, updateErrorCallBack);
+                $scope.cancelEditLead();
+            }
+
+            $scope.cancelEditLead = function () {
+                $scope.editingLead = false;
+            }
+
+            $scope.editLead = function () {
+                $scope.editingLead = true;
+            }
+
+
+            var updateSuccessCallback = function (response) {
+                Logger.success("Suspect Updated Successfully", "Success");
+            }
+
+            var updateErrorCallBack = function (response) {
+                Logger.formValidationMessageBuilder(response, $scope, $scope.leadForm);
+            }
         }])
     .controller('CreateSuspectCtrl', ['$scope', '$routeParams', '$location', 'Suspect', 'Logger', 'UnitedStates', 'SupportedCountryCodes', 'LeadSubTypes', 'NoteType', 'BusinessTypes',
         function ($scope, $routeParams, $location, Suspect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes) {
-            $scope.lead = new Suspect
-//            $scope.lead = {};
+            $scope.lead = {}
             $scope.lead.leadAddresses = [];
             $scope.lead.leadAddresses.push({primaryAddress: true});
             $scope.lead.leadContacts = [];
-            $scope.lead.leadContacts.push({primaryContact: true, leadContactEmailAddresses: [{primaryEmailAddress: true}], leadContactPhoneNumbers: [{primaryPhoneNumber: true}]});
-            $scope.lead.leadNotes = []
+            $scope.lead.leadContacts.push({primaryContact: true, leadContactEmailAddresses: [
+                {primaryEmailAddress: true}
+            ], leadContactPhoneNumbers: [
+                {primaryPhoneNumber: true}
+            ]});
+            $scope.lead.leadNotes = [];
             $scope.lead.leadNotes.push({});
             $scope.errors = [];
             $scope.message = '';
             $scope.states = UnitedStates.list();
             $scope.countryCodes = SupportedCountryCodes.list();
-            $scope.leadSubTypes = LeadSubTypes.list()
+            $scope.leadSubTypes = LeadSubTypes.list();
             $scope.noteTypes = NoteType.list();
             $scope.businessTypes = BusinessTypes.list();
 
             var saveSuccessCallback = function (response) {
                 Logger.success("Suspect Saved Successfully", "Success");
+                $location.path('/show' + response.id);
             }
 
             var saveErrorCallback = function (response) {
@@ -111,4 +154,252 @@ angular.module('suspectApp', ['resources.restApi', 'common.helperFuncs', 'resour
             $scope.leadNaicsChecked = function () {
 
             }
-        }]);
+        }])
+    .controller('ShowSuspectCtrl', ['$scope', '$routeParams', '$location', 'Suspect', 'Logger',
+        function ($scope, $routeParams, $location, Suspect, Logger) {
+
+        }])
+    .controller('AddAddressController', ['$scope', function ($scope) {
+        $scope.address = {};
+
+        $scope.addingAddress = false;
+
+        $scope.addAddress = function () {
+            $scope.addingAddress = true;
+        }
+
+        $scope.cancelAddAddress = function () {
+            $scope.addingAddress = false;
+        }
+
+        $scope.saveAddress = function (address) {
+            $scope.$parent.lead.leadAddresses.push(address);
+            $scope.address = {}; // clear the address after the save
+            $scope.addingAddress = false;
+        }
+    }])
+    .controller('EditAddressController', ['$scope', function ($scope) {
+        $scope.editingAddress = false;
+
+        $scope.editAddress = function () {
+            $scope.editingAddress = true;
+        }
+
+        $scope.cancelEditAddress = function () {
+            $scope.editingAddress = false;
+        }
+
+        $scope.updateAddress = function (address) {
+            // console.log("update address against persistent store" + address);
+            // todo: need to add controller or action to suspect controller
+            $scope.cancelEditAddress();
+        }
+
+        $scope.deleteAddress = function (address, idx) {
+            // toss the actual address off to the API to delete
+            //todo: not sure what this will do
+            $scope.$parent.lead.leadAddresses.splice(idx);
+        }
+    }])
+    .controller('AddContactController', ['$scope', function ($scope) {
+        $scope.contact = {};
+
+        $scope.addingContact = false;
+
+        $scope.addContact = function () {
+            $scope.addingContact = true;
+        }
+
+        $scope.cancelAddContact = function () {
+            $scope.addingContact = false;
+        }
+
+        $scope.saveContact = function (contact) {
+            $scope.$parent.lead.leadContacts.push(contact);
+            $scope.contact = {}; // clear the address after the save
+            $scope.addingContact = false;
+        }
+    }])
+    .controller('EditContactController', ['$scope', function ($scope) {
+        $scope.editingContact = false;
+
+        $scope.editContact = function () {
+            $scope.editingContact = true;
+        }
+
+        $scope.cancelEditContact = function () {
+            $scope.editingContact = false;
+        }
+
+        $scope.updateContact = function (contact) {
+            // console.log("update address against persistent store" + address);
+            //todo: update contact...add controller for leadcontacts
+            $scope.cancelEditContact();
+        }
+
+        $scope.deleteContact = function (contact, idx) {
+            // toss the actual address off to the API to delete
+            //todo: same as before
+            $scope.$parent.lead.leadContacts.splice(idx);
+        }
+    }])
+    .controller('AddContactAddressController', ['$scope', function ($scope) {
+        $scope.address = {};
+
+        $scope.addingContactAddress = false;
+
+        $scope.addContactAddress = function () {
+            $scope.addingContactAddress = true;
+        }
+
+        $scope.cancelAddContactAddress = function () {
+            $scope.addingContactAddress = false;
+        }
+
+        $scope.saveContactAddress = function (contact) {
+            $scope.$parent.contact.leadContactsAddress.push(contact);
+            $scope.contactAddress = {}; // clear the address after the save
+            $scope.addingContactAddress = false;
+        }
+    }])
+    .controller('EditContactAddressController', ['$scope', function ($scope) {
+        $scope.editingContact = false;
+
+        $scope.editContact = function () {
+            $scope.editingContact = true;
+        }
+
+        $scope.cancelEditContact = function () {
+            $scope.editingContact = false;
+        }
+
+        $scope.updateContact = function (contact) {
+            // console.log("update address against persistent store" + address);
+            $scope.cancelEditContact();
+        }
+
+        $scope.deleteContact = function (contact, idx) {
+            // toss the actual address off to the API to delete
+            $scope.$parent.lead.leadContacts.splice(idx);
+        }
+    }])
+    .controller('AddContactController', ['$scope', function ($scope) {
+        $scope.contact = {};
+
+        $scope.addingContact = false;
+
+        $scope.addContact = function () {
+            $scope.addingContact = true;
+        }
+
+        $scope.cancelAddContact = function () {
+            $scope.addingContact = false;
+        }
+
+        $scope.saveContact = function (contact) {
+            $scope.$parent.lead.leadContacts.push(contact);
+            $scope.contact = {}; // clear the address after the save
+            $scope.addingContact = false;
+        }
+    }])
+    .controller('EditContactController', ['$scope', function ($scope) {
+        $scope.editingContact = false;
+
+        $scope.editContact = function () {
+            $scope.editingContact = true;
+        }
+
+        $scope.cancelEditContact = function () {
+            $scope.editingContact = false;
+        }
+
+        $scope.updateContact = function (contact) {
+            // console.log("update address against persistent store" + address);
+            $scope.cancelEditContact();
+        }
+
+        $scope.deleteContact = function (contact, idx) {
+            // toss the actual address off to the API to delete
+            $scope.$parent.lead.leadContacts.splice(idx);
+        }
+    }])
+    .controller('AddContactEmailAddressController', ['$scope', function ($scope) {
+        $scope.emailAddress = {};
+
+        $scope.addingContactEmailAddress = false;
+
+        $scope.addContactEmailAddress = function () {
+            $scope.addingContactEmailAddress = true;
+        }
+
+        $scope.cancelAddContactEmailAddress = function () {
+            $scope.addingContactEmailAddress = false;
+        }
+
+        $scope.saveContactEmailAddress = function (contact) {
+            $scope.$parent.lead.leadContacts.push(contact);
+            $scope.contact = {}; // clear the address after the save
+            $scope.addingContactEmailAddress = false;
+        }
+    }])
+    .controller('EditLeadContactEmailAddressController', ['$scope', function ($scope) {
+        $scope.editingContact = false;
+
+        $scope.editContact = function () {
+            $scope.editingContact = true;
+        }
+
+        $scope.cancelEditContact = function () {
+            $scope.editingContact = false;
+        }
+
+        $scope.updateContact = function (contact) {
+            // console.log("update address against persistent store" + address);
+            $scope.cancelEditContact();
+        }
+
+        $scope.deleteContact = function (contact, idx) {
+            // toss the actual address off to the API to delete
+            $scope.$parent.lead.leadContacts.splice(idx);
+        }
+    }])
+    .controller('AddContactPhoneNumberController', ['$scope', function ($scope) {
+        $scope.contactPhoneNumber = {};
+
+        $scope.addingContactPhoneNumber = false;
+
+        $scope.addContactPhoneNumber = function () {
+            $scope.addingContactPhoneNumber = true;
+        }
+
+        $scope.cancelAddContactPhoneNumber = function () {
+            $scope.addingContactPhoneNumber = false;
+        }
+
+        $scope.saveContactPhoneNumber = function (contactPhoneNumber) {
+            $scope.$parent.leadContact.leadContactPhoneNumbers.push(contactPhoneNumber);
+            $scope.contactPhoneNumber = {}; // clear the address after the save
+            $scope.addingContactPhoneNumber = false;
+        }
+    }])
+    .controller('EditLeadContactPhoneNumberController', ['$scope', function ($scope) {
+        $scope.editingContact = false;
+
+        $scope.editContact = function () {
+            $scope.editingContact = true;
+        }
+
+        $scope.cancelEditContact = function () {
+            $scope.editingContact = false;
+        }
+
+        $scope.updateContact = function (contact) {
+            // console.log("update address against persistent store" + address);
+            $scope.cancelEditContact();
+        }
+
+        $scope.deleteContact = function (contact, idx) {
+            // toss the actual address off to the API to delete
+            $scope.$parent.lead.leadContacts.splice(idx);
+        }
+    }]);
