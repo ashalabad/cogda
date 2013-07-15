@@ -57,9 +57,11 @@ modules = {
     }
 
     account {
-        dependsOn 'dataTables'
-        resource url:[dir: 'css', file: 'account.css']
-        resource url:[dir: 'js/account', file: 'account.js']
+        dependsOn 'bootstrap', 'bootstrap_utils', 'angular'
+        resource url:'js/angular/resources/Account.js', disposition: 'head'
+        resource url:'js/angular/resources/AccountContact.js', disposition: 'head'
+        resource url:'js/angular/account/account.js'
+        resource url:'js/angular/account/account.css'
     }
 
     //Contact
