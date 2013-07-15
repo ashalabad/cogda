@@ -2,6 +2,7 @@ package com.cogda.domain.lead
 
 import com.cogda.common.marshallers.JavaUtilSetExclusionStrategy
 import com.cogda.multitenant.LeadAddress
+import com.cogda.multitenant.LeadService
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
@@ -20,9 +21,11 @@ import static org.codehaus.groovy.grails.web.servlet.HttpHeaders.LOCATION
  * A controller class handles incoming web requests and performs actions such as redirects, rendering views and so on.
  */
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class LeadAddressController{
+class LeadAddressController {
 
     GsonBuilder gsonBuilder
+
+    LeadService leadService
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
@@ -91,7 +94,7 @@ class LeadAddressController{
         JsonElement jsonElement = GSON.parse(request)
         leadAddressInstance.properties = jsonElement
 
-        if (leadAddressInstance.save(flush: true)) {
+        if (leadService.saveLeadAddress(leadAddressInstance)) {
             respondUpdated leadAddressInstance
         } else {
             respondUnprocessableEntity leadAddressInstance

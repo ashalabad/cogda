@@ -1,19 +1,19 @@
 <div class="control-group fieldcontain"
-     data-ng-class="{error: contactPhoneNumberForm['contactPhoneNumber.phoneDescription'].$invalid && contactPhoneNumberForm['contactPhoneNumber.phoneDescription'].$dirty, success: contactPhoneNumberForm['contactPhoneNumber.phoneDescription'].$valid && contactPhoneNumberForm['contactPhoneNumber.phoneDescription'].$dirty}">
-    <label for="contactPhoneNumber.phoneDescription" class="control-label"><g:message
+     data-ng-class="{error: contactPhoneNumberForm['contactPhoneNumber.description'].$invalid && contactPhoneNumberForm['contactPhoneNumber.description'].$dirty, success: contactPhoneNumberForm['contactPhoneNumber.description'].$valid && contactPhoneNumberForm['contactPhoneNumber.description'].$dirty}">
+    <label for="contactPhoneNumber.description" class="control-label"><g:message
             code="leadContactPhoneNumber.description.label"
             default="Phone Description"/></label>
 
     <div class="controls">
-        <input type="text" id="contactPhoneNumber.phoneDescription"
-               name="contactPhoneNumber.phoneDescription"
-               data-ng-model="contactPhoneNumber.phoneDescription"/>
+        <input type="text" id="contactPhoneNumber.description"
+               name="contactPhoneNumber.description"
+               data-ng-model="contactPhoneNumber.description"/>
         <span class="label label-important"
-              data-ng-show="errors['contactPhoneNumber.phoneDescription']">{{ errors['contactPhoneNumber.phoneDescription'] }}</span>
+              data-ng-show="errors['contactPhoneNumber.description']">{{ errors['contactPhoneNumber.description'] }}</span>
         <span class="label label-important"
-              data-ng-show="contactPhoneNumberForm['contactPhoneNumber.phoneDescription'].$invalid && contactPhoneNumberForm['contactPhoneNumber.phoneDescription'].$dirty">${message(code: 'default.invalid.message')}</span>
+              data-ng-show="contactPhoneNumberForm['contactPhoneNumber.description'].$invalid && contactPhoneNumberForm['contactPhoneNumber.description'].$dirty">${message(code: 'default.invalid.message')}</span>
         <label class="error valid"
-               data-ng-show="contactPhoneNumberForm['contactPhoneNumber.phoneDescription'].$valid && contactPhoneNumberForm['contactPhoneNumber.phoneDescription'].$dirty">${message(code: 'default.ok.message')}</label>
+               data-ng-show="contactPhoneNumberForm['contactPhoneNumber.description'].$valid && contactPhoneNumberForm['contactPhoneNumber.description'].$dirty">${message(code: 'default.ok.message')}</label>
     </div>
 </div>
 

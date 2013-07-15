@@ -51,6 +51,8 @@ modules = {
         resource url: 'js/angular/resources/SupportedCountryCodes.js'
         resource url: 'js/angular/resources/NoteType.js'
         resource url: 'js/angular/resources/businessTypes.js'
+        resource url: 'js/angular/resources/LeadAddress.js'
+        resource url: 'js/angular/resources/LeadService.js'
     }
 
     suspect {

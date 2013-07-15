@@ -1,4 +1,4 @@
-<form class="form-horizontal" name="leadForm">
+<form class="form-horizontal" name="leadForm" novalidate>
 <fieldset>
 <legend>
     <g:message code="suspect.label"/>
@@ -178,6 +178,7 @@
             <div data-ng-repeat="contactPhoneNumber in contact.leadContactPhoneNumbers">
                 <g:render template="/lead/leadContactPhoneNumber/partials/indexPartial"/>
             </div>
+            <g:render template="/lead/leadContactPhoneNumber/partials/addPartial"/>
         </fieldset>
         <fieldset class="embedded">
             <legend>Contact Email Addresses</legend>

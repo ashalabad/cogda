@@ -10,6 +10,7 @@ import com.cogda.multitenant.LeadContactAddress
 import com.cogda.multitenant.LeadContactEmailAddress
 import com.cogda.multitenant.LeadContactPhoneNumber
 import com.cogda.multitenant.LeadNote
+import com.cogda.multitenant.LeadService
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
@@ -36,6 +37,7 @@ class SuspectController extends BaseController {
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
     GsonBuilder gsonBuilder
+    LeadService leadService
 
     def index() {
     }
@@ -129,7 +131,7 @@ class SuspectController extends BaseController {
     }
 
     def get() {
-        def leadInstance = Lead.findById(params.id, [fetch: [businessType: "eager"]])
+        def leadInstance = leadService.getLead(params.id);
         if (leadInstance) {
             respondFound leadInstance
         } else {

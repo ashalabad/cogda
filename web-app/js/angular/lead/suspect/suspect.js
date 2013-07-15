@@ -1,4 +1,4 @@
-angular.module('suspectApp', ['resources.restApi', 'common.helperFuncs', 'resources.logger', 'ngGrid', 'resources.suspect', 'resources.unitedStates', 'resources.SupportedCountryCodes', 'resources.leadSubTypes', 'resources.noteType', 'resources.businessTypes'])
+angular.module('suspectApp', ['resources.restApi', 'common.helperFuncs', 'resources.logger', 'ngGrid', 'resources.suspect', 'resources.unitedStates', 'resources.SupportedCountryCodes', 'resources.leadSubTypes', 'resources.noteType', 'resources.businessTypes', 'resources.leadAddress', 'resources.leadService'])
 
     .config(function ($routeProvider) {
         $routeProvider.
@@ -22,7 +22,7 @@ angular.module('suspectApp', ['resources.restApi', 'common.helperFuncs', 'resour
             };
             $scope.edit = function (item) {
                 $location.path('/edit/' + item.id);
-            }
+            };
 
             $scope.show = function (item) {
                 $location.path('/show/' + item.id);
@@ -70,15 +70,15 @@ angular.module('suspectApp', ['resources.restApi', 'common.helperFuncs', 'resour
 //            }, Logger.messageBuilder.curry($scope));
             }, angular.noop());
         }])
-    .controller('EditSuspectCtrl', ['$scope', '$routeParams', '$location', 'Suspect', 'Logger', 'UnitedStates', 'SupportedCountryCodes', 'LeadSubTypes', 'NoteType', 'BusinessTypes',
-        function ($scope, $routeParams, $location, Suspect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes) {
+    .controller('EditSuspectCtrl', ['$scope', '$routeParams', '$location', 'Suspect', 'Logger', 'UnitedStates', 'SupportedCountryCodes', 'LeadSubTypes', 'NoteType', 'BusinessTypes', 'LeadService',
+        function ($scope, $routeParams, $location, Suspect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes, LeadService) {
             $scope.editingLead = false;
             $scope.message = '';
             $scope.errors = [];
             var original = {};
             $scope.lead = {};
             $scope.lead.leadAddresses = [];
-            $scope.lead.leadContacts =[];
+            $scope.lead.leadContacts = [];
             $scope.states = UnitedStates.list();
             $scope.countryCodes = SupportedCountryCodes.list();
             $scope.leadSubTypes = LeadSubTypes.list();
@@ -94,20 +94,34 @@ angular.module('suspectApp', ['resources.restApi', 'common.helperFuncs', 'resour
             $scope.updateLead = function (lead) {
                 Suspect.update(lead).$then(updateSuccessCallback, updateErrorCallBack);
                 $scope.cancelEditLead();
-            }
+            };
+
 
             $scope.cancelEditLead = function () {
                 $scope.editingLead = false;
-            }
+            };
 
             $scope.editLead = function () {
                 $scope.editingLead = true;
-            }
+            };
 
+            $scope.$on('handleUpdateLead', function() {
+                $scope.updateLead($scope.lead);
+            });
+
+            $scope.$on('handleAddAddress', function () {
+                $scope.lead.leadAddresses.push(LeadService.entityToBroadCast);
+                $scope.updateLead($scope.lead);
+            });
+
+            $scope.$on('addContactPhoneNumber', function() {
+                $scope.lead.leadContacts[LeadService.parentIdx].leadContactPhoneNumbers.push(LeadService.entityToBroadCast);
+                $scope.updateLead($scope.lead);
+            });
 
             var updateSuccessCallback = function (response) {
                 Logger.success("Suspect Updated Successfully", "Success");
-            }
+            };
 
             var updateErrorCallBack = function (response) {
                 Logger.formValidationMessageBuilder(response, $scope, $scope.leadForm);
@@ -159,7 +173,7 @@ angular.module('suspectApp', ['resources.restApi', 'common.helperFuncs', 'resour
         function ($scope, $routeParams, $location, Suspect, Logger) {
 
         }])
-    .controller('AddAddressController', ['$scope', function ($scope) {
+    .controller('AddAddressController', ['$scope', 'LeadService', function ($scope, LeadService) {
         $scope.address = {};
 
         $scope.addingAddress = false;
@@ -173,34 +187,32 @@ angular.module('suspectApp', ['resources.restApi', 'common.helperFuncs', 'resour
         }
 
         $scope.saveAddress = function (address) {
-            $scope.$parent.lead.leadAddresses.push(address);
+            LeadService.addEntityBroadcast(address, 'handleAddAddress');
             $scope.address = {}; // clear the address after the save
             $scope.addingAddress = false;
         }
     }])
-    .controller('EditAddressController', ['$scope', function ($scope) {
-        $scope.editingAddress = false;
-
-        $scope.editAddress = function () {
-            $scope.editingAddress = true;
-        }
-
-        $scope.cancelEditAddress = function () {
+    .controller('EditAddressController', ['$scope', '$routeParams', 'LeadAddress', 'Logger', 'LeadService',
+        function ($scope, $routeParams, LeadAddress, Logger, LeadService) {
             $scope.editingAddress = false;
-        }
 
-        $scope.updateAddress = function (address) {
-            // console.log("update address against persistent store" + address);
-            // todo: need to add controller or action to suspect controller
-            $scope.cancelEditAddress();
-        }
+            $scope.editAddress = function () {
+                $scope.editingAddress = true;
+            }
 
-        $scope.deleteAddress = function (address, idx) {
-            // toss the actual address off to the API to delete
-            //todo: not sure what this will do
-            $scope.$parent.lead.leadAddresses.splice(idx);
-        }
-    }])
+            $scope.cancelEditAddress = function () {
+                $scope.editingAddress = false;
+            }
+
+            $scope.updateAddress = function (address, idx) {
+                LeadService.updateEntityBroadcast(address, idx, 'handleUpdateAddress');
+                $scope.cancelEditAddress();
+            }
+
+            $scope.deleteAddress = function (address, idx) {
+                LeadService.deleteEntity(idx);
+            }
+        }])
     .controller('AddContactController', ['$scope', function ($scope) {
         $scope.contact = {};
 
@@ -220,28 +232,30 @@ angular.module('suspectApp', ['resources.restApi', 'common.helperFuncs', 'resour
             $scope.addingContact = false;
         }
     }])
-    .controller('EditContactController', ['$scope', function ($scope) {
+    .controller('EditContactController', ['$scope', 'LeadService', function ($scope, LeadService) {
         $scope.editingContact = false;
 
         $scope.editContact = function () {
             $scope.editingContact = true;
-        }
+        };
 
         $scope.cancelEditContact = function () {
             $scope.editingContact = false;
-        }
+        };
 
         $scope.updateContact = function (contact) {
             // console.log("update address against persistent store" + address);
             //todo: update contact...add controller for leadcontacts
             $scope.cancelEditContact();
-        }
+        };
 
         $scope.deleteContact = function (contact, idx) {
             // toss the actual address off to the API to delete
             //todo: same as before
             $scope.$parent.lead.leadContacts.splice(idx);
-        }
+        };
+
+
     }])
     .controller('AddContactAddressController', ['$scope', function ($scope) {
         $scope.address = {};
@@ -342,7 +356,7 @@ angular.module('suspectApp', ['resources.restApi', 'common.helperFuncs', 'resour
             $scope.addingContactEmailAddress = false;
         }
     }])
-    .controller('EditLeadContactEmailAddressController', ['$scope', function ($scope) {
+    .controller('EditLeadContactEmailAddressController', ['$scope', 'LeadService', function ($scope, LeadService) {
         $scope.editingContactEmailAddress = false;
 
         $scope.editContactEmailAddress = function () {
@@ -354,8 +368,8 @@ angular.module('suspectApp', ['resources.restApi', 'common.helperFuncs', 'resour
         }
 
         $scope.updateContactEmailAddress = function (contact) {
-            // console.log("update address against persistent store" + address);
-            $scope.cancelEditContact();
+            LeadService.save('handleUpdateLead');
+            $scope.cancelEditContactEmailAddress();
         }
 
         $scope.deleteContactEmailAddress = function (contact, idx) {
@@ -363,7 +377,7 @@ angular.module('suspectApp', ['resources.restApi', 'common.helperFuncs', 'resour
             $scope.$parent.lead.leadContacts.splice(idx);
         }
     }])
-    .controller('AddContactPhoneNumberController', ['$scope', function ($scope) {
+    .controller('AddContactPhoneNumberController', ['$scope', 'LeadService', function ($scope, LeadService) {
         $scope.contactPhoneNumber = {};
 
         $scope.addingContactPhoneNumber = false;
@@ -377,12 +391,12 @@ angular.module('suspectApp', ['resources.restApi', 'common.helperFuncs', 'resour
         }
 
         $scope.saveContactPhoneNumber = function (contactPhoneNumber) {
-            $scope.$parent.leadContact.leadContactPhoneNumbers.push(contactPhoneNumber);
+            LeadService.addEntityBroadcast(contactPhoneNumber, $scope.$parent.$index, 'addContactPhoneNumber');
             $scope.contactPhoneNumber = {}; // clear the address after the save
-            $scope.addingContactPhoneNumber = false;
+            $scFope.addingContactPhoneNumber = false;
         }
     }])
-    .controller('EditLeadContactPhoneNumberController', ['$scope', function ($scope) {
+    .controller('EditLeadContactPhoneNumberController', ['$scope', 'LeadService', function ($scope, LeadService) {
         $scope.editingContactPhoneNumber = false;
 
         $scope.editContactPhoneNumber = function () {
@@ -394,8 +408,8 @@ angular.module('suspectApp', ['resources.restApi', 'common.helperFuncs', 'resour
         }
 
         $scope.updateContactPhoneNumber = function (contactPhoneNumber) {
-            // console.log("update address against persistent store" + address);
-            $scope.cancelEditContact();
+            LeadService.save('handleUpdateLead');
+            $scope.cancelEditContactPhoneNumber();
         }
 
         $scope.deleteContactPhoneNumber = function (contactPhoneNumber, idx) {

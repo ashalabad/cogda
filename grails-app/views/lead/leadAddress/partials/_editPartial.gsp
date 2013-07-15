@@ -1,6 +1,17 @@
 <fieldset class="embedded" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html"><legend><g:message
         code="address.label" default="Address"/></legend>
 
+    <div class="control-group fieldcontain">
+        <label for="address.primaryAddress" class="control-label"><g:message
+                code="leadAddress.primaryAddress.label"
+                default="Primary Address"/></label>
+
+        <div class="controls">
+            <input type="checkbox" data-ng-model="address.primaryAddress" name="address.primaryAddress"
+                   id="address.primaryAddress"/>
+        </div>
+    </div>
+
     <div class="control-group fieldcontain"
          data-ng-class="{error: addressForm['address.address.addressOne'].$invalid, success: addressForm['address.address.addressOne'].$valid && addressForm['address.address.addressOne'].$dirty}">
         <label for="address.address.addressOne" class="control-label"><g:message
