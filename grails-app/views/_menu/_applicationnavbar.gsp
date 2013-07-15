@@ -58,7 +58,7 @@
                                     </a>
                                 </li>
                                 <li class="">
-                                    <a href="#" id="applicationNavBarAccountCreate">
+                                    <a href="/account#/create" id="applicationNavBarAccountCreate">
                                         <i class="icon-plus-sign"></i>
                                         <g:message code = "account.menu.create.label"/>
                                     </a>
