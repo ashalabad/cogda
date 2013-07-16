@@ -9,12 +9,11 @@
 
         <div class="controls">
             <div data-ng-repeat="noteType in noteTypes">
-                <label class="radio inline" for='noteType[{{$index}}]'><span
-                        class="radioSpan">{{noteType.description}}</span><input type="radio"
-                                                                                data-ng-model="leadNote.noteType"
-                                                                                data-ng-value="noteType"
-                                                                                name='leadNote.noteType'
-                                                                                id="noteType[{{$index}}]"/>
+                <label><input type="radio"
+                       data-ng-model="leadNote.noteType"
+                       data-ng-value="noteType"
+                       name='leadNote.noteType'>
+                    &nbsp;<span data-ng-bind="noteType.description"></span>
                 </label>
             </div>
         </div>
