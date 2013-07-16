@@ -1,4 +1,4 @@
-angular.module('suspectApp', ['ui.bootstrap','resources.restApi', 'common.helperFuncs', 'resources.logger', 'ngGrid', 'resources.suspect', 'resources.unitedStates', 'resources.SupportedCountryCodes', 'resources.leadSubTypes', 'resources.noteType', 'resources.businessTypes', 'resources.leadAddress', 'resources.leadService'])
+angular.module('suspectApp', ['ui.bootstrap', 'resources.restApi', 'common.helperFuncs', 'resources.logger', 'ngGrid', 'resources.suspect', 'resources.unitedStates', 'resources.SupportedCountryCodes', 'resources.leadSubTypes', 'resources.noteType', 'resources.businessTypes', 'resources.leadAddress', 'resources.leadService'])
 
     .config(function ($routeProvider) {
         $routeProvider.
@@ -102,10 +102,27 @@ angular.module('suspectApp', ['ui.bootstrap','resources.restApi', 'common.helper
             };
 
             $scope.editLead = function () {
-                $scope.editingLead = true;
+                Suspect.get({id: $scope.account.id}, function (data) {
+                    $scope.editOpts = {
+                        dialogFade: true,
+                        backdropFade: true,
+                        templateUrl: 'account/editPartial',
+                        controller: 'EditAccountCtrl',
+                        resolve: {
+                            account: function () {
+                                return angular.copy(data);
+                            }
+                        }
+
+                    };
+                    var d = $dialog.dialog($scope.editOpts);
+                    d.open().then(function () {
+                        $scope.loadAccount();
+                    });
+                });
             };
 
-            $scope.$on('handleUpdateLead', function() {
+            $scope.$on('handleUpdateLead', function () {
                 $scope.updateLead($scope.lead);
             });
 
@@ -114,12 +131,15 @@ angular.module('suspectApp', ['ui.bootstrap','resources.restApi', 'common.helper
                 $scope.updateLead($scope.lead);
             });
 
-            $scope.$on('addContactPhoneNumber', function() {
+            $scope.$on('addContactPhoneNumber', function () {
+                if ($scope.lead.leadContacts[LeadService.parentIdx].leadContactPhoneNumbers === undefined) {
+                    $scope.lead.leadContacts[LeadService.parentIdx].leadContactPhoneNumbers = [];
+                }
                 $scope.lead.leadContacts[LeadService.parentIdx].leadContactPhoneNumbers.push(LeadService.entityToBroadCast);
                 $scope.updateLead($scope.lead);
             });
 
-            $scope.$on('addContactAddress', function() {
+            $scope.$on('addContactAddress', function () {
                 if ($scope.lead.leadContacts[LeadService.parentIdx].leadContactAddresses === undefined) {
                     $scope.lead.leadContacts[LeadService.parentIdx].leadContactAddresses = [];
                 }
@@ -127,7 +147,31 @@ angular.module('suspectApp', ['ui.bootstrap','resources.restApi', 'common.helper
                 $scope.updateLead($scope.lead);
             });
 
-            $scope.clearSearch = function clearSearch(){
+            $scope.$on('addLeadContact', function () {
+                if ($scope.lead.leadContacts === undefined) {
+                    $scope.lead.leadContacts = [];
+                }
+                $scope.lead.leadContacts.push(LeadService.entityToBroadCast);
+                $scope.updateLead($scope.lead);
+            });
+
+            $scope.$on('addContactEmailAddress', function () {
+                if ($scope.lead.leadContacts[LeadService.parentIdx].leadContactEmailAddresses === undefined) {
+                    $scope.lead.leadContacts[LeadService.parentIdx].leadContactEmailAddresses = [];
+                }
+                $scope.lead.leadContacts[LeadService.parentIdx].leadContactEmailAddresses.push(LeadService.entityToBroadCast);
+                $scope.updateLead($scope.lead);
+            });
+
+            $scope.$on('addLeadNote', function() {
+                if ($scope.lead.leadNotes === undefined) {
+                    $scope.lead.leadNotes = [];
+                }
+                $scope.lead.leadNotes.push(LeadService.entityToBroadCast);
+                $scope.updateLead($scope.lead);
+            });
+
+            $scope.clearSearch = function clearSearch() {
                 $scope.searchString = "";
             };
 
@@ -225,25 +269,6 @@ angular.module('suspectApp', ['ui.bootstrap','resources.restApi', 'common.helper
                 LeadService.deleteEntity(idx);
             }
         }])
-    .controller('AddContactController', ['$scope', function ($scope) {
-        $scope.contact = {};
-
-        $scope.addingContact = false;
-
-        $scope.addContact = function () {
-            $scope.addingContact = true;
-        }
-
-        $scope.cancelAddContact = function () {
-            $scope.addingContact = false;
-        }
-
-        $scope.saveContact = function (contact) {
-            $scope.$parent.lead.leadContacts.push(contact);
-            $scope.contact = {}; // clear the address after the save
-            $scope.addingContact = false;
-        }
-    }])
     .controller('EditContactController', ['$scope', 'LeadService', function ($scope, LeadService) {
         $scope.editingContact = false;
 
@@ -266,8 +291,6 @@ angular.module('suspectApp', ['ui.bootstrap','resources.restApi', 'common.helper
             //todo: same as before
             $scope.$parent.lead.leadContacts.splice(idx);
         };
-
-
     }])
     .controller('AddLeadContactAddressController', ['$scope', 'LeadService', function ($scope, LeadService) {
         $scope.contactAddress = {};
@@ -288,28 +311,28 @@ angular.module('suspectApp', ['ui.bootstrap','resources.restApi', 'common.helper
             $scope.addingContactAddress = false;
         }
     }])
-    .controller('EditLeadContactAddressController', ['$scope', function ($scope) {
+    .controller('EditLeadContactAddressController', ['$scope', 'LeadService', function ($scope, LeadService) {
         $scope.editingContactAddress = false;
 
-        $scope.editContact = function () {
+        $scope.editContactAddress = function () {
             $scope.editingContactAddress = true;
         }
 
-        $scope.cancelEditContact = function () {
+        $scope.cancelEditContactAddress = function () {
             $scope.editingContactAddress = false;
         }
 
-        $scope.updateContact = function (contact) {
-            // console.log("update address against persistent store" + address);
-            $scope.cancelEditContact();
+        $scope.updateContactAddress = function (contact) {
+            LeadService.save('handleUpdateLead');
+            $scope.cancelEditContactAddress();
         }
 
-        $scope.deleteContact = function (contact, idx) {
+        $scope.deleteContactAddress = function (contact, idx) {
             // toss the actual address off to the API to delete
             $scope.$parent.lead.leadContacts.splice(idx);
         }
     }])
-    .controller('AddLeadContactController', ['$scope', function ($scope) {
+    .controller('AddLeadContactController', ['$scope', 'LeadService', function ($scope, LeadService) {
         $scope.contact = {};
 
         $scope.addingContact = false;
@@ -323,7 +346,7 @@ angular.module('suspectApp', ['ui.bootstrap','resources.restApi', 'common.helper
         }
 
         $scope.saveContact = function (contact) {
-            $scope.$parent.lead.leadContacts.push(contact);
+            LeadService.addEntityBroadcast(contact, 'addLeadContact');
             $scope.contact = {}; // clear the address after the save
             $scope.addingContact = false;
         }
@@ -349,7 +372,7 @@ angular.module('suspectApp', ['ui.bootstrap','resources.restApi', 'common.helper
             $scope.$parent.lead.leadContacts.splice(idx);
         }
     }])
-    .controller('AddContactEmailAddressController', ['$scope', function ($scope) {
+    .controller('AddContactEmailAddressController', ['$scope', 'LeadService', function ($scope, LeadService) {
         $scope.contactEmailAddress = {};
 
         $scope.addingContactEmailAddress = false;
@@ -363,7 +386,7 @@ angular.module('suspectApp', ['ui.bootstrap','resources.restApi', 'common.helper
         }
 
         $scope.saveContactEmailAddress = function (contactEmailAddress) {
-            $scope.$parent.lead.leadContacts.push(contactEmailAddress);
+            LeadService.addEntityBroadcast(contactEmailAddress, 'addContactEmailAddress', $scope.$parent.$index);
             $scope.contactEmailAddress = {}; // clear the address after the save
             $scope.addingContactEmailAddress = false;
         }
@@ -403,7 +426,7 @@ angular.module('suspectApp', ['ui.bootstrap','resources.restApi', 'common.helper
         }
 
         $scope.saveContactPhoneNumber = function (contactPhoneNumber) {
-            LeadService.addEntityBroadcast(contactPhoneNumber, $scope.$parent.$index, 'addContactPhoneNumber');
+            LeadService.addEntityBroadcast(contactPhoneNumber, 'addContactPhoneNumber', $scope.$parent.$index);
             $scope.contactPhoneNumber = {}; // clear the address after the save
             $scope.addingContactPhoneNumber = false;
         }
@@ -429,6 +452,27 @@ angular.module('suspectApp', ['ui.bootstrap','resources.restApi', 'common.helper
             $scope.$parent.lead.leadContacts.splice(idx);
         }
     }])
+    .controller('EditLeadNoteController', ['$scope', 'LeadService', function ($scope, LeadService) {
+        $scope.editingLeadNote = false;
+
+        $scope.editLeadNote = function () {
+            $scope.editingLeadNote = true;
+        }
+
+        $scope.cancelEditLeadNote = function () {
+            $scope.editingLeadNote = false;
+        }
+
+        $scope.updateLeadNote = function (leadNote) {
+            LeadService.save('handleUpdateLead');
+            $scope.cancelEditLeadNote();
+        }
+
+        $scope.deleteLeadNote = function (leadNote, idx) {
+            // toss the actual address off to the API to delete
+            $scope.$parent.lead.leadContacts.splice(idx);
+        }
+    }])
     .controller('AddLeadNoteController', ['$scope', 'LeadService', function ($scope, LeadService) {
         $scope.leadNote = {};
 
@@ -443,7 +487,7 @@ angular.module('suspectApp', ['ui.bootstrap','resources.restApi', 'common.helper
         }
 
         $scope.saveLeadNote = function (leadNote) {
-            LeadService.addEntityBroadcast(leadNote, $scope.$parent.$index, 'addLeadNote');
+            LeadService.addEntityBroadcast(leadNote, 'addLeadNote');
             $scope.leadNote = {};
             $scope.addingLeadNote = false;
         }

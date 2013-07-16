@@ -1,7 +1,7 @@
 <fieldset class="embedded"><legend><g:message code="note.label" default="Note"/></legend>
 
     <div class="control-group fieldcontain"
-         data-ng-class="{error: noteForm['leadNote.noteType'].$invalid && noteForm['leadNote.noteType'].$dirty, success: noteForm['leadNote.noteType'].$valid && noteForm['leadNote.noteType'].$dirty}">
+         data-ng-class="{error: leadNoteForm['leadNote.noteType'].$invalid && leadNoteForm['leadNote.noteType'].$dirty, success: leadNoteForm['leadNote.noteType'].$valid && leadNoteForm['leadNote.noteType'].$dirty}">
         <label class="control-label">
             <g:message code="lead.subType.label" default="Type"/>
             <span class="required-indicator">*</span>
@@ -21,7 +21,7 @@
     </div>
 
     <div class="control-group fieldcontain "
-         data-ng-class="{error: noteForm['leadNote.note.notes'].$invalid && noteForm['leadNote.note.notes'].$dirty, success: noteForm['leadNote.note.notes'].$valid && noteForm['leadNote.note.notes'].$dirty}">
+         data-ng-class="{error: leadNoteForm['leadNote.note.notes'].$invalid && leadNoteForm['leadNote.note.notes'].$dirty, success: leadNoteForm['leadNote.note.notes'].$valid && leadNoteForm['leadNote.note.notes'].$dirty}">
         <label for="leadNote.note.notes" class="control-label"><g:message code="note.notes.label"
                                                                           default="Notes"/></label>
 

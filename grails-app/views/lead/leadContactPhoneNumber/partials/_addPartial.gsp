@@ -26,7 +26,7 @@
     <br>
 
     <button type="button"
-            class="btn btn-large"
+            class="btn"
             data-ng-click="addContactPhoneNumber()"
             data-ng-hide="addingContactPhoneNumber">
         <i class="icon-plus"></i>
