@@ -1,10 +1,3 @@
-<button class="btn btn-info btn-mini pull-right"
-        type="button"
-        data-ng-click="editContactPhoneNumber()"
-        data-ng-hide="editContactPhoneNumber">
-    <i class="icon-edit icon-white"></i>
-    Edit Contact Phone Number
-</button>
 <button class="btn btn-danger btn-mini pull-right"
         type="button"
         data-ng-click="deleteContactPhoneNumber(contactPhoneNumber)"
@@ -12,6 +5,15 @@
     <i class="icon-remove icon-white"></i>
     Delete Contact Phone Number
 </button>
+
+<button class="btn btn-info btn-mini pull-right"
+        type="button"
+        data-ng-click="editContactPhoneNumber()"
+        data-ng-hide="editContactPhoneNumber">
+    <i class="icon-edit icon-white"></i>
+    Edit Contact Phone Number
+</button>
+
 
 <div class="control-group fieldcontain">
     <label class="control-label" for="contactPhoneNumber.primaryPhoneNumber"></label>

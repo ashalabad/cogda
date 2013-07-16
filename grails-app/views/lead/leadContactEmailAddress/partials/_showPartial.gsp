@@ -1,3 +1,17 @@
+<button class="btn btn-danger btn-mini pull-right"
+        type="button"
+        data-ng-click="deleteContactEmailAddress(contactEmailAddress)"
+        data-ng-hide="editingContactEmailAddress">
+    <i class="icon-remove icon-white"></i>
+    Delete Contact Email Address
+</button>
+<button class="btn btn-info btn-mini pull-right"
+        type="button"
+        data-ng-click="editContactEmailAddress()"
+        data-ng-hide="editContactEmailAddress">
+    <i class="icon-edit icon-white"></i>
+    Edit Contact Email Address
+</button>
 <div class="control-group fieldcontain">
     <label class="control-label" for="contactEmailAddress.primaryEmailAddress"></label>
 

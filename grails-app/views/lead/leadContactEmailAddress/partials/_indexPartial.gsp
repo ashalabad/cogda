@@ -26,20 +26,7 @@
                     Cancel</button>
             </div>
         </div>
-        <button class="btn btn-info"
-                type="button"
-                data-ng-click="editContactEmailAddress()"
-                data-ng-hide="editContactEmailAddress">
-            <i class="icon-edit icon-white"></i>
-            Edit Contact Email Address
-        </button>
-        <button class="btn btn-danger"
-                type="button"
-                data-ng-click="deleteContactEmailAddress(contactEmailAddress)"
-                data-ng-hide="editingContactEmailAddress">
-            <i class="icon-remove icon-white"></i>
-            Delete Contact Email Address
-        </button>
+
     </div>
 </div>
 

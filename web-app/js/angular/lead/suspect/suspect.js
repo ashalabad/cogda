@@ -151,6 +151,40 @@ angular.module('suspectApp', ['ui.bootstrap', 'resources.restApi', 'common.helpe
                 $scope.updateLead($scope.lead);
             });
 
+            $scope.$on('deleteAddress', function() {
+                $scope.lead.leadAddresses.splice(LeadService.entityIdx, 1);
+                $scope.updateLead($scope.lead);
+            });
+
+            $scope.$on('deleteContact', function() {
+                $scope.lead.leadContacts.splice(LeadService.entityIdx, 1);
+                $scope.updateLead($scope.lead);
+            });
+
+            $scope.$on('deleteContactAddress', function() {
+                $scope.lead.leadContacts[LeadService.parentIdx].leadContactAddresses.splice(LeadService.entityIdx, 1);
+                $scope.updateLead($scope.lead);
+            });
+
+            $scope.$on('deleteContact', function() {
+                $scope.lead.leadContacts.splice(LeadService.entityIdx, 1);
+                $scope.updateLead($scope.lead);
+            });
+
+            $scope.$on('deleteLeadContactEmailAddress', function() {
+                $scope.lead.leadContacts[LeadService.parentIdx].leadContactEmailAddresses.splice(LeadService.entityIdx, 1);
+                $scope.updateLead($scope.lead);
+            });
+
+            $scope.$on('deleteContactPhoneNumber', function() {
+                $scope.lead.leadContacts[LeadService.parentIdx].leadContactPhoneNumbers.splice(LeadService.entityIdx, 1);
+                $scope.updateLead($scope.lead);
+            });
+
+            $scope.$on('deleteLeadNote', function() {
+                $scope.lead.leadNotes.splice(LeadService.entityIdx, 1);
+            })
+
             $scope.clearSearch = function clearSearch() {
                 $scope.searchString = "";
             };
@@ -246,7 +280,7 @@ angular.module('suspectApp', ['ui.bootstrap', 'resources.restApi', 'common.helpe
             };
 
             $scope.deleteAddress = function (address, idx) {
-                LeadService.deleteEntity(idx);
+                LeadService.deleteEntity('deleteAddress', idx);
             }
         }])
     .controller('EditContactController', ['$scope', 'LeadService', function ($scope, LeadService) {
@@ -266,8 +300,7 @@ angular.module('suspectApp', ['ui.bootstrap', 'resources.restApi', 'common.helpe
         };
 
         $scope.deleteContact = function (contact, idx) {
-
-            $scope.$parent.lead.leadContacts.splice(idx);
+            LeadService.deleteEntity('deleteContact', idx);
         };
     }])
     .controller('AddLeadContactAddressController', ['$scope', 'LeadService', function ($scope, LeadService) {
@@ -306,7 +339,7 @@ angular.module('suspectApp', ['ui.bootstrap', 'resources.restApi', 'common.helpe
         };
 
         $scope.deleteContactAddress = function (contact, idx) {
-            $scope.$parent.lead.leadContacts.splice(idx, 1);
+            LeadService.deleteEntity('deleteContactAddress', $scope.$index, $scope.$parent.$index);
         };
     }])
     .controller('AddLeadContactController', ['$scope', 'LeadService', function ($scope, LeadService) {
@@ -328,7 +361,7 @@ angular.module('suspectApp', ['ui.bootstrap', 'resources.restApi', 'common.helpe
             $scope.addingContact = false;
         }
     }])
-    .controller('EditContactController', ['$scope', function ($scope) {
+    .controller('EditContactController', ['$scope', 'LeadService', function ($scope, LeadService) {
         $scope.editingContact = false;
 
         $scope.editContact = function () {
@@ -340,13 +373,12 @@ angular.module('suspectApp', ['ui.bootstrap', 'resources.restApi', 'common.helpe
         };
 
         $scope.updateContact = function (contact) {
-            // console.log("update address against persistent store" + address);
+            LeadService.save('handleUpdateLead');
             $scope.cancelEditContact();
         };
 
         $scope.deleteContact = function (contact, idx) {
-            // toss the actual address off to the API to delete
-            $scope.$parent.lead.leadContacts.splice(idx);
+            LeadService.deleteEntity('deleteContact', $scope.$index);
         }
     }])
     .controller('AddContactEmailAddressController', ['$scope', 'LeadService', function ($scope, LeadService) {
@@ -385,7 +417,7 @@ angular.module('suspectApp', ['ui.bootstrap', 'resources.restApi', 'common.helpe
         };
 
         $scope.deleteContactEmailAddress = function (contact, idx) {
-            $scope.$parent.lead.leadContacts.splice(idx);
+            LeadService.deleteEntity('deleteLeadContactEmailAddress', $scope.$index, $scope.$parent.$index);
         };
     }])
     .controller('AddContactPhoneNumberController', ['$scope', 'LeadService', function ($scope, LeadService) {
@@ -424,8 +456,7 @@ angular.module('suspectApp', ['ui.bootstrap', 'resources.restApi', 'common.helpe
         };
 
         $scope.deleteContactPhoneNumber = function (contactPhoneNumber, idx) {
-            // toss the actual address off to the API to delete
-            $scope.$parent.lead.leadContacts.splice(idx);
+            LeadService.deleteEntity('deleteContactPhoneNumber', $scope.$index, $scope.$parent.$index);
         }
     }])
     .controller('EditLeadNoteController', ['$scope', 'LeadService', function ($scope, LeadService) {
@@ -445,8 +476,7 @@ angular.module('suspectApp', ['ui.bootstrap', 'resources.restApi', 'common.helpe
         };
 
         $scope.deleteLeadNote = function (leadNote, idx) {
-            // toss the actual address off to the API to delete
-            $scope.$parent.lead.leadContacts.splice(idx);
+            LeadService.deleteEntity('deleteLeadNote', $scope.$index);
         }
     }])
     .controller('AddLeadNoteController', ['$scope', 'LeadService', function ($scope, LeadService) {

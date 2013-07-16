@@ -179,6 +179,8 @@
             class="span11 well well-small">
             <div data-ng-controller="EditLeadNoteController">
                 <address data-ng-hide="editingLeadNote">
+                    <button type="button" class="btn btn-danger btn-mini pull-right" data-ng-click="deleteLeadNote()"><i
+                            class="icon-edit"></i> <g:message code="default.button.delete.label"/></button>
                     <button type="button" class="btn btn-info btn-mini pull-right" data-ng-click="editLeadNote()"><i
                             class="icon-edit"></i> <g:message code="default.button.edit.label"/></button>
                     <strong>{{leadNote.lastUpdated | date:'MM/dd/yyyy @ h:mm a'}}<br> {{leadNote.noteType.code}}
