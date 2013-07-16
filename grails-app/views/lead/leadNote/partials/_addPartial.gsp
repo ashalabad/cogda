@@ -3,7 +3,7 @@
         <div data-ng-form="leadNoteForm" class="form-horizontal">
             <fieldset class="embedded">
                 <legend>
-                    Add Note
+                    <g:message code="default.add.label" args="[message(code: 'note.label')]"/>
                 </legend>
                 <g:render template="/lead/leadNote/partials/editPartial"/>
 
@@ -12,12 +12,12 @@
                             class="btn btn-primary"
                             data-ng-click="saveLeadNote(leadNote)">
                         <i class="icon-plus icon-white"></i>
-                        Add Note</button>
+                        <g:message code="default.add.label" args="[message(code: 'note.label')]"/></button>
                     <button type="button"
                             class="btn"
                             data-ng-click="cancelAddLeadNote()">
                         <i class="icon-ban-circle"></i>
-                        Cancel</button>
+                        <g:message code="default.button.cancel.label"/></button>
                 </div>
             </fieldset>
         </div>
@@ -27,6 +27,6 @@
             data-ng-click="addLeadNote()"
             data-ng-hide="addingLeadNote">
         <i class="icon-plus"></i>
-        Add Lead Note
+        <g:message code="default.add.label" args="[message(code: 'note.label')]" />
     </button>
 </div>

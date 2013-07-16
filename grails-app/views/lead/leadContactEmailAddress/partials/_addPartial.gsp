@@ -3,7 +3,7 @@
         <div data-ng-form="contactEmailAddressForm" class="form-horizontal">
             <fieldset class="embedded">
                 <legend>
-                    Add Contact Email Address
+                    <g:message code="default.add.label" args="[message(code: 'contactEmailAddress.label')]"/>
                 </legend>
                 <g:render template="/lead/leadContactEmailAddress/partials/editPartial"/>
 
@@ -12,12 +12,13 @@
                             class="btn btn-primary"
                             data-ng-click="saveContactEmailAddress(contactEmailAddress)">
                         <i class="icon-plus icon-white"></i>
-                        Add Contact Email Address</button>
+                        <g:message code="default.add.label" args="[message(code: 'contactEmailAddress.label')]"/>
+                    </button>
                     <button type="button"
                             class="btn"
                             data-ng-click="cancelAddContactEmailAddress()">
                         <i class="icon-ban-circle"></i>
-                        Cancel</button>
+                        <g:message code="default.button.cancel.label"/></button>
                 </div>
             </fieldset>
         </div>
@@ -30,6 +31,6 @@
             data-ng-click="addContactEmailAddress()"
             data-ng-hide="addingContactEmailAddress">
         <i class="icon-plus"></i>
-        Add Contact Email Address
+        <g:message code="default.add.label" args="[message(code: 'contactEmailAddress.label')]"/>
     </button>
 </div>

@@ -28,7 +28,6 @@
         <div class="controls">
             <g:textArea name="leadNotes[0].note.notes" cols="40" rows="5" maxlength="500"
                         data-ng-model="lead.leadNotes[0].note.notes"/>
-            <span class="help-inline">${hasErrors(bean: leadNoteInstance?.note, field: 'description', 'error')}</span>
         </div>
     </div>
 

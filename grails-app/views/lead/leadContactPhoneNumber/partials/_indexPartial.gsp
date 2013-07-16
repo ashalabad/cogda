@@ -11,19 +11,19 @@
                         class="btn btn-primary"
                         data-ng-click="updateContactPhoneNumber(contactPhoneNumber)">
                     <i class="icon-pencil icon-white"></i>
-                    Update Contact Phone Number
+                    <g:message code="default.button.update.label"/> <g:message code="contactPhoneNumber.label"/>
                 </button>
                 <button class="btn btn-danger"
                         type="button"
                         data-ng-click="deleteContactPhoneNumber(contactPhoneNumber, $index)">
                     <i class="icon-remove icon-white"></i>
-                    Delete Contact Phone Number
+                    <g:message code="default.button.delete.label"/> <g:message code="contactPhoneNumber.label"/>
                 </button>
                 <button type="button"
                         class="btn"
                         data-ng-click="cancelEditContactPhoneNumber()">
                     <i class="icon-ban-circle"></i>
-                    Cancel</button>
+                    <g:message code="default.button.cancel.label"/></button>
             </div>
         </div>
     </div>

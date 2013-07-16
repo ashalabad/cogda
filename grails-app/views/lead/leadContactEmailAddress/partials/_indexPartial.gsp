@@ -11,19 +11,20 @@
                         class="btn btn-primary"
                         data-ng-click="updateContactEmailAddress(contactEmailAddress)">
                     <i class="icon-pencil icon-white"></i>
-                    Update Contact Email Address
+                    <g:message code="default.button.update.label"/> <g:message code="contactEmailAddress.label"/>
                 </button>
                 <button class="btn btn-danger"
                         type="button"
                         data-ng-click="deleteContactEmailAddress(contactEmailAddress, $index)">
                     <i class="icon-remove icon-white"></i>
-                    Delete Contact Email Address
+                    <g:message code="default.button.delete.label"/> <g:message code="contactEmailAddress.label"/>
                 </button>
                 <button type="button"
                         class="btn"
                         data-ng-click="cancelEditContactEmailAddress()">
                     <i class="icon-ban-circle"></i>
-                    Cancel</button>
+                    <g:message code="default.button.cancel.label"/>
+                </button>
             </div>
         </div>
 

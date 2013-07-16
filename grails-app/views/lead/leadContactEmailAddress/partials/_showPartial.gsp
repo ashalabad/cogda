@@ -3,15 +3,16 @@
         data-ng-click="deleteContactEmailAddress(contactEmailAddress)"
         data-ng-hide="editingContactEmailAddress">
     <i class="icon-remove icon-white"></i>
-    Delete Contact Email Address
+    <g:message code="default.button.delete.label"/> <g:message code="contactEmailAddress.label"/>
 </button>
 <button class="btn btn-info btn-mini pull-right"
         type="button"
         data-ng-click="editContactEmailAddress()"
         data-ng-hide="editContactEmailAddress">
     <i class="icon-edit icon-white"></i>
-    Edit Contact Email Address
+    <g:message code="default.edit.label" args="[message(code: 'contactEmailAddress.label')]"/>
 </button>
+
 <div class="control-group fieldcontain">
     <label class="control-label" for="contactEmailAddress.primaryEmailAddress"></label>
 

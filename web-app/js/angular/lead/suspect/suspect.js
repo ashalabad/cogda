@@ -70,6 +70,7 @@ angular.module('suspectApp', ['ui.bootstrap', 'resources.restApi', 'common.helpe
         }])
     .controller('EditSuspectCtrl', ['$scope', '$routeParams', '$location', 'Suspect', 'Logger', 'UnitedStates', 'SupportedCountryCodes', 'LeadSubTypes', 'NoteType', 'BusinessTypes', 'LeadService',
         function ($scope, $routeParams, $location, Suspect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes, LeadService) {
+            $scope.title = 'Suspect';
             $scope.editingLead = false;
             $scope.message = '';
             $scope.errors = [];

@@ -4,7 +4,7 @@
             data-ng-click="editLead()"
             data-ng-hide="editingLead" >
         <i class="icon-edit icon-white"></i>
-        Edit Suspect
+        <g:message code="lead.edit.label"/> {{title}}
     </button>
     <div class="control-group fieldcontain">
         <label class="control-label" for="lead.businessType.code">

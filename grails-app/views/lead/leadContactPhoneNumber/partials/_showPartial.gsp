@@ -3,7 +3,7 @@
         data-ng-click="deleteContactPhoneNumber(contactPhoneNumber)"
         data-ng-hide="editingContactPhoneNumber">
     <i class="icon-remove icon-white"></i>
-    Delete Contact Phone Number
+    <g:message code="default.button.delete.label"/> <g:message code="contactPhoneNumber.label"/>
 </button>
 
 <button class="btn btn-info btn-mini pull-right"
@@ -11,7 +11,7 @@
         data-ng-click="editContactPhoneNumber()"
         data-ng-hide="editContactPhoneNumber">
     <i class="icon-edit icon-white"></i>
-    Edit Contact Phone Number
+    <g:message code="default.edit.label" args="[message(code: 'contactPhoneNumber.label')]"/>
 </button>
 
 
@@ -21,7 +21,7 @@
     <div class="controls readonly">
         <span data-ng-show="contactPhoneNumber.primaryPhoneNumber" id="contactPhoneNumber.primaryPhoneNumber">
             <br/>
-            <span class="label label-info">Primary</span>
+            <span class="label label-info"><g:message code="label.primary"/></span>
         </span>
     </div>
 </div>

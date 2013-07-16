@@ -13,9 +13,6 @@
                             <div class="well" data-ng-show="addingContactAddress">
                                 <div data-ng-form="contactAddressForm" class="form-horizontal">
                                     <fieldset class="embedded">
-                                        <legend>
-                                            Add Contact Address
-                                        </legend>
                                         <g:render template="/lead/leadContactAddress/partials/editPartial"/>
 
                                         <div class="form-actions">
@@ -23,12 +20,13 @@
                                                     class="btn btn-primary"
                                                     data-ng-click="saveContactAddress(address)">
                                                 <i class="icon-plus icon-white"></i>
-                                                Add Contact Address</button>
+                                                <g:message code="default.add.label" args="[message(code:'contactAddress.label')]"/>
+                                                </button>
                                             <button type="button"
                                                     class="btn"
                                                     data-ng-click="cancelAddContactAddress()">
                                                 <i class="icon-ban-circle"></i>
-                                                Cancel</button>
+                                                <g:message code="default.button.cancel.label"/></button>
                                         </div>
                                     </fieldset>
                                 </div>
@@ -41,7 +39,7 @@
                                     data-ng-click="addContactAddress()"
                                     data-ng-hide="addingContactAddress">
                                 <i class="icon-plus"></i>
-                                Add Contact Address
+                                <g:message code="default.add.label" args="[message(code:'contactAddress.label')]"/>
                             </button>
                         </div>
                     </fieldset>
@@ -74,19 +72,19 @@
                         class="btn btn-primary"
                         data-ng-click="updateContact(contact)">
                     <i class="icon-pencil icon-white"></i>
-                    Update Contact
+                    <g:message code="default.button.update.label"/> <g:message code="contact.label" default="Contact"/>
                 </button>
                 <button class="btn btn-danger"
                         type="button"
                         data-ng-click="deleteContact(contact, $index)">
                     <i class="icon-remove icon-white"></i>
-                    Delete Contact
+                    <g:message code="default.button.delete.label"/> <g:message code="contact.label" default="Contact"/>
                 </button>
                 <button type="button"
                         class="btn"
                         data-ng-click="cancelEditContact()">
                     <i class="icon-ban-circle"></i>
-                    Cancel</button>
+                    <g:message code="default.button.cancel.label"/></button>
             </div>
         </div>
     </div>

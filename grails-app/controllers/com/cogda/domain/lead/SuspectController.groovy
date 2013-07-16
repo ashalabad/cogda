@@ -44,27 +44,27 @@ class SuspectController extends BaseController {
 //        def suspectInstance = Lead.get(params.id)
         def suspectInstance = Lead.findById(params.id, [fetch: [businessType: "eager"]])
         if (!suspectInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'suspect.label', default: 'Lead'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'suspect.label', default: 'Suspect'), params.id])
             redirect(action: "list")
             return
         }
         [suspectInstance: suspectInstance]
     }
 
-    def listPartial(){
-        render (view:'listPartial')
+    def listPartial() {
+        render(view: 'listPartial')
     }
 
     def editPartial() {
-        render (view:'tabbedEditPartial')
+        render(view: 'tabbedEditPartial')
     }
 
     def createPartial() {
-        render (view:'createPartial')
+        render(view: 'createPartial')
     }
 
     def showPartial() {
-        render (view:'showPartial')
+        render(view: 'showPartial')
     }
 
     def list() {
@@ -155,7 +155,7 @@ class SuspectController extends BaseController {
 
         if (params.version != null) {
             if (suspectInstance.version > params.long('version')) {
-                respondConflict()
+                respondConflict suspectInstance
                 return
             }
         }
@@ -224,11 +224,11 @@ class SuspectController extends BaseController {
         render gsonRetString
     }
 
-    private Map getErrorStringsByField(instance){
+    private Map getErrorStringsByField(instance) {
         Map stringsByField = [:].withDefault { [] }
-        for(fieldErrors in instance.errors){
-            for(error in fieldErrors.allErrors){
-                String message = message(error:error)
+        for (fieldErrors in instance.errors) {
+            for (error in fieldErrors.allErrors) {
+                String message = message(error: error)
                 stringsByField[error.field] << message
             }
         }

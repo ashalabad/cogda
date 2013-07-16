@@ -5,7 +5,8 @@
                 default="Primary Email Address"/></label>
 
         <div class="controls">
-            <input type="checkbox" data-ng-model="contactEmailAddress.primaryEmailAddress" name="contactEmailAddress.primaryEmailAddress"
+            <input type="checkbox" data-ng-model="contactEmailAddress.primaryEmailAddress"
+                   name="contactEmailAddress.primaryEmailAddress"
                    id="contactEmailAddress.primaryEmailAddress"/>
         </div>
     </div>
