@@ -14,24 +14,22 @@
                         <div data-ng-controller="AddLeadContactAddressController">
                             <div class="well" data-ng-show="addingContactAddress">
                                 <div data-ng-form="contactAddressForm" class="form-horizontal">
-                                    <fieldset class="embedded">
-                                        <div data-ng-include="" src="'/leadContactAddress/editPartial'"></div>
-                                        %{--<g:render template="/lead/leadContactAddress/partials/editPartial"/>--}%
-
-                                        <div class="form-actions">
-                                            <button type="submit"
-                                                    class="btn btn-primary"
-                                                    data-ng-click="saveContactAddress(address)">
-                                                <i class="icon-plus icon-white"></i>
-                                                <g:message code="default.add.label" args="[message(code:'contactAddress.label')]"/>
-                                                </button>
-                                            <button type="button"
-                                                    class="btn"
-                                                    data-ng-click="cancelAddContactAddress()">
-                                                <i class="icon-ban-circle"></i>
-                                                <g:message code="default.button.cancel.label"/></button>
-                                        </div>
-                                    </fieldset>
+                                    <div data-ng-include="" src="'/leadContactAddress/editPartial'"></div>
+                                    %{--<g:render template="/lead/leadContactAddress/partials/editPartial"/>--}%
+                                    <div class="form-actions">
+                                        <button type="submit"
+                                                class="btn btn-primary"
+                                                data-ng-click="saveContactAddress(address)">
+                                            <i class="icon-plus icon-white"></i>
+                                            <g:message code="default.add.label"
+                                                       args="[message(code: 'contactAddress.label')]"/>
+                                        </button>
+                                        <button type="button"
+                                                class="btn"
+                                                data-ng-click="cancelAddContactAddress()">
+                                            <i class="icon-ban-circle"></i>
+                                            <g:message code="default.button.cancel.label"/></button>
+                                    </div>
                                 </div>
                             </div>
 
@@ -42,7 +40,7 @@
                                     data-ng-click="addContactAddress()"
                                     data-ng-hide="addingContactAddress">
                                 <i class="icon-plus"></i>
-                                <g:message code="default.add.label" args="[message(code:'contactAddress.label')]"/>
+                                <g:message code="default.add.label" args="[message(code: 'contactAddress.label')]"/>
                             </button>
                         </div>
                     </fieldset>
@@ -55,6 +53,7 @@
                             <div data-ng-include src="'/leadContactPhoneNumber/indexPartial'"></div>
                             %{--<g:render template="/lead/leadContactPhoneNumber/partials/indexPartial"/>--}%
                         </div>
+
                         <div data-ng-include src="'/leadContactPhoneNumber/addPartial'"></div>
                         %{--<g:render template="/lead/leadContactPhoneNumber/partials/addPartial"/>--}%
                     </fieldset>
@@ -66,6 +65,7 @@
                             %{--<g:render template="/lead/leadContactEmailAddress/partials/indexPartial"/>--}%
 
                         </div>
+
                         <div data-ng-include src="'/leadContactEmailAddress/addPartial'"></div>
                         %{--<g:render template="/lead/leadContactEmailAddress/partials/addPartial"/>--}%
                     </fieldset>

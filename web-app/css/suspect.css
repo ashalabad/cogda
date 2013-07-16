@@ -76,3 +76,7 @@ div.add {
         height: 700px
     }
 }
+
+.fixedAddressWellHeight {
+    height:130px;
+}

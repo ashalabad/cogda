@@ -62,6 +62,13 @@ modules = {
         resource url: 'css/suspect.css'
     }
 
+    prospect {
+        dependsOn 'bootstrap', 'bootstrap_utils', 'angular', 'lead'
+        resource url: 'js/angular/resources/Prospect.js'
+        resource url: 'js/angular/lead/prospect/prospect.js'
+        resource url: 'css/prospect.css'
+    }
+
     dataTables {
         dependsOn 'jquery,  jquery-ui'
         resource url:[dir: 'js/dataTables/css', file: 'jquery.dataTables.css']

@@ -31,3 +31,20 @@ div.add {clear:both;}
     clear:both;
     display:block !important;
 }
+
+@media (min-height: 768px) and (max-height: 979px) {
+    .gridStyle {
+        border: 1px solid rgb(212, 212, 212);
+        /*width: 600px;*/
+        height: 500px
+    }
+}
+
+@media (min-height: 1024px) {
+    .gridStyle {
+        border: 1px solid rgb(212, 212, 212);
+        /*width: 600px;*/
+        height: 700px
+    }
+}
+

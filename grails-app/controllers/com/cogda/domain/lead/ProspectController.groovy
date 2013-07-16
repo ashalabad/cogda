@@ -2,6 +2,7 @@ package com.cogda.domain.lead
 
 import com.cogda.BaseController
 import com.cogda.common.LeadType
+import com.cogda.common.marshallers.HibernateProxyTypeAdapter
 import com.cogda.multitenant.Lead
 import com.cogda.multitenant.LeadAddress
 import com.cogda.multitenant.LeadContact
@@ -15,6 +16,7 @@ import com.google.gson.JsonElement
 import grails.converters.JSON
 import grails.plugin.gson.converters.GSON
 import grails.plugins.springsecurity.Secured
+import org.hibernate.FetchMode
 import org.springframework.dao.DataIntegrityViolationException
 
 import static grails.plugin.gson.http.HttpConstants.SC_UNPROCESSABLE_ENTITY
@@ -46,15 +48,33 @@ class ProspectController extends BaseController {
         [prospectInstance: prospectInstance]
     }
 
+    def listPartial() {
+        render(view: 'listPartial')
+    }
+
+    def editPartial() {
+        render(view: 'editPartial')
+    }
+
+    def createPartial() {
+        render(view: 'createPartial')
+    }
+
+    def showPartial() {
+        render(view: 'showPartial')
+    }
+
     def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        def query = Lead.where { leadType == LeadType.PROSPECT }
-        List prospectInstanceList = query.list()
-        def dataToRender = [:]
-        dataToRender.aaData = []
+        response.addIntHeader X_PAGINATION_TOTAL, Lead.countByLeadType(LeadType.PROSPECT) as int
+        def criteria = Lead.createCriteria()
+        def prospectInstanceList = criteria.list(params) {
+            eq('leadType', LeadType.PROSPECT)
+        }
+        def dataToRender = []
         prospectInstanceList.each { Lead prospect ->
             Map map = [:]
-            map.DT_RowId = "row_" + prospect.id
+            map.id = prospect.id
             map.version = prospect.version
             map.clientId = prospect.clientId
             map.businessType = prospect.businessType?.description
@@ -63,13 +83,9 @@ class ProspectController extends BaseController {
             map.contactName = prospect.primaryLeadContactName
             map.phoneNumber = prospect.primaryLeadContactPhoneNumber?.phoneNumber
             map.email = prospect.primaryEmailAddress
-            map.details = remoteLink([controller: 'prospect', action: 'show', id: prospect.id, onSuccess: 'modalDialogHandler(data)', method: 'GET'], 'Details')
-            map.edit = remoteLink([controller: 'prospect', action: 'edit', id: prospect.id, onSuccess: 'modalDialogHandler(data)', method: 'GET'], 'Edit')
-            dataToRender.aaData.add(map)
+            dataToRender.add(map)
         }
-        dataToRender.sEcho = 1
-        render dataToRender as JSON
-        return
+        render dataToRender as GSON
     }
 
     def create() {
@@ -109,7 +125,7 @@ class ProspectController extends BaseController {
     }
 
     def get() {
-        def leadInstance = Lead.get(params.id)
+        def leadInstance = Lead.findById(params.id, [fetch: [businessType: "eager"]])
         if (leadInstance) {
             respondFound leadInstance
         } else {
@@ -191,7 +207,7 @@ class ProspectController extends BaseController {
     private void respondCreated(Lead leadInstance) {
         response.status = SC_CREATED // 201
         response.addHeader LOCATION, createLink(action: 'get', id: leadInstance.id)
-        Gson gson = gsonBuilder.create()
+        Gson gson = gsonBuilder.registerTypeAdapterFactory(HibernateProxyTypeAdapter.FACTORY).create()
         def gsonRetString = gson.toJsonTree(leadInstance);
         render gsonRetString
     }

@@ -2,11 +2,11 @@
 <fieldset class="embedded">
     <input type="hidden" name="id" data-ng-model="lead.id"/>
     <input type="hidden" name="version" data-ng-model="lead.version"/>
-    <r:require module="sicCodeTree"/>
-    <r:require module="naicsCodeTree"/>
+    %{--<r:require module="sicCodeTree"/>--}%
+    %{--<r:require module="naicsCodeTree"/>--}%
 
     <div class="control-group fieldcontain"
-         data-ng-class="{error: leadForm.subType.$invalid && leadForm.subType.$dirty, success: leadForm.subType.$valid && leadForm.subTYpe.$dirty }">
+         data-ng-class="{error: leadForm.subType.$invalid && leadForm.subType.$dirty, success: leadForm.subType.$valid && leadForm.subType.$dirty }">
         <label class="control-label">
             <g:message code="lead.subType.label" default="Type"/>
             <span class="required-indicator">*</span>
@@ -61,16 +61,16 @@
         </div>
     </div>
 
-    <div class="control-group fieldcontain">
-        <label class="control-label">
-            <g:message code="naicssiccode.label" default="NAICS/SIC Codes"/>
-        </label>
+    %{--<div class="control-group fieldcontain">--}%
+        %{--<label class="control-label">--}%
+            %{--<g:message code="naicssiccode.label" default="NAICS/SIC Codes"/>--}%
+        %{--</label>--}%
 
-        <div class="controls">
-            <g:render template="/_common/modals/naicsCode/naicsCodes" model="[treeHandler: 'leadNaicsChecked();']"/>
-            <g:render template="/_common/modals/sicCode/sicCodes" model="[treeHandler: 'leadSicChecked();']"/>
-        </div>
-    </div>
+        %{--<div class="controls">--}%
+            %{--<g:render template="/_common/modals/naicsCode/naicsCodes" model="[treeHandler: 'leadNaicsChecked();']"/>--}%
+            %{--<g:render template="/_common/modals/sicCode/sicCodes" model="[treeHandler: 'leadSicChecked();']"/>--}%
+        %{--</div>--}%
+    %{--</div>--}%
 
     <div class="control-group fieldcontain"
          data-ng-class="{error: leadForm.clientId.$invalid && leadForm.clientId.$dirty, success: leadForm.clientId.$valid}">
