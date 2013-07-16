@@ -305,7 +305,7 @@ angular.module('prospectApp', ['ui.bootstrap', 'resources.restApi', 'common.help
         };
     }])
     .controller('AddLeadContactAddressController', ['$scope', 'LeadService', function ($scope, LeadService) {
-        $scope.contactAddress = {};
+        $scope.address = {};
 
         $scope.addingContactAddress = false;
 
@@ -319,7 +319,7 @@ angular.module('prospectApp', ['ui.bootstrap', 'resources.restApi', 'common.help
 
         $scope.saveContactAddress = function (address) {
             LeadService.addEntityBroadcast(address, 'addContactAddress', $scope.$parent.$index);
-            $scope.contactAddress = {}; // clear the address after the save
+            $scope.address = {}; // clear the address after the save
             $scope.addingContactAddress = false;
         }
     }])

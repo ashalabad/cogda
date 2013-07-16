@@ -11,13 +11,13 @@
             <div class="form-actions">
                 <button type="submit"
                         class="btn btn-primary"
-                        data-ng-click="updateContactAddress(contactAddress)">
+                        data-ng-click="updateContactAddress(address)">
                     <i class="icon-pencil icon-white"></i>
                     <g:message code="default.button.update.label"/> <g:message code="contactAddress.label"/>
                 </button>
                 <button class="btn btn-danger"
                         type="button"
-                        data-ng-click="deleteContactAddress(contactAddress, $index)">
+                        data-ng-click="deleteContactAddress(address, $index)">
                     <i class="icon-remove icon-white"></i>
                     <g:message code="default.button.delete.label"/> <g:message code="contactAddress.label"/>
                 </button>
