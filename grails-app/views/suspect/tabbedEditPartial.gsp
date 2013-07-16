@@ -25,13 +25,15 @@
     <tab heading="Main">
 
         <div data-ng-hide="editingLead">
-            <g:render template="/lead/partials/showPartial"/>
+            <div data-ng-include="" src="'/lead/showPartial'"></div>
+            %{--<g:render template="/lead/partials/showPartial"/>--}%
 
         </div>
         <hr>
 
         <div data-ng-show="editingLead">
-            <g:render template="/lead/partials/editPartial"/>
+            <div data-ng-include="" src="'/lead/editPartial'"></div>
+            %{--<g:render template="/lead/partials/editPartial"/>--}%
 
         </div>
     </tab>
@@ -41,11 +43,13 @@
                 <div data-ng-controller="EditAddressController">
                     <div class="form-horizontal">
                         <div class="well" data-ng-hide="editingAddress">
-                            <g:render template="/lead/leadAddress/partials/showPartial"/>
+                            <div data-ng-include="" src="'/leadAddress/showPartial'"></div>
+                            %{--<g:render template="/lead/leadAddress/partials/showPartial"/>--}%
                         </div>
 
                         <div class="well" data-ng-show="editingAddress" data-ng-form="addressForm">
-                            <g:render template="/lead/leadAddress/partials/editPartial"/>
+                            <div data-ng-include="" src="'/leadAddress/editPartial'"></div>
+                            %{--<g:render template="/lead/leadAddress/partials/editPartial"/>--}%
                             <div class="form-actions">
                                 <button type="submit"
                                         class="btn btn-primary"
@@ -81,7 +85,8 @@
                             <legend>
                                 <g:message code="default.add.label" args="[message(code: 'address.label')]"/>
                             </legend>
-                            <g:render template="/lead/leadAddress/partials/editPartial"/>
+                            <div data-ng-include="" src="'/leadAddress/editPartial'"></div>
+                            %{--<g:render template="/lead/leadAddress/partials/editPartial"/>--}%
 
                             <div class="form-actions">
                                 <button type="submit"
@@ -116,8 +121,8 @@
             <tabset>
                 <tab data-ng-repeat="contact in lead.leadContacts  | orderBy:'primaryContact':'reverse' | filter:searchString"
                      heading="Contact - {{contact.firstName}} {{contact.lastName}}">
-
-                    <g:render template="/lead/leadContact/partials/indexPartial"/>
+                    <div data-ng-include="" src="'/leadContact/indexPartial'"></div>
+                    %{--<g:render template="/lead/leadContact/partials/indexPartial"/>--}%
 
                 </tab>
             </tabset>
@@ -129,7 +134,8 @@
                             <legend>
                                 <g:message code="default.add.label" args="[message(code: 'contact.label')]"/>
                             </legend>
-                            <g:render template="/lead/leadContact/partials/editPartial"/>
+                            <div data-ng-include="" src="'/leadContact/editPartial'"></div>
+                            %{--<g:render template="/lead/leadContact/partials/editPartial"/>--}%
 
                             <div class="form-actions">
                                 <button type="submit"
@@ -181,7 +187,8 @@
                     </address>
 
                     <div class="well" data-ng-show="editingLeadNote" data-ng-form="leadNoteForm">
-                        <g:render template="/lead/leadNote/partials/editPartial"/>
+                        <div data-ng-include src="'/leadNote/editPartial'"></div>
+                        %{--<g:render template="/lead/leadNote/partials/editPartial"/>--}%
                         <div class="form-actions">
                             <button type="submit"
                                     class="btn btn-primary"
@@ -207,7 +214,8 @@
                 </div>
             </li>
         </ul>
-        <g:render template="/lead/leadNote/partials/addPartial"/>
+        <div data-ng-include="" src="'/leadNote/addPartial'"></div>
+        %{--<g:render template="/lead/leadNote/partials/addPartial"/>--}%
 
     </tab>
 </tabset>

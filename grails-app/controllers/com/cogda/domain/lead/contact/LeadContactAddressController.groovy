@@ -102,6 +102,21 @@ class LeadContactAddressController{
         }
     }
 
+    def editPartial(){
+        render(template: "/lead/leadContactAddress/partials/editPartial");
+    }
+
+    def showPartial() {
+        render(template: "/lead/leadContactAddress/partials/showPartial");
+    }
+
+    def showAddressPartial() {
+        render(template: "/address/partials/showPartial");
+    }
+
+    def indexPartial() {
+        render(template:'/lead/leadContactAddress/partials/indexPartial')
+    }
 
     private boolean requestIsJson() {
         GSON.isJson(request)

@@ -5,7 +5,8 @@
                 <legend>
                     <g:message code="default.add.label" args="[message(code: 'contactPhoneNumber.label')]"/>
                 </legend>
-                <g:render template="/lead/leadContactPhoneNumber/partials/editPartial"/>
+                <div data-ng-include="" src="'/leadContactPhoneNumber/editPartial'"></div>
+                %{--<g:render template="/lead/leadContactPhoneNumber/partials/editPartial"/>--}%
 
                 <div class="form-actions">
                     <button type="submit"

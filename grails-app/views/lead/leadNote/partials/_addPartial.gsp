@@ -5,7 +5,8 @@
                 <legend>
                     <g:message code="default.add.label" args="[message(code: 'note.label')]"/>
                 </legend>
-                <g:render template="/lead/leadNote/partials/editPartial"/>
+                <div data-ng-include="" src="'/leadNote/editPartial'"></div>
+                %{--<g:render template="/lead/leadNote/partials/editPartial"/>--}%
 
                 <div class="form-actions">
                     <button type="submit"

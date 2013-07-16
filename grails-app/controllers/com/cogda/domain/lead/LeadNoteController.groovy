@@ -107,4 +107,12 @@ class LeadNoteController {
             redirect(action: "show", id: params.id)
         }
     }
+
+    def editPartial() {
+        render(template: "/lead/leadNote/partials/editPartial")
+    }
+
+    def addPartial() {
+        render(template: "/lead/leadNote/partials/addPartial")
+    }
 }

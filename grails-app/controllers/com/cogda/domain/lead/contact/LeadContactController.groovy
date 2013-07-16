@@ -107,4 +107,16 @@ class LeadContactController {
             redirect(action: "show", id: params.id)
         }
     }
+
+    def showPartial() {
+        render(template:'/lead/leadContact/partials/showPartial')
+    }
+
+    def indexPartial() {
+        render(template:'/lead/leadContact/partials/indexPartial')
+    }
+
+    def editPartial() {
+        render(template:"/lead/leadContact/partials/editPartial")
+    }
 }

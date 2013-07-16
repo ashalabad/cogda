@@ -100,6 +100,21 @@ class LeadContactEmailAddressController {
         }
     }
 
+    def showPartial() {
+        render(template:"/lead/leadContactEmailAddress/partials/showPartial")
+    }
+
+    def editPartial() {
+        render(template:"/lead/leadContactEmailAddress/partials/editPartial")
+    }
+
+    def indexPartial() {
+        render(template:"/lead/leadContactEmailAddress/partials/indexPartial")
+    }
+
+    def addPartial() {
+        render(template:"/lead/leadContactEmailAddress/partials/addPartial")
+    }
 
     private boolean requestIsJson() {
         GSON.isJson(request)

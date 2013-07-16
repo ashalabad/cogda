@@ -276,7 +276,7 @@ angular.module('suspectApp', ['ui.bootstrap', 'resources.restApi', 'common.helpe
             };
 
             $scope.updateAddress = function (address, idx) {
-                LeadService.updateEntityBroadcast(address, idx, 'handleUpdateAddress');
+                LeadService.save('handleUpdateLead');
                 $scope.cancelEditAddress();
             };
 

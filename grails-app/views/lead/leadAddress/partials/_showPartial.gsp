@@ -19,6 +19,7 @@
             <span class="label label-info"><g:message code="leadAddress.primaryAddress.label"/></span>
         </span>
     </div>
-    <g:render template="/address/partials/showPartial"/>
+    <div data-ng-include="" src="'/leadContactAddress/showAddressPartial'"></div>
+    %{--<g:render template="/address/partials/showPartial"/>--}%
 </address>
 

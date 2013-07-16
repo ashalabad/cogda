@@ -1,11 +1,13 @@
 <div data-ng-controller="EditLeadContactEmailAddressController">
     <div class="form-horizontal">
         <div class="well" data-ng-hide="editingContactEmailAddress">
-            <g:render template="/lead/leadContactEmailAddress/partials/showPartial"/>
+            <div data-ng-include src="'/leadContactEmailAddress/showPartial'"></div>
+            %{--<g:render template="/lead/leadContactEmailAddress/partials/showPartial"/>--}%
         </div>
 
         <div class="well" data-ng-show="editingContactEmailAddress" data-ng-form="contactEmailAddressForm">
-            <g:render template="/lead/leadContactEmailAddress/partials/editPartial"/>
+            <div data-ng-include src="'/leadContactEmailAddress/editPartial'"></div>
+            %{--<g:render template="/lead/leadContactEmailAddress/partials/editPartial"/>--}%
             <div class="form-actions">
                 <button type="submit"
                         class="btn btn-primary"

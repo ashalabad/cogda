@@ -116,6 +116,13 @@ class LeadAddressController {
         }
     }
 
+    def showPartial() {
+        render(template:'/lead/leadAddress/partials/showPartial')
+    }
+
+    def editPartial() {
+        render(template:'/lead/leadAddress/partials/editPartial')
+    }
 
     private boolean requestIsJson() {
         GSON.isJson(request)

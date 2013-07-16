@@ -101,6 +101,21 @@ class LeadContactPhoneNumberController {
         }
     }
 
+    def showPartial() {
+        render(template:"/lead/leadContactPhoneNumber/partials/showPartial")
+    }
+
+    def editPartial() {
+        render(template:"/lead/leadContactPhoneNumber/partials/editPartial")
+    }
+
+    def indexPartial() {
+        render(template: "/lead/leadContactPhoneNumber/partials/indexPartial")
+    }
+
+    def addPartial() {
+        render(template:"/lead/leadContactPhoneNumber/partials/addPartial")
+    }
 
     private boolean requestIsJson() {
         GSON.isJson(request)

@@ -1,11 +1,13 @@
 <div data-ng-controller="EditLeadContactPhoneNumberController">
     <div class="form-horizontal">
         <div class="well" data-ng-hide="editingContactPhoneNumber">
-            <g:render template="/lead/leadContactPhoneNumber/partials/showPartial"/>
+            <div data-ng-include="" src="'/leadContactPhoneNumber/showPartial'"></div>
+            %{--<g:render template="/lead/leadContactPhoneNumber/partials/showPartial"/>--}%
         </div>
 
         <div class="well" data-ng-show="editingContactPhoneNumber" data-ng-form="contactPhoneNumberForm">
-            <g:render template="/lead/leadContactPhoneNumber/partials/editPartial"/>
+            <div data-ng-include="" src="'/leadContactPhoneNumber/editPartial'"></div>
+            %{--<g:render template="/lead/leadContactPhoneNumber/partials/editPartial"/>--}%
             <div class="form-actions">
                 <button type="submit"
                         class="btn btn-primary"
