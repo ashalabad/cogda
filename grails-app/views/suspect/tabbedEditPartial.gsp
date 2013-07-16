@@ -27,13 +27,7 @@
     <div data-ng-hide="editingLead">
         <g:render template="/lead/partials/showPartial"/>
 
-        <button type="button"
-                class="btn btn-info"
-                data-ng-click="editLead()"
-                data-ng-hide="editingLead">
-            <i class="icon-edit icon-white"></i>
-            Edit Suspect
-        </button>
+
     </div>
     <hr>
 
@@ -57,8 +51,6 @@
 </tab>
 <tab heading="Addresses ({{lead.leadAddresses.length}})">
     <fieldset class="embedded">
-        <legend>Addresses</legend>
-
         <div data-ng-repeat="address in lead.leadAddresses | orderBy:'primaryAddress':'reverse' | filter:searchString">
             <div data-ng-controller="EditAddressController">
                 <div class="form-horizontal">
@@ -88,20 +80,7 @@
                                 Cancel</button>
                         </div>
                     </div>
-                    <button class="btn btn-info"
-                            type="button"
-                            data-ng-click="editAddress()"
-                            data-ng-hide="editingAddress">
-                        <i class="icon-edit icon-white"></i>
-                        Edit Address
-                    </button>
-                    <button class="btn btn-danger"
-                            type="button"
-                            data-ng-click="deleteAddress(address)"
-                            data-ng-hide="editingAddress">
-                        <i class="icon-remove icon-white"></i>
-                        Delete Address
-                    </button>
+
                 </div>
             </div>
         </div>
@@ -145,9 +124,8 @@
     </fieldset></tab>
 <tab heading="Contacts ({{lead.leadContacts.length}})">
     <fieldset class="embedded">
-        <legend>Contacts</legend>
         <tabset>
-            <tab data-ng-repeat="contact in lead.leadContacts"
+            <tab data-ng-repeat="contact in lead.leadContacts  | orderBy:'primaryContact':'reverse' | filter:searchString"
                  heading="Contact - {{contact.firstName}} {{contact.lastName}}">
 
                 <g:render template="/lead/leadContact/partials/indexPartial"/>
@@ -201,7 +179,7 @@
             class="span11 well well-small">
             <div data-ng-controller="EditLeadNoteController">
                 <address data-ng-hide="editingLeadNote">
-                    <button type="button" class="btn btn-mini pull-right" data-ng-click="editLeadNote()"><i
+                    <button type="button" class="btn btn-info btn-mini pull-right" data-ng-click="editLeadNote()"><i
                             class="icon-edit"></i> <g:message code="default.button.edit.label"/></button>
                     <strong>{{leadNote.lastUpdated | date:'MM/dd/yyyy @ h:mm a'}}<br> {{leadNote.noteType.code}}
                     </strong><br>

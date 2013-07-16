@@ -1,4 +1,11 @@
-<fieldset>
+<fieldset class="well">
+    <button type="button"
+            class="btn btn-info btn-mini pull-right"
+            data-ng-click="editLead()"
+            data-ng-hide="editingLead" >
+        <i class="icon-edit icon-white"></i>
+        Edit Suspect
+    </button>
     <div class="control-group fieldcontain">
         <label class="control-label" for="lead.businessType.code">
             <g:message code="lead.businessType.label"
@@ -50,4 +57,6 @@
             <span data-ng-bind="lead.customerServiceRepresentative" id="lead.customerServiceRepresentative"></span>
         </div>
     </div>
+
+
 </fieldset>

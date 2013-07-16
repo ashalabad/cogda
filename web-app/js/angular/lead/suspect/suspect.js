@@ -102,24 +102,7 @@ angular.module('suspectApp', ['ui.bootstrap', 'resources.restApi', 'common.helpe
             };
 
             $scope.editLead = function () {
-                Suspect.get({id: $scope.account.id}, function (data) {
-                    $scope.editOpts = {
-                        dialogFade: true,
-                        backdropFade: true,
-                        templateUrl: 'account/editPartial',
-                        controller: 'EditAccountCtrl',
-                        resolve: {
-                            account: function () {
-                                return angular.copy(data);
-                            }
-                        }
-
-                    };
-                    var d = $dialog.dialog($scope.editOpts);
-                    d.open().then(function () {
-                        $scope.loadAccount();
-                    });
-                });
+                $scope.editingLead = true;
             };
 
             $scope.$on('handleUpdateLead', function () {
@@ -163,7 +146,7 @@ angular.module('suspectApp', ['ui.bootstrap', 'resources.restApi', 'common.helpe
                 $scope.updateLead($scope.lead);
             });
 
-            $scope.$on('addLeadNote', function() {
+            $scope.$on('addLeadNote', function () {
                 if ($scope.lead.leadNotes === undefined) {
                     $scope.lead.leadNotes = [];
                 }
@@ -281,14 +264,12 @@ angular.module('suspectApp', ['ui.bootstrap', 'resources.restApi', 'common.helpe
         };
 
         $scope.updateContact = function (contact) {
-            // console.log("update address against persistent store" + address);
-            //todo: update contact...add controller for leadcontacts
+            LeadService.save('handleUpdateLead');
             $scope.cancelEditContact();
         };
 
         $scope.deleteContact = function (contact, idx) {
-            // toss the actual address off to the API to delete
-            //todo: same as before
+
             $scope.$parent.lead.leadContacts.splice(idx);
         };
     }])
@@ -328,8 +309,7 @@ angular.module('suspectApp', ['ui.bootstrap', 'resources.restApi', 'common.helpe
         }
 
         $scope.deleteContactAddress = function (contact, idx) {
-            // toss the actual address off to the API to delete
-            $scope.$parent.lead.leadContacts.splice(idx);
+            $scope.$parent.lead.leadContacts.splice(idx, 1);
         }
     }])
     .controller('AddLeadContactController', ['$scope', 'LeadService', function ($scope, LeadService) {

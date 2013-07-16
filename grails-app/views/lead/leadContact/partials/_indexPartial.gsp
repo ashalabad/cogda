@@ -3,9 +3,9 @@
         <div class="well" data-ng-hide="editingContact">
             <g:render template="/lead/leadContact/partials/showPartial"/>
             <tabset>
-                <tab heading="Contact Address">
+                <tab heading="Contact Addresses ({{contact.leadContactAddresses.length }})">
                     <fieldset class="embedded">
-                        <div data-ng-repeat="address in contact.leadContactAddresses">
+                        <div data-ng-repeat="address in contact.leadContactAddresses | orderBy:'primaryAddress':'reverse' | filter:searchString">
                             <g:render template="/lead/leadContactAddress/partials/indexPartial"/>
                         </div>
 
@@ -46,21 +46,19 @@
                         </div>
                     </fieldset>
                 </tab>
-                <tab heading="Contact Phone Numbers">
+                <tab heading="Contact Phone Numbers ({{contact.leadContactPhoneNumbers.length}})">
                     <fieldset class="embedded">
                         <legend></legend>
 
-                        <div data-ng-repeat="contactPhoneNumber in contact.leadContactPhoneNumbers">
+                        <div data-ng-repeat="contactPhoneNumber in contact.leadContactPhoneNumbers | filter:searchString">
                             <g:render template="/lead/leadContactPhoneNumber/partials/indexPartial"/>
                         </div>
                         <g:render template="/lead/leadContactPhoneNumber/partials/addPartial"/>
                     </fieldset>
                 </tab>
-                <tab heading="Contact Email Addresses">
+                <tab heading="Contact Email Addresses ({{contact.leadContactEmailAddresses.length}})">
                     <fieldset class="embedded">
-                        <legend>Contact Email Addresses</legend>
-
-                        <div data-ng-repeat="contactEmailAddress in contact.leadContactEmailAddresses">
+                        <div data-ng-repeat="contactEmailAddress in contact.leadContactEmailAddresses | filter:searchString">
                             <g:render template="/lead/leadContactEmailAddress/partials/indexPartial"/>
                         </div>
                         <g:render template="/lead/leadContactEmailAddress/partials/addPartial"/>
@@ -91,20 +89,6 @@
                     Cancel</button>
             </div>
         </div>
-        <button class="btn btn-info"
-                type="button"
-                data-ng-click="editContact()"
-                data-ng-hide="editContact">
-            <i class="icon-edit icon-white"></i>
-            Edit Contact
-        </button>
-        <button class="btn btn-danger"
-                type="button"
-                data-ng-click="deleteContact(contact)"
-                data-ng-hide="editingContact">
-            <i class="icon-remove icon-white"></i>
-            Delete Contact
-        </button>
     </div>
 </div>
 

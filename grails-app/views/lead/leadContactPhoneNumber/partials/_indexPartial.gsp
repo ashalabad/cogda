@@ -26,20 +26,6 @@
                     Cancel</button>
             </div>
         </div>
-        <button class="btn btn-info"
-                type="button"
-                data-ng-click="editContactPhoneNumber()"
-                data-ng-hide="editContactPhoneNumber">
-            <i class="icon-edit icon-white"></i>
-            Edit Contact Phone Number
-        </button>
-        <button class="btn btn-danger"
-                type="button"
-                data-ng-click="deleteContactPhoneNumber(contactPhoneNumber)"
-                data-ng-hide="editingContactPhoneNumber">
-            <i class="icon-remove icon-white"></i>
-            Delete Contact Phone Number
-        </button>
     </div>
 </div>
 
