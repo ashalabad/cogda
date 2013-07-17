@@ -22,10 +22,10 @@
                         ${message(code:'accountContact.accountContactPhoneNumbers.primary.label')}
                     </label>
                     <div class="controls">
-                        <input type="checkbox"
-                               name="account.accountContacts[contactIndex].accountContactPhoneNumber.primaryPhoneNumber"
-                               data-ng-model="account.accountContacts[contactIndex].accountContactPhoneNumbers[accountContactPhoneNumberIndex].primaryPhoneNumber"
-                        />
+                        <div class="btn-group" data-toggle="buttons-radio">
+                            <button type="button" class="btn" data-ng-class="{'btn-primary':account.accountContacts[contactIndex].accountContactPhoneNumbers[accountContactPhoneNumberIndex].primaryPhoneNumber==true}" data-ng-click="account.accountContacts[contactIndex].accountContactPhoneNumbers[accountContactPhoneNumberIndex].primaryPhoneNumber=true"><g:message code="default.yes.label"/></button>
+                            <button type="button" class="btn" data-ng-class="{'btn-primary':account.accountContacts[contactIndex].accountContactPhoneNumbers[accountContactPhoneNumberIndex].primaryPhoneNumber==false}" data-ng-click="account.accountContacts[contactIndex].accountContactPhoneNumbers[accountContactPhoneNumberIndex].primaryPhoneNumber=false"><g:message code="default.no.label"/></button>
+                        </div>
                     </div>
                 </div>
 

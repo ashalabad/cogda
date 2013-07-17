@@ -41,8 +41,8 @@
                     </label>
                     <div class="controls">
                         <div class="btn-group" data-toggle="buttons-radio">
-                            <button type="button" class="btn" data-ng-class="{active:account.isMarket==true}" data-ng-click="account.isMarket=true"><g:message code="default.yes.label"/></button>
-                            <button type="button" class="btn" data-ng-class="{active:account.isMarket==false}" data-ng-click="account.isMarket=false"><g:message code="default.no.label"/></button>
+                            <button type="button" class="btn" data-ng-class="{'btn-primary':account.isMarket==true}" data-ng-click="account.isMarket=true"><g:message code="default.yes.label"/></button>
+                            <button type="button" class="btn" data-ng-class="{'btn-primary':account.isMarket==false}" data-ng-click="account.isMarket=false"><g:message code="default.no.label"/></button>
                         </div>
                     </div>
                 </div>
@@ -53,8 +53,8 @@
                     </label>
                     <div class="controls">
                         <div class="btn-group" data-toggle="buttons-radio">
-                            <button type="button" class="btn" data-ng-class="{active:account.favorite==true}" data-ng-click="account.favorite=true"><g:message code="default.yes.label"/></button>
-                            <button type="button" class="btn" data-ng-class="{active:account.favorite==false}" data-ng-click="account.favorite=false"><g:message code="default.no.label"/></button>
+                            <button type="button" class="btn" data-ng-class="{'btn-primary':account.favorite==true}" data-ng-click="account.favorite=true"><g:message code="default.yes.label"/></button>
+                            <button type="button" class="btn" data-ng-class="{'btn-primary':account.favorite==false}" data-ng-click="account.favorite=false"><g:message code="default.no.label"/></button>
                         </div>
                     </div>
                 </div>

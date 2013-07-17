@@ -124,9 +124,6 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact', 'c
                 Logger.formValidationMessageBuilder(response, $scope, $scope.accountEditForm);
             };
 
-            $scope.toggleMarket = function toggleMarket(val){
-                $scope.account.isMarket = val;
-            };
         }
     ])
 
@@ -138,6 +135,7 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact', 'c
             $scope.title = "Create Account";
             $scope.account = {};
             $scope.account.isMarket = false;
+            $scope.account.favorite = false;
 
 
 
@@ -162,13 +160,6 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact', 'c
                 // apply errors to the $scope.errrors object
                 Logger.formValidationMessageBuilder(response, $scope, $scope.accountAddForm);
             };
-
-            $scope.toggleMarket = function toggleMarket(val){
-                $scope.account.isMarket = val;
-            };
-//            $scope.$watch('account.isMarket', function () {
-//                console.log($scope.account.isMarket);
-//            });
 
         }])
 
@@ -376,10 +367,6 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact', 'c
 
             $scope.cancel = function(){
                 dialog.close();
-            };
-
-            $scope.togglePrimaryContact = function togglePrimaryContact(val){
-                $scope.accountContact.primaryContact = val;
             };
 
             $scope.saveAccountContact = function(accountContact,accountContactAddress,accountContactEmailAddress,accountContactPhoneNumber){

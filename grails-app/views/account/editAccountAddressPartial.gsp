@@ -11,8 +11,8 @@
                     </label>
                     <div class="controls">
                         <div class="btn-group" data-toggle="buttons-radio">
-                            <button type="button" class="btn" data-ng-class="{active:account.accountAddresses[addressIndex].primaryAddress==true}" data-ng-click="account.accountAddresses[addressIndex].primaryAddress=true"><g:message code="default.yes.label"/></button>
-                            <button type="button" class="btn" data-ng-class="{active:account.accountAddresses[addressIndex].primaryAddress==false}" data-ng-click="account.accountAddresses[addressIndex].primaryAddress=false"><g:message code="default.no.label"/></button>
+                            <button type="button" class="btn" data-ng-class="{'btn-primary':account.accountAddresses[addressIndex].primaryAddress==true}" data-ng-click="account.accountAddresses[addressIndex].primaryAddress=true"><g:message code="default.yes.label"/></button>
+                            <button type="button" class="btn" data-ng-class="{'btn-primary':account.accountAddresses[addressIndex].primaryAddress==false}" data-ng-click="account.accountAddresses[addressIndex].primaryAddress=false"><g:message code="default.no.label"/></button>
                         </div>
                     </div>
                 </div>

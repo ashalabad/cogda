@@ -10,13 +10,12 @@
                         ${message(code:'accountContact.address.primaryAddress.label')}
                     </label>
                     <div class="controls">
-                        <input type="checkbox"
-                               name="accountContactAddress.primaryAddress"
-                               data-ng-model="account.accountContacts[contactIndex].accountContactAddresses[accountContactAddressIndex].primaryAddress"
-                        />
+                        <div class="btn-group" data-toggle="buttons-radio">
+                            <button type="button" class="btn" data-ng-class="{'btn-primary':account.accountContacts[contactIndex].accountContactAddresses[accountContactAddressIndex].primaryAddress==true}" data-ng-click="account.accountContacts[contactIndex].accountContactAddresses[accountContactAddressIndex].primaryAddress=true"><g:message code="default.yes.label"/></button>
+                            <button type="button" class="btn" data-ng-class="{'btn-primary':account.accountContacts[contactIndex].accountContactAddresses[accountContactAddressIndex].primaryAddress==false}" data-ng-click="account.accountContacts[contactIndex].accountContactAddresses[accountContactAddressIndex].primaryAddress=false"><g:message code="default.no.label"/></button>
+                        </div>
                     </div>
                 </div>
-
                 <div class="control-group fieldcontain" data-ng-class="{error: accountContactAddressEditForm['accountContactAddress.address.addressOne'].$invalid}">
                     <label class="control-label">
                         ${message(code:'accountContact.address.addressOne.label')}
@@ -66,7 +65,7 @@
                         ${message(code:'accountContact.address.state.label')}
                     </label>
                     <div class="controls">
-                        <g:select class="input-small" name="accountContactAddress.address.state" data-ng-model="account.accountContacts[contactIndex].accountContactAddresses[accountContactAddressIndex].address.state" from="${com.cogda.common.UsState.values()}" optionKey="key"  noSelection="['': 'State']" />
+                        <g:select class="input-medium" name="accountContactAddress.address.state" data-ng-model="account.accountContacts[contactIndex].accountContactAddresses[accountContactAddressIndex].address.state" from="${com.cogda.common.UsState.values()}" optionKey="key"  noSelection="['': 'State']" />
                     </div>
                 </div>
                 <div class="control-group fieldcontain" data-ng-class="{error: accountContactAddressEditForm['accountContactAddress.address.zipcode'].$invalid}">

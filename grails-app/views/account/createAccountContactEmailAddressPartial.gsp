@@ -22,10 +22,10 @@
                         ${message(code:'accountContact.accountContactEmailAddresses.primary.label')}
                     </label>
                     <div class="controls">
-                        <input type="checkbox"
-                               name="accountContactEmailAddress.primaryEmailAddress"
-                               data-ng-model="accountContactEmailAddress.primaryEmailAddress"
-                               />
+                        <div class="btn-group" data-toggle="buttons-radio">
+                            <button type="button" class="btn" data-ng-class="{'btn-primary':accountContactEmailAddress.primaryEmailAddress==true}" data-ng-click="accountContactEmailAddress.primaryEmailAddress=true"><g:message code="default.yes.label"/></button>
+                            <button type="button" class="btn" data-ng-class="{'btn-primary':accountContactEmailAddress.primaryEmailAddress==false}" data-ng-click="accountContactEmailAddress.primaryEmailAddress=false"><g:message code="default.no.label"/></button>
+                        </div>
                     </div>
                 </div>
 

@@ -7,12 +7,12 @@
             <fieldset>
                 <div class="control-group fieldcontain">
                     <label class="control-label">
-                        ${message(code:'accountContact.primaryContact.label')}
+                        ${message(code:'default.primary.label')}
                     </label>
                     <div class="controls">
                         <div class="btn-group" data-toggle="buttons-radio">
-                            <button type="button" class="btn" data-ng-class="{active:accountContact.primaryContact==true}" data-ng-click="togglePrimaryContact(true)"><g:message code="default.yes.label"/></button>
-                            <button type="button" class="btn" data-ng-class="{active:accountContact.primaryContact==false}" data-ng-click="togglePrimaryContact(false)"><g:message code="default.no.label"/></button>
+                            <button type="button" class="btn" data-ng-class="{'btn-primary':accountContact.primaryContact==true}" data-ng-click="accountContact.primaryContact=true"><g:message code="default.yes.label"/></button>
+                            <button type="button" class="btn" data-ng-class="{'btn-primary':accountContact.primaryContact==false}" data-ng-click="accountContact.primaryContact=false"><g:message code="default.no.label"/></button>
                         </div>
                     </div>
                 </div>
@@ -66,7 +66,7 @@
                         ${message(code:'accountAddress.address.state.label')}
                     </label>
                     <div class="controls">
-                        <g:select class="input-small" name="state" data-ng-model="accountAddress.address.state" from="${com.cogda.common.UsState.values()}" optionKey="key"  noSelection="['': 'State']" />
+                        <g:select class="input-medium" name="state" data-ng-model="accountAddress.address.state" from="${com.cogda.common.UsState.values()}" optionKey="key"  noSelection="['': 'State']" />
                         <span class="help-inline" data-ng-show="errors.state ">{{ errors.state }}</span>
                     </div>
                 </div>

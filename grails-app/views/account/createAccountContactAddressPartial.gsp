@@ -9,11 +9,11 @@
                     <label class="control-label">
                         ${message(code:'accountContact.address.primaryAddress.label')}
                     </label>
-                    <div class="controls">
-                        <input type="checkbox"
-                               name="accountContactAddress.primaryAddress"
-                               data-ng-model="accountContactAddress.primaryAddress"
-                        />
+                        <div class="controls">
+                            <div class="btn-group" data-toggle="buttons-radio">
+                            <button type="button" class="btn" data-ng-class="{'btn-primary':accountContactAddress.primaryAddress==true}" data-ng-click="accountContactAddress.primaryAddress=true"><g:message code="default.yes.label"/></button>
+                            <button type="button" class="btn" data-ng-class="{'btn-primary':accountContactAddress.primaryAddress==false}" data-ng-click="accountContactAddress.primaryAddress=false"><g:message code="default.no.label"/></button>
+                        </div>
                     </div>
                 </div>
 

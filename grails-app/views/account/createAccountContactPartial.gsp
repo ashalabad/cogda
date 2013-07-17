@@ -11,8 +11,8 @@
     </label>
     <div class="controls">
         <div class="btn-group" data-toggle="buttons-radio">
-            <button type="button" class="btn" data-ng-class="{active:accountContact.primaryContact==true}" data-ng-click="togglePrimaryContact(true)"><g:message code="default.yes.label"/></button>
-            <button type="button" class="btn" data-ng-class="{active:accountContact.primaryContact==false}" data-ng-click="togglePrimaryContact(false)"><g:message code="default.no.label"/></button>
+            <button type="button" class="btn" data-ng-class="{'btn-primary':accountContact.primaryContact==true}" data-ng-click="accountContact.primaryContact=true"><g:message code="default.yes.label"/></button>
+            <button type="button" class="btn" data-ng-class="{'btn-primary':accountContact.primaryContact==false}" data-ng-click="accountContact.primaryContact=false"><g:message code="default.no.label"/></button>
         </div>
     </div>
 </div>

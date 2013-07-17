@@ -23,8 +23,8 @@
                             </label>
                             <div class="controls">
                                 <div class="btn-group" data-toggle="buttons-radio">
-                                    <button type="button" class="btn" data-ng-class="{active:account.accountContacts[contactIndex].primaryContact==true}" data-ng-click="account.accountContacts[contactIndex].primaryContact=true"><g:message code="default.yes.label"/></button>
-                                    <button type="button" class="btn" data-ng-class="{active:account.accountContacts[contactIndex].primaryContact==false}" data-ng-click="account.accountContacts[contactIndex].primaryContact=false"><g:message code="default.no.label"/></button>
+                                    <button type="button" class="btn" data-ng-class="{'btn-primary':account.accountContacts[contactIndex].primaryContact==true}" data-ng-click="account.accountContacts[contactIndex].primaryContact=true"><g:message code="default.yes.label"/></button>
+                                    <button type="button" class="btn" data-ng-class="{'btn-primary':account.accountContacts[contactIndex].primaryContact==false}" data-ng-click="account.accountContacts[contactIndex].primaryContact=false"><g:message code="default.no.label"/></button>
                                 </div>
                             </div>
                         </div>
