@@ -30,6 +30,7 @@ class AccountController extends GsonBaseController {
             map.accountName = account.accountName
             map.accountCode = account.accountCode
             map.accountType = account.accountType?.code
+            map.isMarket = account.isMarket ? "Yes": "No"
             map.primaryContact= account.primaryAccountContact?.getFullName()
             dataToRender.add(map)
         }
