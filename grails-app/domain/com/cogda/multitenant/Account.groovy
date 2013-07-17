@@ -20,6 +20,9 @@ class Account {
      */
     AccountType accountType
 
+    Boolean isMarket
+    Boolean active
+
     /* Automatic timestamping of GORM */
     Date	dateCreated
     Date	lastUpdated
@@ -31,6 +34,8 @@ class Account {
     static constraints = {
         accountName(nullable:false, blank:false) //TODO: Dropped unique, need to add custom validator. Refer to issue #27
         accountCode(nullable:true)
+        isMarket(nullable:true)
+        active(nullable:true)
 
     }
 
