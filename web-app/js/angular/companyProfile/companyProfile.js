@@ -1,5 +1,6 @@
 angular.module('companyProfileApp', ['resources.restApi', 'common.helperFuncs', 'resources.logger', 'ngGrid', 'resources.companyProfile',
-    'resources.companyProfileAddress', 'resources.unitedStates', 'resources.internalUserProfile', 'resources.companyProfileContact'])
+    'resources.companyProfileAddress', 'resources.unitedStates', 'resources.internalUserProfile', 'resources.companyProfileContact',
+    'resources.companyProfilePhoneNumber'])
 
     .config(function ($routeProvider) {
         $routeProvider
@@ -360,9 +361,6 @@ angular.module('companyProfileApp', ['resources.restApi', 'common.helperFuncs', 
         /*******************************************************************/
         /*                      init variables                             */
         /*******************************************************************/
-        $scope.message = '';
-        $scope.errors = [];
-
         $scope.q = "";  // the userProfile search query
         $scope.searchResults = [];
 
@@ -432,4 +430,130 @@ angular.module('companyProfileApp', ['resources.restApi', 'common.helperFuncs', 
             // apply errors to the $scope.errors object
             Logger.error("Error adding Company Profile Contact", "Error");
         }
+    }])
+    .controller("addCompanyProfilePhoneNumberController", ['$scope', '$routeParams', '$location', 'InternalUserProfile', 'Logger', 'UnitedStates', '$anchorScroll', 'limitToFilter', 'CompanyProfilePhoneNumber',
+        function($scope, $routeParams, $location, InternalUserProfile, Logger, UnitedStates, $anchorScroll, limitToFilter, CompanyProfilePhoneNumber){
+
+            /*******************************************************************/
+            /*                      init variables                             */
+            /*******************************************************************/
+            $scope.message = '';
+            $scope.errors = [];
+            $scope.formActionsClickable = true;
+
+            var defaultForm = {
+                published: false,
+                primaryPhoneNumber: false,
+                phoneNumber: "",
+                label: "",
+                companyProfile: {
+                    id: $scope.companyProfile.id
+                }
+            }
+
+            $scope.clearForm = function(){
+                $scope.addCompanyProfilePhoneNumberForm.label = "";
+                $scope.addCompanyProfilePhoneNumberForm.phoneNumber = "";
+                $scope.addCompanyProfilePhoneNumberForm.primaryPhoneNumber = false;
+            }
+
+            $scope.toggleFormActionsClickable = function(){
+                $scope.formActionsClickable = !$scope.formActionsClickable;
+            }
+
+            $scope.cancelAddCompanyProfileAddress = function(){
+                $scope.clearForm();
+                $scope.addCompanyProfilePhoneNumberForm.$setPristine();
+                $scope.companyProfilePhoneNumber = angular.copy(defaultForm);
+                $location.hash("CompanyProfilePhoneNumbers");  // set the hash tag of the #CompanyProfileAddresses
+                $anchorScroll(); // scroll to the #CompanyProfilePhoneNumbers location at the top of the CompanyProfileAddress(es) section
+            }
+
+            $scope.formActionsClickable = true;
+            $scope.companyProfilePhoneNumber = angular.copy(defaultForm);
+
+            $scope.canSave = function(addCompanyProfilePhoneNumberForm){
+                if(addCompanyProfilePhoneNumberForm){
+                    return addCompanyProfilePhoneNumberForm.$valid;
+                }else{
+                    return true;
+                }
+            }
+
+
+            /*******************************************************************/
+            /*                      action methods                             */
+            /*******************************************************************/
+
+            /**
+             * Create a new Company Profile Phone Number
+             * @param companyProfilePhoneNumber
+             */
+            $scope.saveCompanyProfilePhoneNumber = function(companyProfilePhoneNumber){
+                $scope.formActionsClickable = false;  // set all of the form action buttons to disabled while the save processes.
+                var companyProfile = {
+                    id:$scope.companyProfile.id
+                };
+                companyProfilePhoneNumber.companyProfile = companyProfile;  // make sure that the companyProfile is associated with this companyProfileAddress
+                CompanyProfilePhoneNumber.save(companyProfilePhoneNumber, function(data){
+                    companyProfilePhoneNumber.id = data.id;
+                    $scope.companyProfile.companyProfilePhoneNumbers.push(companyProfilePhoneNumber);
+                    $scope.cancelAddCompanyProfileAddress();
+                }, function(){
+                    Logger.error("Error Adding Company Profile Phone Number", "Error");
+                }).$then(saveSuccessCallback, saveErrorCallback);
+            };
+
+            /**
+             * updateSuccessCallback - success handler for successful save
+             * @param response
+             */
+            var saveSuccessCallback = function(response){
+                $scope.toggleFormActionsClickable();
+                // apply the success message to toastr
+                Logger.success("Company Profile Phone Number Added Successfully", "Success");
+            };
+
+            /**
+             * saveErrorCallback - error handler for unsuccessful save
+             * @param response
+             */
+            var saveErrorCallback = function(response){
+                $scope.toggleFormActionsClickable();
+                // apply errors to the $scope.errors object
+                Logger.formValidationMessageBuilder(response, $scope, $scope.addCompanyProfilePhoneNumberForm);
+            }
+     }])
+    .controller("editCompanyProfilePhoneNumberController", ['$scope', '$routeParams', '$location', 'InternalUserProfile', 'Logger', 'UnitedStates', '$anchorScroll', 'limitToFilter', 'CompanyProfilePhoneNumber',
+        function($scope, $routeParams, $location, InternalUserProfile, Logger, UnitedStates, $anchorScroll, limitToFilter, CompanyProfilePhoneNumber){
+
+            /*******************************************************************/
+            /*                      init variables                             */
+            /*******************************************************************/
+            $scope.message = '';
+            $scope.errors = [];
+            $scope.formActionsClickable = true;
+            $scope.toggleFormActionsClickable = function(){
+                $scope.formActionsClickable = !$scope.formActionsClickable;
+            }
+            /*******************************************************************/
+            /*                      action methods                             */
+            /*******************************************************************/
+
+            /**
+             * Create a new Company Profile Phone Number
+             * @param companyProfilePhoneNumber
+             */
+            $scope.deleteCompanyProfilePhoneNumber = function(companyProfilePhoneNumber, idx){
+                $scope.formActionsClickable = false;
+                CompanyProfilePhoneNumber.delete(companyProfilePhoneNumber, function(data){
+                    $scope.companyProfile.companyProfilePhoneNumbers.splice(idx, 1);  // remove the phone number from presentation
+                    // apply the success message to toastr
+                    Logger.success("Company Profile Phone Number Deleted Successfully", "Success");
+                }, function(){
+                    Logger.error("Error Deleting Company Profile Phone Number", "Error");
+                    $scope.toggleFormActionsClickable();
+                });
+            };
+
     }]);

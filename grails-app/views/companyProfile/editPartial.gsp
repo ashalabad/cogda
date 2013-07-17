@@ -76,7 +76,7 @@
                                                data-ng-model="q"
                                                type="text"
                                                placeholder="Search User Profiles"
-                                               data-ng-change="userProfileSearch()"
+                                               data-ng-keyup="userProfileSearch()"
                                                data-ng-pattern="/[A-Za-z0-9]/"/>
                                         <button type="button" data-ng-click="clearUserProfileSearch()" class="btn">
                                             <i class="icon-minus-sign"></i>
@@ -237,8 +237,6 @@
                     </div>
                 </div>
 
-                <br>
-
                 <button type="button"
                         class="btn"
                         data-ng-click="addCompanyProfileAddress()"
@@ -253,34 +251,79 @@
     <!-- END: Company Profile Address -->
 
     <!-- START: Company Profile Phone Numbers -->
-    <div id="" class="form-horizontal">
+    <div id="CompanyProfilePhoneNumbers" class="form-horizontal">
         <fieldset class="embedded">
             <legend>
                 <g:message code="companyProfile.companyProfilePhoneNumbers.label"/>
-                <span class="pull-right">
-                    <button class="btn btn-success " data-ng-click="addCompanyProfilePhoneNumber()">
-                        <i class="icon-plus"></i>
-                        ${message(code: 'default.add.label', args: [message(code: 'companyProfile.companyProfilePhoneNumbers.label', default: 'UserProfilePhoneNumber')])}
-                    </button>
-                </span>
             </legend>
             <div class="control-group fieldcontain">
                 <label class="control-label">
                     <g:message code="companyProfile.companyProfilePhoneNumbers.label" />
                 </label>
                 <div class="controls">
-
-                    <ul class = "unstyled" data-ng-repeat = "companyProfilePhoneNumber in companyProfile.companyProfilePhoneNumbers">
-                        <li>
-                            {{ companyProfilePhoneNumber.phoneNumber }}  {{ companyProfilePhoneNumber.primary ? 'Primary' : '' }}
-                        </li>
-                    </ul>
-
-                    <span class="help-inline" data-ng-show="errors. ">{{ errors. }}</span>
+                    <div data-ng-controller = "addCompanyProfilePhoneNumberController" >
+                        <div data-ng-form = "addCompanyProfilePhoneNumberForm" class="form-inline">
+                            <label for="label">
+                                <g:message code="companyProfilePhoneNumber.label.label"/>:
+                            </label>
+                            <input type = "text"
+                                   name="label"
+                                   id="label"
+                                   data-ng-model="companyProfilePhoneNumber.label"
+                                   class="input-mini"/>
+                            <label for="label">
+                                <g:message code="companyProfilePhoneNumber.phoneNumber.label"/>:
+                            </label>
+                            <input type = "text"
+                                   name="phoneNumber"
+                                   id="phoneNumber"
+                                   data-ng-model="companyProfilePhoneNumber.phoneNumber"
+                                   class="input-small"
+                                   required="required"/>
+                            <label class="checkbox">
+                                <input type="checkbox"
+                                       name="primaryPhoneNumber"
+                                       id="primaryPhoneNumber"
+                                       data-ng-model="companyProfilePhoneNumber.primaryPhoneNumber"
+                                       />
+                                <g:message code="companyProfileNumber.primary.label"/>
+                            </label>
+                            <button type="button"
+                                    class="btn btn-info"
+                                    data-ng-click="saveCompanyProfilePhoneNumber(companyProfilePhoneNumber)"
+                                    data-ng-disabled="!canSave(addCompanyProfilePhoneNumberForm) || !formActionsClickable">
+                                <i class="icon-plus"/>
+                                Add
+                            </button>
+                        </div>
+                    </div>
+                    <div style="margin-top:5px;">
+                    <strong>
+                        <g:message code="companyProfilePhoneNumber.list.label"/>
+                    </strong>
+                        <ul class = "unstyled" data-ng-repeat = "companyProfilePhoneNumber in companyProfile.companyProfilePhoneNumbers">
+                            <li>
+                                <address data-ng-controller="editCompanyProfilePhoneNumberController">
+                                    <button type="button"
+                                            class="btn btn-danger btn-mini"
+                                            data-ng-click="deleteCompanyProfilePhoneNumber(companyProfilePhoneNumber)"
+                                            data-ng-disabled="!formActionsClickable">
+                                        <i class="icon-remove"/>
+                                    </button>
+                                    <abbr data-ng-show="companyProfilePhoneNumber.label" title="{{ companyProfilePhoneNumber.label }}"> ({{companyProfilePhoneNumber.label}}):</abbr>
+                                    {{ companyProfilePhoneNumber.phoneNumber }}
+                                    <span class="label label-info" data-ng-show="companyProfilePhoneNumber.primaryPhoneNumber">
+                                        {{ companyProfilePhoneNumber.primaryPhoneNumber ? 'Primary' : '' }}
+                                    </span>
+                                </address>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </fieldset>
     </div>
     <!-- END: Company Profile Phone Numbers -->
+
     </fieldset>
 </form>
