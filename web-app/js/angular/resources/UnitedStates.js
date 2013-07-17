@@ -1,5 +1,5 @@
 /**
- * RestApi implementation of a CompanyProfile resource...
+ * RestApi implementation of a UnitedStates resource...
  */
 angular.module('resources.unitedStates', ['ngResource']);
 angular.module('resources.unitedStates', []).factory('UnitedStates', function($resource) {

@@ -47,12 +47,7 @@
         <fieldset class="embedded">
             <legend>
                 <g:message code="companyProfile.companyProfileContacts.label" />
-                <span class="pull-right">
-                    <button class="btn btn-success" data-ng-click="addUserProfilePhoneNumber()">
-                        <i class="icon-plus"></i>
-                        ${message(code: 'default.add.label', args: [message(code: 'companyProfile.companyProfileContacts.label', default: 'UserProfilePhoneNumber')])}
-                    </button>
-                </span>
+
             </legend>
         <div class="control-group fieldcontain">
             <label class="control-label">
@@ -60,16 +55,88 @@
             </label>
             <div class="controls">
 
-                <input type="text" data-ng-model="companyProfileContactUserProfile" />
+                <div data-ng-controller="addCompanyProfileContactController">
 
-                <ul data-ng-repeat = "companyProfileContact in companyProfile.companyProfileContacts">
-                    <li>
-                        {{ companyProfileContact.userProfile.firstName }}
-                        {{ companyProfileContact.userProfile.lastName }}
-                    </li>
-                </ul>
+                    <div class = "row">
 
-                <span class="help-inline" data-ng-show="errors. ">{{ errors. }}</span>
+                        <div class="span6">
+
+                            <div class="row">
+
+                                <div class="span3">
+                                <!-- User Profile Search -->
+                                   <div class = "well">
+                                    <label for="userProfileSearcher">
+                                        <strong>Search:</strong>
+                                    </label>
+
+                                    <div class="input-append">
+                                        <input class="input-medium"
+                                               id="userProfileSearcher"
+                                               data-ng-model="q"
+                                               type="text"
+                                               placeholder="Search User Profiles"
+                                               data-ng-change="userProfileSearch()"
+                                               data-ng-pattern="/[A-Za-z0-9]/"/>
+                                        <button type="button" data-ng-click="clearUserProfileSearch()" class="btn">
+                                            <i class="icon-minus-sign"></i>
+                                        </button>
+                                    </div>
+
+                                <ul
+                                    data-ng-repeat="userProfile in searchResults | filter:filterUserProfileResults"
+                                    class="nav nav-list"
+                                    style="margin-top:5px;">
+                                    <li class="searchResultItem">
+                                        <div style="padding: 5px; border: #B0C4DE solid;">
+                                            {{userProfile.lastName}}
+                                            <br>
+                                            {{userProfile.firstName}}
+                                            <br>
+                                            {{userProfile.primaryEmailAddress}}
+                                            <br>
+                                            <button type="button"
+                                                    class="btn btn-primary btn-mini"
+                                                    data-ng-click = "saveCompanyProfileContact(userProfile, $index)">
+                                                Add Contact <i class="icon-arrow-right icon-white"></i>
+                                            </button>
+                                        </div>
+                                    </li>
+                                </ul>
+
+                            </div>
+
+                                </div>
+
+
+                                <div class="span3">
+                                    <!-- Current Company Profile Contacts -->
+                                    <div class="well">
+                                        <strong>Current Company Contacts:</strong>
+
+                                        <ul class="unstyled"
+                                            data-ng-repeat = "companyProfileContact in companyProfile.companyProfileContacts">
+                                            <div data-ng-controller="editCompanyProfileContactController">
+                                                <li>
+                                                    <span>
+                                                        <button class="btn btn-danger btn-mini"
+                                                                type="button"
+                                                                data-ng-disabled="disableDeleteButton"
+                                                                data-ng-click="deleteCompanyProfileContact(companyProfileContact, $index)">
+                                                            <i class="icon-remove"></i>
+                                                        </button>
+                                                        {{ companyProfileContact.userProfile.firstName }}
+                                                        {{ companyProfileContact.userProfile.lastName }}
+                                                        </span>
+                                                </li>
+                                            </div>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
        </fieldset>

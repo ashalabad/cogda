@@ -8,6 +8,8 @@ import com.cogda.domain.Contact
 import com.cogda.domain.ContactAddress
 import com.cogda.domain.ContactEmailAddress
 import com.cogda.domain.ContactPhoneNumber
+import com.cogda.domain.UserProfile
+import com.cogda.domain.UserProfileEmailAddress
 import com.cogda.domain.admin.AccountType
 import com.cogda.domain.admin.BusinessType
 import com.cogda.domain.admin.CompanyType
@@ -19,6 +21,9 @@ import com.cogda.domain.admin.SicCode
 import com.cogda.domain.admin.SicNaicsCodeCrosswalk
 import com.cogda.domain.admin.SystemEmailMessageTemplate
 import com.cogda.domain.onboarding.Registration
+import com.cogda.domain.security.Role
+import com.cogda.domain.security.User
+import com.cogda.domain.security.UserRole
 import com.cogda.multitenant.Account
 import com.cogda.multitenant.AccountCompanyOwner
 import com.cogda.multitenant.AccountContact
@@ -155,6 +160,8 @@ class BootStrap {
                     customerAccountService.onboardCustomerAccount(raisRegistration)
                     createRennaissanceDummyData(raisRegistration)
                     createRennaissanceAccountDummyData(raisRegistration)
+                    createRennaissanceUserDummyData(raisRegistration)
+                    createRennaissanceUserProfileDummyData(raisRegistration)
                 }
             }
 
@@ -180,6 +187,60 @@ class BootStrap {
         }
     }
     def destroy = {
+    }
+
+    def createRennaissanceUserDummyData(Registration registration){
+        CustomerAccount customerAccount = CustomerAccount.findBySubDomain(registration.subDomain)
+        customerAccount.withThisTenant {
+            def role = Role.findByAuthority(CustomerAccountService.ROLE_USER)
+            110.times { Integer i ->
+                String username =  "rais" + i
+                User user = new User()
+                user.username = username
+                user.password = "password"
+                user.enabled = true
+                user.accountExpired = false
+                assert user.validate()
+                assert user.save()
+                UserRole.create(user, role)
+            }
+        }
+    }
+
+    def createRennaissanceUserProfileDummyData(Registration registration){
+        CustomerAccount customerAccount = CustomerAccount.findBySubDomain(registration.subDomain)
+        customerAccount.withThisTenant {
+            Company company = Company.retrieveRootCompany()
+            def role = Role.findByAuthority(CustomerAccountService.ROLE_USER)
+            110.times { Integer i ->
+                String username =  "rais" + i
+                User user = User.findByUsername(username)
+                assert user, "User was not found with username $username"
+
+                UserProfile userProfile = new UserProfile()
+                userProfile.user = user
+                userProfile.company = company
+                userProfile.published = true
+                userProfile.firstName = "Rais First Name " + i
+                userProfile.lastName = "Rais Last Name " + i
+                userProfile.aboutDesc = "About Description " + i
+                userProfile.associationsDesc = "Associations Description " + i
+                userProfile.businessSpecialtiesDesc = "Business Specialties " + i
+
+                UserProfileEmailAddress userProfileEmailAddress = new UserProfileEmailAddress()
+                userProfileEmailAddress.published = true
+                userProfileEmailAddress.emailAddress = "${username}@cogda.com"
+                userProfileEmailAddress.primaryEmailAddress = true
+
+                assert userProfile.validate()
+                assert userProfile.save()
+
+                userProfileEmailAddress.userProfile = userProfile
+                assert userProfileEmailAddress.validate()
+                assert userProfileEmailAddress.save()
+                userProfile.addToUserProfileEmailAddresses(userProfileEmailAddress)
+            }
+        }
     }
 
     def createRennaissanceAccountDummyData(Registration registration){

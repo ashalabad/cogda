@@ -36,7 +36,9 @@ modules = {
         dependsOn 'bootstrap', 'bootstrap_utils', 'angular'
         resource url:'js/angular/resources/CompanyProfile.js'
         resource url:'js/angular/resources/CompanyProfileAddress.js'
+        resource url:'js/angular/resources/CompanyProfileContact.js'
         resource url:'js/angular/resources/UnitedStates.js'
+        resource url:'js/angular/resources/InternalUserProfile.js'
         resource url:'js/angular/companyProfile/companyProfile.js'
         resource url:'js/angular/companyProfile/companyProfile.css'
     }
