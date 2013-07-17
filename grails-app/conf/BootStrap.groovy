@@ -265,6 +265,9 @@ class BootStrap {
                         testAccount.accountName= nextLine[0]?.trim()
                         testAccount.accountCode= nextLine[1]?.trim()
                         testAccount.accountType= AccountType.findByCode(nextLine[2]?.trim())
+                        testAccount.isMarket = Boolean.TRUE;
+                        testAccount.active = Boolean.TRUE;
+                        testAccount.accountCode= nextLine[1]?.trim()
                         if (testAccount.hasErrors() || !testAccount.validate() ) {
                             log.error("Could not import testAccount with AccountCode: ${testAccount.accountCode}  ${testAccount.errors}")
                         }
