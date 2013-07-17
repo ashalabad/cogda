@@ -22,6 +22,7 @@ class Account {
 
     Boolean isMarket
     Boolean active
+    Boolean favorite
 
     /* Automatic timestamping of GORM */
     Date	dateCreated
@@ -36,6 +37,7 @@ class Account {
         accountCode(nullable:true)
         isMarket(nullable:true)
         active(nullable:true)
+        favorite(nullable:true)
 
     }
 

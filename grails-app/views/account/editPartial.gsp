@@ -41,8 +41,20 @@
                     </label>
                     <div class="controls">
                         <div class="btn-group" data-toggle="buttons-radio">
-                            <button id="isMarketTrue" type="button" class="btn" data-ng-class="{active:account.isMarket==true}" data-ng-click="toggleMarket(true)"><g:message code="default.yes.label"/></button>
-                            <button id="isMarketFalse" type="button" class="btn" data-ng-class="{active:account.isMarket==false}" data-ng-click="toggleMarket(false)"><g:message code="default.no.label"/></button>
+                            <button type="button" class="btn" data-ng-class="{active:account.isMarket==true}" data-ng-click="account.isMarket=true"><g:message code="default.yes.label"/></button>
+                            <button type="button" class="btn" data-ng-class="{active:account.isMarket==false}" data-ng-click="account.isMarket=false"><g:message code="default.no.label"/></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-group fieldcontain">
+                    <label class="control-label">
+                        <g:message code="account.favorite.label" />
+                    </label>
+                    <div class="controls">
+                        <div class="btn-group" data-toggle="buttons-radio">
+                            <button type="button" class="btn" data-ng-class="{active:account.favorite==true}" data-ng-click="account.favorite=true"><g:message code="default.yes.label"/></button>
+                            <button type="button" class="btn" data-ng-class="{active:account.favorite==false}" data-ng-click="account.favorite=false"><g:message code="default.no.label"/></button>
                         </div>
                     </div>
                 </div>

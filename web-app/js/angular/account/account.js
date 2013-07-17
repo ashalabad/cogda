@@ -22,8 +22,9 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact', 'c
             };
 
             $scope.pageHeader = "Account Manager";
-            $scope.editButton = '<button type="button" class="btn btn-mini" data-ng-click="editAccount(row)" ><i class="icon-edit"></i> Edit</button> '
-            $scope.showButton = '<button type="button" class="btn btn-mini" data-ng-click="showAccount(row)" ><i class="icon-eye-open"></i> Show</button> '
+            $scope.editButton = '<button type="button" class="btn btn-mini" data-ng-click="editAccount(row)" ><i class="icon-edit"></i> Edit</button> ';
+            $scope.showButton = '<button type="button" class="btn btn-mini" data-ng-click="showAccount(row)" ><i class="icon-eye-open"></i> Show</button> ';
+            $scope.favoriteIcon = '<div class="favoriteIcon" data-ng-show="row.entity.favorite==true"><i class="icon-star"></i></div>';
             $scope.actionButtons = $scope.editButton + $scope.showButton;
             $scope.sortInfo = { fields:['accountName'], directions: ['asc']};
             $scope.accountGridOptions = {
@@ -35,6 +36,7 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact', 'c
                 showFooter: true,
                 footerRowHeight: 30,
                 columnDefs: [
+                    {field:'favorite', displayName:'',cellTemplate:$scope.favoriteIcon, width:'25px'},
                     {field:'accountName', displayName:'Account Name'},
                     {field:'accountCode', displayName:'Account Code'},
                     {field:'accountType', displayName:'Account Type'},

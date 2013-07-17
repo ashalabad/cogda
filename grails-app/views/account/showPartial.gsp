@@ -3,6 +3,7 @@
     <div class="row">
         <div class="span5 accountDisplay lead">
             <h3 class="center">
+                <span clas="favoriteIcon" data-ng-show="account.favorite==true"><i class="icon-star"></i></span>
                 <span data-ng-bind='account.accountName'></span>
             </h3>
             <hr class="darkHR">

@@ -20,7 +20,7 @@ class AccountController extends GsonBaseController {
 
     def list() {
         //println params.dump()
-        List accountInstanceList = Account.list(params)
+        List accountInstanceList = Account.findAllByActive(true,params)
 
         def dataToRender = []
 
@@ -31,6 +31,7 @@ class AccountController extends GsonBaseController {
             map.accountCode = account.accountCode
             map.accountType = account.accountType?.code
             map.isMarket = account.isMarket ? "Yes": "No"
+            map.favorite = account.favorite
             map.primaryContact= account.primaryAccountContact?.getFullName()
             dataToRender.add(map)
         }
@@ -109,6 +110,7 @@ class AccountController extends GsonBaseController {
 
 
     def get() {
+        // TODO: filter active == false
         def accountInstance = Account.get(params.id)
 //        if (accountInstance) {
 //            respondFound accountInstance
