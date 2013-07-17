@@ -6,6 +6,7 @@
             <br>
             <div data-ng-show="showAccountContact">
                 <h1 class="center lead">
+                    <span data-ng-show="account.accountContacts[contactIndex].primaryContact"> <span class="label label-success"><i class="icon-asterisk"></i> <g:message code="default.primary.label" /></span></span>
                     <span data-ng-bind='account.accountContacts[contactIndex].lastName'></span>,
                     <span data-ng-bind='account.accountContacts[contactIndex].firstName'></span>
                     <span data-ng-bind='account.accountContacts[contactIndex].middleName'></span>
@@ -16,6 +17,17 @@
             <div data-ng-hide="showAccountContact">
                 <form name="accountContactEditForm" class="form-horizontal">
                     <fieldset>
+                        <div class="control-group fieldcontain">
+                            <label class="control-label">
+                                ${message(code:'accountContact.primaryContact.label')}
+                            </label>
+                            <div class="controls">
+                                <div class="btn-group" data-toggle="buttons-radio">
+                                    <button type="button" class="btn" data-ng-class="{active:account.accountContacts[contactIndex].primaryContact==true}" data-ng-click="account.accountContacts[contactIndex].primaryContact=true"><g:message code="default.yes.label"/></button>
+                                    <button type="button" class="btn" data-ng-class="{active:account.accountContacts[contactIndex].primaryContact==false}" data-ng-click="account.accountContacts[contactIndex].primaryContact=false"><g:message code="default.no.label"/></button>
+                                </div>
+                            </div>
+                        </div>
                         <div class="control-group fieldcontain">
                             <label class="control-label">
                                 ${message(code:'accountContact.firstName.label')}

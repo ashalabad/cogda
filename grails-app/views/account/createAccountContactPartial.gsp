@@ -10,7 +10,10 @@
         ${message(code:'accountContact.primaryContact.label')}
     </label>
     <div class="controls">
-        <input type="checkbox" data-ng-model="accountContact.primaryContact" name="primaryContact" />
+        <div class="btn-group" data-toggle="buttons-radio">
+            <button type="button" class="btn" data-ng-class="{active:accountContact.primaryContact==true}" data-ng-click="togglePrimaryContact(true)"><g:message code="default.yes.label"/></button>
+            <button type="button" class="btn" data-ng-class="{active:accountContact.primaryContact==false}" data-ng-click="togglePrimaryContact(false)"><g:message code="default.no.label"/></button>
+        </div>
     </div>
 </div>
 <div class="control-group fieldcontain"

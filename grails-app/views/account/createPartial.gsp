@@ -33,6 +33,18 @@
                         <span class="help-inline" data-ng-show="errors.accountAddressType ">{{ errors.accountCode }}</span>
                     </div>
                 </div>
+
+                <div class="control-group fieldcontain">
+                    <label class="control-label">
+                        <g:message code="account.isMarket.label" />
+                    </label>
+                    <div class="controls">
+                        <div class="btn-group" data-toggle="buttons-radio">
+                            <button type="button" class="btn" data-ng-class="{active:account.isMarket==true}" data-ng-click="toggleMarket(true)"><g:message code="default.yes.label"/></button>
+                            <button type="button" class="btn" data-ng-class="{active:account.isMarket==false}" data-ng-click="toggleMarket(false)"><g:message code="default.no.label"/></button>
+                        </div>
+                    </div>
+                </div>
             </fieldset>
             <div class="span6">
                 <button type="button" class="btn btn-primary pull-right" data-ng-click="saveAccount()"><i class="icon-save"></i> <g:message code="default.button.create.label"/></button>

@@ -35,10 +35,11 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact', 'c
                 showFooter: true,
                 footerRowHeight: 30,
                 columnDefs: [
-                    {field:'accountName', displayName:'Account Name', groupable:false},
-                    {field:'accountCode', displayName:'Account Code', groupable:false},
+                    {field:'accountName', displayName:'Account Name'},
+                    {field:'accountCode', displayName:'Account Code'},
                     {field:'accountType', displayName:'Account Type'},
-                    {field:'primaryContact', displayName:'Primary Contact',sortable:false, groupable:false},
+                    {field:'isMarket', displayName:'Is Market?'},
+                    {field:'primaryContact', displayName:'Primary Contact',sortable:false},
                     {displayName:'', cellTemplate: $scope.actionButtons, sortable:false}
                 ]
             };
@@ -82,6 +83,8 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact', 'c
                 Logger.formValidationMessageBuilder(response, $scope, $scope.accountEditForm);
             };
 
+
+
         }])
 
     .controller('EditAccountCtrl',['$scope','account','dialog','Account','Logger',
@@ -91,10 +94,10 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact', 'c
             $scope.errors = [];
             $scope.title = "Edit Account";
             $scope.account = account;
-
             $scope.cancel = function(){
                 dialog.close();
             };
+
 
             $scope.updateAccount = function(accountInstance){
                 Account.update(accountInstance).$then(updateSuccessCallback, updateErrorCallback);
@@ -118,6 +121,10 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact', 'c
                 // apply errors to the $scope.errrors object
                 Logger.formValidationMessageBuilder(response, $scope, $scope.accountEditForm);
             };
+
+            $scope.toggleMarket = function toggleMarket(val){
+                $scope.account.isMarket = val;
+            };
         }
     ])
 
@@ -128,6 +135,9 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact', 'c
             $scope.errors = [];
             $scope.title = "Create Account";
             $scope.account = {};
+            $scope.account.isMarket = false;
+
+
 
             $scope.saveAccount = function(){
                 Account.save($scope.account).$then(updateSuccessCallback, updateErrorCallback);
@@ -150,6 +160,13 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact', 'c
                 // apply errors to the $scope.errrors object
                 Logger.formValidationMessageBuilder(response, $scope, $scope.accountAddForm);
             };
+
+            $scope.toggleMarket = function toggleMarket(val){
+                $scope.account.isMarket = val;
+            };
+//            $scope.$watch('account.isMarket', function () {
+//                console.log($scope.account.isMarket);
+//            });
 
         }])
 
@@ -357,6 +374,10 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact', 'c
 
             $scope.cancel = function(){
                 dialog.close();
+            };
+
+            $scope.togglePrimaryContact = function togglePrimaryContact(val){
+                $scope.accountContact.primaryContact = val;
             };
 
             $scope.saveAccountContact = function(accountContact,accountContactAddress,accountContactEmailAddress,accountContactPhoneNumber){

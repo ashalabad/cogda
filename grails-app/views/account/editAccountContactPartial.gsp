@@ -5,6 +5,17 @@
     <div class="modal-body" >
         <form name="accountContactEditForm" class="form-horizontal">
             <fieldset>
+                <div class="control-group fieldcontain">
+                    <label class="control-label">
+                        ${message(code:'accountContact.primaryContact.label')}
+                    </label>
+                    <div class="controls">
+                        <div class="btn-group" data-toggle="buttons-radio">
+                            <button type="button" class="btn" data-ng-class="{active:account.accountContacts[contactIndex].primaryContact==true}" data-ng-click="account.accountContacts[contactIndex].primaryContact=true"><g:message code="default.yes.label"/></button>
+                            <button type="button" class="btn" data-ng-class="{active:account.accountContacts[contactIndex].primaryContact==false}" data-ng-click="account.accountContacts[contactIndex].primaryContact=false"><g:message code="default.no.label"/></button>
+                        </div>
+                    </div>
+                </div>
                 <div class="control-group fieldcontain"
                      data-ng-class="{error: accountContactEditForm['accountContacts[contactIndex].firstName'].$invalid}">
                     <label class="control-label">

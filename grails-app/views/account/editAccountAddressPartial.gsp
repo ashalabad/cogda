@@ -10,7 +10,10 @@
                         ${message(code:'accountAddress.primaryAddress.label')}
                     </label>
                     <div class="controls">
-                        <input type="checkbox" data-ng-model="account.accountAddresses[addressIndex].primaryAddress" name="primaryAddress" />
+                        <div class="btn-group" data-toggle="buttons-radio">
+                            <button type="button" class="btn" data-ng-class="{active:account.accountAddresses[addressIndex].primaryAddress==true}" data-ng-click="account.accountAddresses[addressIndex].primaryAddress=true"><g:message code="default.yes.label"/></button>
+                            <button type="button" class="btn" data-ng-class="{active:account.accountAddresses[addressIndex].primaryAddress==false}" data-ng-click="account.accountAddresses[addressIndex].primaryAddress=false"><g:message code="default.no.label"/></button>
+                        </div>
                     </div>
                 </div>
                 <div class="control-group fieldcontain" data-ng-class="{error: accountAddressAddForm['accountAddressType'].$invalid}">
