@@ -2,12 +2,53 @@ package com.cogda.domain
 
 import com.cogda.domain.onboarding.Registration
 import com.cogda.domain.security.User
+import org.hibernate.Criteria
 
 /**
  * UserProfileService
  * A service class encapsulates the core business logic of a Grails application
  */
 class UserProfileService {
+
+    List<UserProfile> internalUserProfileList(Map params){
+        params.q = "%"
+        return internalUserProfileSearch(params)
+    }
+
+    /**
+     * returns search results constrained to the active tenant id
+     * by doing a join of the UserProfile to the User object.
+     * This method cannot be used outside of a an active CustomerAccount.
+     * @param params
+     * @return List
+     */
+    List<UserProfile> internalUserProfileSearch(Map params){
+
+        if(!params.q){
+            return [] // Please provide a search query
+        }
+
+        String searchQuery = "%" + params.q.trim() + "%"
+        params.max = Math.min(params.max ?: 10, 100)
+        params.sort = params.sort ?: "lastName"
+        params.order = params.order ?: "asc"
+        params.offset = params.offset ?: 0
+
+        String query = "select userProfile from User user, UserProfile userProfile where " +
+                " userProfile.user.id = user.id and user.enabled is :enabled and user.accountExpired is :accountExpired " +
+                " and " +
+                " ( lower(userProfile.firstName) like lower(:searchQuery) or " +
+                "   lower(userProfile.lastName)  like lower(:searchQuery) or " +
+                "   lower(user.username) like lower(:searchQuery) " +
+                " ) " +
+                " order by userProfile.lastName asc, userProfile.firstName asc "
+
+        List<UserProfile> userProfiles = UserProfile.executeQuery(query,
+                [enabled:true, accountExpired:false, searchQuery:searchQuery],
+                [max:params.max, offset:params.offset, cache:true])
+
+        return userProfiles
+    }
 
     /**
      * Creates a UserProfile based on the passed in User object and the

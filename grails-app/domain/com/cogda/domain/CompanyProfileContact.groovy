@@ -11,7 +11,16 @@ class CompanyProfileContact {
 
     static belongsTo = CompanyProfile
 
+    /**
+     * UserProfile of a person working at the CustomerAccount
+     * that has this CompanyProfile
+     */
     UserProfile userProfile
+
+    /**
+     * The CompanyProfile that this CompanyProfileContact belongs to.
+     */
+    CompanyProfile companyProfile
 
     /* Automatic timestamping of GORM */
 	Date	dateCreated
