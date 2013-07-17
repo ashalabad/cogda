@@ -1,4 +1,4 @@
-angular.module('resources.leadService', ['$rootScope']);
+angular.module('resources.leadService', ['$rootScope', 'resources.leadNote']);
 angular.module('resources.leadService', []).factory('LeadService', function ($rootScope) {
     var leadService = {};
     leadService.entityToBroadCast = {};

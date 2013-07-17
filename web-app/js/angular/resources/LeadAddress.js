@@ -1,4 +1,3 @@
-angular.module('resources.leadAddress', ['resources.restApi']);
-angular.module('resources.leadAddress', []).factory('LeadAddress', function(RestApi) {
+angular.module('resources.leadAddress', ['resources.restApi']).factory('LeadAddress', ['RestApi', function (RestApi) {
     return RestApi.getRest('/leadAddress/');
-});
+}]);
