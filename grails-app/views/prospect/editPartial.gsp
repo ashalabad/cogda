@@ -161,7 +161,7 @@
         </fieldset>
     </tab>
     <tab heading="Documents ({{lead.files.length}})">
-        <div class="well">CCom</div>
+        <div class="well">Coming Soon...</div>
     </tab>
 
     <tab heading="Notes ({{lead.leadNotes.length}})">

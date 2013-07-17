@@ -1,5 +1,7 @@
 package com.cogda.domain.lead
 
+import com.cogda.GsonBaseController
+import com.cogda.multitenant.Lead
 import com.cogda.multitenant.LeadNote
 import grails.plugins.springsecurity.Secured
 import org.springframework.dao.DataIntegrityViolationException
@@ -9,7 +11,7 @@ import org.springframework.dao.DataIntegrityViolationException
  * A controller class handles incoming web requests and performs actions such as redirects, rendering views and so on.
  */
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class LeadNoteController {
+class LeadNoteController extends GsonBaseController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
@@ -27,14 +29,17 @@ class LeadNoteController {
     }
 
     def save() {
-        def leadNoteInstance = new LeadNote(params)
-        if (!leadNoteInstance.save(flush: true)) {
-            render(view: "create", model: [leadNoteInstance: leadNoteInstance])
+        if (!requestIsJson()) {
+            respondNotAcceptable()
             return
         }
 
-        flash.message = message(code: 'default.created.message', args: [message(code: 'leadNote.label', default: 'LeadNote'), leadNoteInstance.id])
-        redirect(action: "show", id: leadNoteInstance.id)
+        def leadNoteInstance = new LeadNote(request.GSON)
+        if (leadNoteInstance.save(flush: true)) {
+            respondCreated leadNoteInstance
+        } else {
+            respondUnprocessableEntity leadNoteInstance
+        }
     }
 
     def show() {

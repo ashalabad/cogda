@@ -144,45 +144,37 @@ angular.module('prospectApp', ['ui.bootstrap', 'resources.restApi', 'common.help
                 $scope.updateLead($scope.lead);
             });
 
-            $scope.$on('addLeadNote', function () {
-                if ($scope.lead.leadNotes === undefined) {
-                    $scope.lead.leadNotes = [];
-                }
-                $scope.lead.leadNotes.push(LeadService.entityToBroadCast);
-                $scope.updateLead($scope.lead);
-            });
-
-            $scope.$on('deleteAddress', function() {
+            $scope.$on('deleteAddress', function () {
                 $scope.lead.leadAddresses.splice(LeadService.entityIdx, 1);
                 $scope.updateLead($scope.lead);
             });
 
-            $scope.$on('deleteContact', function() {
+            $scope.$on('deleteContact', function () {
                 $scope.lead.leadContacts.splice(LeadService.entityIdx, 1);
                 $scope.updateLead($scope.lead);
             });
 
-            $scope.$on('deleteContactAddress', function() {
+            $scope.$on('deleteContactAddress', function () {
                 $scope.lead.leadContacts[LeadService.parentIdx].leadContactAddresses.splice(LeadService.entityIdx, 1);
                 $scope.updateLead($scope.lead);
             });
 
-            $scope.$on('deleteContact', function() {
+            $scope.$on('deleteContact', function () {
                 $scope.lead.leadContacts.splice(LeadService.entityIdx, 1);
                 $scope.updateLead($scope.lead);
             });
 
-            $scope.$on('deleteLeadContactEmailAddress', function() {
+            $scope.$on('deleteLeadContactEmailAddress', function () {
                 $scope.lead.leadContacts[LeadService.parentIdx].leadContactEmailAddresses.splice(LeadService.entityIdx, 1);
                 $scope.updateLead($scope.lead);
             });
 
-            $scope.$on('deleteContactPhoneNumber', function() {
+            $scope.$on('deleteContactPhoneNumber', function () {
                 $scope.lead.leadContacts[LeadService.parentIdx].leadContactPhoneNumbers.splice(LeadService.entityIdx, 1);
                 $scope.updateLead($scope.lead);
             });
 
-            $scope.$on('deleteLeadNote', function() {
+            $scope.$on('deleteLeadNote', function () {
                 $scope.lead.leadNotes.splice(LeadService.entityIdx, 1);
             })
 
@@ -480,8 +472,8 @@ angular.module('prospectApp', ['ui.bootstrap', 'resources.restApi', 'common.help
             LeadService.deleteEntity('deleteLeadNote', $scope.$index);
         }
     }])
-    .controller('AddLeadNoteController', ['$scope', 'LeadService', function ($scope, LeadService) {
-        $scope.leadNote = {};
+    .controller('AddLeadNoteController', ['$scope', 'LeadService', 'Logger', function ($scope, LeadService, Logger) {
+        $scope.leadNote = { };
 
         $scope.addingLeadNote = false;
 
@@ -494,8 +486,24 @@ angular.module('prospectApp', ['ui.bootstrap', 'resources.restApi', 'common.help
         };
 
         $scope.saveLeadNote = function (leadNote) {
-            LeadService.addEntityBroadcast(leadNote, 'addLeadNote');
-            $scope.leadNote = {};
+            var lead = {
+                id: $scope.lead.id
+            };
+            leadNote.lead = lead;
+            LeadService.leadNote.save(leadNote,function (data) {
+                leadNote.id = data.id;
+                $scope.lead.leadNotes.push(leadNote);
+                $scope.cancelAddLeadNote();
+            }).$then(updateSuccessCallback, updateErrorCallBack);
+            $scope.leadNote = { };
             $scope.addingLeadNote = false;
+        }
+
+        var updateSuccessCallback = function (response) {
+            Logger.success("Note Updated Successfully", "Success");
+        };
+
+        var updateErrorCallBack = function (response) {
+            Logger.formValidationMessageBuilder(response, $scope, $scope.leadNoteForm);
         }
     }]);

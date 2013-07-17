@@ -53,6 +53,7 @@ modules = {
         resource url: 'js/angular/resources/businessTypes.js'
         resource url: 'js/angular/resources/LeadAddress.js'
         resource url: 'js/angular/resources/LeadService.js'
+        resource url: 'js/angular/resources/LeadNote.js'
     }
 
     suspect {

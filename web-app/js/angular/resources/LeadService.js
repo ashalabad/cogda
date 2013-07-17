@@ -1,6 +1,7 @@
-angular.module('resources.leadService', ['$rootScope', 'resources.leadNote']);
-angular.module('resources.leadService', []).factory('LeadService', function ($rootScope) {
+angular.module('resources.leadService', ['$rootScope']);
+angular.module('resources.leadService', ['resources.leadNote']).factory('LeadService', ['$rootScope', 'LeadNote', function ($rootScope, LeadNote) {
     var leadService = {};
+    leadService.currentLead = {};
     leadService.entityToBroadCast = {};
     leadService.entityPath = '';
     leadService.entityIdx = -1;
@@ -22,5 +23,7 @@ angular.module('resources.leadService', []).factory('LeadService', function ($ro
         $rootScope.$broadcast(handler);
     };
 
+    leadService.leadNote = LeadNote;
+
     return leadService;
-});
+}]);
