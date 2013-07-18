@@ -11,8 +11,8 @@
                     </label>
                     <div class="controls">
                         <input type="text"
-                               name="account.accountContacts[contactIndex].accountContactPhoneNumber.phoneNumber"
-                               data-ng-model="account.accountContacts[contactIndex].accountContactPhoneNumbers[accountContactPhoneNumberIndex].phoneNumber"
+                               name="accountContact.accountContactPhoneNumber.phoneNumber"
+                               data-ng-model="accountContact.accountContactPhoneNumbers[accountContactPhoneNumberIndex].phoneNumber"
                                placeholder="${message(code:'accountContact.accountContactPhoneNumber.phoneNumber.label')}"/>
                     </div>
                 </div>
@@ -23,8 +23,8 @@
                     </label>
                     <div class="controls">
                         <div class="btn-group" data-toggle="buttons-radio">
-                            <button type="button" class="btn" data-ng-class="{'btn-primary':account.accountContacts[contactIndex].accountContactPhoneNumbers[accountContactPhoneNumberIndex].primaryPhoneNumber==true}" data-ng-click="account.accountContacts[contactIndex].accountContactPhoneNumbers[accountContactPhoneNumberIndex].primaryPhoneNumber=true"><g:message code="default.yes.label"/></button>
-                            <button type="button" class="btn" data-ng-class="{'btn-primary':account.accountContacts[contactIndex].accountContactPhoneNumbers[accountContactPhoneNumberIndex].primaryPhoneNumber==false}" data-ng-click="account.accountContacts[contactIndex].accountContactPhoneNumbers[accountContactPhoneNumberIndex].primaryPhoneNumber=false"><g:message code="default.no.label"/></button>
+                            <button type="button" class="btn" data-ng-class="{'btn-primary':accountContact.accountContactPhoneNumbers[accountContactPhoneNumberIndex].primaryPhoneNumber==true}" data-ng-click="accountContact.accountContactPhoneNumbers[accountContactPhoneNumberIndex].primaryPhoneNumber=true"><g:message code="default.yes.label"/></button>
+                            <button type="button" class="btn" data-ng-class="{'btn-primary':accountContact.accountContactPhoneNumbers[accountContactPhoneNumberIndex].primaryPhoneNumber==false}" data-ng-click="accountContact.accountContactPhoneNumbers[accountContactPhoneNumberIndex].primaryPhoneNumber=false"><g:message code="default.no.label"/></button>
                         </div>
                     </div>
                 </div>

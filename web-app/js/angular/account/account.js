@@ -1,4 +1,4 @@
-angular.module('accountApp', ['resources.Account','resources.AccountContact', 'common.helperFuncs', 'resources.logger', 'ngGrid', 'ui.bootstrap'])
+angular.module('accountApp', ['resources.Account','resources.AccountContact','resources.AccountContactLink','resources.AccountContactEmailAddress','resources.AccountContactPhoneNumber','resources.AccountContactAddress', 'common.helperFuncs', 'resources.logger', 'ngGrid', 'ui.bootstrap'])
 
     .config(function ($routeProvider) {
         $routeProvider.
@@ -6,7 +6,7 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact', 'c
             when('/edit/:id', {templateUrl: '/account/editPartial', controller: 'EditAccountCtrl' }).
             when('/create', {templateUrl: '/account/createPartial', controller: 'CreateAccountCtrl' }).
             when('/show/:id', {templateUrl: '/account/showPartial', controller: 'ShowAccountCtrl' }).
-            when('/contact/:id', {templateUrl: '/account/showAccountContactPartial', controller: 'AccountContactCtrl' }).
+            when('/accountContact/:id', {templateUrl: '/account/showAccountContactPartial', controller: 'AccountContactCtrl' }).
             otherwise({ redirectTo: '/' });
     })
 
@@ -24,7 +24,8 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact', 'c
             $scope.pageHeader = "Account Manager";
             $scope.editButton = '<button type="button" class="btn btn-mini" data-ng-click="editAccount(row)" ><i class="icon-edit"></i> Edit</button> ';
             $scope.showButton = '<button type="button" class="btn btn-mini" data-ng-click="showAccount(row)" ><i class="icon-eye-open"></i> Show</button> ';
-            $scope.favoriteIcon = '<div class="favoriteIcon" data-ng-show="row.entity.favorite==true"><i class="icon-star"></i></div>';
+            $scope.favoriteIcon = '<div class="gridIcon" data-ng-show="row.entity.favorite==true"><span class="label label-warning"><i class="icon-star"></i></span></div>';
+            $scope.marketIcon = '<div class="gridIcon" data-ng-show="row.entity.isMarket==true"><span class="label label-info"><i class="icon-columns"></i></span></div>';
             $scope.actionButtons = $scope.editButton + $scope.showButton;
             $scope.sortInfo = { fields:['accountName'], directions: ['asc']};
             $scope.accountGridOptions = {
@@ -37,11 +38,11 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact', 'c
                 footerRowHeight: 30,
                 columnDefs: [
                     {field:'favorite', displayName:'',cellTemplate:$scope.favoriteIcon, width:'25px'},
-                    {field:'accountName', displayName:'Account Name'},
-                    {field:'accountCode', displayName:'Account Code'},
-                    {field:'accountType', displayName:'Account Type'},
-                    {field:'isMarket', displayName:'Is Market?'},
-                    {field:'primaryContact', displayName:'Primary Contact',sortable:false},
+                    {field:'isMarket', displayName:'',cellTemplate:$scope.marketIcon, width:'25px'},
+                    {field:'accountName', displayName:'Account Name',width:'35%'},
+                    {field:'accountCode', displayName:'Account Code',width:'10%'},
+                    {field:'accountType', displayName:'Account Type',width:'10%'},
+                    {field:'primaryContact', displayName:'Primary Contact',sortable:false,width:'25%'},
                     {displayName:'', cellTemplate: $scope.actionButtons, sortable:false}
                 ]
             };
@@ -163,20 +164,13 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact', 'c
 
         }])
 
-    .controller('ShowAccountCtrl', ['$scope','$routeParams','$dialog','$location','Account','Logger',
-        function ($scope,$routeParams, $dialog, $location, Account, Logger) {
+    .controller('ShowAccountCtrl', ['$scope','$routeParams','$dialog','$location','Account','Logger','AccountContactLink',
+        function ($scope,$routeParams, $dialog, $location, Account, Logger,AccountContactLink) {
 
             $scope.loadAccount = function(){
                 Account.get({id:$routeParams.id},function (data) {
                     $scope.account = data;
 //                    console.log($scope.account);
-
-                    $.each($scope.account.accountContacts, function(i, v) {
-                        if (v.primaryContact == true) {
-                            $scope.primaryAccountContact = v;
-                            $scope.formattedPrimaryContact = $scope.formatContact($scope.primaryAccountContact);
-                        }
-                    });
 
                     $.each($scope.account.accountAddresses, function(i, v) {
                         if (v.primaryAddress == true) {
@@ -185,8 +179,21 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact', 'c
                             $scope.mapPrimaryAddress = $scope.formatAddressForMapping($scope.formattedPrimaryAddress);
                         }
                     });
+
+                    AccountContactLink.primaryContact({id:$scope.account.id},function(primaryContact){
+                        $scope.primaryAccountContact = primaryContact;
+                        $scope.formattedPrimaryContact = $scope.formatContact($scope.primaryAccountContact);
+                    });
+
+                    AccountContactLink.accountContacts({id:$scope.account.id},function(result){
+                        $scope.accountContacts = result.properties.contacts;
+//                        console.log(result);
+                    });
+
+
                 })
             };
+
             $scope.clearSearch = function clearSearch(){
                 $scope.searchString = "";
             };
@@ -209,6 +216,7 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact', 'c
                     d.open().then(function(){$scope.loadAccount();});
                 });
             };
+
             $scope.addAccountAddress = function addAccountAddress(){
                 var addOpts = {
                     dialogFade: true,
@@ -225,7 +233,8 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact', 'c
                 var d = $dialog.dialog(addOpts);
                 d.open().then(function(){$scope.loadAccount();});
             };
-            $scope.addAccountContact = function addAccountContact(){
+
+            $scope.addAccountContact = function addAccountContact(primary){
                 var addOpts = {
                     dialogFade: true,
                     backdropFade: true,
@@ -234,6 +243,9 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact', 'c
                     resolve: {
                         account: function() {
                             return angular.copy($scope.account);
+                        },
+                        primary: function() {
+                            return primary
                         }
                     }
 
@@ -241,6 +253,7 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact', 'c
                 var d = $dialog.dialog(addOpts);
                 d.open().then(function(){$scope.loadAccount();});
             };
+
             $scope.addAccountNote = function addAccountNote(){
                 var addOpts = {
                     dialogFade: true,
@@ -257,6 +270,7 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact', 'c
                 var d = $dialog.dialog(addOpts);
                 d.open().then(function(){$scope.loadAccount();});
             };
+
             $scope.editAccountAddress = function editAccountAddress(accountAddress){
                 var editOpts = {
                     dialogFade: true,
@@ -298,10 +312,11 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact', 'c
             };
 
             $scope.showAccountContact = function showAccountContact(accountContact){
-                $location.path('/contact/' + accountContact.id);
+                $location.path('/accountContact/' + accountContact.id);
             };
 
             $scope.formatContact= function(contact){
+//                console.log(contact);
                 var primaryAccountContactEmailAddress=null;
                 var primaryAccountContactPhoneNumber=null;
 
@@ -354,33 +369,52 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact', 'c
             };
 
             $scope.clearSearch();
+
             $scope.loadAccount();
 
         }])
 
-    .controller('CreateAccountContactCtrl', ['$scope','$routeParams','dialog','$location','Account','Logger','account',
-        function ($scope,$routeParams, dialog, $location, Account, Logger,account) {
+    .controller('CreateAccountContactCtrl', ['$scope','$routeParams','dialog','$location','AccountContact','Logger','account','AccountContactLink','primary',
+        function ($scope,$routeParams, dialog, $location, AccountContact, Logger,account,AccountContactLink,primary) {
             $scope.message = '';
             $scope.errors = [];
             $scope.title = "Create Contact";
-            $scope.account = account;
+            $scope.accountContactLink = {
+                account: account,
+                primaryContact: primary,
+                accountContact: {
+                    firstName:"",
+                    middleName:"",
+                    lastName:"",
+                    accountContactEmailAddresses: [],
+                    accountContactPhoneNumbers: []
+                }
+            };
+            $scope.accountContactEmailAddress = {
+                primaryEmailAddress: true,
+                    emailAddress:""
+            };
+            $scope.accountContactPhoneNumber = {
+                primaryPhoneNumber: true,
+                    phoneNumber:""
+            };
 
             $scope.cancel = function(){
                 dialog.close();
             };
 
-            $scope.saveAccountContact = function(accountContact,accountContactAddress,accountContactEmailAddress,accountContactPhoneNumber){
-                accountContact.accountContactEmailAddresses=[];
-                accountContact.accountContactAddresses=[];
-                accountContact.accountContactPhoneNumbers=[];
-                accountContactEmailAddress.primaryEmailAddress = true;
-                accountContactPhoneNumber.primaryPhoneNumber = true;
-                accountContactAddress.primaryAddress = true;
-                accountContact.accountContactEmailAddresses.push(accountContactEmailAddress);
-                accountContact.accountContactAddresses.push(accountContactAddress);
-                accountContact.accountContactPhoneNumbers.push(accountContactPhoneNumber);
-                $scope.account.accountContacts.push(accountContact);
-                Account.update($scope.account).$then(updateSuccessCallback, updateErrorCallback);
+            $scope.saveAccountContact = function(){
+                $scope.accountContactLink.accountContact.accountContactEmailAddresses.push($scope.accountContactEmailAddress);
+                $scope.accountContactLink.accountContact.accountContactPhoneNumbers.push($scope.accountContactPhoneNumber);
+                AccountContact.save($scope.accountContactLink.accountContact).$then(saveAccountContactLink,updateErrorCallback);
+            };
+
+            var saveAccountContactLink = function(response){
+//                console.log(response);
+                AccountContact.get({id:response.resource.id},function (data) {
+                    $scope.accountContactLink.accountContact = data;
+                    AccountContactLink.save($scope.accountContactLink).$then(updateSuccessCallback, updateErrorCallback);
+                },updateErrorCallback);
             };
             /**
              * updateSuccessCallback - success handler for successful update
@@ -561,22 +595,22 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact', 'c
             };
         }])
 
-    .controller('AccountContactCtrl',['$scope','$routeParams','$dialog','$location','Account','Logger','AccountContact',
-        function ($scope,$routeParams, $dialog, $location, Account, Logger, AccountContact) {
+    .controller('AccountContactCtrl',['$scope','$routeParams','$dialog','$location','Account','Logger','AccountContact','AccountContactEmailAddress','AccountContactPhoneNumber','AccountContactAddress',
+        function ($scope,$routeParams, $dialog, $location, Account, Logger, AccountContact, AccountContactEmailAddress, AccountContactPhoneNumber, AccountContactAddress) {
 
             $scope.showAccountContact=true;
 
             $scope.loadAccountContact = function(){
                 AccountContact.get({id:$routeParams.id},function (data) {
                     $scope.accountContact = data;
-                    Account.get({id:$scope.accountContact.account.id},function (data) {
-                        $scope.account = data;
-                        $.each($scope.account.accountContacts, function(i, v) {
-                            if (v.id == $scope.accountContact.id) {
-                                $scope.contactIndex =i;
-                            }
-                        });
-                    });
+//                    Account.get({id:$scope.accountContact.account.id},function (data) {
+//                        $scope.account = data;
+//                        $.each($scope.account.accountContacts, function(i, v) {
+//                            if (v.id == $scope.accountContact.id) {
+//                                $scope.contactIndex =i;
+//                            }
+//                        });
+//                    });
 
 
                 });
@@ -599,18 +633,18 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact', 'c
 
             };
 
-            $scope.showAccount = function showAccount(){
-                $location.path('/show/' + $scope.account.id);
-            };
+//            $scope.showAccount = function showAccount(){
+//                $location.path('/show/' + $scope.account.id);
+//            };
 
             $scope.editAccountContact = function editAccountContact(){
-                $scope.createTemp($scope.account);
+                $scope.createTemp($scope.accountContact);
                 $scope.showAccountContact = false;
 
             };
 
             $scope.cancelAccountContactEdit = function cancelAccountContactEdit(){
-                $scope.account = angular.copy($scope.temp);
+                $scope.accountContact = angular.copy($scope.temp);
                 $scope.showAccountContact = true;
 
             };
@@ -620,8 +654,64 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact', 'c
                 $scope.temp = angular.copy(item);
             };
 
-            $scope.updateAccount = function(){
-                Account.update($scope.account).$then(updateSuccessCallback, updateErrorCallback);
+            $scope.updateAccountContact = function(){
+                AccountContact.update($scope.accountContact).$then(updateSuccessCallback, updateErrorCallback);
+            };
+
+            $scope.deleteAccountContactEmailAddress = function deleteAccountContactEmailAddress(accountContactEmailAddress){
+                var title = 'Delete Email Address';
+                var msg = 'Are you sure you want to delete this email address?';
+                var btns = [{result:'cancel', label: 'Cancel'}, {result:'delete', label: 'Delete', cssClass: 'btn-danger'}];
+
+                $dialog.messageBox(title, msg, btns)
+                    .open()
+                    .then(function(result){
+                        if(result=='delete')
+                            AccountContactEmailAddress.delete({id:accountContactEmailAddress.id}).$then(deleteCallback, deleteCallback);
+
+                    });
+            };
+
+            $scope.deleteAccountContactPhoneNumber = function deleteAccountContactPhoneNumber(accountContactPhoneNumber){
+                var title = 'Delete Phone Number';
+                var msg = 'Are you sure you want to delete this phone number?';
+                var btns = [{result:'cancel', label: 'Cancel'}, {result:'delete', label: 'Delete', cssClass: 'btn-danger'}];
+
+                $dialog.messageBox(title, msg, btns)
+                    .open()
+                    .then(function(result){
+                        if(result=='delete')
+                            AccountContactPhoneNumber.delete({id:accountContactPhoneNumber.id}).$then(deleteCallback, deleteCallback);
+
+                    });
+            };
+
+            $scope.deleteAccountContactAddress = function deleteAccountContactAddress(accountContactAddress){
+                var title = 'Delete Address';
+                var msg = 'Are you sure you want to delete this address?';
+                var btns = [{result:'cancel', label: 'Cancel'}, {result:'delete', label: 'Delete', cssClass: 'btn-danger'}];
+
+                $dialog.messageBox(title, msg, btns)
+                    .open()
+                    .then(function(result){
+                        if(result=='delete')
+                            AccountContactAddress.delete({id:accountContactAddress.id}).$then(deleteCallback, deleteCallback);
+
+                    });
+            };
+
+            $scope.deleteAccountContact = function deleteAccountContact(){
+                var title = 'Delete Account Contact';
+                var msg = 'Are you sure you want to delete this account contact?';
+                var btns = [{result:'cancel', label: 'Cancel'}, {result:'delete', label: 'Delete', cssClass: 'btn-danger'}];
+
+                $dialog.messageBox(title, msg, btns)
+                    .open()
+                    .then(function(result){
+                        if(result=='delete')
+                            AccountContact.delete({id:$scope.accountContact.id}).$then(deleteAccountContactCallback, deleteAccountContactCallback);
+
+                    });
             };
 
             /**
@@ -643,6 +733,18 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact', 'c
                 Logger.formValidationMessageBuilder(response, $scope, $scope.accountContactEditForm);
             };
 
+            var deleteCallback = function(response){
+                // apply the success message to toastr
+                Logger.messageBuilder(response, $scope);
+                $scope.loadAccountContact();
+            };
+
+            var deleteAccountContactCallback = function(response){
+                // apply the success message to toastr
+                Logger.messageBuilder(response, $scope);
+                $location.path('/');
+            };
+
             $scope.addAccountContactEmailAddress = function addAccountContactEmailAddress(){
                 var addOpts = {
                     dialogFade: true,
@@ -650,17 +752,13 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact', 'c
                     templateUrl:  'account/createAccountContactEmailAddressPartial',
                     controller: 'CreateAccountContactEmailAddressCtrl',
                     resolve: {
-                        accountContactId: function() {
-                            return angular.copy($scope.accountContact.id);
-                        },
-                        account: function() {
-                            return angular.copy($scope.account);
+                        accountContact: function() {
+                            return angular.copy($scope.accountContact);
                         }
+
                     }
 
                 };
-                console.log(addOpts);
-
                 var d = $dialog.dialog(addOpts);
                 d.open().then(function(){$scope.loadAccountContact();});
             };
@@ -675,11 +773,8 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact', 'c
                         accountContactEmailAddressId: function() {
                             return angular.copy(accountContactEmailAddress.id);
                         },
-                        accountContactId: function() {
-                            return angular.copy($scope.accountContact.id);
-                        },
-                        account: function() {
-                            return angular.copy($scope.account);
+                        accountContact: function() {
+                            return angular.copy($scope.accountContact);
                         }
                     }
 
@@ -695,16 +790,13 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact', 'c
                     templateUrl:  'account/createAccountContactPhoneNumberPartial',
                     controller: 'CreateAccountContactPhoneNumberCtrl',
                     resolve: {
-                        accountContactId: function() {
-                            return angular.copy($scope.accountContact.id);
-                        },
-                        account: function() {
-                            return angular.copy($scope.account);
+                        accountContact: function() {
+                            return angular.copy($scope.accountContact);
                         }
                     }
 
                 };
-                console.log(addOpts);
+//                console.log(addOpts);
 
                 var d = $dialog.dialog(addOpts);
                 d.open().then(function(){$scope.loadAccountContact();});
@@ -720,11 +812,8 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact', 'c
                         accountContactPhoneNumberId: function() {
                             return angular.copy(accountContactPhoneNumber.id);
                         },
-                        accountContactId: function() {
-                            return angular.copy($scope.accountContact.id);
-                        },
-                        account: function() {
-                            return angular.copy($scope.account);
+                        accountContact: function() {
+                            return angular.copy($scope.accountContact);
                         }
                     }
 
@@ -740,16 +829,13 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact', 'c
                     templateUrl:  'account/createAccountContactAddressPartial',
                     controller: 'CreateAccountContactAddressCtrl',
                     resolve: {
-                        accountContactId: function() {
-                            return angular.copy($scope.accountContact.id);
-                        },
-                        account: function() {
-                            return angular.copy($scope.account);
+                        accountContact: function() {
+                            return angular.copy($scope.accountContact);
                         }
                     }
 
                 };
-                console.log(addOpts);
+//                console.log(addOpts);
 
                 var d = $dialog.dialog(addOpts);
                 d.open().then(function(){$scope.loadAccountContact();});
@@ -765,11 +851,8 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact', 'c
                         accountContactAddressId: function() {
                             return angular.copy(accountContactAddress.id);
                         },
-                        accountContactId: function() {
-                            return angular.copy($scope.accountContact.id);
-                        },
-                        account: function() {
-                            return angular.copy($scope.account);
+                        accountContact: function() {
+                            return angular.copy($scope.accountContact);
                         }
                     }
 
@@ -781,33 +864,22 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact', 'c
             $scope.loadAccountContact();
         }])
 
-    .controller('CreateAccountContactEmailAddressCtrl', ['$scope','$routeParams','dialog','$location','Account','Logger','account','accountContactId',
-        function ($scope,$routeParams, dialog, $location, Account, Logger,account,accountContactId) {
+    .controller('CreateAccountContactEmailAddressCtrl', ['$scope','$routeParams','dialog','AccountContact','Logger','accountContact',
+        function ($scope,$routeParams, dialog, AccountContact, Logger, accountContact) {
             $scope.message = '';
             $scope.errors = [];
             $scope.title = "Add Email Address";
-            $scope.account = account;
+            $scope.accountContact = accountContact;
 
             $scope.cancel = function(){
                 dialog.close();
             };
 
-            $.each($scope.account.accountContacts, function(i, v) {
-                if (v.id == accountContactId) {
-                    $scope.contactIndex =i;
-                }
-            });
-
             $scope.saveAccountContactEmailAddress = function(accountContactEmailAddress){
-                $scope.account.accountContacts[$scope.contactIndex].accountContactEmailAddresses.push(accountContactEmailAddress);
-                Account.update($scope.account).$then(updateSuccessCallback, updateErrorCallback);
+                $scope.accountContact.accountContactEmailAddresses.push(accountContactEmailAddress);
+                AccountContact.update($scope.accountContact).$then(updateSuccessCallback, updateErrorCallback);
             };
 
-//                $scope.saveAccountContact = function(accountContactEmailAddress){
-//                    accountContact.accountContactEmailAddresses.push(accountContactEmailAddress);
-//                    $scope.account.accountContacts.push(accountContact);
-//                    Account.update($scope.account).$then(updateSuccessCallback, updateErrorCallback);
-//                };
             /**
              * updateSuccessCallback - success handler for successful update
              * @param response
@@ -829,31 +901,25 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact', 'c
 
         }])
 
-    .controller('EditAccountContactEmailAddressCtrl', ['$scope','$routeParams','dialog','$location','Account','Logger','account','accountContactId','accountContactEmailAddressId',
-        function ($scope,$routeParams, dialog, $location, Account, Logger,account,accountContactId, accountContactEmailAddressId) {
+    .controller('EditAccountContactEmailAddressCtrl', ['$scope','$routeParams','dialog','AccountContact','Logger','accountContact','accountContactEmailAddressId',
+        function ($scope,$routeParams, dialog, AccountContact, Logger,accountContact, accountContactEmailAddressId) {
             $scope.message = '';
             $scope.errors = [];
             $scope.title = "Edit Email Address";
-            $scope.account = account;
+            $scope.accountContact = accountContact;
 
             $scope.cancel = function(){
                 dialog.close();
             };
 
-            $.each($scope.account.accountContacts, function(i, v) {
-                if (v.id == accountContactId) {
-                    $scope.contactIndex =i;
-                }
-            });
-
-            $.each($scope.account.accountContacts[$scope.contactIndex].accountContactEmailAddresses, function(i, v) {
+            $.each($scope.accountContact.accountContactEmailAddresses, function(i, v) {
                 if (v.id == accountContactEmailAddressId) {
                     $scope.accountContactEmailAddressIndex =i;
                 }
             });
 
             $scope.updateAccount = function(){
-                Account.update($scope.account).$then(updateSuccessCallback, updateErrorCallback);
+                AccountContact.update($scope.accountContact).$then(updateSuccessCallback, updateErrorCallback);
             };
 
             /**
@@ -877,33 +943,23 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact', 'c
 
         }])
 
-    .controller('CreateAccountContactPhoneNumberCtrl', ['$scope','$routeParams','dialog','$location','Account','Logger','account','accountContactId',
-        function ($scope,$routeParams, dialog, $location, Account, Logger,account,accountContactId) {
+    .controller('CreateAccountContactPhoneNumberCtrl', ['$scope','$routeParams','dialog','AccountContact','Logger','accountContact',
+        function ($scope,$routeParams, dialog, AccountContact, Logger, accountContact) {
             $scope.message = '';
             $scope.errors = [];
             $scope.title = "Add Phone Number";
-            $scope.account = account;
+            $scope.accountContact = accountContact;
 
             $scope.cancel = function(){
                 dialog.close();
             };
 
-            $.each($scope.account.accountContacts, function(i, v) {
-                if (v.id == accountContactId) {
-                    $scope.contactIndex =i;
-                }
-            });
 
             $scope.saveAccountContactPhoneNumber = function(accountContactPhoneNumber){
-                $scope.account.accountContacts[$scope.contactIndex].accountContactPhoneNumbers.push(accountContactPhoneNumber);
-                Account.update($scope.account).$then(updateSuccessCallback, updateErrorCallback);
+                $scope.accountContact.accountContactPhoneNumbers.push(accountContactPhoneNumber);
+                AccountContact.update($scope.accountContact).$then(updateSuccessCallback, updateErrorCallback);
             };
 
-//                $scope.saveAccountContact = function(accountContactPhoneNumber){
-//                    accountContact.accountContactPhoneNumberes.push(accountContactPhoneNumber);
-//                    $scope.account.accountContacts.push(accountContact);
-//                    Account.update($scope.account).$then(updateSuccessCallback, updateErrorCallback);
-//                };
             /**
              * updateSuccessCallback - success handler for successful update
              * @param response
@@ -925,31 +981,25 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact', 'c
 
         }])
 
-    .controller('EditAccountContactPhoneNumberCtrl', ['$scope','$routeParams','dialog','$location','Account','Logger','account','accountContactId','accountContactPhoneNumberId',
-        function ($scope,$routeParams, dialog, $location, Account, Logger,account,accountContactId, accountContactPhoneNumberId) {
+    .controller('EditAccountContactPhoneNumberCtrl', ['$scope','$routeParams','dialog','AccountContact','Logger','accountContact','accountContactPhoneNumberId',
+        function ($scope,$routeParams, dialog, AccountContact, Logger,accountContact, accountContactPhoneNumberId) {
             $scope.message = '';
             $scope.errors = [];
             $scope.title = "Edit Phone Number";
-            $scope.account = account;
+            $scope.accountContact = accountContact;
 
             $scope.cancel = function(){
                 dialog.close();
             };
 
-            $.each($scope.account.accountContacts, function(i, v) {
-                if (v.id == accountContactId) {
-                    $scope.contactIndex =i;
-                }
-            });
-
-            $.each($scope.account.accountContacts[$scope.contactIndex].accountContactPhoneNumbers, function(i, v) {
+            $.each($scope.accountContact.accountContactPhoneNumbers, function(i, v) {
                 if (v.id == accountContactPhoneNumberId) {
                     $scope.accountContactPhoneNumberIndex =i;
                 }
             });
 
             $scope.updateAccount = function(accountContactPhoneNumber){
-                Account.update($scope.account).$then(updateSuccessCallback, updateErrorCallback);
+                AccountContact.update($scope.accountContact).$then(updateSuccessCallback, updateErrorCallback);
             };
 
             /**
@@ -973,74 +1023,62 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact', 'c
 
         }])
 
-    .controller('CreateAccountContactAddressCtrl', ['$scope','$routeParams','dialog','$location','Account','Logger','account','accountContactId',
-    function ($scope,$routeParams, dialog, $location, Account, Logger,account,accountContactId) {
-        $scope.message = '';
-        $scope.errors = [];
-        $scope.title = "Add Address";
-        $scope.account = account;
-
-        $scope.cancel = function(){
-            dialog.close();
-        };
-
-        $.each($scope.account.accountContacts, function(i, v) {
-            if (v.id == accountContactId) {
-                $scope.contactIndex =i;
-            }
-        });
-
-        $scope.saveAccountContactAddress = function(accountContactAddress){
-            $scope.account.accountContacts[$scope.contactIndex].accountContactAddresses.push(accountContactAddress);
-            Account.update($scope.account).$then(updateSuccessCallback, updateErrorCallback);
-        };
-
-        /**
-         * updateSuccessCallback - success handler for successful update
-         * @param response
-         */
-        var updateSuccessCallback = function(response){
-            // apply the success message to toastr
-            Logger.messageBuilder(response, $scope);
-            dialog.close();
-        };
-
-        /**
-         * updateErrorCallback - error handler for unsuccessful update
-         * @param response
-         */
-        var updateErrorCallback = function(response){
-            // apply errors to the $scope.errrors object
-            Logger.formValidationMessageBuilder(response, $scope, $scope.accountContactAddressAddForm);
-        };
-
-    }])
-
-    .controller('EditAccountContactAddressCtrl', ['$scope','$routeParams','dialog','$location','Account','Logger','account','accountContactId','accountContactAddressId',
-        function ($scope,$routeParams, dialog, $location, Account, Logger,account,accountContactId, accountContactAddressId) {
+    .controller('CreateAccountContactAddressCtrl', ['$scope','$routeParams','dialog','AccountContact','Logger','accountContact',
+        function ($scope,$routeParams, dialog, AccountContact, Logger,accountContact) {
             $scope.message = '';
             $scope.errors = [];
-            $scope.title = "Edit Address";
-            $scope.account = account;
+            $scope.title = "Add Address";
+            $scope.accountContact = accountContact;
 
             $scope.cancel = function(){
                 dialog.close();
             };
 
-            $.each($scope.account.accountContacts, function(i, v) {
-                if (v.id == accountContactId) {
-                    $scope.contactIndex =i;
-                }
-            });
+            $scope.saveAccountContactAddress = function(accountContactAddress){
+                $scope.accountContact.accountContactAddresses.push(accountContactAddress);
+                AccountContact.update($scope.accountContact).$then(updateSuccessCallback, updateErrorCallback);
+            };
 
-            $.each($scope.account.accountContacts[$scope.contactIndex].accountContactAddresses, function(i, v) {
+            /**
+             * updateSuccessCallback - success handler for successful update
+             * @param response
+             */
+            var updateSuccessCallback = function(response){
+                // apply the success message to toastr
+                Logger.messageBuilder(response, $scope);
+                dialog.close();
+            };
+
+            /**
+             * updateErrorCallback - error handler for unsuccessful update
+             * @param response
+             */
+            var updateErrorCallback = function(response){
+                // apply errors to the $scope.errrors object
+                Logger.formValidationMessageBuilder(response, $scope, $scope.accountContactAddressAddForm);
+            };
+
+    }])
+
+    .controller('EditAccountContactAddressCtrl', ['$scope','$routeParams','dialog','AccountContact','Logger','accountContact','accountContactAddressId',
+        function ($scope,$routeParams, dialog, AccountContact, Logger,accountContact, accountContactAddressId) {
+            $scope.message = '';
+            $scope.errors = [];
+            $scope.title = "Edit Address";
+            $scope.accountContact = accountContact;
+
+            $scope.cancel = function(){
+                dialog.close();
+            };
+
+            $.each($scope.accountContact.accountContactAddresses, function(i, v) {
                 if (v.id == accountContactAddressId) {
                     $scope.accountContactAddressIndex =i;
                 }
             });
 
             $scope.updateAccount = function(accountContactAddress){
-                Account.update($scope.account).$then(updateSuccessCallback, updateErrorCallback);
+                AccountContact.update($scope.accountContact).$then(updateSuccessCallback, updateErrorCallback);
             };
 
             /**

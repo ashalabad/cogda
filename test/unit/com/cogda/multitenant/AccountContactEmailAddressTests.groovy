@@ -38,20 +38,10 @@ class AccountContactEmailAddressTests {
 
     void testEmailConstraint(){
 
-        mockDomain(AccountType, [new AccountType(code:"Agency", intCode:0, description: "Agency")])
-
-        Account account = mockDomain(Account)
-        account.accountName = "accountName"
-        account.accountCode = "accountCode"
-        account.accountType = AccountType.findByCode("Agency")
-        assert account.save(), "Account test domain class was not saved successfully"
-
         AccountContact accountContact = mockDomain(AccountContact)
         accountContact.firstName = "firstName"
         accountContact.middleName = "middleName"
         accountContact.lastName = "lastName"
-        accountContact.account = account
-        accountContact.primaryContact = true
         assert accountContact.save(), "AccountContact test domain class was not saved successfully"
 
         accountEmailAddress = mockDomain(AccountContactEmailAddress)

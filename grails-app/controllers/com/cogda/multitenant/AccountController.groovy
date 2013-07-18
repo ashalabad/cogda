@@ -12,7 +12,7 @@ import static grails.plugin.gson.http.HttpConstants.*
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AccountController extends GsonBaseController {
 
-    final static String ACCOUNT_LABEL = "account.label"
+    final static String LABEL = "account.label"
 
     def index(){
 
@@ -30,13 +30,25 @@ class AccountController extends GsonBaseController {
             map.accountName = account.accountName
             map.accountCode = account.accountCode
             map.accountType = account.accountType?.code
-            map.isMarket = account.isMarket ? "Yes": "No"
+            map.isMarket = account.isMarket
             map.favorite = account.favorite
             map.primaryContact= account.primaryAccountContact?.getFullName()
             dataToRender.add(map)
         }
         response.addIntHeader X_PAGINATION_TOTAL, Account.count()
         render dataToRender as GSON
+    }
+
+    def accountsContacts() {
+//        def carrier = com.cogda.domain.admin.AccountType.findByCode("Carrier")
+        def accounts = Account.list() //findAllByAccountType(carrier)
+        def dataToRender = [:]
+        accounts.each {
+            def accountContacts = AccountContactLink.findAllByAccount(it).collect {it.accountContact}
+            dataToRender.put(it,accountContacts)
+        }
+        def some =  dataToRender as JSON
+        println some.target
     }
 
     def listPartial(){
@@ -79,10 +91,6 @@ class AccountController extends GsonBaseController {
         render(view:'editAccountNotePartial')
     }
 
-    def editAccountContactPartial(){
-        render(view:'editAccountContactPartial')
-    }
-
     def createAccountContactEmailAddressPartial(){
         render(view:'createAccountContactEmailAddressPartial')
     }
@@ -115,7 +123,7 @@ class AccountController extends GsonBaseController {
 //        if (accountInstance) {
 //            respondFound accountInstance
 //        } else {
-//            respondNotFound ACCOUNT_LABEL
+//            respondNotFound LABEL
 //        }
         JSON.use('deep')
         render accountInstance as JSON
@@ -143,7 +151,7 @@ class AccountController extends GsonBaseController {
 
         def accountInstance = Account.get(params.id)
         if (!accountInstance) {
-            respondNotFound ACCOUNT_LABEL
+            respondNotFound LABEL
             return
         }
 
@@ -166,15 +174,15 @@ class AccountController extends GsonBaseController {
     def delete() {
         def accountInstance = Account.get(params.id)
         if (!accountInstance) {
-            respondNotFound ACCOUNT_LABEL
+            respondNotFound LABEL
             return
         }
 
         try {
             accountInstance.delete(flush: true)
-            respondDeleted()
+            respondDeleted LABEL
         } catch (DataIntegrityViolationException e) {
-            respondNotDeleted ACCOUNT_LABEL
+            respondNotDeleted LABEL
         }
     }
 }

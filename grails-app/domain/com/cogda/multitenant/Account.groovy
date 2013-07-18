@@ -28,7 +28,7 @@ class Account {
     Date	dateCreated
     Date	lastUpdated
 
-    static hasMany = [accountContacts:AccountContact,accountAddresses:AccountAddress,accountNotes:AccountNote]
+    static hasMany = [accountAddresses:AccountAddress,accountNotes:AccountNote]
 
     static transients = ["primaryEmailAddress", "primaryAccountEmailAddress", "primaryAccountContact", "primaryAccountContactName"]
 
@@ -77,11 +77,7 @@ class Account {
      * @return AccountContact
      */
     public AccountContact getPrimaryAccountContact(){
-        AccountContact accountContact = this.accountContacts?.find {
-            it.primaryContact == Boolean.TRUE
-        }
-
-        return accountContact
+        return AccountContactLink.findByAccountAndPrimaryContact(this,true)?.accountContact
     }
 
     /**

@@ -34,9 +34,9 @@
                         <span class="help-inline" data-ng-show="errors.accountCode ">{{ errors.accountCode }}</span>
                     </div>
                 </div>
-
                 <div class="control-group fieldcontain">
                     <label class="control-label">
+                        <span class="gridIcon"><span class="label label-info"><i class="icon-columns"></i></span></span>
                         <g:message code="account.isMarket.label" />
                     </label>
                     <div class="controls">
@@ -49,6 +49,7 @@
 
                 <div class="control-group fieldcontain">
                     <label class="control-label">
+                        <span class="gridIcon"><span class="label label-warning"><i class="icon-star"></i></span></span>
                         <g:message code="account.favorite.label" />
                     </label>
                     <div class="controls">

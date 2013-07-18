@@ -11,8 +11,8 @@
                     </label>
                     <div class="controls">
                         <div class="btn-group" data-toggle="buttons-radio">
-                            <button type="button" class="btn" data-ng-class="{'btn-primary':account.accountContacts[contactIndex].accountContactAddresses[accountContactAddressIndex].primaryAddress==true}" data-ng-click="account.accountContacts[contactIndex].accountContactAddresses[accountContactAddressIndex].primaryAddress=true"><g:message code="default.yes.label"/></button>
-                            <button type="button" class="btn" data-ng-class="{'btn-primary':account.accountContacts[contactIndex].accountContactAddresses[accountContactAddressIndex].primaryAddress==false}" data-ng-click="account.accountContacts[contactIndex].accountContactAddresses[accountContactAddressIndex].primaryAddress=false"><g:message code="default.no.label"/></button>
+                            <button type="button" class="btn" data-ng-class="{'btn-primary':accountContact.accountContactAddresses[accountContactAddressIndex].primaryAddress==true}" data-ng-click="accountContact.accountContactAddresses[accountContactAddressIndex].primaryAddress=true"><g:message code="default.yes.label"/></button>
+                            <button type="button" class="btn" data-ng-class="{'btn-primary':accountContact.accountContactAddresses[accountContactAddressIndex].primaryAddress==false}" data-ng-click="accountContact.accountContactAddresses[accountContactAddressIndex].primaryAddress=false"><g:message code="default.no.label"/></button>
                         </div>
                     </div>
                 </div>
@@ -23,7 +23,7 @@
                     <div class="controls">
                         <input type="text"
                                name="accountContactAddress.address.addressOne"
-                               data-ng-model="account.accountContacts[contactIndex].accountContactAddresses[accountContactAddressIndex].address.addressOne"
+                               data-ng-model="accountContact.accountContactAddresses[accountContactAddressIndex].address.addressOne"
                                placeholder="${message(code:'accountContact.address.addressOne.label')}"/>
                     </div>
                 </div>
@@ -34,7 +34,7 @@
                     <div class="controls">
                         <input type="text"
                                name="accountContactAddress.address.addressTwo"
-                               data-ng-model="account.accountContacts[contactIndex].accountContactAddresses[accountContactAddressIndex].address.addressTwo"
+                               data-ng-model="accountContact.accountContactAddresses[accountContactAddressIndex].address.addressTwo"
                                placeholder="${message(code:'accountContact.address.addressTwo.label')}"/>
                     </div>
                 </div>
@@ -45,7 +45,7 @@
                     <div class="controls">
                         <input type="text"
                                name="accountContactAddress.address.addressThree"
-                               data-ng-model="account.accountContacts[contactIndex].accountContactAddresses[accountContactAddressIndex].address.addressThree"
+                               data-ng-model="accountContact.accountContactAddresses[accountContactAddressIndex].address.addressThree"
                                placeholder="${message(code:'accountContact.address.addressThree.label')}"/>
                     </div>
                 </div>
@@ -56,7 +56,7 @@
                     <div class="controls">
                         <input type="text"
                                name="accountContactAddress.address.city"
-                               data-ng-model="account.accountContacts[contactIndex].accountContactAddresses[accountContactAddressIndex].address.city"
+                               data-ng-model="accountContact.accountContactAddresses[accountContactAddressIndex].address.city"
                                placeholder="${message(code:'accountContact.address.city.label')}"/>
                     </div>
                 </div>
@@ -65,7 +65,7 @@
                         ${message(code:'accountContact.address.state.label')}
                     </label>
                     <div class="controls">
-                        <g:select class="input-medium" name="accountContactAddress.address.state" data-ng-model="account.accountContacts[contactIndex].accountContactAddresses[accountContactAddressIndex].address.state" from="${com.cogda.common.UsState.values()}" optionKey="key"  noSelection="['': 'State']" />
+                        <g:select class="input-medium" name="accountContactAddress.address.state" data-ng-model="accountContact.accountContactAddresses[accountContactAddressIndex].address.state" from="${com.cogda.common.UsState.values()}" optionKey="key"  noSelection="['': 'State']" />
                     </div>
                 </div>
                 <div class="control-group fieldcontain" data-ng-class="{error: accountContactAddressEditForm['accountContactAddress.address.zipcode'].$invalid}">
@@ -75,7 +75,7 @@
                     <div class="controls">
                         <input type="text"
                                name="accountContactAddress.address.zipcode"
-                               data-ng-model="account.accountContacts[contactIndex].accountContactAddresses[accountContactAddressIndex].address.zipcode"
+                               data-ng-model="accountContact.accountContactAddresses[accountContactAddressIndex].address.zipcode"
                                placeholder="${message(code:'accountContact.address.zipcode.label')}"/>
                     </div>
                 </div>
@@ -86,7 +86,7 @@
                     <div class="controls">
                         <input type="text"
                                name="accountContactAddress.address.county"
-                               data-ng-model="account.accountContacts[contactIndex].accountContactAddresses[accountContactAddressIndex].address.county"
+                               data-ng-model="accountContact.accountContactAddresses[accountContactAddressIndex].address.county"
                                placeholder="${message(code:'accountContact.address.county.label')}"/>
                     </div>
                 </div>
@@ -97,7 +97,7 @@
                     <div class="controls">
                         <input type="text"
                                name="accountContactAddress.address.country"
-                               data-ng-model="account.accountContacts[contactIndex].accountContactAddresses[accountContactAddressIndex].address.country"
+                               data-ng-model="accountContact.accountContactAddresses[accountContactAddressIndex].address.country"
                                placeholder="${message(code:'accountContact.address.country.label')}"/>
                     </div>
                 </div>

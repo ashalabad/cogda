@@ -3,14 +3,15 @@
     <div class="row">
         <div class="span5 accountDisplay lead">
             <h3 class="center">
-                <span clas="favoriteIcon" data-ng-show="account.favorite==true"><i class="icon-star"></i></span>
                 <span data-ng-bind='account.accountName'></span>
             </h3>
             <hr class="darkHR">
-            <h3 class="center">
-                <span class="lead" data-ng-bind="account.accountType.code"></span>
-                <span class="lead" data-ng-bind="account.accountCode"></span>
-            </h3>
+            <h4 class="center">
+                <span class="gridIcon" data-ng-show="account.favorite==true"><span class="label label-warning"><i class="icon-star"></i></span></span>
+                <span class="gridIcon" data-ng-show="account.isMarket==true"><span class="label label-info"><i class="icon-columns"></i></span></span>
+                <span data-ng-bind="account.accountType.code"></span>
+                <span data-ng-bind="account.accountCode"></span>
+            </h4>
         </div>
         <div class="span3 well well-small minWell" data-ng-show="formattedPrimaryAddress">
             <a target="_blank" data-ng-href="http://maps.google.com?q={{mapPrimaryAddress}}" class="btn btn-mini btn-info pull-right"><i class="icon-map-marker"></i> <g:message code="default.button.map.label" /></a>
@@ -26,7 +27,7 @@
             <button type="button" class="btn btn-mini pull-right" data-ng-click="showAccountContact(primaryAccountContact)" ><i class="icon-eye-open"></i> <g:message code="default.button.show.label" /></button>
         </div>
         <div class="span3" data-ng-hide="formattedPrimaryContact">
-            <button type="button" class="btn btn-primary" data-ng-click="addAccountContact()"><i class="icon-plus"></i> <g:message code="default.add.label" args="[message(code:'accountContact.primaryContact.label')]" /></button>
+            <button type="button" class="btn btn-primary" data-ng-click="addAccountContact(true)"><i class="icon-plus"></i> <g:message code="default.add.label" args="[message(code:'accountContact.primaryContact.label')]" /></button>
         </div>
     </div>
     <div class="row">
@@ -35,7 +36,7 @@
             <button type="button" class="btn btn-mini" data-ng-click="attachDocument()"><i class="icon-upload"></i> <g:message code="default.attach.label" args="[message(code:'document.label')]" /></button>
             <button type="button" class="btn btn-mini" data-ng-click="createSubmission()"><i class="icon-plus"></i> <g:message code="default.create.label" args="[message(code:'submission.label')]" /></button>
             <button type="button" class="btn btn-mini" data-ng-click="addAccountNote()"><i class="icon-plus"></i> <g:message code="default.add.label" args="[message(code:'accountNote.note.notes.label')]" /></button>
-            <button type="button" class="btn btn-mini" data-ng-click="addAccountContact()"><i class="icon-plus"></i> <g:message code="default.add.label" args="[message(code:'accountContact.contact.label')]" /></button>
+            <button type="button" class="btn btn-mini" data-ng-click="addAccountContact(false)"><i class="icon-plus"></i> <g:message code="default.add.label" args="[message(code:'accountContact.contact.label')]" /></button>
             <button type="button" class="btn btn-mini" data-ng-click="addAccountAddress()"><i class="icon-plus"></i> <g:message code="default.add.label" args="[message(code:'accountAddress.address.label')]" /></button>
         </div>
         <div class="span4">
@@ -70,10 +71,9 @@
 
                 <tab heading="Contacts">
                     <ul class="inline">
-                        <li data-ng-repeat="contact in account.accountContacts | orderBy:'lastName' | filter:searchString " class="span5 well well-small fixedContactWellHeight">
+                        <li data-ng-repeat="contact in accountContacts | orderBy:'lastName' | filter:searchString " class="span5 well well-small fixedContactWellHeight">
                             <button type="button" class="btn btn-mini pull-right" data-ng-click="showAccountContact(contact)" ><i class="icon-eye-open"></i> <g:message code="default.button.show.label" /></button>
                             <div data-ng-bind-html-unsafe="formatContact(contact)"></div>
-                            <div class="pull-right" data-ng-show="contact.primaryContact"> <span class="label label-success"><i class="icon-asterisk"></i> <g:message code="default.primary.label" /></span></div>
                         </li>
                     </ul>
                 </tab>
@@ -97,7 +97,6 @@
                             <a target="_blank" data-ng-href="http://maps.google.com?q={{}}" class="btn btn-mini btn-info pull-right"><i class="icon-map-marker"></i> <g:message code="default.button.map.label" /></a>
                             <button type="button" class="btn btn-mini pull-right" data-ng-click="editAccountAddress(address)" ><i class="icon-edit"></i> <g:message code="default.button.edit.label" /></button>
                             <div data-ng-bind-html-unsafe="formatAddress(address)"></div>
-                            <span class="pull-right" data-ng-show="address.primaryAddress"> <span class="label label-success"><i class="icon-asterisk"></i> <g:message code="default.primary.label" /></span></span>
                         </li>
                     </ul>
                 </tab>

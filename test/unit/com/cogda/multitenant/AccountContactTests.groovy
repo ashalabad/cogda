@@ -12,7 +12,8 @@ import org.junit.*
 @TestMixin(DomainClassUnitTestMixin)
 class AccountContactTests {
 
-    AccountContact accountContact
+    AccountContact accountContact,accountContact2
+
 
     void setUp() {
         // Setup logic here
@@ -39,7 +40,6 @@ class AccountContactTests {
 
         assert "nullable" == accountContact.errors["firstName"].code
         assert "nullable" == accountContact.errors["lastName"].code
-        assert "nullable" == accountContact.errors["account"].code
         assert !accountContact.errors["userProfile"]
         assert !accountContact.errors["middleName"]
         assert !accountContact.errors["primaryContact"]
@@ -60,24 +60,25 @@ class AccountContactTests {
 
     void testGetFullName(){
 
-        mockDomain(AccountType, [new AccountType(code:"Agency", intCode:0, description: "Agency")])
-
-        Account account = mockDomain(Account)
-        account.accountName = "accountName"
-        account.accountCode = "accountCode"
-        account.accountType = AccountType.findByCode("Agency")
-        assert account.save(), "Account test domain class was not saved successfully"
-
         def firstName = "firstName"
+        def middleName = "middlename"
         def lastName = "lastname"
 
         accountContact = mockDomain(AccountContact)
-            accountContact.account = account
             accountContact.firstName = firstName
             accountContact.lastName = lastName
+            accountContact.middleName = middleName
         assert accountContact.save(),"AccountContact test domain class was not saved successfully"
 
-        assert accountContact.getFullName() == "${lastName}, ${firstName}"
+        assert accountContact.getFullName() == "${lastName}, ${firstName} ${middleName}"
+
+        accountContact2 = mockDomain(AccountContact)
+        accountContact2.firstName = firstName
+        accountContact2.lastName = lastName
+        accountContact2.middleName = null
+        assert accountContact2.save(),"AccountContact test domain class was not saved successfully"
+
+        assert accountContact2.getFullName() == "${lastName}, ${firstName}"
 
     }
 

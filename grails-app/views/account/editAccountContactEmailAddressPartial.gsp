@@ -11,8 +11,8 @@
                     </label>
                     <div class="controls">
                         <input type="text"
-                               name="account.accountContacts[contactIndex].accountContactEmailAddress.emailAddress"
-                               data-ng-model="account.accountContacts[contactIndex].accountContactEmailAddresses[accountContactEmailAddressIndex].emailAddress"
+                               name="accountContact.accountContactEmailAddress.emailAddress"
+                               data-ng-model="accountContact.accountContactEmailAddresses[accountContactEmailAddressIndex].emailAddress"
                                placeholder="${message(code:'accountContact.accountContactEmailAddress.emailAddress.label')}"/>
                     </div>
                 </div>
@@ -23,8 +23,8 @@
                     </label>
                     <div class="controls">
                         <div class="btn-group" data-toggle="buttons-radio">
-                            <button type="button" class="btn" data-ng-class="{'btn-primary':account.accountContacts[contactIndex].accountContactEmailAddresses[accountContactEmailAddressIndex].primaryEmailAddress==true}" data-ng-click="account.accountContacts[contactIndex].accountContactEmailAddresses[accountContactEmailAddressIndex].primaryEmailAddress=true"><g:message code="default.yes.label"/></button>
-                            <button type="button" class="btn" data-ng-class="{'btn-primary':account.accountContacts[contactIndex].accountContactEmailAddresses[accountContactEmailAddressIndex].primaryEmailAddress==false}" data-ng-click="account.accountContacts[contactIndex].accountContactEmailAddresses[accountContactEmailAddressIndex].primaryEmailAddress=false"><g:message code="default.no.label"/></button>
+                            <button type="button" class="btn" data-ng-class="{'btn-primary':accountContact.accountContactEmailAddresses[accountContactEmailAddressIndex].primaryEmailAddress==true}" data-ng-click="accountContact.accountContactEmailAddresses[accountContactEmailAddressIndex].primaryEmailAddress=true"><g:message code="default.yes.label"/></button>
+                            <button type="button" class="btn" data-ng-class="{'btn-primary':accountContact.accountContactEmailAddresses[accountContactEmailAddressIndex].primaryEmailAddress==false}" data-ng-click="accountContact.accountContactEmailAddresses[accountContactEmailAddressIndex].primaryEmailAddress=false"><g:message code="default.no.label"/></button>
                         </div>
                     </div>
                 </div>

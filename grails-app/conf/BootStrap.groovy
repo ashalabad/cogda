@@ -31,7 +31,7 @@ import com.cogda.multitenant.AccountCompanyOwner
 import com.cogda.multitenant.AccountContact
 import com.cogda.multitenant.AccountContactAddress
 import com.cogda.multitenant.AccountContactEmailAddress
-import com.cogda.multitenant.AccountContactEmailAddress
+import com.cogda.multitenant.AccountContactLink
 import com.cogda.multitenant.AccountContactPhoneNumber
 import com.cogda.multitenant.AccountNote
 import com.cogda.multitenant.Company
@@ -277,9 +277,7 @@ class BootStrap {
                             def testAccountContact = new AccountContact(
                                     firstName: nextLine[3]?.trim(),
                                     middleName: nextLine[4]?.trim(),
-                                    lastName: nextLine[5]?.trim(),
-                                    account: testAccount,
-                                    primaryContact: true
+                                    lastName: nextLine[5]?.trim()
                             )
                             if (testAccountContact.hasErrors() || !testAccountContact.validate() ) {
                                 log.error("Could not import testAccountContact ${testAccountContact.firstName} ${testAccountContact.lastName}  ${testAccountContact.errors}")
@@ -321,7 +319,7 @@ class BootStrap {
                                 testAccountContact.addToAccountContactPhoneNumbers(testAccountPhoneNumber)
                                 testAccountContact.save()
 
-                                testAccount.addToAccountContacts(testAccountContact)
+                                AccountContactLink.create testAccount, testAccountContact, true, true
                                 testAccount.save()
                             }
 
