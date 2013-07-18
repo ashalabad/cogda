@@ -3,6 +3,8 @@ package com.cogda.domain.lead
 import com.cogda.GsonBaseController
 import com.cogda.multitenant.Lead
 import com.cogda.multitenant.LeadNote
+import com.google.gson.JsonElement
+import grails.plugin.gson.converters.GSON
 import grails.plugins.springsecurity.Secured
 import org.springframework.dao.DataIntegrityViolationException
 
@@ -14,6 +16,8 @@ import org.springframework.dao.DataIntegrityViolationException
 class LeadNoteController extends GsonBaseController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
+
+    static LEAD_NOTE_LABEL = "leadNote.label"
 
     def index() {
         redirect(action: "list", params: params)
@@ -65,51 +69,46 @@ class LeadNoteController extends GsonBaseController {
     }
 
     def update() {
-        def leadNoteInstance = LeadNote.get(params.id)
-        if (!leadNoteInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'leadNote.label', default: 'LeadNote'), params.id])
-            redirect(action: "list")
+        if (!requestIsJson()) {
+            respondNotAcceptable()
             return
         }
 
-        if (params.version) {
-            def version = params.version.toLong()
-            if (leadNoteInstance.version > version) {
-                leadNoteInstance.errors.rejectValue("version", "default.optimistic.locking.failure",
-                        [message(code: 'leadNote.label', default: 'LeadNote')] as Object[],
-                        "Another user has updated this LeadNote while you were editing")
-                render(view: "edit", model: [leadNoteInstance: leadNoteInstance])
+        def leadNoteInstance = LeadNote.get(params.id)
+        if (!leadNoteInstance) {
+            respondNotFound params.id
+            return
+        }
+
+        if (params.version != null) {
+            if (leadNoteInstance.version > params.long('version')) {
+                respondConflict(leadNoteInstance)
                 return
             }
         }
 
-        leadNoteInstance.properties = params
+        JsonElement jsonElement = GSON.parse(request)
+        leadNoteInstance.properties = jsonElement
 
-        if (!leadNoteInstance.save(flush: true)) {
-            render(view: "edit", model: [leadNoteInstance: leadNoteInstance])
-            return
+        if (leadNoteInstance.save(flush: true)) {
+            respondUpdated leadNoteInstance
+        } else {
+            respondUnprocessableEntity leadNoteInstance
         }
-
-        flash.message = message(code: 'default.updated.message', args: [message(code: 'leadNote.label', default: 'LeadNote'), leadNoteInstance.id])
-        redirect(action: "show", id: leadNoteInstance.id)
     }
 
     def delete() {
         def leadNoteInstance = LeadNote.get(params.id)
         if (!leadNoteInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'leadNote.label', default: 'LeadNote'), params.id])
-            redirect(action: "list")
+            respondNotFound LEAD_NOTE_LABEL, params.id
             return
         }
 
         try {
             leadNoteInstance.delete(flush: true)
-            flash.message = message(code: 'default.deleted.message', args: [message(code: 'leadNote.label', default: 'LeadNote'), params.id])
-            redirect(action: "list")
-        }
-        catch (DataIntegrityViolationException e) {
-            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'leadNote.label', default: 'LeadNote'), params.id])
-            redirect(action: "show", id: params.id)
+            respondDeleted LEAD_NOTE_LABEL, params.id
+        } catch (DataIntegrityViolationException e) {
+            respondNotDeleted LEAD_NOTE_LABEL
         }
     }
 

@@ -54,6 +54,10 @@ modules = {
         resource url: 'js/angular/resources/LeadAddress.js'
         resource url: 'js/angular/resources/LeadService.js'
         resource url: 'js/angular/resources/LeadNote.js'
+        resource url: 'js/angular/resources/LeadContactPhoneNumber.js'
+        resource url: 'js/angular/resources/LeadContactEmailAddress.js'
+        resource url: 'js/angular/resources/LeadContactAddress.js'
+        resource url: 'js/angular/resources/LeadContact.js'
     }
 
     suspect {

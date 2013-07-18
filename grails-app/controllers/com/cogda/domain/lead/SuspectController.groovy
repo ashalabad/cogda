@@ -129,7 +129,7 @@ class SuspectController extends BaseController {
     }
 
     def get() {
-        def leadInstance = Lead.findById(params.id, [fetch: [businessType: "eager"]])
+        def leadInstance = Lead.findByIdAndLeadType(params.id, LeadType.SUSPECT, [fetch: [businessType: "eager"]])
         if (leadInstance) {
             respondFound leadInstance
         } else {

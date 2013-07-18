@@ -5,7 +5,7 @@
             %{--<g:render template="/lead/leadContactAddress/partials/showPartial"/>--}%
         </div>
 
-        <div class="well" data-ng-show="editingContactAddress" data-ng-form="contactAddressForm">
+        <div class="well" data-ng-show="editingContactAddress" data-ng-form="leadContactAddressForm">
             %{--<g:render template="/lead/leadContactAddress/partials/editPartial"/>--}%
             <div data-ng-include="" src="'/leadContactAddress/editPartial'"></div>
             <div class="form-actions">

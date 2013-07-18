@@ -91,7 +91,9 @@
             <select id="address.address.state"
                     name="address.address.state"
                     data-ng-model='address.address.state'
-                    data-ng-options='state.name as state.shortName for state in states'></select>
+                    data-ng-options='abbr as desc for (abbr, desc) in states'>
+                <option value="">-- choose --</option>
+            </select>
             <span class="help-inline"
                   data-ng-show="errors['address.address.state'] ">{{ errors['address.address.state'] }}</span>
             <span class="error" data-ng-show="addressForm['address.address.state'].$invalid"></span>
@@ -109,7 +111,9 @@
             <select name="address.address.country"
                     id="address.address.country"
                     data-ng-model='address.address.country'
-                    data-ng-options='country.countryCode as country.countryDescription for country in countryCodes'></select>
+                    data-ng-options='country.countryCode as country.countryDescription for country in countryCodes'>
+                <option value="">-- choose --</option>
+            </select>
             <span class="help-inline"
                   data-ng-show="errors['address.address.country'] ">{{ errors['address.address.country'] }}</span>
             <span class="error" data-ng-show="addressForm['address.address.country'].$invalid"></span>

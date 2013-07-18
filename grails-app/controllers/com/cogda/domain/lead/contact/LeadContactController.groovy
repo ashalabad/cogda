@@ -1,110 +1,97 @@
 package com.cogda.domain.lead.contact
 
+import com.cogda.GsonBaseController
 import com.cogda.multitenant.LeadContact
+import com.google.gson.Gson
+import com.google.gson.JsonElement
+import grails.plugin.gson.converters.GSON
 import grails.plugins.springsecurity.Secured
 import org.springframework.dao.DataIntegrityViolationException
+
+import static grails.plugin.gson.http.HttpConstants.X_PAGINATION_TOTAL
+import static javax.servlet.http.HttpServletResponse.SC_OK
 
 /**
  * LeadContactController
  * A controller class handles incoming web requests and performs actions such as redirects, rendering views and so on.
  */
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class LeadContactController {
+class LeadContactController extends GsonBaseController {
 
-    static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
-
-    def index() {
-        redirect(action: "list", params: params)
-    }
-
-    def list() {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        [leadContactInstanceList: LeadContact.list(params), leadContactInstanceTotal: LeadContact.count()]
-    }
-
-    def create() {
-        [leadContactInstance: new LeadContact(params)]
+    def list(Integer max) {
+        params.max = Math.min(max ?: 10, 100)
+        response.status = SC_OK
+        response.addIntHeader X_PAGINATION_TOTAL, LeadContact.count()
+        List leadContacts = LeadContact.list(params)
+        Gson gson = gsonBuilder.create()
+        def jsonTree = gson.toJsonTree(leadContacts)
+        render jsonTree
+        return
     }
 
     def save() {
-        def leadContactInstance = new LeadContact(params)
-        if (!leadContactInstance.save(flush: true)) {
-            render(view: "create", model: [leadContactInstance: leadContactInstance])
+        if (!requestIsJson()) {
+            respondNotAcceptable()
             return
         }
-
-        flash.message = message(code: 'default.created.message', args: [message(code: 'leadContact.label', default: 'LeadContact'), leadContactInstance.id])
-        redirect(action: "show", id: leadContactInstance.id)
+        LeadContact leadContactInstance = new LeadContact(request.GSON)
+        if (leadContactInstance.save(flush: true)) {
+            respondCreated leadContactInstance
+        } else {
+            respondUnprocessableEntity leadContactInstance
+        }
     }
 
-    def show() {
+    def get() {
         def leadContactInstance = LeadContact.get(params.id)
-        if (!leadContactInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'leadContact.label', default: 'LeadContact'), params.id])
-            redirect(action: "list")
-            return
+        if (leadContactInstance) {
+            respondFound leadContactInstance
+        } else {
+            respondNotFound params.id
         }
-
-        [leadContactInstance: leadContactInstance]
-    }
-
-    def edit() {
-        def leadContactInstance = LeadContact.get(params.id)
-        if (!leadContactInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'leadContact.label', default: 'LeadContact'), params.id])
-            redirect(action: "list")
-            return
-        }
-
-        [leadContactInstance: leadContactInstance]
     }
 
     def update() {
-        def leadContactInstance = LeadContact.get(params.id)
-        if (!leadContactInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'leadContact.label', default: 'LeadContact'), params.id])
-            redirect(action: "list")
+        if (!requestIsJson()) {
+            respondNotAcceptable()
             return
         }
 
-        if (params.version) {
-            def version = params.version.toLong()
-            if (leadContactInstance.version > version) {
-                leadContactInstance.errors.rejectValue("version", "default.optimistic.locking.failure",
-                        [message(code: 'leadContact.label', default: 'LeadContact')] as Object[],
-                        "Another user has updated this LeadContact while you were editing")
-                render(view: "edit", model: [leadContactInstance: leadContactInstance])
+        def leadContactInstance = LeadContact.get(params.id)
+        if (!leadContactInstance) {
+            respondNotFound params.id
+            return
+        }
+
+        if (params.version != null) {
+            if (leadContactInstance.version > params.long('version')) {
+                respondConflict(leadContactInstance)
                 return
             }
         }
 
-        leadContactInstance.properties = params
+        JsonElement jsonElement = GSON.parse(request)
+        leadContactInstance.properties = jsonElement
 
-        if (!leadContactInstance.save(flush: true)) {
-            render(view: "edit", model: [leadContactInstance: leadContactInstance])
-            return
+        if (leadContactInstance.save(flush: true)) {
+            respondUpdated leadContactInstance
+        } else {
+            respondUnprocessableEntity leadContactInstance
         }
-
-        flash.message = message(code: 'default.updated.message', args: [message(code: 'leadContact.label', default: 'LeadContact'), leadContactInstance.id])
-        redirect(action: "show", id: leadContactInstance.id)
     }
 
     def delete() {
         def leadContactInstance = LeadContact.get(params.id)
         if (!leadContactInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'leadContact.label', default: 'LeadContact'), params.id])
-            redirect(action: "list")
+            respondNotFound params.id
             return
         }
 
         try {
             leadContactInstance.delete(flush: true)
-            flash.message = message(code: 'default.deleted.message', args: [message(code: 'leadContact.label', default: 'LeadContact'), params.id])
-            redirect(action: "list")
-        }
-        catch (DataIntegrityViolationException e) {
-            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'leadContact.label', default: 'LeadContact'), params.id])
-            redirect(action: "show", id: params.id)
+            respondDeleted params.id
+        } catch (DataIntegrityViolationException e) {
+            respondNotDeleted params.id
         }
     }
 

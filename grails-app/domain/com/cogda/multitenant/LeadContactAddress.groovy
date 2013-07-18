@@ -10,13 +10,13 @@ import grails.plugin.multitenant.core.annotation.MultiTenant
 @MultiTenant
 class LeadContactAddress {
 
-    Long	id
-    Long	version
+    Long id
+    Long version
 
-    Date	dateCreated
-    Date	lastUpdated
+    Date dateCreated
+    Date lastUpdated
 
-    static belongsTo	= [leadContact:LeadContact]	// tells GORM to cascade commands: e.g., delete this object if the "parent" is deleted.
+    static belongsTo = [leadContact: LeadContact]    // tells GORM to cascade commands: e.g., delete this object if the "parent" is deleted.
 
     Address address
 
@@ -25,6 +25,7 @@ class LeadContactAddress {
     static embedded = ["address"]
 
     static constraints = {
+        primaryAddress(nullable: true)
         address(nullable: true) // since lead contacts won't necessarily have addresses
     }
 }

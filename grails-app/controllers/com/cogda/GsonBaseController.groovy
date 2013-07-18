@@ -78,6 +78,14 @@ class GsonBaseController {
         return
     }
 
+    private void respondNotFound(String entityLabel, entityId) {
+        def responseBody = [:]
+        responseBody.message = message(code: 'default.not.found.message', args: [message(code:entityLabel), entityId])
+        response.status = SC_NOT_FOUND // 404
+        render responseBody as GSON
+        return
+    }
+
     private void respondConflict(instance) {
         instance.errors.rejectValue('version', 'default.optimistic.locking.failure',
                 [message(code: getClassNameLabel(instance))] as Object[],
@@ -94,6 +102,14 @@ class GsonBaseController {
     private void respondDeleted(String entityLabel) {
         def responseBody = [:]
         responseBody.message = message(code: 'default.deleted.message', args: [message(code:  entityLabel)])
+        response.status = SC_OK  // 200
+        render responseBody as GSON
+        return
+    }
+
+    private void respondDeleted(String entityLabel, entityId) {
+        def responseBody = [:]
+        responseBody.message = message(code: 'default.deleted.message', args: [message(code:  entityLabel), entityId])
         response.status = SC_OK  // 200
         render responseBody as GSON
         return

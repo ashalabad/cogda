@@ -1,6 +1,5 @@
 package com.cogda.domain.lead
 
-import com.cogda.common.marshallers.JavaUtilSetExclusionStrategy
 import com.cogda.multitenant.LeadAddress
 import com.cogda.multitenant.LeadService
 import com.google.gson.Gson
@@ -138,14 +137,14 @@ class LeadAddressController {
     private void respondCreated(LeadAddress leadAddressInstance) {
         response.status = SC_CREATED // 201
         response.addHeader LOCATION, createLink(action: 'get', id: leadAddressInstance.id)
-        Gson gson = gsonBuilder.addSerializationExclusionStrategy(new JavaUtilSetExclusionStrategy()).create()
+        Gson gson = gsonBuilder.create()
         def gsonRetString = gson.toJsonTree(leadAddressInstance)
         render gsonRetString
     }
 
     private void respondUpdated(LeadAddress leadAddressInstance) {
         response.status = SC_OK // 200
-        Gson gson = gsonBuilder.addSerializationExclusionStrategy(new JavaUtilSetExclusionStrategy()).create()
+        Gson gson = gsonBuilder.create()
         def gsonRetString = gson.toJsonTree(leadAddressInstance);
         render gsonRetString
     }

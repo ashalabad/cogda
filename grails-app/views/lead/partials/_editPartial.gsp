@@ -28,7 +28,9 @@
 
             <div class="controls">
                 <select id="businessType" name='businessType' data-ng-model='lead.businessType'
-                        data-ng-options="bt.description for bt in businessTypes" required></select>
+                        data-ng-options="bt.description for bt in businessTypes" required>
+                    <option value="">-- choose --</option>
+                </select>
                 <span class="label label-important"
                       data-ng-show="leadForm.businessType.$invalid && leadForm.businessType.$dirty">${message(code: 'default.invalid.message')}</span>
                 <span class="label label-important" data-ng-show="errors.businessType">{{ errors.businessType }}</span>

@@ -1,6 +1,5 @@
 package com.cogda.domain.lead.contact
 
-import com.cogda.common.marshallers.JavaUtilSetExclusionStrategy
 import com.cogda.multitenant.LeadContactPhoneNumber
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -131,14 +130,14 @@ class LeadContactPhoneNumberController {
     private void respondCreated(LeadContactPhoneNumber leadContactPhoneNumberInstance) {
         response.status = SC_CREATED // 201
         response.addHeader LOCATION, createLink(action: 'get', id: leadContactPhoneNumberInstance.id)
-        Gson gson = gsonBuilder.addSerializationExclusionStrategy(new JavaUtilSetExclusionStrategy()).create()
+        Gson gson = gsonBuilder.create()
         def gsonRetString = gson.toJsonTree(leadContactPhoneNumberInstance);
         render gsonRetString
     }
 
     private void respondUpdated(LeadContactPhoneNumber leadContactPhoneNumberInstance) {
         response.status = SC_OK // 200
-        Gson gson = gsonBuilder.addSerializationExclusionStrategy(new JavaUtilSetExclusionStrategy()).create()
+        Gson gson = gsonBuilder.create()
         def gsonRetString = gson.toJsonTree(leadContactPhoneNumberInstance);
         render gsonRetString
     }

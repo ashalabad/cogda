@@ -52,7 +52,9 @@
 
         <div class="controls">
             <select id="businessType" name='businessType' data-ng-model='lead.businessType'
-                    data-ng-options="bt.description for bt in businessTypes" required></select>
+                    data-ng-options="bt.description for bt in businessTypes" required>
+                <option value="">-- choose --</option>
+            </select>
             <span class="label label-important"
                   data-ng-show="leadForm.businessType.$invalid && leadForm.businessType.$dirty">${message(code: 'default.invalid.message')}</span>
             <span class="label label-important" data-ng-show="errors.businessType">{{ errors.businessType }}</span>
@@ -62,14 +64,14 @@
     </div>
 
     %{--<div class="control-group fieldcontain">--}%
-        %{--<label class="control-label">--}%
-            %{--<g:message code="naicssiccode.label" default="NAICS/SIC Codes"/>--}%
-        %{--</label>--}%
+    %{--<label class="control-label">--}%
+    %{--<g:message code="naicssiccode.label" default="NAICS/SIC Codes"/>--}%
+    %{--</label>--}%
 
-        %{--<div class="controls">--}%
-            %{--<g:render template="/_common/modals/naicsCode/naicsCodes" model="[treeHandler: 'leadNaicsChecked();']"/>--}%
-            %{--<g:render template="/_common/modals/sicCode/sicCodes" model="[treeHandler: 'leadSicChecked();']"/>--}%
-        %{--</div>--}%
+    %{--<div class="controls">--}%
+    %{--<g:render template="/_common/modals/naicsCode/naicsCodes" model="[treeHandler: 'leadNaicsChecked();']"/>--}%
+    %{--<g:render template="/_common/modals/sicCode/sicCodes" model="[treeHandler: 'leadSicChecked();']"/>--}%
+    %{--</div>--}%
     %{--</div>--}%
 
     <div class="control-group fieldcontain"

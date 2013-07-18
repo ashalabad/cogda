@@ -81,7 +81,9 @@
                 <select id="leadAddresses[0].address.state"
                         name="leadAddresses[0].address.state"
                         data-ng-model='lead.leadAddresses[$index].address.state'
-                        data-ng-options='state.name as state.shortName for state in states'></select>
+                        data-ng-options='abbr as desc for (abbr, desc) in states'>
+                    <option value="">-- choose --</option>
+                </select>
                 <span class="help-inline"
                       data-ng-show="errors['leadAddresses[0].address.state'] ">{{ errors['leadAddresses[0].address.state'] }}</span>
                 <span class="error" data-ng-show="leadForm['leadAddresses[0].address.state'].$invalid"></span>
@@ -99,7 +101,9 @@
                 <select name="leadAddresses[0].address.country"
                         id="leadAddresses[0].address.country"
                         data-ng-model='lead.leadAddresses[$index].address.country'
-                        data-ng-options='country.countryCode as country.countryDescription for country in countryCodes'></select>
+                        data-ng-options='country.countryCode as country.countryDescription for country in countryCodes'>
+                    <option value="">-- choose --</option>
+                </select>
                 <span class="help-inline"
                       data-ng-show="errors['leadAddresses[0].address.country'] ">{{ errors['leadAddresses[0].address.country'] }}</span>
                 <span class="error" data-ng-show="leadForm['leadAddresses[0].address.country'].$invalid"></span>

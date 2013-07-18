@@ -17,6 +17,7 @@ import grails.converters.JSON
 import grails.plugin.gson.converters.GSON
 import grails.plugins.springsecurity.Secured
 import org.hibernate.FetchMode
+import org.hibernate.criterion.CriteriaSpecification
 import org.springframework.dao.DataIntegrityViolationException
 
 import static grails.plugin.gson.http.HttpConstants.SC_UNPROCESSABLE_ENTITY
@@ -125,7 +126,13 @@ class ProspectController extends BaseController {
     }
 
     def get() {
-        def leadInstance = Lead.findById(params.id, [fetch: [businessType: "eager"]])
+//        def leadInstance = Lead.withCriteria {
+//            eq('id',params.id.toLong())
+//            fetchMode 'businessType', FetchMode.EAGER
+//            fetchMode 'leadNotes', FetchMode.EAGER
+//            resultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY)
+//        }
+        def leadInstance = Lead.findByIdAndLeadType(params.id, LeadType.PROSPECT,[fetch: [businessType: "eager"]])
         if (leadInstance) {
             respondFound leadInstance
         } else {
@@ -199,7 +206,7 @@ class ProspectController extends BaseController {
 
     private void respondFound(Lead leadInstance) {
         response.status = SC_OK
-        Gson gson = gsonBuilder.create()
+        Gson gson = gsonBuilder.registerTypeAdapterFactory(HibernateProxyTypeAdapter.FACTORY).create()
         def gsonRetString = gson.toJsonTree(leadInstance);
         render gsonRetString
     }
