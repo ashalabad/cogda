@@ -105,5 +105,9 @@ modules = {
         resource url:[dir: 'js/jqueryFileUpload/js',         file:'jquery.fileupload-validate.js']
     }
 
-
+    submissionBuilder {
+        dependsOn 'bootstrap', 'bootstrap_utils', 'angular'
+        resource url:'js/angular/submissionBuilder/submissionBuilder.js'
+        resource url:'js/angular/submissionBuilder/submissionBuilder.css'
+    }
 }

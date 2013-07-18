@@ -1,0 +1,12 @@
+.fixedHeightContainer{
+    height: 400px;
+    padding:3px;
+}
+.marketContactsContainer{
+    height:390px;
+    overflow:auto;
+    background:#fff;
+}
+.accordion-heading {
+    font-weight: bolder;
+}
