@@ -1,4 +1,8 @@
-angular.module('prospectApp', ['ui.bootstrap', 'resources.restApi', 'common.helperFuncs', 'resources.logger', 'ngGrid', 'resources.prospect', 'resources.unitedStates', 'resources.SupportedCountryCodes', 'resources.leadSubTypes', 'resources.noteType', 'resources.businessTypes', 'resources.leadAddress', 'resources.leadService'])
+angular.module('prospectApp', ['ui.bootstrap', 'resources.restApi', 'common.helperFuncs', 'resources.logger', 'ngGrid',
+        'resources.prospect', 'resources.unitedStates', 'resources.SupportedCountryCodes', 'resources.leadSubTypes',
+        'resources.noteType', 'resources.businessTypes', 'resources.leadAddress', 'resources.leadService',
+        'resources.leadNote', 'resources.leadContactPhoneNumber', 'resources.leadContactEmailAddress',
+        'resources.leadContact', 'resources.leadContactAddress'])
 
     .config(function ($routeProvider) {
         $routeProvider.
@@ -77,11 +81,15 @@ angular.module('prospectApp', ['ui.bootstrap', 'resources.restApi', 'common.help
             $scope.lead = {};
             $scope.lead.leadAddresses = [];
             $scope.lead.leadContacts = [];
-            $scope.states = UnitedStates.list();
+
             $scope.countryCodes = SupportedCountryCodes.list();
             $scope.leadSubTypes = LeadSubTypes.list();
             $scope.noteTypes = NoteType.list();
             $scope.businessTypes = BusinessTypes.list();
+
+            UnitedStates.list().$then(function (response) {
+                $scope.states = response.data;
+            });
 
             Prospect.get($routeParams, function (data) {
                 $scope.lead = data;
@@ -102,81 +110,6 @@ angular.module('prospectApp', ['ui.bootstrap', 'resources.restApi', 'common.help
             $scope.editLead = function () {
                 $scope.editingLead = true;
             };
-
-            $scope.$on('handleUpdateLead', function () {
-                $scope.updateLead($scope.lead);
-            });
-
-            $scope.$on('handleAddAddress', function () {
-                $scope.lead.leadAddresses.push(LeadService.entityToBroadCast);
-                $scope.updateLead($scope.lead);
-            });
-
-            $scope.$on('addContactPhoneNumber', function () {
-                if ($scope.lead.leadContacts[LeadService.parentIdx].leadContactPhoneNumbers === undefined) {
-                    $scope.lead.leadContacts[LeadService.parentIdx].leadContactPhoneNumbers = [];
-                }
-                $scope.lead.leadContacts[LeadService.parentIdx].leadContactPhoneNumbers.push(LeadService.entityToBroadCast);
-                $scope.updateLead($scope.lead);
-            });
-
-            $scope.$on('addContactAddress', function () {
-                if ($scope.lead.leadContacts[LeadService.parentIdx].leadContactAddresses === undefined) {
-                    $scope.lead.leadContacts[LeadService.parentIdx].leadContactAddresses = [];
-                }
-                $scope.lead.leadContacts[LeadService.parentIdx].leadContactAddresses.push(LeadService.entityToBroadCast);
-                $scope.updateLead($scope.lead);
-            });
-
-            $scope.$on('addLeadContact', function () {
-                if ($scope.lead.leadContacts === undefined) {
-                    $scope.lead.leadContacts = [];
-                }
-                $scope.lead.leadContacts.push(LeadService.entityToBroadCast);
-                $scope.updateLead($scope.lead);
-            });
-
-            $scope.$on('addContactEmailAddress', function () {
-                if ($scope.lead.leadContacts[LeadService.parentIdx].leadContactEmailAddresses === undefined) {
-                    $scope.lead.leadContacts[LeadService.parentIdx].leadContactEmailAddresses = [];
-                }
-                $scope.lead.leadContacts[LeadService.parentIdx].leadContactEmailAddresses.push(LeadService.entityToBroadCast);
-                $scope.updateLead($scope.lead);
-            });
-
-            $scope.$on('deleteAddress', function () {
-                $scope.lead.leadAddresses.splice(LeadService.entityIdx, 1);
-                $scope.updateLead($scope.lead);
-            });
-
-            $scope.$on('deleteContact', function () {
-                $scope.lead.leadContacts.splice(LeadService.entityIdx, 1);
-                $scope.updateLead($scope.lead);
-            });
-
-            $scope.$on('deleteContactAddress', function () {
-                $scope.lead.leadContacts[LeadService.parentIdx].leadContactAddresses.splice(LeadService.entityIdx, 1);
-                $scope.updateLead($scope.lead);
-            });
-
-            $scope.$on('deleteContact', function () {
-                $scope.lead.leadContacts.splice(LeadService.entityIdx, 1);
-                $scope.updateLead($scope.lead);
-            });
-
-            $scope.$on('deleteLeadContactEmailAddress', function () {
-                $scope.lead.leadContacts[LeadService.parentIdx].leadContactEmailAddresses.splice(LeadService.entityIdx, 1);
-                $scope.updateLead($scope.lead);
-            });
-
-            $scope.$on('deleteContactPhoneNumber', function () {
-                $scope.lead.leadContacts[LeadService.parentIdx].leadContactPhoneNumbers.splice(LeadService.entityIdx, 1);
-                $scope.updateLead($scope.lead);
-            });
-
-            $scope.$on('deleteLeadNote', function () {
-                $scope.lead.leadNotes.splice(LeadService.entityIdx, 1);
-            })
 
             $scope.clearSearch = function clearSearch() {
                 $scope.searchString = "";
@@ -205,7 +138,9 @@ angular.module('prospectApp', ['ui.bootstrap', 'resources.restApi', 'common.help
             $scope.lead.leadNotes.push({});
             $scope.errors = [];
             $scope.message = '';
-            $scope.states = UnitedStates.list();
+            UnitedStates.list().$then(function (response) {
+                $scope.states = response.data;
+            });
             $scope.countryCodes = SupportedCountryCodes.list();
             $scope.leadSubTypes = LeadSubTypes.list();
             $scope.noteTypes = NoteType.list();
@@ -236,7 +171,7 @@ angular.module('prospectApp', ['ui.bootstrap', 'resources.restApi', 'common.help
         function ($scope, $routeParams, $location, Prospect, Logger) {
 
         }])
-    .controller('AddAddressController', ['$scope', 'LeadService', function ($scope, LeadService) {
+    .controller('AddAddressController', ['$scope', 'LeadAddress', 'Logger', function ($scope, LeadAddress, Logger) {
         $scope.address = {};
 
         $scope.addingAddress = false;
@@ -250,13 +185,25 @@ angular.module('prospectApp', ['ui.bootstrap', 'resources.restApi', 'common.help
         };
 
         $scope.saveAddress = function (address) {
-            LeadService.addEntityBroadcast(address, 'handleAddAddress');
+            address.lead = { id: $scope.lead.id };
+            LeadAddress.save(address,function (data) {
+                address.id = data.id;
+                $scope.lead.leadAddresses.push(address);
+                $scope.cancelAddAddress();
+            }).$then(updateSuccessCallback, updateErrorCallback);
             $scope.address = {}; // clear the address after the save
-            $scope.addingAddress = false;
-        }
+        };
+
+        var updateSuccessCallback = function (response) {
+            Logger.success("Address Added Successfully", "Success");
+        };
+
+        var updateErrorCallback = function (response) {
+            Logger.formValidationMessageBuilder(response, $scope, $scope.leadForm);
+        };
     }])
-    .controller('EditAddressController', ['$scope', '$routeParams', 'LeadAddress', 'Logger', 'LeadService',
-        function ($scope, $routeParams, LeadAddress, Logger, LeadService) {
+    .controller('EditAddressController', ['$scope', '$routeParams', 'LeadAddress', 'Logger',
+        function ($scope, $routeParams, LeadAddress, Logger) {
             $scope.editingAddress = false;
 
             $scope.editAddress = function () {
@@ -267,16 +214,29 @@ angular.module('prospectApp', ['ui.bootstrap', 'resources.restApi', 'common.help
                 $scope.editingAddress = false;
             };
 
-            $scope.updateAddress = function (address, idx) {
-                LeadService.save('handleUpdateLead');
+            $scope.updateAddress = function (address) {
+                LeadAddress.update(address).$then(updateSuccessCallback, updateErrorCallback);
                 $scope.cancelEditAddress();
             };
 
             $scope.deleteAddress = function (address, idx) {
-                LeadService.deleteEntity('deleteAddress', idx);
-            }
+                LeadAddress.delete(address, function () {
+                    Logger.success("Address Deleted Successfully", "Success");
+                    $scope.lead.leadAddresses.splice(idx, 1);
+                }, function () {
+                    Logger.error("Failed to Delete Address", "Error");
+                })
+            };
+
+            var updateSuccessCallback = function (response) {
+                Logger.success("Contact Updated Successfully", "Success");
+            };
+
+            var updateErrorCallback = function (response) {
+                Logger.formValidationMessageBuilder(response, $scope, $scope.leadAddressForm);
+            };
         }])
-    .controller('EditContactController', ['$scope', 'LeadService', function ($scope, LeadService) {
+    .controller('EditContactController', ['$scope', 'LeadContact', 'Logger', function ($scope, LeadContact, Logger) {
         $scope.editingContact = false;
 
         $scope.editContact = function () {
@@ -288,15 +248,28 @@ angular.module('prospectApp', ['ui.bootstrap', 'resources.restApi', 'common.help
         };
 
         $scope.updateContact = function (contact) {
-            LeadService.save('handleUpdateLead');
+            LeadContact.update(contact).$then(updateSuccessCallback, updateErrorCallback);
             $scope.cancelEditContact();
         };
 
         $scope.deleteContact = function (contact, idx) {
-            LeadService.deleteEntity('deleteContact', idx);
+            LeadContact.delete(contact, function () {
+                Logger.success("Contact Deleted Succesfully", "Success");
+                $scope.lead.leadContacts.splice(idx, 1);
+            }, function () {
+                Logger.error("Failed to Delete Contact", "Error");
+            });
+        };
+
+        var updateSuccessCallback = function (response) {
+            Logger.success("Contact Updated Successfully", "Success");
+        };
+
+        var updateErrorCallback = function (response) {
+            Logger.formValidationMessageBuilder(response, $scope, $scope.leadContactForm);
         };
     }])
-    .controller('AddLeadContactAddressController', ['$scope', 'LeadService', function ($scope, LeadService) {
+    .controller('AddLeadContactAddressController', ['$scope', 'LeadContactAddress', 'Logger', function ($scope, LeadContactAddress, Logger) {
         $scope.address = {};
 
         $scope.addingContactAddress = false;
@@ -309,13 +282,27 @@ angular.module('prospectApp', ['ui.bootstrap', 'resources.restApi', 'common.help
             $scope.addingContactAddress = false;
         };
 
-        $scope.saveContactAddress = function (address) {
-            LeadService.addEntityBroadcast(address, 'addContactAddress', $scope.$parent.$index);
+        $scope.saveContactAddress = function (contactAddress) {
+            contactAddress.leadContact = {
+                id: $scope.contact.id
+            };
+            LeadContactAddress.save(contactAddress,function (data) {
+                contactAddress.id = data.id;
+                $scope.contact.leadContactAddresses.push(contactAddress);
+                $scope.cancelAddContactAddress();
+            }).$then(updateSuccessCallback, updateErrorCallback);
             $scope.address = {}; // clear the address after the save
-            $scope.addingContactAddress = false;
+        };
+
+        var updateSuccessCallback = function (response) {
+            Logger.success("Contact Address Updated Successfully", "Success");
+        };
+
+        var updateErrorCallback = function (response) {
+            Logger.formValidationMessageBuilder(response, $scope, $scope.leadContactAdressForm);
         }
     }])
-    .controller('EditLeadContactAddressController', ['$scope', 'LeadService', function ($scope, LeadService) {
+    .controller('EditLeadContactAddressController', ['$scope', 'LeadContactAddress', 'Logger', function ($scope, LeadContactAddress, Logger) {
         $scope.editingContactAddress = false;
 
         $scope.editContactAddress = function () {
@@ -326,16 +313,30 @@ angular.module('prospectApp', ['ui.bootstrap', 'resources.restApi', 'common.help
             $scope.editingContactAddress = false;
         };
 
-        $scope.updateContactAddress = function (contact) {
-            LeadService.save('handleUpdateLead');
+        $scope.updateContactAddress = function (address) {
+            LeadContactAddress.update(address).$then(updateSuccessCallback, updateErrorCallback);
             $scope.cancelEditContactAddress();
         };
 
-        $scope.deleteContactAddress = function (contact, idx) {
-            LeadService.deleteEntity('deleteContactAddress', $scope.$index, $scope.$parent.$index);
+        $scope.deleteContactAddress = function (address, idx) {
+            LeadContactAddress.delete(address, function () {
+                Logger.success("Contact Address Deleted Successfully", "Success");
+                $scope.contact.leadContactAddresses.splice(idx, 1);
+            }, function () {
+                Logger.error("Failed to Delete Contact Address", "Error");
+            });
+        };
+
+        var updateSuccessCallback = function (response) {
+            Logger.success("Contact Address Updated Successfully", "Success");
+        };
+
+        var updateErrorCallback = function (response) {
+            Logger.formValidationMessageBuilder(response, $scope, $scope.leadContactAddressForm);
         };
     }])
-    .controller('AddLeadContactController', ['$scope', 'LeadService', function ($scope, LeadService) {
+    .controller('AddLeadContactController', ['$scope', 'LeadContact', 'Logger',
+        function ($scope, LeadContact, Logger) {
         $scope.contact = {};
 
         $scope.addingContact = false;
@@ -349,12 +350,26 @@ angular.module('prospectApp', ['ui.bootstrap', 'resources.restApi', 'common.help
         };
 
         $scope.saveContact = function (contact) {
-            LeadService.addEntityBroadcast(contact, 'addLeadContact');
-            $scope.contact = {}; // clear the address after the save
-            $scope.addingContact = false;
+                contact.lead = {
+                    id: $scope.lead.id
+                };
+                LeadContact.save(contact,function (data) {
+                    contact.id = data.id;
+                    $scope.lead.leadContacts.push(contact);
+                    $scope.cancelAddContact();
+                }).$then(updateSuccessCallback, updateErrorCallBack);
+                $scope.contact = { };
+            };
+
+            var updateSuccessCallback = function (response) {
+                Logger.success("Contact Updated Successfully", "Success");
+            };
+
+            var updateErrorCallBack = function (response) {
+                Logger.formValidationMessageBuilder(response, $scope, $scope.leadContactForm);
         }
     }])
-    .controller('EditContactController', ['$scope', 'LeadService', function ($scope, LeadService) {
+    .controller('EditContactController', ['$scope', 'LeadContact', 'Logger', function ($scope, LeadContact, Logger) {
         $scope.editingContact = false;
 
         $scope.editContact = function () {
@@ -366,15 +381,29 @@ angular.module('prospectApp', ['ui.bootstrap', 'resources.restApi', 'common.help
         };
 
         $scope.updateContact = function (contact) {
-            LeadService.save('handleUpdateLead');
-            $scope.cancelEditContact();
+            LeadContact.update(contact).$then(updateSuccessCallback, updateErrorCallback);
+            $scope.cancelEditContact()
         };
 
         $scope.deleteContact = function (contact, idx) {
-            LeadService.deleteEntity('deleteContact', $scope.$index);
-        }
+            LeadContact.delete(contact, function () {
+                Logger.success("Contact Deleted Successfully", "Success");
+                $scope.lead.leadContacts.splice(idx, 1);
+            }, function () {
+                Logger.error("Failed to Delete Contact", "Error");
+            })
+        };
+
+        var updateSuccessCallback = function (response) {
+            Logger.success("Contact Updated Successfully", "Success");
+        };
+
+        var updateErrorCallback = function (response) {
+            Logger.formValidationMessageBuilder(response, $scope, $scope.leadContactForm);
+        };
     }])
-    .controller('AddContactEmailAddressController', ['$scope', 'LeadService', function ($scope, LeadService) {
+    .controller('AddContactEmailAddressController', ['$scope', 'LeadContactEmailAddress', 'Logger',
+        function ($scope, LeadContactEmailAddress, Logger) {
         $scope.contactEmailAddress = {};
 
         $scope.addingContactEmailAddress = false;
@@ -388,12 +417,28 @@ angular.module('prospectApp', ['ui.bootstrap', 'resources.restApi', 'common.help
         };
 
         $scope.saveContactEmailAddress = function (contactEmailAddress) {
-            LeadService.addEntityBroadcast(contactEmailAddress, 'addContactEmailAddress', $scope.$parent.$index);
+                var leadContact = {
+                    id: $scope.contact.id
+                };
+                contactEmailAddress.leadContact = leadContact;
+                LeadContactEmailAddress.save(contactEmailAddress,function (data) {
+                    contactEmailAddress.id = data.id;
+                    $scope.contact.leadContactEmailAddresses.push(contactEmailAddress);
+                    $scope.cancelAddContactEmailAddress();
+                }).$then(updateSuccessCallback, updateErrorCallback);
             $scope.contactEmailAddress = {}; // clear the address after the save
-            $scope.addingContactEmailAddress = false;
+            };
+
+            var updateSuccessCallback = function (response) {
+                Logger.success("Contact Email Address Added Successfully", "Success");
+            };
+
+            var updateErrorCallback = function (response) {
+                Logger.formValidationMessageBuilder(response, $scope, $scope.leadContactEmailAddressForm);
         }
     }])
-    .controller('EditLeadContactEmailAddressController', ['$scope', 'LeadService', function ($scope, LeadService) {
+    .controller('EditLeadContactEmailAddressController', ['$scope', 'LeadContactEmailAddress', 'Logger',
+        function ($scope, LeadContactEmailAddress, Logger) {
         $scope.editingContactEmailAddress = false;
 
         $scope.editContactEmailAddress = function () {
@@ -404,16 +449,30 @@ angular.module('prospectApp', ['ui.bootstrap', 'resources.restApi', 'common.help
             $scope.editingContactEmailAddress = false;
         };
 
-        $scope.updateContactEmailAddress = function (contact) {
-            LeadService.save('handleUpdateLead');
+            $scope.updateContactEmailAddress = function (contactEmailAddress) {
+                LeadContactEmailAddress.update(contactEmailAddress).$then(updateSuccessCallback, updateErrorCallback);
             $scope.cancelEditContactEmailAddress();
         };
 
-        $scope.deleteContactEmailAddress = function (contact, idx) {
-            LeadService.deleteEntity('deleteLeadContactEmailAddress', $scope.$index, $scope.$parent.$index);
+            $scope.deleteContactEmailAddress = function (contactEmailAddress, idx) {
+                LeadContactEmailAddress.delete(contactEmailAddress, function () {
+                    Logger.success("Contact Email Address Deleted Successfully", "Success");
+                    $scope.contact.leadContactEmailAddresses.splice(idx, 1);
+                }, function () {
+                    Logger.error("Failed to Delete Contact Email Address", "Error");
+                });
         };
+
+            var updateSuccessCallback = function (response) {
+                Logger.success("Contact Email Address Updated Successfully", "Success");
+            };
+
+            var updateErrorCallback = function (response) {
+                Logger.formValidationMessageBuilder(response, $scope, $scope.leadContactEmailAddressForm);
+            };
     }])
-    .controller('AddContactPhoneNumberController', ['$scope', 'LeadService', function ($scope, LeadService) {
+    .controller('AddContactPhoneNumberController', ['$scope', 'LeadContactPhoneNumber', 'Logger',
+        function ($scope, LeadContactPhoneNumber, Logger) {
         $scope.contactPhoneNumber = {};
 
         $scope.addingContactPhoneNumber = false;
@@ -427,12 +486,27 @@ angular.module('prospectApp', ['ui.bootstrap', 'resources.restApi', 'common.help
         };
 
         $scope.saveContactPhoneNumber = function (contactPhoneNumber) {
-            LeadService.addEntityBroadcast(contactPhoneNumber, 'addContactPhoneNumber', $scope.$parent.$index);
+                var contact = {
+                    id: $scope.contact.id
+                };
+                contactPhoneNumber.leadContact = contact;
+                LeadContactPhoneNumber.save(contactPhoneNumber,function (data) {
+                    contactPhoneNumber.id = data.id;
+                    $scope.contact.leadContactPhoneNumbers.push(contactPhoneNumber);
+                    $scope.cancelAddContactPhoneNumber();
+                }).$then(updateSuccessCallback, updateErrorCallback);
             $scope.contactPhoneNumber = {}; // clear the address after the save
-            $scope.addingContactPhoneNumber = false;
+            };
+
+            var updateSuccessCallback = function (response) {
+                Logger.success("Successfully Added Contact Phone Number", "Success");
+            };
+
+            var updateErrorCallback = function (response) {
+                Logger.formValidationMessageBuilder(response, $scope, $scope.leadContactPhoneNumberForm);
         }
     }])
-    .controller('EditLeadContactPhoneNumberController', ['$scope', 'LeadService', function ($scope, LeadService) {
+    .controller('EditLeadContactPhoneNumberController', ['$scope', 'LeadContactPhoneNumber', 'Logger', function ($scope, LeadContactPhoneNumber, Logger) {
         $scope.editingContactPhoneNumber = false;
 
         $scope.editContactPhoneNumber = function () {
@@ -444,15 +518,28 @@ angular.module('prospectApp', ['ui.bootstrap', 'resources.restApi', 'common.help
         };
 
         $scope.updateContactPhoneNumber = function (contactPhoneNumber) {
-            LeadService.save('handleUpdateLead');
+            LeadContactPhoneNumber.update(contactPhoneNumber).$then(updateSuccessCallback, updateErrorCallBack);
             $scope.cancelEditContactPhoneNumber();
         };
 
         $scope.deleteContactPhoneNumber = function (contactPhoneNumber, idx) {
-            LeadService.deleteEntity('deleteContactPhoneNumber', $scope.$index, $scope.$parent.$index);
-        }
+            LeadContactPhoneNumber.delete(contactPhoneNumber, function() {
+                Logger.success("Contact Phone Number Deleted Successfully", "Success");
+                $scope.contact.leadContactPhoneNumbers.splice(idx, 1);
+            }, function() {
+                Logger.error("Failed to Delete Contact Phone Number", "Error");
+            });
+        };
+
+        var updateSuccessCallback = function (response) {
+            Logger.success("Contact Phone Number Updated Successfully", "Success");
+        };
+
+        var updateErrorCallBack = function (response) {
+            Logger.formValidationMessageBuilder(response, $scope, $scope.leadContactPhoneNumberForm);
+        };
     }])
-    .controller('EditLeadNoteController', ['$scope', 'LeadService', function ($scope, LeadService) {
+    .controller('EditLeadNoteController', ['$scope', 'LeadNote', 'Logger', function ($scope, LeadNote, Logger) {
         $scope.editingLeadNote = false;
 
         $scope.editLeadNote = function () {
@@ -464,15 +551,28 @@ angular.module('prospectApp', ['ui.bootstrap', 'resources.restApi', 'common.help
         };
 
         $scope.updateLeadNote = function (leadNote) {
-            LeadService.save('handleUpdateLead');
+            LeadNote.update(leadNote).$then(updateSuccessCallback, updateErrorCallBack);
             $scope.cancelEditLeadNote();
         };
 
         $scope.deleteLeadNote = function (leadNote, idx) {
-            LeadService.deleteEntity('deleteLeadNote', $scope.$index);
-        }
+            LeadNote.delete(leadNote, function() {
+                Logger.success("Note Deleted Successfully", "Success");
+                $scope.lead.leadNotes.splice(idx, 1);
+            }, function() {
+                Logger.error("Failed to Delete Note", "Error");
+            });
+        };
+
+        var updateSuccessCallback = function (response) {
+            Logger.success("Note Updated Successfully", "Success");
+        };
+
+        var updateErrorCallBack = function (response) {
+            Logger.formValidationMessageBuilder(response, $scope, $scope.leadNoteForm);
+        };
     }])
-    .controller('AddLeadNoteController', ['$scope', 'LeadService', 'Logger', function ($scope, LeadService, Logger) {
+    .controller('AddLeadNoteController', ['$scope', 'LeadNote', 'Logger', function ($scope, LeadNote, Logger) {
         $scope.leadNote = { };
 
         $scope.addingLeadNote = false;
@@ -486,21 +586,19 @@ angular.module('prospectApp', ['ui.bootstrap', 'resources.restApi', 'common.help
         };
 
         $scope.saveLeadNote = function (leadNote) {
-            var lead = {
+            leadNote.lead = {
                 id: $scope.lead.id
             };
-            leadNote.lead = lead;
-            LeadService.leadNote.save(leadNote,function (data) {
+            LeadNote.save(leadNote,function (data) {
                 leadNote.id = data.id;
                 $scope.lead.leadNotes.push(leadNote);
                 $scope.cancelAddLeadNote();
             }).$then(updateSuccessCallback, updateErrorCallBack);
             $scope.leadNote = { };
-            $scope.addingLeadNote = false;
-        }
+        };
 
         var updateSuccessCallback = function (response) {
-            Logger.success("Note Updated Successfully", "Success");
+            Logger.success("Note Added Successfully", "Success");
         };
 
         var updateErrorCallBack = function (response) {

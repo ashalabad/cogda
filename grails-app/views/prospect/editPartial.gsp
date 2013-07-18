@@ -171,7 +171,7 @@
                 <div data-ng-controller="EditLeadNoteController">
                     <address data-ng-hide="editingLeadNote">
                         <button type="button" class="btn btn-danger btn-mini pull-right"
-                                data-ng-click="deleteLeadNote()"><i
+                                data-ng-click="deleteLeadNote(leadNote)"><i
                                 class="icon-edit"></i> <g:message code="default.button.delete.label"/></button>
                         <button type="button" class="btn btn-info btn-mini pull-right" data-ng-click="editLeadNote()"><i
                                 class="icon-edit"></i> <g:message code="default.button.edit.label"/></button>
