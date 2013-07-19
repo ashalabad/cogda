@@ -1,4 +1,5 @@
 <form name="companyProfileDetailForm"
+      novalidate="novalidate"
       class="form-horizontal">
     <fieldset>
         <legend>

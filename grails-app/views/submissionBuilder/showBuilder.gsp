@@ -89,9 +89,9 @@
         <div class="well">
 
             <div class="well-small">
-                <ul class="unstyled" data-ng-repeat="submission in submission.submissions">
+                <div class="unstyled" data-ng-repeat="submission in submission.submissions">
 
-                </ul>
+                </div>
             </div>
         </div>
 

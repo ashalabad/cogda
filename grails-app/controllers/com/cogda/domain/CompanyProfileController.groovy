@@ -79,7 +79,12 @@ class CompanyProfileController extends GsonBaseController{
             }
         }
 
-        companyProfileInstance.properties = request.GSON
+        def jsonObject = request.GSON
+        companyProfileInstance.companyWebsite = jsonObject.companyWebsite?.getAsString()
+        companyProfileInstance.companyDescription = jsonObject.companyDescription?.getAsString()
+        companyProfileInstance.businessSpecialties = jsonObject.businessSpecialties?.getAsString()
+        companyProfileInstance.associations = jsonObject.associations?.getAsString()
+        companyProfileInstance.published = jsonObject.published?.getAsBoolean()
 
         if (companyProfileInstance.save(flush: true)) {
             respondUpdated companyProfileInstance
