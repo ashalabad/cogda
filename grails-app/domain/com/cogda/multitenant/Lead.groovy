@@ -30,7 +30,7 @@ class Lead {
             files: FileReference,
             leadContacts: LeadContact,
             leadAddresses: LeadAddress,
-            linesOfBusiness: LineOfBusiness,
+            linesOfBusiness: LeadLineOfBusiness,
             naicsCodes: NaicsCode,
             sicCodes: SicCode]
 
