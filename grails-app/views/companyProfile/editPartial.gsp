@@ -4,6 +4,11 @@
     <fieldset>
         <legend>
             <g:message code="companyProfile.label"/>
+            <span class="pull-right">
+            <a class="btn" data-ng-href = "/companyProfile#/">
+                <g:message code="default.button.show.label"/>
+            </a>
+            </span>
         </legend>
 
         <div id="showCompanyProfileDetail" class="form-horizontal" data-ng-hide="editingCompanyProfile">
