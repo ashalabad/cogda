@@ -1,0 +1,39 @@
+.gridStyle {
+    border: 1px solid rgb(212,212,212);
+    height: 390px
+}
+
+.fixedAddressWellHeight {
+    height:130px;
+}
+
+.fixedContactWellHeight {
+    height:80px;
+}
+
+.minWell {
+    min-height: 145px;
+}
+
+.accountDisplay{
+    padding-top:10px;
+    background-color: #f5f5f5;
+    border: #a5d8ff inset 2px;
+    min-height: 150px;
+    -webkit-border-radius: 0 0 6px 6px;
+    -moz-border-radius: 0 0 6px 6px;
+    border-radius: 6px 6px 6px 6px;
+    -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.15);
+    -moz-box-shadow: 0 1px 2px rgba(0,0,0,.15);
+    box-shadow: 0 1px 2px rgba(0,0,0,.15);
+}
+
+.darkHR{
+    border-color:#ccc;
+}
+
+.gridIcon{
+    padding: 3px;
+}
+
+

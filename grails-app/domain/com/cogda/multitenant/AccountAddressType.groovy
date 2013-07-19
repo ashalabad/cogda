@@ -23,4 +23,8 @@ class AccountAddressType {
         description(nullable:true, maxSize: 255)
     }
 
+    String toString() {
+        code
+    }
+
 }

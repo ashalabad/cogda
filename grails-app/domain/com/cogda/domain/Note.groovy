@@ -6,18 +6,15 @@ package com.cogda.domain
  */
 class Note {
 
-    /* Default (injected) attributes of GORM */
-	Long	id
-	Long	version
-
     String notes
 
     static mapping = {
+        version false
         notes type:'text'
     }
 
     static constraints = {
-        notes(maxSize:500)
+        notes(maxSize:15000)
     }
 
 }

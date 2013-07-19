@@ -25,10 +25,13 @@ import com.cogda.domain.security.Role
 import com.cogda.domain.security.User
 import com.cogda.domain.security.UserRole
 import com.cogda.multitenant.Account
+import com.cogda.multitenant.AccountAddress
+import com.cogda.multitenant.AccountAddressType
 import com.cogda.multitenant.AccountCompanyOwner
 import com.cogda.multitenant.AccountContact
+import com.cogda.multitenant.AccountContactAddress
 import com.cogda.multitenant.AccountContactEmailAddress
-import com.cogda.multitenant.AccountContactEmailAddress
+import com.cogda.multitenant.AccountContactLink
 import com.cogda.multitenant.AccountContactPhoneNumber
 import com.cogda.multitenant.AccountNote
 import com.cogda.multitenant.Company
@@ -133,6 +136,9 @@ class BootStrap {
             }
             if(AccountType.count() == 0){
                 createAccountTypes()
+            }
+            if(AccountAddressType.count() == 0){
+                createAccountAddressTypes()
             }
             if(SupportedCountryCode.count() == 0){
                 createSupportedCountryCodes()
@@ -259,6 +265,9 @@ class BootStrap {
                         testAccount.accountName= nextLine[0]?.trim()
                         testAccount.accountCode= nextLine[1]?.trim()
                         testAccount.accountType= AccountType.findByCode(nextLine[2]?.trim())
+                        testAccount.isMarket = Boolean.TRUE;
+                        testAccount.active = Boolean.TRUE;
+                        testAccount.accountCode= nextLine[1]?.trim()
                         if (testAccount.hasErrors() || !testAccount.validate() ) {
                             log.error("Could not import testAccount with AccountCode: ${testAccount.accountCode}  ${testAccount.errors}")
                         }
@@ -268,9 +277,7 @@ class BootStrap {
                             def testAccountContact = new AccountContact(
                                     firstName: nextLine[3]?.trim(),
                                     middleName: nextLine[4]?.trim(),
-                                    lastName: nextLine[5]?.trim(),
-                                    account: testAccount,
-                                    primaryContact: true
+                                    lastName: nextLine[5]?.trim()
                             )
                             if (testAccountContact.hasErrors() || !testAccountContact.validate() ) {
                                 log.error("Could not import testAccountContact ${testAccountContact.firstName} ${testAccountContact.lastName}  ${testAccountContact.errors}")
@@ -293,15 +300,64 @@ class BootStrap {
                                 else
                                     testAccountEmail.save()
 
+                                AccountContactAddress accountContactAddress = new AccountContactAddress()
+                                accountContactAddress.address = new Address()
+                                accountContactAddress.address.addressOne = "address line 1"
+                                accountContactAddress.address.addressTwo = "address line 2"
+                                accountContactAddress.address.addressThree = "address line 3"
+                                accountContactAddress.address.city = "Athens"
+                                accountContactAddress.address.state = "Georgia"
+                                accountContactAddress.address.zipcode = "30602"
+                                accountContactAddress.primaryAddress = Boolean.TRUE
+                                testAccountContact.addToAccountContactAddresses(accountContactAddress)
+                                accountContactAddress.save()
+                                if(accountContactAddress.hasErrors()){
+                                    println "accountContactAddress ${accountContactAddress} failed to save ${accountContactAddress.errors}"
+                                }
+
                                 testAccountContact.addToAccountContactEmailAddresses(testAccountEmail)
                                 testAccountContact.addToAccountContactPhoneNumbers(testAccountPhoneNumber)
                                 testAccountContact.save()
 
-                                testAccount.addToAccountContacts(testAccountContact)
+                                AccountContactLink.create testAccount, testAccountContact, true, true
                                 testAccount.save()
                             }
-                                def tempNote = new Note(notes:"This is a sample note").save()
-                                def tempAccountNote = new AccountNote(note: tempNote,account: testAccount,noteType: NoteType.get(1)).save()
+
+
+                            AccountAddress accountAddress = new AccountAddress()
+                            accountAddress.address = new Address()
+                            accountAddress.address.addressOne = "address line 1"
+                            accountAddress.address.addressTwo = "address line 2"
+                            accountAddress.address.addressThree = "address line 3"
+                            accountAddress.accountAddressType = AccountAddressType.findByCode("Mailing")
+                            accountAddress.address.city = "Athens"
+                            accountAddress.address.state = "Georgia"
+                            accountAddress.address.zipcode = "30602"
+                            accountAddress.primaryAddress = Boolean.TRUE
+                            testAccount.addToAccountAddresses(accountAddress)
+                            accountAddress.save()
+
+                            accountAddress = new AccountAddress()
+                            accountAddress.address = new Address()
+                            accountAddress.address.addressOne = "address line 1"
+                            accountAddress.address.addressTwo = "address line 2"
+                            accountAddress.address.addressThree = "address line 3"
+                            accountAddress.accountAddressType = AccountAddressType.findByCode("Billing")
+                            accountAddress.address.city = "Athens"
+                            accountAddress.address.state = "Georgia"
+                            accountAddress.address.zipcode = "30602"
+                            accountAddress.primaryAddress = Boolean.FALSE
+                            testAccount.addToAccountAddresses(accountAddress)
+                            accountAddress.save()
+
+                            if(accountAddress.hasErrors()){
+                                println "accountAddress ${accountAddress} failed to save ${accountAddress.errors}"
+                            }
+                            def noteText = """Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer volutpat pretium dictum. Praesent consequat sollicitudin est at fringilla. Morbi lacinia, mauris a gravida imperdiet, mi nulla scelerisque diam, eu rutrum massa neque non mauris. Nulla est felis, mattis non hendrerit vitae, accumsan id metus. Fusce ac leo nec velit venenatis tincidunt. In in ante id sapien ultrices mollis. Vivamus consequat sit amet odio vel ullamcorper. Maecenas sit amet mollis justo. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi quis bibendum nisl. Nunc aliquet accumsan nulla vel porttitor. Donec vestibulum mattis odio, a auctor nunc pulvinar dignissim. Aenean molestie dignissim tempus. Aenean nec tellus urna. Mauris blandit auctor eros, sit amet luctus diam blandit sit amet. Suspendisse consequat consectetur consequat.
+                                                Nullam vitae neque commodo, mattis purus non, varius diam. Nam ac sodales diam. Curabitur augue ligula, auctor eu vestibulum ut, lacinia non lacus. Etiam sodales tincidunt malesuada. Nunc ultricies consectetur congue. Sed ornare elit tellus, sed vulputate velit tincidunt nec. Suspendisse pretium nisi convallis risus convallis, quis faucibus nulla ornare. Etiam eget mauris nec odio posuere pellentesque. Curabitur nisl neque, elementum quis ipsum ac, scelerisque lobortis orci. Sed porta orci arcu, id mollis tellus ullamcorper ut. In egestas elit sit amet consequat mollis."""
+
+                            def tempNote = new Note(notes:noteText).save()
+                            def tempAccountNote = new AccountNote(note: tempNote,account: testAccount,noteType: NoteType.get(1)).save()
 
                             log.debug("Importing testAccount  ${testAccount}")
                             AccountCompanyOwner.create testAccount, company, true
@@ -448,6 +504,19 @@ class BootStrap {
             }
         }
     }
+
+    def createAccountAddressTypes(){
+        AccountAddressType.withTransaction {
+            if (!AccountAddressType.findByCode("Mailing")) {
+                new AccountAddressType(code: "Mailing", description: "Mailing").save()
+            }
+            if (!AccountAddressType.findByCode("Billing")) {
+                new AccountAddressType(code: "Billing", description: "Billing").save()
+            }
+        }
+    }
+
+
 
     def createRennaissanceRegistration(){
         if (!Registration.findBySubDomain("rais")) {
@@ -722,10 +791,10 @@ Thank you!
 
 
     def importNaicsCodes() {
-            InputStream is = amazonWebService.s3.getObject(new GetObjectRequest("cogda-test", "testingfiles/NaicsCode.csv")).getObjectContent()
-            CSVReader reader = new CSVReader(new InputStreamReader(is))
-            String[] nextLine;
-            while ((nextLine = reader.readNext()) != null) {
+        InputStream is = amazonWebService.s3.getObject(new GetObjectRequest("cogda-test", "testingfiles/NaicsCode.csv")).getObjectContent()
+        CSVReader reader = new CSVReader(new InputStreamReader(is))
+        String[] nextLine;
+        while ((nextLine = reader.readNext()) != null) {
             def code = nextLine[0]?.trim()
             def desc = nextLine[1]?.trim()
             if(code && code != ""){
