@@ -135,10 +135,14 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact','re
             $scope.errors = [];
             $scope.title = "Create Account";
             $scope.account = {};
+            $scope.account.active = true;
             $scope.account.isMarket = false;
             $scope.account.favorite = false;
 
 
+            $scope.cancel = function cancel(){
+                $location.path('/');
+            };
 
             $scope.saveAccount = function(){
                 Account.save($scope.account).$then(updateSuccessCallback, updateErrorCallback);
@@ -170,28 +174,26 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact','re
             $scope.loadAccount = function(){
                 Account.get({id:$routeParams.id},function (data) {
                     $scope.account = data;
-//                    console.log($scope.account);
 
-                    $.each($scope.account.accountAddresses, function(i, v) {
-                        if (v.primaryAddress == true) {
-                            $scope.primaryAccountAddress = v
-                            $scope.formattedPrimaryAddress = $scope.formatAddress($scope.primaryAccountAddress);
-                            $scope.mapPrimaryAddress = $scope.formatAddressForMapping($scope.formattedPrimaryAddress);
-                        }
+                }).$then(function(){
+                        $.each($scope.account.accountAddresses, function(i, v) {
+                            if (v.primaryAddress == true) {
+                                $scope.primaryAccountAddress = v
+                                $scope.formattedPrimaryAddress = $scope.formatAddress($scope.primaryAccountAddress);
+                                $scope.mapPrimaryAddress = $scope.formatAddressForMapping($scope.formattedPrimaryAddress);
+                            }
+                        });
+
+                        AccountContactLink.accountContacts({id:$scope.account.id},function(result){
+                            $scope.accountContacts = result.properties.contacts;
+                        }).$then(function() {
+                                AccountContactLink.primaryContact({id:$scope.account.id},function(primaryContact){
+                                    $scope.primaryAccountContact = primaryContact;
+                                    $scope.formattedPrimaryContact = $scope.formatContact($scope.primaryAccountContact);
+                                });
+                        });
+
                     });
-
-                    AccountContactLink.primaryContact({id:$scope.account.id},function(primaryContact){
-                        $scope.primaryAccountContact = primaryContact;
-                        $scope.formattedPrimaryContact = $scope.formatContact($scope.primaryAccountContact);
-                    });
-
-                    AccountContactLink.accountContacts({id:$scope.account.id},function(result){
-                        $scope.accountContacts = result.properties.contacts;
-//                        console.log(result);
-                    });
-
-
-                })
             };
 
             $scope.clearSearch = function clearSearch(){
@@ -315,6 +317,56 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact','re
                 $location.path('/accountContact/' + accountContact.id);
             };
 
+            $scope.unlinkAccountContact = function unlinkAccountContact(accountContact){
+                var title = 'Unlink Account Contact';
+                var msg = 'Are you sure you want to remove this link?';
+                var btns = [{result:'cancel', label: 'Cancel'}, {result:'delete', label: 'Unlink', cssClass: 'btn-danger'}];
+                $dialog.messageBox(title, msg, btns)
+                    .open()
+                    .then(function(result){
+                        if(result=='delete'){
+                            AccountContactLink.delete({account:$scope.account,accountContact:accountContact}).$then(updateSuccessCallback, updateSuccessCallback);
+                        }
+                    });
+            };
+
+            $scope.designatePrimaryAccountContact = function designatePrimaryAccountContact(accountContact){
+                var title = 'Primary Contact';
+                var msg = 'Are you sure you want to make this the Primary Contact?';
+                var btns = [{result:'cancel', label: 'Cancel'}, {result:'yes', label: 'Yes', cssClass: 'btn-primary'}];
+                $dialog.messageBox(title, msg, btns)
+                    .open()
+                    .then(function(result){
+                        if(result=='yes'){
+                            AccountContactLink.designatePrimary({account:$scope.account,accountContact:accountContact}).$then(updateSuccessCallback, updateSuccessCallback);
+                        }
+                    });
+            };
+
+            var updateSuccessCallback = function(response){
+                // apply the success message to toastr
+                Logger.messageBuilder(response, $scope);
+                $scope.loadAccount();
+            };
+
+            $scope.addAccountLink = function addAccountLink(){
+                var addOpts = {
+                    dialogFade: true,
+                    backdropFade: true,
+                    templateUrl:  'account/createAccountLinkPartial',
+                    controller: 'CreateAccountLinkCtrl',
+                    resolve: {
+                        account: function() {
+                            return angular.copy($scope.account);
+                        }
+
+                    }
+
+                };
+                var d = $dialog.dialog(addOpts);
+                d.open().then(function(){$scope.loadAccount();});
+            };
+
             $scope.formatContact= function(contact){
 //                console.log(contact);
                 var primaryAccountContactEmailAddress=null;
@@ -378,7 +430,7 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact','re
         function ($scope,$routeParams, dialog, $location, AccountContact, Logger,account,AccountContactLink,primary) {
             $scope.message = '';
             $scope.errors = [];
-            $scope.title = "Create Contact";
+            $scope.title = "Add Contact";
             $scope.accountContactLink = {
                 account: account,
                 primaryContact: primary,
@@ -398,6 +450,8 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact','re
                 primaryPhoneNumber: true,
                     phoneNumber:""
             };
+
+
 
             $scope.cancel = function(){
                 dialog.close();
@@ -595,25 +649,21 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact','re
             };
         }])
 
-    .controller('AccountContactCtrl',['$scope','$routeParams','$dialog','$location','Account','Logger','AccountContact','AccountContactEmailAddress','AccountContactPhoneNumber','AccountContactAddress',
-        function ($scope,$routeParams, $dialog, $location, Account, Logger, AccountContact, AccountContactEmailAddress, AccountContactPhoneNumber, AccountContactAddress) {
+    .controller('AccountContactCtrl',['$scope','$routeParams','$dialog','$location','Account','Logger','AccountContact','AccountContactEmailAddress','AccountContactPhoneNumber','AccountContactAddress','AccountContactLink',
+        function ($scope,$routeParams, $dialog, $location, Account, Logger, AccountContact, AccountContactEmailAddress, AccountContactPhoneNumber, AccountContactAddress,AccountContactLink) {
 
             $scope.showAccountContact=true;
 
             $scope.loadAccountContact = function(){
                 AccountContact.get({id:$routeParams.id},function (data) {
                     $scope.accountContact = data;
-//                    Account.get({id:$scope.accountContact.account.id},function (data) {
-//                        $scope.account = data;
-//                        $.each($scope.account.accountContacts, function(i, v) {
-//                            if (v.id == $scope.accountContact.id) {
-//                                $scope.contactIndex =i;
-//                            }
-//                        });
-//                    });
-
-
+                    AccountContactLink.accounts({id:$scope.accountContact.id},function(result){
+                        $scope.accounts = result.properties.accounts;
+//                        console.log(result);
+                    });
                 });
+
+
             };
 
             $scope.formatAddress= function(accountContactAddress){
@@ -633,9 +683,21 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact','re
 
             };
 
-//            $scope.showAccount = function showAccount(){
-//                $location.path('/show/' + $scope.account.id);
-//            };
+            $scope.formatAccount= function(account){
+                var formattedAccount = "<strong>" + account.accountName + "</strong><br>" + account.accountType.code;
+                if(account.accountCode)
+                    formattedAccount += "<br>" + account.accountCode;
+                $.each(account.accountAddresses, function(i, v) {
+                    if (v.primaryAddress == true) {
+                        formattedAccount += "<br>" + $scope.formatAddress(v);
+                    }
+                });
+                return formattedAccount;
+            };
+
+            $scope.showAccount = function showAccount(account){
+                $location.path('/show/' + account.id);
+            };
 
             $scope.editAccountContact = function editAccountContact(){
                 $scope.createTemp($scope.accountContact);
@@ -657,6 +719,21 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact','re
             $scope.updateAccountContact = function(){
                 AccountContact.update($scope.accountContact).$then(updateSuccessCallback, updateErrorCallback);
             };
+
+            $scope.unlinkAccount = function unlinkAccount(account){
+                var title = 'Unlink Account';
+                var msg = 'Are you sure you want to remove this link?';
+                var btns = [{result:'cancel', label: 'Cancel'}, {result:'delete', label: 'Unlink', cssClass: 'btn-danger'}];
+                $dialog.messageBox(title, msg, btns)
+                    .open()
+                    .then(function(result){
+                        if(result=='delete'){
+                            AccountContactLink.delete({account:account,accountContact:$scope.accountContact}).$then(deleteCallback, deleteCallback);
+                        }
+                    });
+            };
+
+
 
             $scope.deleteAccountContactEmailAddress = function deleteAccountContactEmailAddress(accountContactEmailAddress){
                 var title = 'Delete Email Address';
@@ -743,6 +820,24 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact','re
                 // apply the success message to toastr
                 Logger.messageBuilder(response, $scope);
                 $location.path('/');
+            };
+
+            $scope.addAccountContactLink = function addAccountContactLink(){
+                var addOpts = {
+                    dialogFade: true,
+                    backdropFade: true,
+                    templateUrl:  'account/createAccountContactLinkPartial',
+                    controller: 'CreateAccountContactLinkCtrl',
+                    resolve: {
+                        accountContact: function() {
+                            return angular.copy($scope.accountContact);
+                        }
+
+                    }
+
+                };
+                var d = $dialog.dialog(addOpts);
+                d.open().then(function(){$scope.loadAccountContact();});
             };
 
             $scope.addAccountContactEmailAddress = function addAccountContactEmailAddress(){
@@ -898,6 +993,94 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact','re
                 // apply errors to the $scope.errrors object
                 Logger.formValidationMessageBuilder(response, $scope, $scope.accountContactEmailAddressAddForm);
             };
+
+        }])
+
+    .controller('CreateAccountContactLinkCtrl', ['$scope','$routeParams','dialog','AccountContactLink','Logger','accountContact',
+        function ($scope,$routeParams, dialog, AccountContactLink, Logger, accountContact) {
+            $scope.message = '';
+            $scope.errors = [];
+            $scope.title = "Link Account";
+            $scope.account = "";
+
+            $scope.loadAccounts = function(){
+                AccountContactLink.availableAccounts({id:accountContact.id}, function(data){
+                    $scope.accounts = data;
+                });
+            };
+
+            $scope.cancel = function(){
+                dialog.close();
+            };
+
+            $scope.saveAccountContactLink = function(){
+                AccountContactLink.create({accountContact:accountContact.id,account:$scope.account.id}).$then(updateSuccessCallback, updateErrorCallback);
+            };
+
+            /**
+             * updateSuccessCallback - success handler for successful update
+             * @param response
+             */
+            var updateSuccessCallback = function(response){
+                // apply the success message to toastr
+                Logger.messageBuilder(response, $scope);
+                dialog.close();
+            };
+
+            /**
+             * updateErrorCallback - error handler for unsuccessful update
+             * @param response
+             */
+            var updateErrorCallback = function(response){
+                // apply errors to the $scope.errrors object
+                Logger.formValidationMessageBuilder(response, $scope, $scope.accountContactLinkAddForm);
+            };
+
+            $scope.loadAccounts();
+
+        }])
+
+    .controller('CreateAccountLinkCtrl', ['$scope','$routeParams','dialog','AccountContactLink','Logger','account',
+        function ($scope,$routeParams, dialog, AccountContactLink, Logger, account) {
+            $scope.message = '';
+            $scope.errors = [];
+            $scope.title = "Link Account Contact";
+            $scope.accountContact = "";
+
+            $scope.loadAccountContacts = function(){
+                AccountContactLink.availableAccountContacts({id:account.id}, function(data){
+                    $scope.accountContacts = data;
+                });
+            };
+
+            $scope.cancel = function(){
+                dialog.close();
+            };
+
+            $scope.saveAccountLink = function(){
+                AccountContactLink.create({accountContact:$scope.accountContact.id,account:account.id}).$then(updateSuccessCallback, updateErrorCallback);
+            };
+
+            /**
+             * updateSuccessCallback - success handler for successful update
+             * @param response
+             */
+            var updateSuccessCallback = function(response){
+                // apply the success message to toastr
+                Logger.messageBuilder(response, $scope);
+                dialog.close();
+            };
+
+            /**
+             * updateErrorCallback - error handler for unsuccessful update
+             * @param response
+             */
+            var updateErrorCallback = function(response){
+                // apply errors to the $scope.errrors object
+                Logger.formValidationMessageBuilder(response, $scope, $scope.accountLinkAddForm);
+            };
+
+            $scope.loadAccountContacts();
 
         }])
 
