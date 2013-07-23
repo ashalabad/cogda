@@ -1,10 +1,10 @@
-package com.cogda.multitenant
+package com.cogda.domain
 
 /**
- * SubmissionAccountContact
+ * RequestForActionDocument
  * A domain class describes the data object and it's mapping to the database
  */
-class SubmissionAccountContact {
+class RequestForActionDocument {
 
     /* Default (injected) attributes of GORM */
 //	Long	id

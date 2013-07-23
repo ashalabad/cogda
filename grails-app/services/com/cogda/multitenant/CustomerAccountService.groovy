@@ -37,6 +37,11 @@ import org.codehaus.groovy.grails.commons.GrailsApplication
  */
 class CustomerAccountService {
 
+    /**
+     * CurrentTenant currentTenant - the ThreadLocal CurrentTenant if
+     * there is a currently active tenant.  Used when we are resolving a currently
+     * active tenant when locating folders and files.
+     */
     CurrentTenant currentTenant
 
     private static final log = LogFactory.getLog(this)
