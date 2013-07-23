@@ -51,8 +51,37 @@ class DocumentStorageServiceSpec extends IntegrationSpec {
         assert currentCustomerAccountFolder.endsWith(customerAccount.accountId)
     }
 
-    void "attempts to change folder names fail"(){
-        when:
+    void "appendSlash correctly appends slash to the end of a String folder"(){
+        expect:
+        documentStorageService.appendSlash(paramfolder) == returnFolder
+
+        where:
+        paramfolder       | returnFolder
+        "something"       | "something/"
+        "something/"      | "something/"
+        "something/s"     | "something/s/"
+        "something/1"     | "something/1/"
+        "something/_"     | "something/_/"
+        "something/_/"    | "something/_/"
+        "something/1/"    | "something/1/"
+        "something/*/"    | "something/*/"
+        "something/@/"    | "something/@/"
+        "something/@"     | "something/@/"
+
 
     }
+
+    void "test that the 'folder' names have not been changed"(){
+        expect:
+        assert DocumentStorageService.getPathPrefix()         == "customerAccounts/"
+        assert DocumentStorageService.getCompaniesFolder()    == "companies"
+        assert DocumentStorageService.getClientsFolder()      == "clients"
+        assert DocumentStorageService.getLeadsFolder()        == "leads"
+        assert DocumentStorageService.getImagesFolder()       == "images"
+        assert DocumentStorageService.getTempFolder()         == "temp"
+        assert DocumentStorageService.getUsersFolder()        == "users"
+    }
+
+
+
 }

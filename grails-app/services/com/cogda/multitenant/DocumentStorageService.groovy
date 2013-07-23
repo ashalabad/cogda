@@ -9,6 +9,11 @@ import org.codehaus.groovy.grails.commons.GrailsApplication
  */
 class DocumentStorageService {
     /**
+     * The character used to separate the Folders
+     */
+    protected static final String FOLDER_SEPARATOR = "/"
+
+    /**
      * CustomerAccountService customerAccountService
      */
     CustomerAccountService customerAccountService
@@ -22,44 +27,44 @@ class DocumentStorageService {
      * The root path prefix -
      * The customerAccountRoot exists on the defaultBucket "customerAccounts/${customerAccount.accountId}/"
      */
-    private final String pathPrefix = "customerAccounts/"
+    private static final String PATH_PREFIX = "customerAccounts/"
 
     /**
      * The companiesFolder contains all of the companies for a customerAccount
      */
-    private final String companiesFolder = "companies"
+    private static final String COMPANIES_FOLDER = "companies"
 
     /**
      * The clients folder is a storage location for storing client specific information for a customerAccount
      */
-    private final String clientsFolder = "clients"
+    private static final String CLIENTS_FOLDER = "clients"
 
     /**
      * the leads folder is a storage location for storing Lead information for a customerAccount
      */
-    private final String leadsFolder = "leads"
+    private static final String LEADS_FOLDER = "leads"
 
     /**
      * The imagesFolder contains images for a customerAccount
      */
-    private final String imagesFolder = "images"
+    private static final String IMAGES_FOLDER = "images"
 
     /**
      * The tempFolder contains temporary files for a customerAccount
      */
-    private final String tempFolder = "temp"
+    private static final String TEMP_FOLDER = "temp"
 
     /**
      * The usersFolder contains user specific files for a customerAccount
      */
-    private final String usersFolder = "users"
+    private static final String USERS_FOLDER = "users"
 
     /**
      * The customerAccountRoot exists on the defaultBucket "customerAccounts/${customerAccount.accountId}/"
      * @return String
      */
-    String getPathPrefix() {
-        return pathPrefix
+    static String getPathPrefix() {
+        return PATH_PREFIX
     }
 
     /**
@@ -68,47 +73,58 @@ class DocumentStorageService {
      *     "customerAccounts/${customerAccount.accountId}/companies"
      * @return String
      */
-    String getCompaniesFolder() {
-        return companiesFolder
+    static String getCompaniesFolder() {
+        return COMPANIES_FOLDER
     }
     /**
      * The companiesFolder contains all of the clients associated with a customerAccount
      * @return String
      */
-    String getClientsFolder() {
-        return clientsFolder
+    static String getClientsFolder() {
+        return CLIENTS_FOLDER
     }
     /**
      * The leadsFolder contains all of the leads associated with a customerAccount
      * @return String
      */
-    String getLeadsFolder() {
-        return leadsFolder
+    static String getLeadsFolder() {
+        return LEADS_FOLDER
     }
     /**
      * The imagesFolder contains all of the image files associated with a customerAccount
      * @return String
      */
-    String getImagesFolder() {
-        return imagesFolder
+    static String getImagesFolder() {
+        return IMAGES_FOLDER
     }
     /**
      * The tempFolder contains all of the temporary files associated with a customerAccount
      * @return String
      */
-    String getTempFolder() {
-        return tempFolder
+    static String getTempFolder() {
+        return TEMP_FOLDER
     }
 
     /**
      * The usersFolder contains all of the user files associated with a customerAccount
      * @return String
      */
-    String getUsersFolder() {
-        return usersFolder
+    static String getUsersFolder() {
+        return USERS_FOLDER
     }
 
-    static transactional = true
+    /**
+     * Appends the FOLDER_SEPARATOR to the passed in String if one does not currently
+     * exist at the end of the passed in string.
+     * @param folder
+     * @return String
+     */
+    protected String appendSlash(String folder){
+        if(!folder.endsWith(FOLDER_SEPARATOR)){
+            folder += FOLDER_SEPARATOR
+        }
+        return folder
+    }
 
     /**
      * Returns the folder from S3 for the currently active CustomerAccount based on
@@ -131,5 +147,15 @@ class DocumentStorageService {
      */
     public String getDefaultBucket(){
         return grailsApplication.config.grails.plugin.awssdk.default.bucket
+    }
+
+    /**
+     * Will return customerAccounts/${customerAccount.accountId}/companies
+     * @return
+     */
+    String getCurrentAccountCompaniesFolder(){
+        String folder = appendSlash(currentCustomerAccountFolder)
+        folder += DocumentStorageService.getCompaniesFolder()
+        return folder
     }
 }
