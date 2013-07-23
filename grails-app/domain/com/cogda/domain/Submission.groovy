@@ -51,6 +51,11 @@ class Submission {
         parentSubmission(nullable: true)
         createdBy(nullable:false)
         submissionId(nullable:false, unique:true)
+        leadLineOfBusinesses(validator: { Set leadLineOfBusinesses, Submission submission ->
+            if(submission.isChild() && !leadLineOfBusinesses){
+                return ['submission.child.leadLineOfBusinesses.required']
+            }
+        })
     }
 
     /**

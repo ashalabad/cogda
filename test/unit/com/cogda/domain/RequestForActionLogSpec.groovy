@@ -1,15 +1,13 @@
-package com.cogda.multitenant
+package com.cogda.domain
 
-
-
+import com.cogda.domain.RequestForActionLog
 import grails.test.mixin.*
-import org.junit.*
 
 /**
  * See the API for {@link grails.test.mixin.domain.DomainClassUnitTestMixin} for usage instructions
  */
-@TestFor(RequestForActionDocument)
-class RequestForActionDocumentSpec {
+@TestFor(RequestForActionLog)
+class RequestForActionLogSpec {
 
     void testSomething() {
         fail "Implement me"

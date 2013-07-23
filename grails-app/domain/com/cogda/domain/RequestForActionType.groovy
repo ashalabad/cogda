@@ -1,4 +1,4 @@
-package com.cogda.multitenant
+package com.cogda.domain
 
 /**
  * RequestForActionStatus

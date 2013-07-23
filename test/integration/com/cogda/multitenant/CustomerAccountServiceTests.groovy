@@ -30,6 +30,8 @@ class CustomerAccountServiceTests extends BaseIntegrationTest{
 
     private static final log = LogFactory.getLog(this)
 
+    private static final String TESTING_CUSTOMER_ACCOUNT_NAME = "CHOCOTACO"
+
     CustomerAccountService customerAccountService
     AmazonWebService amazonWebService
     GrailsApplication grailsApplication
@@ -270,6 +272,7 @@ class CustomerAccountServiceTests extends BaseIntegrationTest{
         final String pathPrefix = "customerAccounts/"
         final String companiesFolder = "companies"
         final String clientsFolder = "clients"
+        final String leadsFolder = "leads"
         final String imagesFolder = "images"
         final String tempFolder = "temp"
         final String usersFolder = "users"
@@ -279,7 +282,7 @@ class CustomerAccountServiceTests extends BaseIntegrationTest{
 
         List objectSummaries = objectListing.objectSummaries
 
-        assert objectSummaries.size() == 11
+        assert objectSummaries.size() == 12
 
         objectSummaries.each { S3ObjectSummary objectSummary ->
             try {
@@ -298,6 +301,16 @@ class CustomerAccountServiceTests extends BaseIntegrationTest{
     @Test
     void testCreateFirstCompanyProfile(){
 
+    }
+
+    @Test
+    void testGetActiveCustomerAccount(){
+        CustomerAccount customerAccount  = CustomerAccount.findBySubDomain(TESTING_CUSTOMER_ACCOUNT_NAME)
+        assert customerAccount, "Testing Customer Account with subDomain $TESTING_CUSTOMER_ACCOUNT_NAME was not found. Perhaps someone removed it from Bootstrap.groovy"
+
+        customerAccount.withThisTenant {
+            assert customerAccountService.activeCustomerAccount.subDomain.equals(customerAccount.subDomain)
+        }
     }
 
 

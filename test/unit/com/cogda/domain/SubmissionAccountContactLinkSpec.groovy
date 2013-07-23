@@ -1,15 +1,13 @@
-package com.cogda.multitenant
+package com.cogda.domain
 
-
-
+import com.cogda.domain.SubmissionAccountContactLink
 import grails.test.mixin.*
-import org.junit.*
 
 /**
  * See the API for {@link grails.test.mixin.domain.DomainClassUnitTestMixin} for usage instructions
  */
-@TestFor(RequestForAction)
-class RequestForActionSpec {
+@TestFor(SubmissionAccountContactLink)
+class SubmissionAccountContactLinkSpec {
 
     void testSomething() {
         fail "Implement me"
