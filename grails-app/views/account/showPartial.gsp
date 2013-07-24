@@ -33,10 +33,19 @@
     <div class="row">
         <div class="span8">
             <button type="button" class="btn btn-mini" data-ng-click="editAccount()"><i class="icon-edit"></i> <g:message code="default.edit.label" args="[message(code:'account.label')]"  /></button>
-            <button type="button" class="btn btn-mini" data-ng-click="attachDocument()"><i class="icon-upload"></i> <g:message code="default.attach.label" args="[message(code:'document.label')]" /></button>
             <button type="button" class="btn btn-mini" data-ng-click="createSubmission()"><i class="icon-plus"></i> <g:message code="default.create.label" args="[message(code:'submission.label')]" /></button>
+            <button type="button" class="btn btn-mini" data-ng-click="attachDocument()"><i class="icon-upload"></i> <g:message code="default.attach.label" args="[message(code:'document.label')]" /></button>
+            <div class="btn-group">
+                <a class="btn btn-mini dropdown-toggle" data-toggle="dropdown" href="#">
+                    <i class="icon-plus"></i> <g:message code="default.add.label" args="[message(code:'accountContact.contact.label')]" />
+                    <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a data-ng-click="addAccountContact(false)"><i class="icon-plus"></i> <g:message code="default.new.label" args="[message(code:'accountContact.contact.label')]" /></a></li>
+                    <li><a data-ng-click="addAccountLink()"><i class="icon-link"></i> <g:message code="accountContactLink.link.label" args="[message(code:'accountContact.contact.label')]" /></a></li>
+                </ul>
+            </div>
             <button type="button" class="btn btn-mini" data-ng-click="addAccountNote()"><i class="icon-plus"></i> <g:message code="default.add.label" args="[message(code:'accountNote.note.notes.label')]" /></button>
-            <button type="button" class="btn btn-mini" data-ng-click="addAccountContact(false)"><i class="icon-plus"></i> <g:message code="default.add.label" args="[message(code:'accountContact.contact.label')]" /></button>
             <button type="button" class="btn btn-mini" data-ng-click="addAccountAddress()"><i class="icon-plus"></i> <g:message code="default.add.label" args="[message(code:'accountAddress.address.label')]" /></button>
         </div>
         <div class="span4">
@@ -72,7 +81,17 @@
                 <tab heading="Contacts">
                     <ul class="inline">
                         <li data-ng-repeat="contact in accountContacts | orderBy:'lastName' | filter:searchString " class="span5 well well-small fixedContactWellHeight">
-                            <button type="button" class="btn btn-mini pull-right" data-ng-click="showAccountContact(contact)" ><i class="icon-eye-open"></i> <g:message code="default.button.show.label" /></button>
+                            <div class="btn-group pull-right">
+                                <a class="btn btn-mini dropdown-toggle" data-toggle="dropdown" href="#">
+                                    <i class="icon-cog"></i> Manage Contact
+                                    <span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a data-ng-click="showAccountContact(contact)" ><i class="icon-eye-open"></i> <g:message code="default.button.show.label" /></a></li>
+                                    <li><a data-ng-click="unlinkAccountContact(contact)" ><i class="icon-link"></i> <g:message code="accountContactLink.unlink.simple.label" /></a></li>
+                                    <li data-ng-hide="contact.id == primaryAccountContact.id"><a data-ng-click="designatePrimaryAccountContact(contact)" ><i class="icon-asterisk"></i> Make Primary</a></li>
+                                </ul>
+                            </div>
                             <div data-ng-bind-html-unsafe="formatContact(contact)"></div>
                         </li>
                     </ul>

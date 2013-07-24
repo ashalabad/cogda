@@ -19,7 +19,6 @@ class AccountController extends GsonBaseController {
     }
 
     def list() {
-        //println params.dump()
         List accountInstanceList = Account.findAllByActive(true,params)
 
         def dataToRender = []
@@ -39,17 +38,16 @@ class AccountController extends GsonBaseController {
         render dataToRender as GSON
     }
 
-    def accountsContacts() {
-//        def carrier = com.cogda.domain.admin.AccountType.findByCode("Carrier")
-        def accounts = Account.list() //findAllByAccountType(carrier)
-        def dataToRender = [:]
-        accounts.each {
-            def accountContacts = AccountContactLink.findAllByAccount(it).collect {it.accountContact}
-            dataToRender.put(it,accountContacts)
-        }
-        def some =  dataToRender as JSON
-        println some.target
-    }
+//    def accountsContacts() {
+////        def carrier = com.cogda.domain.admin.AccountType.findByCode("Carrier")
+//        def accounts = Account.list() //findAllByAccountType(carrier)
+//        def dataToRender = [:]
+//        accounts.each {
+//            def accountContacts = AccountContactLink.findAllByAccount(it).collect {it.accountContact}
+//            dataToRender.put(it,accountContacts)
+//        }
+//        render dataToRender as JSON
+//    }
 
     def listPartial(){
         render (view:'listPartial')
@@ -89,6 +87,14 @@ class AccountController extends GsonBaseController {
 
     def editAccountNotePartial(){
         render(view:'editAccountNotePartial')
+    }
+
+    def createAccountContactLinkPartial(){
+        render(view:'createAccountContactLinkPartial')
+    }
+
+    def createAccountLinkPartial(){
+        render(view:'createAccountLinkPartial')
     }
 
     def createAccountContactEmailAddressPartial(){
@@ -161,7 +167,6 @@ class AccountController extends GsonBaseController {
                 return
             }
         }
-//        println request.GSON
         accountInstance.properties = request.GSON
 
         if (accountInstance.save(flush: true)) {

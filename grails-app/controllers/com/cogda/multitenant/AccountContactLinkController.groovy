@@ -11,22 +11,123 @@ import static grails.plugin.gson.http.HttpConstants.*
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AccountContactLinkController extends GsonBaseController {
 
-    final static String LABEL = "accountContact.label"
+    final static String LABEL = "accountContactLink.label"
 
+    def accounts() {
+        def returnObject = new Expando()
+        returnObject.accounts = AccountContactLink.findAllByAccountContact(AccountContact.get(params.id)).collect {it.account}
+        render returnObject as JSON
+    }
+
+    def availableAccounts() {
+        def accountList = Account.findAllByActive(true)
+        def memberships = AccountContactLink.findAllByAccountContact(AccountContact.get(params.id)).collect {it.account}
+        def availableAccounts =  accountList.minus(memberships).sort{it.accountName}
+        def dataToRender = []
+        availableAccounts.each {
+            def map = [:]
+            map.id = it.id
+            map.accountName = it.accountName
+            dataToRender.add(map)
+        }
+        render dataToRender as JSON
+    }
 
     def primaryContact() {
         AccountContact primaryContact = AccountContactLink.findByAccountAndPrimaryContact(Account.get(params.id),true)?.accountContact
         if (primaryContact) {
             respondFound primaryContact
         } else {
-            respondNotFound "Primary Contact"
+            respondNotFound "accountContact.primaryContact.label"
         }
     }
+
+    def designatePrimary(){
+        if (!requestIsJson()) {
+            respondNotAcceptable()
+            return
+        }
+
+        def jsonObject = request.GSON
+        Long accountId = jsonObject?.account?.id?.getAsLong()
+        Long accountContactId = jsonObject?.accountContact?.id?.getAsLong()
+
+        def accountInstance = Account.get(accountId)
+        def accountContactInstance = AccountContact.get(accountContactId)
+        if(accountInstance && accountContactInstance){
+            List accountContactLinkList = AccountContactLink.findAllByAccount(accountInstance)
+            accountContactLinkList.each { AccountContactLink accountContactLink ->
+                accountContactLink.primaryContact = Boolean.FALSE
+                accountContactLink.save()
+            }
+            def accountContactLinkInstance = AccountContactLink.findByAccountAndAccountContact(accountInstance,accountContactInstance)
+            accountContactLinkInstance.primaryContact = Boolean.TRUE
+            if (accountContactLinkInstance.save(flush: true)) {
+                respondUpdated accountContactLinkInstance
+            } else {
+                respondUnprocessableEntity accountContactLinkInstance
+            }
+        }
+
+    }
+
 
     def accountContacts() {
         def returnObject = new Expando()
         returnObject.contacts = AccountContactLink.findAllByAccount(Account.get(params.id)).collect {it.accountContact}
         render returnObject as JSON
+    }
+
+    def availableAccountContacts() {
+        def accountContactList = AccountContact.findAllByActive(true)
+        def memberships = AccountContactLink.findAllByAccount(Account.get(params.id)).collect {it.accountContact}
+        def availableAccounts =  accountContactList.minus(memberships).sort{it.lastName}
+        def dataToRender = []
+        availableAccounts.each {
+            def map = [:]
+            map.id = it.id
+            map.accountContact = it.getFullName()
+            dataToRender.add(map)
+        }
+        render dataToRender as JSON
+    }
+
+
+    def get() {
+        def accountInstance = Account.get(params.account)
+        def accountContactInstance = AccountContact.get(params.accountContact)
+        if(accountInstance && accountContactInstance){
+            def accountContactLinkInstance = AccountContactLink.findByAccountAndAccountContact(accountInstance,accountContactInstance)
+            if (accountContactLinkInstance) {
+                respondFound accountContactLinkInstance
+            }
+        }else {
+            respondNotFound LABEL
+        }
+
+    }
+
+    def create() {
+        if (!requestIsJson()) {
+            respondNotAcceptable()
+            return
+        }
+
+        def jsonObject = request.GSON
+        Long accountId = jsonObject?.account?.getAsLong()
+        Long accountContactId = jsonObject?.accountContact?.getAsLong()
+
+        def accountInstance = Account.get(accountId)
+        def accountContactInstance = AccountContact.get(accountContactId)
+        if(accountInstance && accountContactInstance){
+            def accountContactLinkInstance = AccountContactLink.create(accountInstance,accountContactInstance,false)
+            if(accountContactLinkInstance){
+                respondCreated accountContactLinkInstance
+            } else {
+                respondUnprocessableEntity accountContactLinkInstance
+            }
+        }
+
     }
 
     def save() {
@@ -61,7 +162,6 @@ class AccountContactLinkController extends GsonBaseController {
                 return
             }
         }
-//        println request.GSON
         accountContactLinkInstance.properties = request.GSON
 
         if (accountContactLinkInstance.save(flush: true)) {
@@ -71,4 +171,35 @@ class AccountContactLinkController extends GsonBaseController {
         }
     }
 
+    def delete() {
+        if (!requestIsJson()) {
+            respondNotAcceptable()
+            return
+        }
+
+        def jsonObject = request.GSON
+        Long accountId = jsonObject?.account?.id?.getAsLong()
+        Long accountContactId = jsonObject?.accountContact?.id?.getAsLong()
+
+        def accountInstance = Account.get(accountId)
+        def accountContactInstance = AccountContact.get(accountContactId)
+        if(accountInstance && accountContactInstance){
+            def accountContactLinkInstance = AccountContactLink.findByAccountAndAccountContact(accountInstance,accountContactInstance)
+            if (!accountContactLinkInstance) {
+                respondNotFound LABEL
+                return
+            }
+
+
+            try {
+                accountContactLinkInstance.delete(flush: true)
+                respondDeleted LABEL
+            } catch (DataIntegrityViolationException e) {
+                respondNotDeleted LABEL
+            }
+        }
+        else {
+            respondNotFound LABEL
+        }
+    }
 }

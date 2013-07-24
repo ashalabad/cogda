@@ -57,7 +57,6 @@ class AccountContactController extends GsonBaseController {
                 return
             }
         }
-//        println request.GSON
         accountContactInstance.properties = request.GSON
 
         if (accountContactInstance.save(flush: true)) {
@@ -85,7 +84,6 @@ class AccountContactController extends GsonBaseController {
                 return
             }
         }
-//        println request.GSON
         AccountContactLink.removeAll(accountContactInstance)
         accountContactInstance.active = Boolean.FALSE
 

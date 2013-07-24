@@ -40,8 +40,8 @@
                     </label>
                     <div class="controls">
                         <div class="btn-group" data-toggle="buttons-radio">
-                            <button type="button" class="btn" data-ng-class="{'btn-primary':account.isMarket==true}" data-ng-click="account.favorite=true"><g:message code="default.yes.label"/></button>
-                            <button type="button" class="btn" data-ng-class="{'btn-primary':account.isMarket==false}" data-ng-click="account.favorite=false"><g:message code="default.no.label"/></button>
+                            <button type="button" class="btn" data-ng-class="{'btn-primary':account.isMarket==true}" data-ng-click="account.isMarket=true"><g:message code="default.yes.label"/></button>
+                            <button type="button" class="btn" data-ng-class="{'btn-primary':account.isMarket==false}" data-ng-click="account.isMarket=false"><g:message code="default.no.label"/></button>
                         </div>
                     </div>
                 </div>
@@ -59,7 +59,8 @@
                 </div>
             </fieldset>
             <div class="span6">
-                <button type="button" class="btn btn-primary pull-right" data-ng-click="saveAccount()"><i class="icon-save"></i> <g:message code="default.button.create.label"/></button>
+                <button type="button" class="btn pull-right" data-ng-click="cancel()"><i class="icon-remove"></i> <g:message code="default.button.cancel.label"/></button>
+                <button type="button" class="btn btn-primary pull-right " data-ng-click="saveAccount()"><i class="icon-save"></i> <g:message code="default.button.create.label"/></button>
             </div>
         </form>
     </div>
