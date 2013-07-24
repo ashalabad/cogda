@@ -68,11 +68,51 @@ environments {
             }
         }
     }
+    develop {
+        dataSource {
+            username = "cogdadevelop"
+            password = "Sm00thCRiMaNail"
+            dbCreate = "create-drop" // one of 'create', 'create-drop', 'update', 'validate', ''
+            pooled = true
+            driverClassName = "com.mysql.jdbc.Driver"
+            url = "jdbc:mysql://ec2-50-19-213-178.compute-1.amazonaws.com/cogda_develop"
+            dialect = org.hibernate.dialect.MySQL5InnoDBDialect
+            properties {
+                validationQuery = "SELECT 1"
+                testOnBorrow = true
+                testOnReturn = true
+                testWhileIdle = true
+                timeBetweenEvictionRunsMillis = 1000 * 60 * 30
+                numTestsPerEvictionRun = 3
+                minEvictableIdleTimeMillis = 1000 * 60 * 30
+            }
+        }
+    }
+    staging {
+        dataSource {
+            username = "cogdastaging"
+            password = "Sh0K0Tini"
+            dbCreate = "validate" // one of 'create', 'create-drop', 'update', 'validate', ''
+            pooled = true
+            driverClassName = "com.mysql.jdbc.Driver"
+            url = "jdbc:mysql://ec2-50-19-213-178.compute-1.amazonaws.com/cogda_staging"
+            dialect = org.hibernate.dialect.MySQL5InnoDBDialect
+            properties {
+                validationQuery = "SELECT 1"
+                testOnBorrow = true
+                testOnReturn = true
+                testWhileIdle = true
+                timeBetweenEvictionRunsMillis = 1000 * 60 * 30
+                numTestsPerEvictionRun = 3
+                minEvictableIdleTimeMillis = 1000 * 60 * 30
+            }
+        }
+    }
     production {
         dataSource {
             username = "cogdaprod"
             password = "10sllow21"
-            dbCreate = "create-drop" // one of 'create', 'create-drop', 'update', 'validate', ''
+            dbCreate = "validate" // one of 'create', 'create-drop', 'update', 'validate', ''
             pooled = true
             driverClassName = "com.mysql.jdbc.Driver"
             url = "jdbc:mysql://ec2-50-19-213-178.compute-1.amazonaws.com/cogda_prod"
