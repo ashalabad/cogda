@@ -1,4 +1,4 @@
-package com.cogda.domain.lead
+package com.cogda.multitenant.lead
 
 import com.cogda.BaseController
 import com.cogda.common.LeadType
@@ -6,20 +6,15 @@ import com.cogda.common.marshallers.HibernateProxyTypeAdapter
 import com.cogda.multitenant.Lead
 import com.cogda.multitenant.LeadAddress
 import com.cogda.multitenant.LeadContact
-import com.cogda.multitenant.LeadContactAddress
 import com.cogda.multitenant.LeadContactEmailAddress
 import com.cogda.multitenant.LeadContactPhoneNumber
 import com.cogda.multitenant.LeadNote
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
-import grails.converters.JSON
 import grails.plugin.gson.converters.GSON
 import grails.plugins.springsecurity.Secured
-import org.hibernate.FetchMode
 import org.springframework.dao.DataIntegrityViolationException
-
-import java.lang.reflect.Modifier
 
 import static grails.plugin.gson.http.HttpConstants.SC_UNPROCESSABLE_ENTITY
 import static grails.plugin.gson.http.HttpConstants.X_PAGINATION_TOTAL

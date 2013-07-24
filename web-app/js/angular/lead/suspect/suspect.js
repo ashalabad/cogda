@@ -1,4 +1,5 @@
-angular.module('suspectApp', ['ui.bootstrap', 'resources.restApi', 'common.helperFuncs', 'resources.logger', 'ngGrid',
+angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.naicsCodeTree', 'resources.sicCodeTree',
+        'resources.restApi', 'common.helperFuncs', 'resources.logger', 'ngGrid',
         'resources.suspect', 'resources.unitedStates', 'resources.SupportedCountryCodes', 'resources.leadSubTypes',
         'resources.noteType', 'resources.businessTypes', 'resources.leadService'])
 
@@ -129,8 +130,6 @@ angular.module('suspectApp', ['ui.bootstrap', 'resources.restApi', 'common.helpe
             ], leadContactPhoneNumbers: [
                 {primaryPhoneNumber: true}
             ]});
-            $scope.lead.leadNotes = [];
-            $scope.lead.leadNotes.push({});
             $scope.errors = [];
             $scope.message = '';
             UnitedStates.list().$then(function (response) {
@@ -140,10 +139,26 @@ angular.module('suspectApp', ['ui.bootstrap', 'resources.restApi', 'common.helpe
             $scope.leadSubTypes = LeadSubTypes.list();
             $scope.noteTypes = NoteType.list();
             $scope.businessTypes = BusinessTypes.list();
+            $scope.lead.linesOfBusiness = [];
 
-            var saveSuccessCallback = function (response) {
-                Logger.success("Suspect Saved Successfully", "Success");
-                $location.path('/show' + response.id);
+            $scope.addingLeadLineOfBusiness = false;
+
+            $scope.addLeadLineOfBusiness = function () {
+                $scope.addingLeadLineOfBusiness = true;
+            };
+
+            $scope.cancelAddLeadLineOfBusiness = function () {
+                $scope.addingLeadLineOfBusiness = false;
+            }
+
+            $scope.saveLeadLineOfBusiness = function (leadLineOfBusiness) {
+                $scope.lead.linesOfBusiness.push(leadLineOfBusiness);
+                $scope.cancelAddLeadLineOfBusiness();
+            }
+
+            var saveSuccessCallback = function () {
+                Logger.success("Prospect Saved Successfully", "Success");
+                $location.path('/edit/' + $scope.lead.id);
             };
 
             var saveErrorCallback = function (response) {
@@ -155,12 +170,11 @@ angular.module('suspectApp', ['ui.bootstrap', 'resources.restApi', 'common.helpe
             };
 
             $scope.saveSuspect = function (lead) {
-                Suspect.save(lead).$then(saveSuccessCallback, saveErrorCallback);
+                Suspect.save(lead,function (data) {
+                    lead.id = data.id;
+                }).$then(saveSuccessCallback, saveErrorCallback);
             };
 
-            $scope.leadNaicsChecked = function () {
-
-            }
         }])
     .controller('ShowSuspectCtrl', ['$scope', '$routeParams', '$location', 'Suspect', 'Logger',
         function ($scope, $routeParams, $location, Suspect, Logger) {

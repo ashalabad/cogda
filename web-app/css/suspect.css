@@ -1,37 +1,3 @@
-#suspectList td {
-    cursor: pointer;
-}
-
-.row_selected {
-    background-color: #ccc !important;
-}
-
-.row_selected td {
-    background-color: #ccc !important;
-}
-
-#suspectHeader {
-    width: 300px;
-}
-
-.controls.readonly
-{
-    padding-top: 5px;
-}
-
-div.field {
-    padding: 2px;
-    clear: both;
-}
-
-div.field input {
-    float: left;
-}
-
-div.add {
-    clear: both;
-}
-
 @media (min-width: 1200px) {
     .modal {
         width: 960px;
@@ -55,12 +21,6 @@ div.add {
     }
 }
 
-.new {
-    margin-left: 69px;
-    clear: both;
-    display: block !important;
-}
-
 @media (min-height: 768px) and (max-height: 979px) {
     .gridStyle {
         border: 1px solid rgb(212, 212, 212);
@@ -77,6 +37,13 @@ div.add {
     }
 }
 
-.fixedAddressWellHeight {
-    height:130px;
+.tab-content {
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    padding: 10px;
+}
+
+.nav-tabs {
+    margin-bottom: 0px;
 }
