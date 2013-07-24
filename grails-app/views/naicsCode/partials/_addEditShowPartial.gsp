@@ -5,9 +5,6 @@
         <i class="icon-edit icon-white"></i>
         <g:message code="default.edit.label" args="[message([code: 'naicsCodes.label'])]"/>
     </button>
-
-    <div data-ng-repeat="naicsCode in lead.naicsCodes">
-        <span data-ng-bind="naicsCode.description"></span>
-    </div>
+    <g:render template="/naicsCode/partials/naicsReadOnlyPartial"/>
     <g:render template="/naicsCode/partials/naicsCodesPartial"/>
 </div>

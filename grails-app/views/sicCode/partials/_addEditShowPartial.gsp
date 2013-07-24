@@ -5,9 +5,6 @@
         <i class="icon-edit icon-white"></i>
         <g:message code="default.edit.label" args="[message([code: 'sicCodes.label'])]"/>
     </button>
-
-    <div data-ng-repeat="sicCode in lead.sicCodes">
-        <span data-ng-bind="sicCode.description"></span>
-    </div>
+    <g:render template="/sicCode/partials/sicReadOnlyPartial"/>
     <g:render template="/sicCode/partials/sicCodesPartial"/>
 </div>

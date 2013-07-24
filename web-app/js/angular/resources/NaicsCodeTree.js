@@ -25,13 +25,14 @@ angular.module('resources.naicsCodeTree', ['resources.logger'])
                 var undeterminedNodesCopy;
 
                 scope.$watch('filterText', function (filterText) {
-                    if (filterText !== undefined && (filterText.length >= 2 || filterText.length == 0))
+                    if (filterText !== undefined && (filterText.length >= 2 || filterText.length == 0)) {
                         if (timeoutPromise !== undefined) {
                             $timeout.cancel(timeoutPromise);
                         }
-                    timeoutPromise = $timeout(function () {
-                        $(element).find('#tree').jstree("search", filterText);
-                    }, 500);
+                        timeoutPromise = $timeout(function () {
+                            $(element).find('#tree').jstree("search", filterText);
+                        }, 500);
+                    }
                 });
 
                 scope.$watch('includeRelatedSicCodes', function (includeRelatedSicCodes) {
@@ -65,7 +66,8 @@ angular.module('resources.naicsCodeTree', ['resources.logger'])
                         $.each(selectedNodes, function () {
                             if ($('#' + this.id).length > 0) {
                                 spliceThese.push(this);
-                                $('#tree').jstree('check_node', '#' + this.id);
+//                                $('#tree').jstree('check_node', '#' + this.id);
+                                $(element).find('#tree').jstree('check_node', '#' + this.id);
                             }
                         });
                         $.each(spliceThese, function () {
@@ -102,15 +104,15 @@ angular.module('resources.naicsCodeTree', ['resources.logger'])
                     setUndetermined(undeterminedNodesCopy);
                 };
 
-                scope.$watch('tree', function () {
-                    if (scope.disableCheckBoxes) {
-                        createUncheckable();
-                    } else {
-                        createCheckable();
-                    }
-                });
+                var setStateAndDisable = function() {
+                    scope.$apply();
+                    $(element).find('li').removeAttr('rel');
+                    setState();
+                    $(element).find('li').attr('rel', 'disabled');
+                };
 
                 var createUncheckable = function () {
+                    $(element).find('[type="checkbox"]')[0].disabled = true;
                     $(element).find('#tree').jstree({
                         "json_data": {
                             "ajax": {
@@ -157,11 +159,9 @@ angular.module('resources.naicsCodeTree', ['resources.logger'])
                     }, false).delegate("a", "click",function (event, data) {
                             event.preventDefault();
                         }).bind("loaded.jstree",function (event, data) {
-                            setState();
-                            $('#tree').find('li').attr('rel', 'disabled');
+                            setStateAndDisable();
                         }).bind("load_node.jstree", function (event, data) {
-                            setState();
-                            $('#tree').find('li').attr('rel', 'disabled');
+                            setStateAndDisable();
                         });
                 };
 
@@ -211,6 +211,12 @@ angular.module('resources.naicsCodeTree', ['resources.logger'])
                                 getSelected()
                             });
                         });
+                };
+
+                if (scope.disableCheckBoxes !== undefined) {
+                    $timeout(createUncheckable, 1000);
+                } else {
+                    createCheckable();
                 }
             }
         };

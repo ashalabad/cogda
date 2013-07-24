@@ -72,7 +72,7 @@
         <div clas="row-fluid">
 
             <legend><g:message code="sicCodes.label"/></legend>
-            <g:render template="/naicsCode/partials/addEditShowPartial"/>
+            <g:render template="/sicCode/partials/addEditShowPartial"/>
         </div>
 
         <div class="row-fluid">

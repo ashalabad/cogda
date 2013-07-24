@@ -1,6 +1,7 @@
 package com.cogda.domain.admin
 
 import com.cogda.BaseController
+import com.cogda.multitenant.Lead
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
 import grails.plugin.gson.converters.GSON
@@ -30,6 +31,16 @@ class NaicsCodeController extends BaseController {
 
         } else {
             render jsTreeify(NaicsCode.findAllByParentNaicsCodeAndActive(null, true).sort { it.id }, 0) as GSON
+        }
+    }
+
+    def activeNaicsCodesForLead() {
+        if (params.id) {
+            def leadInstance = Lead.get(params.id)
+            def sortedCodes = leadInstance.naicsCodes.groupBy {it.level}
+            sortedCodes
+        } else {
+            render[] as GSON
         }
     }
 

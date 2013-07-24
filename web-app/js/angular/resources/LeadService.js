@@ -472,10 +472,6 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid',
         $scope.toggleShowNaicsCodes = function () {
             $scope.showNaicsCodes = !$scope.showNaicsCodes;
         };
-
-        $scope.toJSON = function (obj) {
-            return JSON.stringify(obj, null, 2);
-        };
     }])
     .controller('ModalEditCtrl', ['$scope', 'Lead', '$http', 'Logger', function ($scope, Lead, $http, Logger) {
         $scope.saveData = false;
@@ -501,7 +497,9 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid',
             $scope.$parent.relatedSicCodes = $scope.relatedSicCodes;
             $scope.$parent.relatedNaicsCodes = $scope.relatedNaicsCodes;
             $scope.shouldBeOpen = false;
-            Lead.update($scope.lead).$then(updateSuccessCallback, updateErrorCallBack);
+            Lead.update($scope.lead, function(data) {
+                $scope.lead = data;
+            }).$then(updateSuccessCallback, updateErrorCallBack);
         };
 
         $scope.opts = {

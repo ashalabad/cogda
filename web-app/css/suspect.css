@@ -45,5 +45,11 @@
 }
 
 .nav-tabs {
-    margin-bottom: 0px;
+    margin-bottom: 0;
+}
+
+#tree {
+    white-space: nowrap;
+    overflow: auto;
+    text-overflow: ellipsis;
 }
