@@ -8,6 +8,7 @@ hibernate {
 }
 // environment specific settings
 environments {
+    // development database for grails run-app
     development {
         dataSource {
             username = "dev"
@@ -28,6 +29,7 @@ environments {
             }
         }
     }
+    // local testing database - for running integration tests
     test {
         dataSource {
             username = "dev"
@@ -48,6 +50,7 @@ environments {
             }
         }
     }
+    // beestest is the environment used by Cloudbees to run our tests in Jenkins.
     beestest {
         dataSource {
             username = "testingbees"
@@ -68,6 +71,7 @@ environments {
             }
         }
     }
+    // develop is the environment used by Cloudbees to run our cogda-develop.cogda.cloudbees.net application
     develop {
         dataSource {
             username = "cogdadevelop"
@@ -88,6 +92,7 @@ environments {
             }
         }
     }
+    // staging is the environment used by Cloudbees to run our cogda-staging.cogda.cloudbees.net application
     staging {
         dataSource {
             username = "cogdastaging"
@@ -108,6 +113,7 @@ environments {
             }
         }
     }
+    // production is the environment used by Cloudbees to run our Cogda application
     production {
         dataSource {
             username = "cogdaprod"
