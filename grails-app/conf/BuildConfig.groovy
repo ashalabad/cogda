@@ -94,6 +94,5 @@ grails.project.dependency.resolution = {
             exclude "spock-grails-support"
         }
     }
-
-    grails.plugin.location.'grails-gson' = "../grails-gson"
 }
+grails.plugin.location.'grails-gson' = "plugins/grails-gson"
