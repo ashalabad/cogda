@@ -33,6 +33,7 @@
 			</fieldset>
 			<div class="controls">
 				<input type='submit' id="submit" class="btn btn-success" value='${message(code: "springSecurity.login.button")}'/>
+                <g:link controller="password" action="index" class="btn pull-right"><i class="icon-question-sign"></i> Forgot Password</g:link>
 			</div>
 		</form>
 	</div>
