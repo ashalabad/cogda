@@ -1,4 +1,4 @@
-package com.cogda.domain.lead.contact
+package com.cogda.multitenant.lead.contact
 
 import com.cogda.multitenant.LeadContactPhoneNumber
 import com.google.gson.Gson

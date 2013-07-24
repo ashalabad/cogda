@@ -1,7 +1,6 @@
-package com.cogda.domain.lead
+package com.cogda.multitenant.lead
 
 import com.cogda.GsonBaseController
-import com.cogda.multitenant.Lead
 import com.cogda.multitenant.LeadNote
 import com.google.gson.JsonElement
 import grails.plugin.gson.converters.GSON

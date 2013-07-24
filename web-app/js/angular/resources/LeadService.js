@@ -2,7 +2,7 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid',
         'resources.unitedStates', 'resources.SupportedCountryCodes', 'resources.leadSubTypes',
         'resources.noteType', 'resources.businessTypes', 'resources.leadAddress', 'resources.leadService',
         'resources.leadNote', 'resources.leadContactPhoneNumber', 'resources.leadContactEmailAddress',
-        'resources.leadContact', 'resources.leadContactAddress'])
+        'resources.leadContact', 'resources.leadContactAddress', 'resources.lead'])
     .controller('AddAddressController', ['$scope', 'LeadAddress', 'Logger', function ($scope, LeadAddress, Logger) {
         $scope.address = {};
 
@@ -436,4 +436,159 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid',
         var updateErrorCallBack = function (response) {
             Logger.formValidationMessageBuilder(response, $scope, $scope.leadNoteForm);
         }
-    }]);
+    }])
+    .controller('ModalCtrl', ['$scope', function ($scope) {
+        $scope.saveData = false;
+        var sicCodeCopy = [];
+        var naicsCodeCopy = [];
+
+        $scope.open = function () {
+            sicCodeCopy = angular.copy($scope.lead.sicCodes);
+            ;
+            naicsCodeCopy = angular.copy($scope.lead.naicsCodes);
+            $scope.shouldBeOpen = true;
+        };
+
+        $scope.close = function () {
+            $scope.shouldBeOpen = false;
+            $scope.saveData = false;
+            $scope.lead.naicsCodes = naicsCodeCopy;
+            $scope.lead.sicCodes = sicCodeCopy;
+        };
+
+        $scope.save = function () {
+            $scope.saveData = true;
+            $scope.$parent.relatedSicCodes = $scope.relatedSicCodes;
+            $scope.$parent.relatedNaicsCodes = $scope.relatedNaicsCodes;
+            $scope.shouldBeOpen = false;
+        };
+
+        $scope.opts = {
+            dialogFade: true,
+            backdropFade: true,
+            controller: 'ModalCtrl'
+        };
+        $scope.showNaicsCodes = false;
+        $scope.toggleShowNaicsCodes = function () {
+            $scope.showNaicsCodes = !$scope.showNaicsCodes;
+        };
+
+        $scope.toJSON = function (obj) {
+            return JSON.stringify(obj, null, 2);
+        };
+    }])
+    .controller('ModalEditCtrl', ['$scope', 'Lead', '$http', 'Logger', function ($scope, Lead, $http, Logger) {
+        $scope.saveData = false;
+        var sicCodeCopy = [];
+        var naicsCodeCopy = [];
+
+        $scope.open = function () {
+            sicCodeCopy = angular.copy($scope.lead.sicCodes);
+            ;
+            naicsCodeCopy = angular.copy($scope.lead.naicsCodes);
+            $scope.shouldBeOpen = true;
+        };
+
+        $scope.close = function () {
+            $scope.shouldBeOpen = false;
+            $scope.saveData = false;
+            $scope.lead.naicsCodes = naicsCodeCopy;
+            $scope.lead.sicCodes = sicCodeCopy;
+        };
+
+        $scope.save = function () {
+            $scope.saveData = true;
+            $scope.$parent.relatedSicCodes = $scope.relatedSicCodes;
+            $scope.$parent.relatedNaicsCodes = $scope.relatedNaicsCodes;
+            $scope.shouldBeOpen = false;
+            Lead.update($scope.lead).$then(updateSuccessCallback, updateErrorCallBack);
+        };
+
+        $scope.opts = {
+            dialogFade: true,
+            backdropFade: true,
+            controller: 'ModalCtrl'
+        };
+        $scope.showNaicsCodes = false;
+        $scope.toggleShowNaicsCodes = function () {
+            $scope.showNaicsCodes = !$scope.showNaicsCodes;
+        };
+
+        var updateSuccessCallback = function (response) {
+            Logger.success("Successfully Updated", "Success");
+        };
+
+        var updateErrorCallBack = function (response) {
+            Logger.messageBuilder(response);
+        }
+    }])
+    .controller('CreateLineOfBusinessCtrl', ['$scope', 'Logger',
+        function ($scope, Logger) {
+            $scope.today = function () {
+                $scope.dt = new Date();
+            };
+
+            $scope.today();
+
+            $scope.clear = function () {
+                $scope.dt = null;
+            };
+
+            $scope.toggleMin = function () {
+                $scope.minDate = ( $scope.minDate ) ? null : new Date();
+            };
+
+            $scope.toggleMin();
+
+        }])
+    .controller('EditLeadLineOfBusinessCtrl', ['$scope', 'Logger',
+        function ($scope, Logger) {
+            $scope.today = function () {
+                $scope.dt = new Date();
+            };
+
+            $scope.today();
+
+            $scope.clear = function () {
+                $scope.dt = null;
+            };
+
+            $scope.toggleMin = function () {
+                $scope.minDate = ( $scope.minDate ) ? null : new Date();
+            };
+
+            $scope.toggleMin();
+
+        }])
+    .controller('AddLeadLineOfBusinessController', ['$scope', 'Logger',
+        function ($scope, Logger) {
+            $scope.leadLineOfBusiness = {};
+            $scope.addingLeadLineOfBusiness = false;
+
+            $scope.addLeadLineOfBusiness = function () {
+                $scope.addingLeadLineOfBusiness = true;
+            };
+
+            $scope.cancelAddLeadLineOfBusiness = function () {
+                $scope.addingLeadLineOfBusiness = false;
+            }
+
+            $scope.saveLeadLineOfBusiness = function (leadLineOfBusiness) {
+                leadLineOfBusiness.lead = {id: $scope.lead.id};
+                LeadLineOfBusiness.save(leadLineOfBusiness,function (data) {
+                    leadLineOfBusiness.id = data.id;
+                    $scope.lead.linesOfBusiness.push(leadLineOfBusiness);
+                    $scope.cancelAddLeadLineOfBusiness();
+                }).$then(updateSuccessCallback, updateErrorCallback);
+                $scope.leadLineOfBusiness = {};
+            };
+
+            var updateSuccessCallback = function (response) {
+                Logger.success("Line Of Business Added Successfully", "Success");
+            };
+
+            var updateErrorCallback = function (response) {
+                Logger.formValidationMessageBuilder(response, $scope, $scope.leadLineOfBusinessForm);
+            };
+
+        }]);

@@ -17,7 +17,7 @@ class SicCodeController extends BaseController {
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
 
-    def getActiveSicCodes() {
+    def activeSicCodes() {
         if (params.parentId) {
             def codes = SicCode.findAllByParentSicCodeAndActive(SicCode.get(params.parentId), true).sort { it.id }
             if (!codes) {
@@ -78,17 +78,21 @@ class SicCodeController extends BaseController {
 
     def selectedSicCodes() {
         JsonElement jsonElement = GSON.parse(request)
-        jsonElement.checked.each {
-            def sicCode = SicCode.findById(it.getAsLong())
-            println sicCode.toString()
-            if (SicNaicsCodeCrosswalk.countBySicCode(sicCode) != 0) {
-                println "\t-----Related NAICS Codes-----"
-                SicNaicsCodeCrosswalk.findAllBySicCode(sicCode).each { crosswalk ->
-                    println "\t ${crosswalk.naicsCode.toString()}"
+        def naicsCodes = []
+
+        jsonElement.each {
+            def sicCode = SicCode.findById(it.id.toString().toLong())
+            SicNaicsCodeCrosswalk.findAllBySicCode(sicCode).each {
+                naicsCodes.add(it.naicsCode.id)
+            }
+            sicCode.getAllChildSicCodes().each { SicCode childSicCode ->
+                SicNaicsCodeCrosswalk.findAllBySicCode(childSicCode).each { subIt ->
+                    naicsCodes.add(subIt.naicsCode.id)
                 }
             }
         }
-        render "TODO"
+
+        render naicsCodes.unique() as GSON
     }
 
     private void respondNotFound(id) {

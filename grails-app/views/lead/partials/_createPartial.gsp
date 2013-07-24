@@ -63,16 +63,28 @@
         </div>
     </div>
 
-    %{--<div class="control-group fieldcontain">--}%
-    %{--<label class="control-label">--}%
-    %{--<g:message code="naicssiccode.label" default="NAICS/SIC Codes"/>--}%
-    %{--</label>--}%
+    <div class="control-group fieldcontain" data-ng-controller="ModalCtrl">
+        <label class="control-label">
+            <g:message code="naicsCodes.label" default="NAICS Codes"/>
+        </label>
 
-    %{--<div class="controls">--}%
-    %{--<g:render template="/_common/modals/naicsCode/naicsCodes" model="[treeHandler: 'leadNaicsChecked();']"/>--}%
-    %{--<g:render template="/_common/modals/sicCode/sicCodes" model="[treeHandler: 'leadSicChecked();']"/>--}%
-    %{--</div>--}%
-    %{--</div>--}%
+        <div class="controls">
+            <button class="btn" data-ng-click="open()"><g:message code="naicsCodes.label" default="NAICS Codes"/></button>
+            <g:render template="/naicsCode/partials/naicsCodesPartial"/>
+
+        </div>
+    </div>
+
+    <div class="control-group fieldcontain" data-ng-controller="ModalCtrl">
+        <label class="control-label">
+            <g:message code="sicCodes.label" default="SIC Codes"/>
+        </label>
+
+        <div class="controls">
+            <button class="btn" data-ng-click="open()"><g:message code="sicCodes.label" default="SIC Codes"/></button>
+            <g:render template="/sicCode/partials/sicCodesPartial"/>
+        </div>
+    </div>
 
     <div class="control-group fieldcontain"
          data-ng-class="{error: leadForm.clientId.$invalid && leadForm.clientId.$dirty, success: leadForm.clientId.$valid}">
@@ -94,6 +106,5 @@
     <g:render template="/lead/leadAddress/partials/createPartial"/>
 
     <g:render template="/lead/leadContact/partials/createPartial"/>
-
-    <g:render template="/lead/leadNote/partials/createPartial"/>
+    <div data-ng-include="" src="'/leadLineOfBusiness/createPartial'"></div>
 </fieldset>

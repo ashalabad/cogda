@@ -5,6 +5,11 @@
 </legend>
 
 <div class="row">
+    <div class="span4">
+        <button class="btn btn-mini">Build Submission</button>
+        <button class="btn btn-mini">View Contact Log</button>
+        <button class="btn btn-danger btn-mini">Delete Prospect</button>
+    </div>
     <div class="span4 pull-right">
         <form class="form-search">
             <div class="input-append pull-left">
@@ -14,151 +19,38 @@
         </form>
     </div>
 </div>
+<br/>
 <tabset>
-    <tab heading="Main">
+    <tab heading="Dashboard">
+        <div class="well">Coming soon....</div>
+    </tab>
+    <tab heading="Details">
 
         <div data-ng-hide="editingLead">
             <div data-ng-include="" src="'/lead/showPartial'"></div>
             %{--<g:render template="/lead/partials/showPartial"/>--}%
 
         </div>
-        <hr>
-
         <div data-ng-show="editingLead">
             <div data-ng-include="" src="'/lead/editPartial'"></div>
             %{--<g:render template="/lead/partials/editPartial"/>--}%
 
         </div>
     </tab>
+    <tab heading="Lines of Business ({{lead.linesOfBusiness.length}})">
+        <g:render template="/lead/leadLineOfBusiness/partials/addEditShowPartial"/>
+    </tab>
+    <tab heading="NAICS & SIC Codes ({{lead.sicCodes ? lead.sicCodes.length : 0 + lead.naicsCodes ? lead.naicsCodes.length : 0}})">
+        <legend><g:message code="sicCodes.label"/></legend>
+        <g:render template="/sicCode/partials/addEditShowPartial"/>
+        <legend><g:message code="naicsCodes.label"/> </legend>
+        <g:render template="/naicsCode/partials/addEditShowPartial"/>
+    </tab>
     <tab heading="Addresses ({{lead.leadAddresses.length}})">
-        <fieldset class="embedded">
-            <div data-ng-repeat="address in lead.leadAddresses | orderBy:'primaryAddress':'reverse' | filter:searchString">
-                <div data-ng-controller="EditAddressController">
-                    <div class="form-horizontal">
-                        <div class="well" data-ng-hide="editingAddress">
-                            <div data-ng-include="" src="'/leadAddress/showPartial'"></div>
-                            %{--<g:render template="/lead/leadAddress/partials/showPartial"/>--}%
-                        </div>
-
-                        <div class="well" data-ng-show="editingAddress" data-ng-form="addressForm">
-                            <div data-ng-include="" src="'/leadAddress/editPartial'"></div>
-                            %{--<g:render template="/lead/leadAddress/partials/editPartial"/>--}%
-                            <div class="form-actions">
-                                <button type="submit"
-                                        class="btn btn-primary"
-                                        data-ng-click="updateAddress(address)">
-                                    <i class="icon-pencil icon-white"></i>
-                                    <g:message code="default.button.update.label"/> <g:message code="address.label"
-                                                                                               default="Address"/>
-                                </button>
-                                <button class="btn btn-danger"
-                                        type="button"
-                                        data-ng-click="deleteAddress(address, $index)">
-                                    <i class="icon-remove icon-white"></i>
-                                    <g:message code="default.button.delete.label"/> <g:message code="address.label"
-                                                                                               default="Address"/>
-                                </button>
-                                <button type="button"
-                                        class="btn"
-                                        data-ng-click="cancelEditAddress()">
-                                    <i class="icon-ban-circle"></i>
-                                    <g:message code="default.button.cancel.label"/></button>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-
-
-            <div data-ng-controller="AddAddressController">
-                <div class="well" data-ng-show="addingAddress">
-                    <div data-ng-form="addressForm" class="form-horizontal">
-                        <fieldset class="embedded">
-                            <legend>
-                                <g:message code="default.add.label" args="[message(code: 'address.label')]"/>
-                            </legend>
-                            <div data-ng-include="" src="'/leadAddress/editPartial'"></div>
-                            %{--<g:render template="/lead/leadAddress/partials/editPartial"/>--}%
-
-                            <div class="form-actions">
-                                <button type="submit"
-                                        class="btn btn-primary"
-                                        data-ng-click="saveAddress(address)">
-                                    <i class="icon-plus icon-white"></i>
-                                    <g:message code="default.add.label" args="[message(code: 'address.label')]"/>
-                                </button>
-                                <button type="button"
-                                        class="btn"
-                                        data-ng-click="cancelAddAddress()">
-                                    <i class="icon-ban-circle"></i>
-                                    <g:message code="default.button.cancel.label"/></button>
-                            </div>
-                        </fieldset>
-                    </div>
-                </div>
-
-                <br>
-
-                <button type="button"
-                        class="btn"
-                        data-ng-click="addAddress()"
-                        data-ng-hide="addingAddress">
-                    <i class="icon-plus"></i>
-                    <g:message code="default.add.label" args="[message(code: 'address.label')]"/>
-                </button>
-            </div>
-        </fieldset></tab>
+        <g:render template="/lead/leadAddress/partials/addEditShowPartial"/>
+    </tab>
     <tab heading="Contacts ({{lead.leadContacts.length}})">
-        <fieldset class="embedded">
-            <tabset>
-                <tab data-ng-repeat="contact in lead.leadContacts  | orderBy:'primaryContact':'reverse' | filter:searchString"
-                     heading="Contact - {{contact.firstName}} {{contact.lastName}}">
-                    <div data-ng-include="" src="'/leadContact/indexPartial'"></div>
-                    %{--<g:render template="/lead/leadContact/partials/indexPartial"/>--}%
-
-                </tab>
-            </tabset>
-
-            <div data-ng-controller="AddLeadContactController">
-                <div class="well" data-ng-show="addingContact">
-                    <div data-ng-form="contactForm" class="form-horizontal">
-                        <fieldset class="embedded">
-                            <legend>
-                                <g:message code="default.add.label" args="[message(code: 'contact.label')]"/>
-                            </legend>
-                            <div data-ng-include="" src="'/leadContact/editPartial'"></div>
-                            %{--<g:render template="/lead/leadContact/partials/editPartial"/>--}%
-
-                            <div class="form-actions">
-                                <button type="submit"
-                                        class="btn btn-primary"
-                                        data-ng-click="saveContact(contact)">
-                                    <i class="icon-plus icon-white"></i>
-                                    <g:message code="default.add.label" args="[message(code: 'contact.label')]"/>
-                                </button>
-                                <button type="button"
-                                        class="btn"
-                                        data-ng-click="cancelAddContact()">
-                                    <i class="icon-ban-circle"></i>
-                                    <g:message code="default.button.cancel.label"/></button>
-                            </div>
-                        </fieldset>
-                    </div>
-                </div>
-
-                <br>
-
-                <button type="button"
-                        class="btn"
-                        data-ng-click="addContact()"
-                        data-ng-hide="addingContact">
-                    <i class="icon-plus"></i>
-                    <g:message code="default.add.label" args="[message(code: 'contact.label')]"/>
-                </button>
-            </div>
-
-        </fieldset>
+        <g:render template="/lead/leadContact/partials/addEditShowPartial"/>
     </tab>
     <tab heading="Documents ({{lead.files.length}})">
         <div class="well">Coming Soon...</div>

@@ -26,6 +26,13 @@ modules = {
         resource url:'js/angular/common/helperFuncs.js', disposition: 'head'
     }
 
+    angularStrap {
+        dependsOn 'angular'
+        resource url:'js/bundles/angular/angularStrap/angular-strap.min.js', disposition: 'head'
+        resource url:'js/bundles/angular/angularStrap/my-bootstrap-datepicker.css', disposition: 'head'
+        resource url:'js/bundles/angular/angularStrap/my-bootstrap-datepicker.js', disposition: 'head'
+    }
+
     company {
         dependsOn 'bootstrap', 'bootstrap_utils', 'angular'
         resource url:'js/angular/company/company.js'
@@ -45,7 +52,7 @@ modules = {
     }
 
     lead {
-        dependsOn 'bootstrap', 'bootstrap_utils', 'angular'
+        dependsOn 'bootstrap, bootstrap_utils, angular, angularNaicsCodeTree, angularSicCodeTree, angularStrap'
         resource url: 'js/angular/resources/LeadSubTypes.js'
         resource url: 'js/angular/resources/unitedStates.js'
         resource url: 'js/angular/resources/SupportedCountryCodes.js'
@@ -58,6 +65,7 @@ modules = {
         resource url: 'js/angular/resources/LeadContactEmailAddress.js'
         resource url: 'js/angular/resources/LeadContactAddress.js'
         resource url: 'js/angular/resources/LeadContact.js'
+        resource url: 'js/angular/resources/Lead.js'
     }
 
     suspect {
@@ -110,6 +118,16 @@ modules = {
         resource url:[dir: 'js/jstree/themes/default', file: 'd.gif']
         resource url:[dir: 'js/jstree/themes/default', file: 'style.css']
         resource url:[dir: 'js/jstree/themes/default', file: 'throbber.gif']
+    }
+
+    angularNaicsCodeTree {
+        dependsOn 'jstree', 'angular'
+        resource url:'js/angular/resources/NaicsCodeTree.js', disposition: 'head'
+    }
+
+    angularSicCodeTree {
+        dependsOn 'jstree, angular'
+        resource url:'js/angular/resources/SicCodeTree.js', disposition: 'head'
     }
 
     naicsCodeTree {

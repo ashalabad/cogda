@@ -1,4 +1,5 @@
-angular.module('prospectApp', ['ui.bootstrap', 'resources.restApi', 'common.helperFuncs', 'resources.logger', 'ngGrid',
+angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.naicsCodeTree', 'resources.sicCodeTree',
+        'resources.restApi', 'common.helperFuncs', 'resources.logger', 'ngGrid',
         'resources.prospect', 'resources.unitedStates', 'resources.SupportedCountryCodes', 'resources.leadSubTypes',
         'resources.noteType', 'resources.businessTypes', 'resources.leadService'])
 
@@ -8,6 +9,7 @@ angular.module('prospectApp', ['ui.bootstrap', 'resources.restApi', 'common.help
             when('/edit/:id', {templateUrl: '/prospect/editPartial', controller: 'EditProspectCtrl' }).
             when('/create', {templateUrl: '/prospect/createPartial', controller: 'CreateProspectCtrl' }).
             when('/show/:id', {templateUrl: '/prospect/showPartial', controller: 'ShowProspectCtrl' }).
+            when('').
             otherwise({ redirectTo: '/list' });
     })
     .controller('ListProspectCtrl', ['$scope', '$routeParams', '$location', 'RestApi', 'Logger',
@@ -132,8 +134,6 @@ angular.module('prospectApp', ['ui.bootstrap', 'resources.restApi', 'common.help
             ], leadContactPhoneNumbers: [
                 {primaryPhoneNumber: true}
             ]});
-            $scope.lead.leadNotes = [];
-            $scope.lead.leadNotes.push({});
             $scope.errors = [];
             $scope.message = '';
             UnitedStates.list().$then(function (response) {
@@ -143,10 +143,26 @@ angular.module('prospectApp', ['ui.bootstrap', 'resources.restApi', 'common.help
             $scope.leadSubTypes = LeadSubTypes.list();
             $scope.noteTypes = NoteType.list();
             $scope.businessTypes = BusinessTypes.list();
+            $scope.lead.linesOfBusiness = [];
 
-            var saveSuccessCallback = function (response) {
+            $scope.addingLeadLineOfBusiness = false;
+
+            $scope.addLeadLineOfBusiness = function () {
+                $scope.addingLeadLineOfBusiness = true;
+            };
+
+            $scope.cancelAddLeadLineOfBusiness = function () {
+                $scope.addingLeadLineOfBusiness = false;
+            }
+
+            $scope.saveLeadLineOfBusiness = function (leadLineOfBusiness) {
+                $scope.lead.linesOfBusiness.push(leadLineOfBusiness);
+                $scope.cancelAddLeadLineOfBusiness();
+            }
+
+            var saveSuccessCallback = function () {
                 Logger.success("Prospect Saved Successfully", "Success");
-                $location.path('/show' + response.id);
+                $location.path('/edit/' + $scope.lead.id);
             };
 
             var saveErrorCallback = function (response) {
@@ -158,12 +174,11 @@ angular.module('prospectApp', ['ui.bootstrap', 'resources.restApi', 'common.help
             };
 
             $scope.saveProspect = function (lead) {
-                Prospect.save(lead).$then(saveSuccessCallback, saveErrorCallback);
+                Prospect.save(lead,function (data) {
+                    lead.id = data.id;
+                }).$then(saveSuccessCallback, saveErrorCallback);
             };
 
-            $scope.leadNaicsChecked = function () {
-
-            }
         }])
     .controller('ShowProspectCtrl', ['$scope', '$routeParams', '$location', 'Prospect', 'Logger',
         function ($scope, $routeParams, $location, Prospect, Logger) {

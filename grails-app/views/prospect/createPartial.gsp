@@ -13,10 +13,11 @@
                 <g:message code="prospect.label"/>
             </legend>
             <g:render template="/lead/partials/createPartial"/>
+
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary" id="prospectFormSave" data-ng-click="saveProspect(lead)"
                         %{--data-ng-disabled="!canSave()"--}%
-                >
+                ><i class="icon-save"></i>
                     <g:message code="default.button.save.label" default="Save"/>
                 </button>
                 <button class="btn" id="cancelFormSave" data-ng-click="resetProspect()" >

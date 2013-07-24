@@ -1,0 +1,153 @@
+angular.module('resources.sicCodeTree', ['resources.logger'])
+    .controller('SicCodeCtrl', ['$scope', 'Logger', function ($scope, Logger) {
+        $scope.collapseTree = function () {
+
+        };
+    }])
+    .directive('sicCodeTree', [ '$timeout', '$http', 'Logger', function ($timeout, $http, Logger) {
+        return {
+
+            restrict: 'A',
+            transclude: true,
+            scope: {
+                selectedNodes: '=',
+                undeterminedNodes: '=',
+                includeRelatedNaicsCodes: '=',
+                relatedNaicsCodes: '=',
+                closeContainer: '&'
+            },
+            templateUrl: '/js/angular/resources/SicCodeTree.html',
+
+            link: function (scope, element, attrs) {
+                var timeoutPromise;
+                var loadedState = false;
+                var selectedNodesCopy;
+                var undeterminedNodesCopy;
+
+                scope.$watch('filterText', function (filterText) {
+                    if (filterText !== undefined && (filterText.length >= 2 || filterText.length == 0))
+                        if (timeoutPromise !== undefined) {
+                            $timeout.cancel(timeoutPromise);
+                        }
+                    timeoutPromise = $timeout(function () {
+                        $(element).find('#tree').jstree("search", filterText);
+                    }, 500);
+                });
+
+                scope.$watch('includeRelatedNaicsCodes', function (includeRelatedNaicsCodes) {
+                    scope.includeRelatedNaicsCodes = includeRelatedNaicsCodes;
+                });
+
+                var getSelected = function () {
+                    scope.selectedNodes = [];
+                    scope.undeterminedNodes = [];
+                    var $tree = $('#tree');
+                    $tree.find('.jstree-checked').each(
+                        function () {
+                            scope.selectedNodes.push({id: Number(this.id)});
+                        });
+                    $tree.find('.jstree-undetermined').each(
+                        function () {
+                            scope.undeterminedNodes.push({id: Number(this.id)});
+                        }
+                    );
+                    if (scope.includeRelatedNaicsCodes) {
+                        $http.post("/sicCode/selectedSicCodes", JSON.stringify(scope.selectedNodes)).
+                            success(function (data) {
+                                scope.relatedNaicsCodes = data;
+                            });
+                    }
+                };
+
+                var setSelected = function (selectedNodes) {
+                    if (selectedNodes !== undefined) {
+                        var spliceThese = [];
+                        $.each(selectedNodes, function () {
+                            if ($('#' + this.id).length > 0) {
+                                spliceThese.push(this);
+                                $('#tree').jstree('check_node', '#' + this.id);
+                            }
+                        });
+                        $.each(spliceThese, function () {
+                            var index = selectedNodes.indexOf(this);
+                            selectedNodes.splice(index, 1);
+                        });
+                    }
+                };
+
+                var setUndetermined = function (undeterminedNodes) {
+                    if (undeterminedNodes !== undefined) {
+                        var spliceThese = [];
+                        $.each(undeterminedNodes, function () {
+                            var $target = $('#' + this.id);
+                            if ($target.length > 0) {
+                                spliceThese.push(this);
+                                $target.removeClass('jstree-checked jstree-unchecked').addClass('jstree-undetermined');
+                            }
+                        });
+                        $.each(spliceThese, function () {
+                            var index = undeterminedNodes.indexOf(this);
+                            undeterminedNodes.splice(index, 1);
+                        })
+                    }
+                };
+
+                var setState = function () {
+                    if (!loadedState) {
+                        loadedState = true;
+                        selectedNodesCopy = angular.copy(scope.selectedNodes);
+                        undeterminedNodesCopy = angular.copy(scope.undeterminedNodes);
+                    }
+                    setSelected(selectedNodesCopy);
+                    setUndetermined(undeterminedNodesCopy);
+                };
+
+                scope.$watch('tree', function () {
+                    $(element).find('#tree').jstree({
+                        "json_data": {
+                            "ajax": {
+                                "url": function (node) {
+                                    return node == -1 ? "/sicCode/activeSicCodes" : "/sicCode/activeSicCodes?parentId=" + node.attr('id');
+                                },
+                                "type": "get",
+                                "success": function (codes) {
+                                    var nodes = [];
+                                    for (var i = 0; i < codes.length; i++) {
+                                        var code = codes[i];
+                                        if (code.hasChildSicCodes) {
+                                            code.state = "closed";
+                                        }
+                                        nodes.push(code);
+                                    }
+                                    return nodes;
+                                }
+                            }
+                        },
+                        "themes": {
+                            "theme": "default",
+                            "dots": false,
+                            "icons": false
+                        },
+                        "search": {
+                            "case_insensitive": true,
+                            "show_only_matches": true,
+                            "ajax": {
+                                "url": '/sicCode/search'
+                            }
+                        },
+
+                        "plugins": ["themes", "json_data", "checkbox", "search", "adv_search"]
+                    }, false).delegate("a", "click",function (event, data) {
+                            event.preventDefault();
+                        }).bind("loaded.jstree",function (event, data) {
+                            setState();
+                        }).bind("load_node.jstree",function (event, data) {
+                            setState();
+                        }).bind("change_state.jstree", function (event, data) {
+                            scope.$apply(function () {
+                                getSelected()
+                            });
+                        });
+                });
+            }}
+    }]);

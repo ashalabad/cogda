@@ -3,8 +3,11 @@
         <div class="well" data-ng-hide="editingContact">
             <div data-ng-include="" src="'/leadContact/showPartial'"></div>
             %{--<g:render template="/lead/leadContact/partials/showPartial"/>--}%
+
+        </div>
+        <div data-ng-hide="editingContact">
             <tabset>
-                <tab heading="Contact Addresses ({{contact.leadContactAddresses.length }})">
+                <tab heading="Addresses ({{contact.leadContactAddresses.length }})">
                     <fieldset class="embedded">
                         <div data-ng-repeat="address in contact.leadContactAddresses | orderBy:'primaryAddress':'reverse' | filter:searchString">
                             <div data-ng-include="" src="'/leadContactAddress/indexPartial'"></div>
@@ -33,7 +36,7 @@
                                 </div>
                             </div>
 
-                            <br>
+                            <hr>
 
                             <button type="button"
                                     class="btn"
@@ -45,10 +48,8 @@
                         </div>
                     </fieldset>
                 </tab>
-                <tab heading="Contact Phone Numbers ({{contact.leadContactPhoneNumbers.length}})">
+                <tab heading="Phone Numbers ({{contact.leadContactPhoneNumbers.length}})">
                     <fieldset class="embedded">
-                        <legend></legend>
-
                         <div data-ng-repeat="contactPhoneNumber in contact.leadContactPhoneNumbers | filter:searchString">
                             <div data-ng-include src="'/leadContactPhoneNumber/indexPartial'"></div>
                             %{--<g:render template="/lead/leadContactPhoneNumber/partials/indexPartial"/>--}%
@@ -58,14 +59,12 @@
                         %{--<g:render template="/lead/leadContactPhoneNumber/partials/addPartial"/>--}%
                     </fieldset>
                 </tab>
-                <tab heading="Contact Email Addresses ({{contact.leadContactEmailAddresses.length}})">
+                <tab heading="Email Addresses ({{contact.leadContactEmailAddresses.length}})">
                     <fieldset class="embedded">
                         <div data-ng-repeat="contactEmailAddress in contact.leadContactEmailAddresses | filter:searchString">
                             <div data-ng-include src="'/leadContactEmailAddress/indexPartial'"></div>
                             %{--<g:render template="/lead/leadContactEmailAddress/partials/indexPartial"/>--}%
-
                         </div>
-
                         <div data-ng-include src="'/leadContactEmailAddress/addPartial'"></div>
                         %{--<g:render template="/lead/leadContactEmailAddress/partials/addPartial"/>--}%
                     </fieldset>

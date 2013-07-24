@@ -21,7 +21,7 @@
     <!-- Empty Header -->
 </content>
 
-<div data-ng-app="prospectApp" data-base-url="${createLink(uri: 'prospect')}">
+<div data-ng-app="prospectApp" data-base-url="${createLink(uri: 'prospect')}" data-ng-cloak>
     <!-- Placeholder for view - Injects the views dynamically into the div for data-ng-view -->
     <div data-ng-view=""></div>
 </div>

@@ -1,4 +1,4 @@
-package com.cogda.domain.lead
+package com.cogda.multitenant.lead
 
 import com.cogda.multitenant.LeadAddress
 import com.cogda.multitenant.LeadService

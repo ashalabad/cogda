@@ -1,9 +1,8 @@
-package com.cogda.domain.lead
+package com.cogda.multitenant.lead
 
 
 
 import grails.test.mixin.*
-import org.junit.*
 import spock.lang.Specification
 
 /**

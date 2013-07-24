@@ -1,4 +1,4 @@
-package com.cogda.domain.lead
+package com.cogda.multitenant.lead
 
 import com.cogda.GsonBaseController
 import com.cogda.multitenant.LeadLineOfBusiness
@@ -31,6 +31,14 @@ class LeadLineOfBusinessController extends GsonBaseController {
     def showPartial() {
         render(template:"/lead/leadLineOfBusiness/partials/showPartial")
     }
+    def targetDatePicker() {
+        render(view:'/lead/leadLineOfBusiness/partials/_datePicker', model: [modelName: "\$parent.\$parent.leadLineOfBusiness.targetDate"])
+    }
+
+    def expirationDatePicker() {
+        render(view:'/lead/leadLineOfBusiness/partials/_datePicker', model: [modelName: "\$parent.\$parent.leadLineOfBusiness.expirationDate"])
+    }
+
 
     def save() {
         if (!requestIsJson()) {
