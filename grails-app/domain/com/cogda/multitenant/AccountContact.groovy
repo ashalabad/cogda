@@ -38,10 +38,12 @@ class AccountContact {
      */
     String lastName
 
-    /**
-     * Primary contact
-     */
-    Boolean primaryContact
+    Boolean favorite = Boolean.FALSE
+
+    Boolean displayAsMarketOnBuilder = Boolean.FALSE
+
+    Boolean active = Boolean.TRUE
+
 
     static hasMany = [accountContactAddresses:AccountContactAddress,
             accountContactEmailAddresses:AccountContactEmailAddress,
@@ -53,15 +55,12 @@ class AccountContact {
 	Date	dateCreated
 	Date	lastUpdated
 
-	static belongsTo	= [account:Account]	// tells GORM to cascade commands: e.g., delete this object if the "parent" is deleted.
-
 
     static constraints = {
         userProfile(nullable: true)
         firstName(nullable:false, blank:false)
         middleName(nullable:true)
         lastName(nullable:false, blank:false)
-        primaryContact(nullable:true)
     }
 
     /**
@@ -69,7 +68,10 @@ class AccountContact {
      * @return String
      */
     String getFullName(){
-        return "${lastName}, ${firstName}"
+        if(this.middleName)
+            "${lastName}, ${firstName} ${middleName}"
+        else
+            "${lastName}, ${firstName}"
     }
 
     /**

@@ -73,7 +73,7 @@ angular.module('resources.logger', []).factory('Logger', function () {
                 break;
             case 409: // optimistic locking failure - display error message on the page
                 if(response.data.message){
-                    error(response.data.message, "Error")
+                    error(response.data.message, "Error");
                 }else{
                     error("Another user has updated this item while you were editing", "Error");
                 }
@@ -82,7 +82,7 @@ angular.module('resources.logger', []).factory('Logger', function () {
                 error("Unable to process your request", "Error");
                 break;
             case 500:
-                error("Unable to process request", "This was due to an issue on the server - please file a support ticket")
+                error("Unable to process request", "This was due to an issue on the server - please file a support ticket");
                 break;
             default: // TODO: general error handling
         }
@@ -96,7 +96,7 @@ angular.module('resources.logger', []).factory('Logger', function () {
                 if(response.data.message){
                     error(response.data.message, "Error");
                 }else{
-                    error("Errors", "Error");
+                    error("Data Validation Failed", "Error");
                 }
                 break;
             default:

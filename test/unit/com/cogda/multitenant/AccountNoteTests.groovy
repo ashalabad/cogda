@@ -31,8 +31,7 @@ class AccountNoteTests {
 
         assert "nullable" == accountNote.errors["note"].code
         assert "nullable" == accountNote.errors["account"].code
-
-        assert !accountNote.errors["noteType"]
+        assert "nullable" == accountNote.errors["noteType"].code
 
     }
 }
