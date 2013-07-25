@@ -253,8 +253,8 @@ application.name="Cogda"
 
 environments {
     development {
-        grails.plugin.awssdk.accessKey = "AKIAJIUNDMPJW4QGSSTA"
-        grails.plugin.awssdk.secretKey = "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"
+        grails.plugin.awssdk.accessKey = "AKIAILS5HGMNXGK47S7Q"
+        grails.plugin.awssdk.secretKey = "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"
         grails.plugin.awssdk.default.bucket = "cogda-development"
     }
     test {
