@@ -71,8 +71,9 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
                 $scope.total = parseInt(headers('X-Pagination-Total'));
             }, angular.noop());
         }])
-    .controller('EditSuspectCtrl', ['$scope', '$routeParams', '$location', 'Suspect', 'Logger', 'UnitedStates', 'SupportedCountryCodes', 'LeadSubTypes', 'NoteType', 'BusinessTypes',
-        function ($scope, $routeParams, $location, Suspect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes) {
+    .controller('EditSuspectCtrl', ['$scope', '$routeParams', '$location', 'Suspect', 'Logger', 'UnitedStates',
+        'SupportedCountryCodes', 'LeadSubTypes', 'NoteType', 'BusinessTypes', 'LineOfBusiness', 'LeadLineOfBusiness',
+        function ($scope, $routeParams, $location, Suspect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes, LineOfBusiness, LeadLineOfBusiness) {
             $scope.title = 'Suspect';
             $scope.editingLead = false;
             $scope.message = '';
@@ -87,6 +88,9 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
             $scope.leadSubTypes = LeadSubTypes.list();
             $scope.noteTypes = NoteType.list();
             $scope.businessTypes = BusinessTypes.list();
+            LineOfBusiness.list().$then(function (response) {
+                $scope.linesOfBusiness = response.data;
+            })
 
             Suspect.get($routeParams, function (data) {
                 $scope.lead = data;
@@ -117,10 +121,27 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
 
             var updateErrorCallBack = function (response) {
                 Logger.formValidationMessageBuilder(response, $scope, $scope.leadForm);
-            }
+            };
+
+            $scope.updateLineOfBusiness = function (lineOfBusiness) {
+                LeadLineOfBusiness.update(lineOfBusiness).$then(updateSuccessCallback, updateErrorCallBack);
+                var index = $scope.lead.linesOfBusiness.indexOf(lineOfBusiness);
+                $scope.lead.linesOfBusiness[index] = lineOfBusiness;
+                $scope.editingLineOfBusiness = false;
+                return $scope.editingLineOfBusiness;
+            };
+
+            $scope.editLineOfBusiness = function () {
+                $scope.editingLineOfBusiness = true;
+            };
+
+            $scope.cancelEditLineOfBusiness = function () {
+                $scope.editingLineOfBusiness = false;
+            };
         }])
-    .controller('CreateSuspectCtrl', ['$scope', '$routeParams', '$location', 'Suspect', 'Logger', 'UnitedStates', 'SupportedCountryCodes', 'LeadSubTypes', 'NoteType', 'BusinessTypes',
-        function ($scope, $routeParams, $location, Suspect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes) {
+    .controller('CreateSuspectCtrl', ['$scope', '$routeParams', '$location', 'Suspect', 'Logger', 'UnitedStates',
+        'SupportedCountryCodes', 'LeadSubTypes', 'NoteType', 'BusinessTypes', 'DateHelper', 'LineOfBusiness',
+        function ($scope, $routeParams, $location, Suspect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes, DateHelper, LineOfBusiness) {
             $scope.lead = {};
             $scope.lead.leadAddresses = [];
             $scope.lead.leadAddresses.push({primaryAddress: true});
@@ -135,6 +156,11 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
             UnitedStates.list().$then(function (response) {
                 $scope.states = response.data;
             });
+
+            LineOfBusiness.list().$then(function (response) {
+                $scope.linesOfBusiness = response.data;
+            })
+
             $scope.countryCodes = SupportedCountryCodes.list();
             $scope.leadSubTypes = LeadSubTypes.list();
             $scope.noteTypes = NoteType.list();
@@ -144,6 +170,7 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
             $scope.addingLeadLineOfBusiness = false;
 
             $scope.addLeadLineOfBusiness = function () {
+                $scope.leadLineOfBusiness = {};
                 $scope.addingLeadLineOfBusiness = true;
             };
 
@@ -152,9 +179,26 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
             }
 
             $scope.saveLeadLineOfBusiness = function (leadLineOfBusiness) {
+                leadLineOfBusiness.targetDate = DateHelper.getFormattedDate(leadLineOfBusiness.targetDate);
+                leadLineOfBusiness.expirationDate = DateHelper.getFormattedDate(leadLineOfBusiness.expirationDate);
                 $scope.lead.linesOfBusiness.push(leadLineOfBusiness);
                 $scope.cancelAddLeadLineOfBusiness();
             }
+
+            $scope.updateLineOfBusiness = function (lineOfBusiness) {
+                $scope.lead.linesOfBusiness[$scope.index] = lineOfBusiness;
+                $scope.editingLineOfBusiness = false;
+            };
+
+            $scope.editLineOfBusiness = function (index) {
+                $scope.index = index;
+                $scope.leadLineOfBusiness = angular.copy($scope.lead.linesOfBusiness[index]);
+                $scope.editingLineOfBusiness = true;
+            };
+
+            $scope.cancelEditLineOfBusiness = function () {
+                $scope.editingLineOfBusiness = false;
+            };
 
             var saveSuccessCallback = function () {
                 Logger.success("Prospect Saved Successfully", "Success");
