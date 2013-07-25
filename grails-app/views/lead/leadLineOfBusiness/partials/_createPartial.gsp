@@ -45,7 +45,7 @@
         </button></td>
         <td><button class="btn btn-danger btn-mini"
                     type="button"
-                    data-ng-click="deleteLineOfBusiness(lineOfBusiness)"
+                    data-ng-click="deleteLineOfBusiness($index)"
                     data-ng-hide="editingLineOfBusiness">
             <i class="icon-remove icon-white"></i>
             <g:message code="default.button.delete.label"/>
