@@ -41,7 +41,7 @@ angular.module('resources.sicCodeTree', ['resources.logger'])
                 var getSelected = function () {
                     scope.selectedNodes = [];
                     scope.undeterminedNodes = [];
-                    var $tree = $('#tree');
+                    var $tree = $(element).find('#tree');
                     $tree.find('.jstree-checked').each(
                         function () {
                             scope.selectedNodes.push({id: Number(this.id)});
