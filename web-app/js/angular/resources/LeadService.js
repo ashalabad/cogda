@@ -1,8 +1,9 @@
-angular.module('resources.leadService', ['resources.logger', 'ngGrid',
+angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.helperFuncs',
         'resources.unitedStates', 'resources.SupportedCountryCodes', 'resources.leadSubTypes',
         'resources.noteType', 'resources.businessTypes', 'resources.leadAddress', 'resources.leadService',
         'resources.leadNote', 'resources.leadContactPhoneNumber', 'resources.leadContactEmailAddress',
-        'resources.leadContact', 'resources.leadContactAddress', 'resources.lead'])
+        'resources.leadContact', 'resources.leadContactAddress', 'resources.leadLineOfBusiness',
+        'resources.lineOfBusiness', 'resources.lead'])
     .controller('AddAddressController', ['$scope', 'LeadAddress', 'Logger', function ($scope, LeadAddress, Logger) {
         $scope.address = {};
 
@@ -497,7 +498,7 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid',
             $scope.$parent.relatedSicCodes = $scope.relatedSicCodes;
             $scope.$parent.relatedNaicsCodes = $scope.relatedNaicsCodes;
             $scope.shouldBeOpen = false;
-            Lead.update($scope.lead, function(data) {
+            Lead.update($scope.lead,function (data) {
                 $scope.lead = data;
             }).$then(updateSuccessCallback, updateErrorCallBack);
         };
@@ -539,29 +540,58 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid',
             $scope.toggleMin();
 
         }])
-    .controller('EditLeadLineOfBusinessCtrl', ['$scope', 'Logger',
-        function ($scope, Logger) {
-            $scope.today = function () {
-                $scope.dt = new Date();
+    .controller('EditLeadLineOfBusinessCtrl', ['$scope', 'Logger', 'LineOfBusiness', 'LeadLineOfBusiness',
+        function ($scope, Logger, LineOfBusiness, LeadLineOfBusiness) {
+            LineOfBusiness.list().$then(function (response) {
+                $scope.linesOfBusiness = response.data;
+            });
+
+//            $scope.editingLineOfBusiness = false;
+
+            $scope.editLineOfBusiness = function () {
+//                $scope.editingLineOfBusiness = true;
+                $scope.$parent.$parent.editingLineOfBusiness = true;
+                $scope.$parent.$parent.leadLineOfBusiness = $scope.leadLineOfBusiness;
             };
 
-            $scope.today();
-
-            $scope.clear = function () {
-                $scope.dt = null;
+            $scope.cancelEditLineOfBusiness = function () {
+//                $scope.editingLineOfBusiness = false;
+                $scope.$parent.editingLineOfBusiness = false;
             };
 
-            $scope.toggleMin = function () {
-                $scope.minDate = ( $scope.minDate ) ? null : new Date();
+            $scope.updateLineOfBusiness = function (lineOfBusiness) {
+                var result = $scope.$parent.updateLineOfBusiness($scope.leadLineOfBusiness);
+                if (!result) {
+                    $scope.cancelEditLineOfBusiness();
+                }
             };
 
-            $scope.toggleMin();
+            $scope.deleteLineOfBusiness = function (lineOfBusiness, idx) {
+                LeadLineOfBusiness.delete(lineOfBusiness, function () {
+                    Logger.success("Contact Phone Number Deleted Successfully", "Success");
+                    $scope.contact.leadLineOfBusinesss.splice(idx, 1);
+                }, function () {
+                    Logger.error("Failed to Delete Contact Phone Number", "Error");
+                });
+            };
+
+            var updateSuccessCallback = function (response) {
+                Logger.success("Contact Phone Number Updated Successfully", "Success");
+            };
+
+            var updateErrorCallBack = function (response) {
+                Logger.formValidationMessageBuilder(response, $scope, $scope.leadLineOfBusinessForm);
+            };
 
         }])
-    .controller('AddLeadLineOfBusinessController', ['$scope', 'Logger',
-        function ($scope, Logger) {
+    .controller('AddLeadLineOfBusinessCtrl', ['$scope', 'Logger', 'LeadLineOfBusiness', 'LineOfBusiness', 'DateHelper',
+        function ($scope, Logger, LeadLineOfBusiness, LineOfBusiness, DateHelper) {
             $scope.leadLineOfBusiness = {};
             $scope.addingLeadLineOfBusiness = false;
+
+            LineOfBusiness.list().$then(function (response) {
+                $scope.linesOfBusiness = response.data;
+            });
 
             $scope.addLeadLineOfBusiness = function () {
                 $scope.addingLeadLineOfBusiness = true;
@@ -569,10 +599,12 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid',
 
             $scope.cancelAddLeadLineOfBusiness = function () {
                 $scope.addingLeadLineOfBusiness = false;
-            }
+            };
 
             $scope.saveLeadLineOfBusiness = function (leadLineOfBusiness) {
                 leadLineOfBusiness.lead = {id: $scope.lead.id};
+                leadLineOfBusiness.targetDate = DateHelper.getFormattedDate(leadLineOfBusiness.targetDate);
+                leadLineOfBusiness.expirationDate = DateHelper.getFormattedDate(leadLineOfBusiness.expirationDate);
                 LeadLineOfBusiness.save(leadLineOfBusiness,function (data) {
                     leadLineOfBusiness.id = data.id;
                     $scope.lead.linesOfBusiness.push(leadLineOfBusiness);

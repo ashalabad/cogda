@@ -1,6 +1,18 @@
 <fieldset>
     <div data-ng-form="leadLineOfBusinessForm">
         <div class="control-group fieldcontain">
+            <label for="lineOfBusiness" class="control-label">
+                <g:message code="lineOfBusiness.label"/>
+            </label>
+            <div class="controls">
+                <select id="lineOfBusiness" data-ng-model="leadLineOfBusiness.lineOfBusiness"
+                    data-ng-options="lob.description group by lob.lineOfBusinessCategory.description for lob in linesOfBusiness">
+                    <option value="">-- choose Line Of Business --</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="control-group fieldcontain">
             <label for="targetDate" class="control-label">
                 <g:message code="leadLineOfBusiness.targetDate.label" default="Target Date"/><span
                     class="required-indicator">*</span>
@@ -41,7 +53,7 @@
             </label>
 
             <div class="controls">
-                <input type="number" id="targetPremium" class="input-medium"
+                <input type="number" id="targetPremium" class="input-medium" min="0"
                        data-ng-model="leadLineOfBusiness.targetPremium">
             </div>
         </div>
@@ -53,7 +65,7 @@
             </label>
 
             <div class="controls">
-                <input type="number" id="targetCommission" class="input-medium"
+                <input type="number" id="targetCommission" class="input-medium" min="0"
                        data-ng-model="leadLineOfBusiness.targetCommission">
             </div>
         </div>

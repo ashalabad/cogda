@@ -8,7 +8,7 @@
 <button class="btn btn-info btn-mini pull-right"
         type="button"
         data-ng-click="editContactEmailAddress()"
-        data-ng-hide="editContactEmailAddress">
+        data-ng-hide="editingContactEmailAddress">
     <i class="icon-edit icon-white"></i>
     <g:message code="default.edit.label" args="[message(code: 'contactEmailAddress.label')]"/>
 </button>

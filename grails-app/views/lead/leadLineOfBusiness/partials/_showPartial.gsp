@@ -1,42 +1,31 @@
-<div class="row">
-    <div class="span3">
-        <span data-ng-show="leadLineOfBusiness.targetDate">
-            {{ leadLineOfBusiness.targetDate |date:mediumShort }}
-        </span>
-    </div>
-    <div class="span3">
-        <span data-ng-show="leadLineOfBusiness.expirationDate">
-            {{ leadLineOfBusiness.expirationDate }}
-        </span>
-    </div>
-    <div class="span3">
-        <span data-ng-show="leadLineOfBusiness.targetPremium">
-            {{ leadLineOfBusiness.targetPremium }}
-        </span>
-    </div>
-    <div class="span3">
-        <span data-ng-show="leadLineOfBusiness.targetCommission">
-            {{ leadLineOfBusiness.targetCommission }}
-        </span>
-    </div>
-    <div class="span3">
-        <span data-ng-show="leadLineOfBusiness.writingCompany.companyName">
-            {{ leadLineOfBusiness.writingCompany.companyName }}
-        </span>
-    </div>
-    <div class="span3">
-        <span data-ng-show="leadLineOfBusiness.billingCompany.companyName">
-            {{ leadLineOfBusiness.billingCompany.companyName }}
-        </span>
-    </div>
-    <div class="span3">
-        <span data-ng-show="leadLineOfBusiness.renewal">
-            {{ leadLineOfBusiness.renewal }}
-        </span>
-    </div>
-    <div class="span3">
-        <span data-ng-show="leadLineOfBusiness.remarket">
-            {{ leadLineOfBusiness.remarket }}
-        </span>
-    </div>
-</div>
+<td>
+    {{ leadLineOfBusiness.lineOfBusiness.description }}
+</td>
+
+<td>
+    {{ leadLineOfBusiness.targetDate | date: mediumDate }}
+</td>
+
+<td>
+    {{ leadLineOfBusiness.expirationDate | date: mediumDate }}
+</td>
+
+<td>
+    {{ leadLineOfBusiness.targetPremium }}
+</td>
+
+<td>
+    {{ leadLineOfBusiness.targetCommission }}
+</td>
+<td>
+    {{ leadLineOfBusiness.writingCompany }}
+</td>
+<td>
+    {{ leadLineOfBusiness.billingCompany }}
+</td>
+<td>
+    {{ leadLineOfBusiness.renewal }}
+</td>
+<td>
+    {{ leadLineOfBusiness.remarket }}
+</td>

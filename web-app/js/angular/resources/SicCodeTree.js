@@ -175,7 +175,7 @@ angular.module('resources.sicCodeTree', ['resources.logger'])
                                     var nodes = [];
                                     for (var i = 0; i < codes.length; i++) {
                                         var code = codes[i];
-                                        if (code.hasChildNaicsCodes) {
+                                        if (code.hasChildSicCodes) {
                                             code.state = "closed";
                                         }
                                         nodes.push(code);

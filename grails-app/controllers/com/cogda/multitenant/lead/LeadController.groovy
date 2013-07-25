@@ -2,6 +2,7 @@ package com.cogda.multitenant.lead
 
 import com.cogda.GsonBaseController
 import com.cogda.multitenant.Lead
+import com.google.gson.Gson
 import com.google.gson.JsonElement
 import grails.plugin.gson.converters.GSON
 
@@ -26,7 +27,9 @@ class LeadController extends GsonBaseController {
             respondNotAcceptable()
             return
         }
-        Lead leadInstance = new Lead(request.GSON)
+        Gson gson = gsonBuilder.setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").create()
+
+        Lead leadInstance = gson.fromJson(request.GSON, Lead)
         if (!leadInstance.save(flush: true)) {
             respondUnprocessableEntity(leadInstance)
             return

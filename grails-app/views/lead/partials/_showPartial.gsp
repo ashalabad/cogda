@@ -61,16 +61,11 @@
         </div>
     </div>
 </fieldset>
-
+<legend><g:message code="lineOfBusiness.label"/></legend>
+<g:render template="leadLineOfBusiness/partials/addEditShowPartial"/>
 <div class="row-fluid">
     <div class="span6">
-        <div class="row-fluid">
-            <legend><g:message code="lineOfBusiness.label"/></legend>
-            <g:render template="leadLineOfBusiness/partials/addEditShowPartial"/>
-        </div>
-
         <div clas="row-fluid">
-
             <legend><g:message code="sicCodes.label"/></legend>
             <g:render template="/sicCode/partials/addEditShowPartial"/>
         </div>

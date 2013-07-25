@@ -250,11 +250,13 @@ application.name="Cogda"
 
 // Start: AWS-SDK Plugin Configuration - Eventually we will move this configuration to Java Properties files that
 // are loaded at runtime.
-
+// All of the users used to access AWS buckets are part of the Cogda_Web group
+// A specific user is assigned to access a specific bucket.
 environments {
+    // development uses: cogda_development_web user security credentials
     development {
-        grails.plugin.awssdk.accessKey = "AKIAJIUNDMPJW4QGSSTA"
-        grails.plugin.awssdk.secretKey = "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"
+        grails.plugin.awssdk.accessKey = "AKIAILS5HGMNXGK47S7Q"
+        grails.plugin.awssdk.secretKey = "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"
         grails.plugin.awssdk.default.bucket = "cogda-development"
     }
     test {

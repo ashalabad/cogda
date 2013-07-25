@@ -2,6 +2,7 @@ package com.cogda.multitenant.lead
 
 import com.cogda.GsonBaseController
 import com.cogda.multitenant.LeadLineOfBusiness
+import com.google.gson.Gson
 import com.google.gson.JsonElement
 import grails.plugin.gson.converters.GSON
 import org.springframework.dao.DataIntegrityViolationException
@@ -31,21 +32,14 @@ class LeadLineOfBusinessController extends GsonBaseController {
     def showPartial() {
         render(template:"/lead/leadLineOfBusiness/partials/showPartial")
     }
-    def targetDatePicker() {
-        render(view:'/lead/leadLineOfBusiness/partials/_datePicker', model: [modelName: "\$parent.\$parent.leadLineOfBusiness.targetDate"])
-    }
-
-    def expirationDatePicker() {
-        render(view:'/lead/leadLineOfBusiness/partials/_datePicker', model: [modelName: "\$parent.\$parent.leadLineOfBusiness.expirationDate"])
-    }
-
 
     def save() {
         if (!requestIsJson()) {
             respondNotAcceptable()
             return
         }
-
+//        Gson gson = gsonBuilder.setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").create()
+//        LeadLineOfBusiness leadLineOfBusinsessInstance = gson.fromJson(request.GSON, LeadLineOfBusiness)
         def leadLineOfBusinsessInstance = new LeadLineOfBusiness(request.GSON)
         if (leadLineOfBusinsessInstance.save(flush: true)) {
             respondCreated leadLineOfBusinsessInstance

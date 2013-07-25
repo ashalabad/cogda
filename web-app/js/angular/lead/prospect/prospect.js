@@ -1,7 +1,7 @@
 angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.naicsCodeTree', 'resources.sicCodeTree',
-        'resources.restApi', 'common.helperFuncs', 'resources.logger', 'ngGrid',
+        'resources.restApi', 'common.helperFuncs', 'resources.logger', 'ngGrid', 'resources.lineOfBusiness',
         'resources.prospect', 'resources.unitedStates', 'resources.SupportedCountryCodes', 'resources.leadSubTypes',
-        'resources.noteType', 'resources.businessTypes', 'resources.leadService'])
+        'resources.noteType', 'resources.businessTypes', 'resources.leadService', 'resources.leadLineOfBusiness'])
 
     .config(function ($routeProvider) {
         $routeProvider.
@@ -72,8 +72,9 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
                 $scope.total = parseInt(headers('X-Pagination-Total'));
             }, angular.noop());
         }])
-    .controller('EditProspectCtrl', ['$scope', '$routeParams', '$location', 'Prospect', 'Logger', 'UnitedStates', 'SupportedCountryCodes', 'LeadSubTypes', 'NoteType', 'BusinessTypes',
-        function ($scope, $routeParams, $location, Prospect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes) {
+    .controller('EditProspectCtrl', ['$scope', '$routeParams', '$location', 'Prospect', 'Logger', 'UnitedStates',
+        'SupportedCountryCodes', 'LeadSubTypes', 'NoteType', 'BusinessTypes', 'LineOfBusiness', 'LeadLineOfBusiness',
+        function ($scope, $routeParams, $location, Prospect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes, LineOfBusiness, LeadLineOfBusiness) {
             $scope.title = 'Prospect';
             $scope.editingLead = false;
             $scope.message = '';
@@ -86,6 +87,9 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
             $scope.leadSubTypes = LeadSubTypes.list();
             $scope.noteTypes = NoteType.list();
             $scope.businessTypes = BusinessTypes.list();
+            LineOfBusiness.list().$then(function (response) {
+                $scope.linesOfBusiness = response.data;
+            })
 
             UnitedStates.list().$then(function (response) {
                 $scope.states = response.data;
@@ -121,10 +125,27 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
 
             var updateErrorCallBack = function (response) {
                 Logger.formValidationMessageBuilder(response, $scope, $scope.leadForm);
-            }
+            };
+
+            $scope.updateLineOfBusiness = function (lineOfBusiness) {
+                LeadLineOfBusiness.update(lineOfBusiness).$then(updateSuccessCallback, updateErrorCallBack);
+                var index = $scope.lead.linesOfBusiness.indexOf(lineOfBusiness);
+                $scope.lead.linesOfBusiness[index] = lineOfBusiness;
+                $scope.editingLineOfBusiness = false;
+                return $scope.editingLineOfBusiness;
+            };
+
+            $scope.editLineOfBusiness = function () {
+                $scope.editingLineOfBusiness = true;
+            };
+
+            $scope.cancelEditLineOfBusiness = function () {
+                $scope.editingLineOfBusiness = false;
+            };
         }])
-    .controller('CreateProspectCtrl', ['$scope', '$routeParams', '$location', 'Prospect', 'Logger', 'UnitedStates', 'SupportedCountryCodes', 'LeadSubTypes', 'NoteType', 'BusinessTypes',
-        function ($scope, $routeParams, $location, Prospect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes) {
+    .controller('CreateProspectCtrl', ['$scope', '$routeParams', '$location', 'Prospect', 'Logger', 'UnitedStates',
+        'SupportedCountryCodes', 'LeadSubTypes', 'NoteType', 'BusinessTypes', 'DateHelper', 'LineOfBusiness',
+        function ($scope, $routeParams, $location, Prospect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes, DateHelper, LineOfBusiness) {
             $scope.lead = {};
             $scope.lead.leadAddresses = [];
             $scope.lead.leadAddresses.push({primaryAddress: true});
@@ -139,6 +160,11 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
             UnitedStates.list().$then(function (response) {
                 $scope.states = response.data;
             });
+
+            LineOfBusiness.list().$then(function (response) {
+                $scope.linesOfBusiness = response.data;
+            })
+
             $scope.countryCodes = SupportedCountryCodes.list();
             $scope.leadSubTypes = LeadSubTypes.list();
             $scope.noteTypes = NoteType.list();
@@ -148,6 +174,7 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
             $scope.addingLeadLineOfBusiness = false;
 
             $scope.addLeadLineOfBusiness = function () {
+                $scope.leadLineOfBusiness = {};
                 $scope.addingLeadLineOfBusiness = true;
             };
 
@@ -156,9 +183,26 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
             }
 
             $scope.saveLeadLineOfBusiness = function (leadLineOfBusiness) {
+                leadLineOfBusiness.targetDate = DateHelper.getFormattedDate(leadLineOfBusiness.targetDate);
+                leadLineOfBusiness.expirationDate = DateHelper.getFormattedDate(leadLineOfBusiness.expirationDate);
                 $scope.lead.linesOfBusiness.push(leadLineOfBusiness);
                 $scope.cancelAddLeadLineOfBusiness();
             }
+
+            $scope.updateLineOfBusiness = function (lineOfBusiness) {
+                $scope.lead.linesOfBusiness[$scope.index] = lineOfBusiness;
+                $scope.editingLineOfBusiness = false;
+            };
+
+            $scope.editLineOfBusiness = function (index) {
+                $scope.index = index;
+                $scope.leadLineOfBusiness = angular.copy($scope.lead.linesOfBusiness[index]);
+                $scope.editingLineOfBusiness = true;
+            };
+
+            $scope.cancelEditLineOfBusiness = function () {
+                $scope.editingLineOfBusiness = false;
+            };
 
             var saveSuccessCallback = function () {
                 Logger.success("Prospect Saved Successfully", "Success");
@@ -178,6 +222,8 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
                     lead.id = data.id;
                 }).$then(saveSuccessCallback, saveErrorCallback);
             };
+
+
 
         }])
     .controller('ShowProspectCtrl', ['$scope', '$routeParams', '$location', 'Prospect', 'Logger',
