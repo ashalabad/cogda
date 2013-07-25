@@ -73,7 +73,8 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
         }])
     .controller('EditSuspectCtrl', ['$scope', '$routeParams', '$location', 'Suspect', 'Logger', 'UnitedStates',
         'SupportedCountryCodes', 'LeadSubTypes', 'NoteType', 'BusinessTypes', 'LineOfBusiness', 'LeadLineOfBusiness',
-        function ($scope, $routeParams, $location, Suspect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes, LineOfBusiness, LeadLineOfBusiness) {
+        '$dialog',
+        function ($scope, $routeParams, $location, Suspect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes, LineOfBusiness, LeadLineOfBusiness, $dialog) {
             $scope.title = 'Suspect';
             $scope.editingLead = false;
             $scope.message = '';
@@ -137,6 +138,32 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
 
             $scope.cancelEditLineOfBusiness = function () {
                 $scope.editingLineOfBusiness = false;
+            };
+
+            $scope.deleteSuspect = function (lead) {
+                var title = "Delete Suspect";
+                var msg = "Are you sure you want to delete this Suspect?";
+                var btns = [
+                    {result: 'cancel', label: 'Cancel'},
+                    {result: 'delete', label: 'Delete', cssClass: 'btn-danger'}
+                ];
+
+                $dialog.messageBox(title, msg, btns)
+                    .open()
+                    .then(function(result){
+                        if (result == 'delete')
+                            Suspect.delete({id: lead.id})
+                                .$then(deleteSuspectSuccessCallback, deleteSuspectErrorCallback);
+                    });
+            };
+
+            var deleteSuspectSuccessCallback = function(response) {
+                Logger.success("Suspect Deleted Successfully");
+                $location.path('/list/');
+            };
+
+            var deleteSuspectErrorCallback = function(response) {
+                Logger.messageBuilder(response, $scope);
             };
         }])
     .controller('CreateSuspectCtrl', ['$scope', '$routeParams', '$location', 'Suspect', 'Logger', 'UnitedStates',

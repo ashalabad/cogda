@@ -1,14 +1,9 @@
 package com.cogda.multitenant.lead
 
-import com.cogda.BaseController
+import com.cogda.GsonBaseController
 import com.cogda.common.LeadType
 import com.cogda.common.marshallers.HibernateProxyTypeAdapter
-import com.cogda.multitenant.Lead
-import com.cogda.multitenant.LeadAddress
-import com.cogda.multitenant.LeadContact
-import com.cogda.multitenant.LeadContactEmailAddress
-import com.cogda.multitenant.LeadContactPhoneNumber
-import com.cogda.multitenant.LeadNote
+import com.cogda.multitenant.*
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
@@ -26,10 +21,10 @@ import static org.codehaus.groovy.grails.web.servlet.HttpHeaders.LOCATION
  * A controller class handles incoming web requests and performs actions such as redirects, rendering views and so on.
  */
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class SuspectController extends BaseController {
+class SuspectController extends GsonBaseController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
-
+    final static String SUSPECT_LABEL = "suspect.label"
     GsonBuilder gsonBuilder
 
     def index() {
@@ -166,22 +161,17 @@ class SuspectController extends BaseController {
     }
 
     def delete() {
-        def suspectInstance = Lead.get(params.id)
-        if (!suspectInstance) {
-
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'lead.label', default: 'Lead'), params.id])
-            redirect(action: "list")
+        def leadInstance = Lead.get(params.id)
+        if (!leadInstance) {
+            respondNotFound SUSPECT_LABEL
             return
         }
 
         try {
-            suspectInstance.delete(flush: true)
-            flash.message = message(code: 'default.deleted.message', args: [message(code: 'lead.label', default: 'Lead'), params.id])
-            redirect(action: "list")
-        }
-        catch (DataIntegrityViolationException e) {
-            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'lead.label', default: 'Lead'), params.id])
-            redirect(action: "show", id: params.id)
+            leadInstance.delete(flush: true)
+            respondDeleted SUSPECT_LABEL
+        } catch (DataIntegrityViolationException e) {
+            respondNotDeleted SUSPECT_LABEL
         }
     }
 
@@ -254,20 +244,6 @@ class SuspectController extends BaseController {
             message(error: it)
         }
         response.status = SC_CONFLICT // 409
-        render responseBody as GSON
-    }
-
-    private void respondDeleted(id) {
-        def responseBody = [:]
-        responseBody.message = message(code: 'default.deleted.message', args: [message(code: 'lead.label', default: 'Lead'), id])
-        response.status = SC_OK  // 200
-        render responseBody as GSON
-    }
-
-    private void respondNotDeleted(id) {
-        def responseBody = [:]
-        responseBody.message = message(code: 'default.not.deleted.message', args: [message(code: 'lead.label', default: 'Lead'), id])
-        response.status = SC_INTERNAL_SERVER_ERROR  // 500
         render responseBody as GSON
     }
 
