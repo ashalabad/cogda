@@ -66,6 +66,9 @@ class BootStrap {
 
     def init = { servletContext ->
 
+        
+        final String defaultBucket = grailsApplication.config.grails.plugin.awssdk.default.bucket
+        
         for (dc in grailsApplication.domainClasses) {
             dc.metaClass.getErrorStrings = { Locale locale = Locale.getDefault() ->
                 def stringsByField = [:].withDefault { [] }
@@ -256,7 +259,7 @@ class BootStrap {
 
     def createRennaissanceAccountDummyData(Registration registration){
         CustomerAccount customerAccount = CustomerAccount.findBySubDomain(registration.subDomain)
-        InputStream is = amazonWebService.s3.getObject(new GetObjectRequest("cogda-test", "testingfiles/AccountData.csv")).getObjectContent()
+        InputStream is = amazonWebService.s3.getObject(new GetObjectRequest(defaultBucket, "testingfiles/AccountData.csv")).getObjectContent()
         CSVReader reader = new CSVReader(new InputStreamReader(is))
         String[] nextLine;
         Integer count = 0;
@@ -380,7 +383,7 @@ class BootStrap {
 
         List<String> companyNames = ["Cogda Solutions, LLC", "Sombra Technologies", "Rennaissance Alliance", "Hartford", "AIG", "QBE", "HBA", "ABC", "123", "456"]
         List<String> jobTitles = ["Thane", "King", "Queen", "Prince", "Princess", "Queen Mother", "Regent", "Prior", "Dean", "Bishop"]
-        InputStream is = amazonWebService.s3.getObject(new GetObjectRequest("cogda-test", "testingfiles/ContactTestDataBigFile.csv")).getObjectContent()
+        InputStream is = amazonWebService.s3.getObject(new GetObjectRequest(defaultBucket, "testingfiles/ContactTestDataBigFile.csv")).getObjectContent()
         CSVReader reader = new CSVReader(new InputStreamReader(is))
         String[] nextLine;
         Integer count = 0;
@@ -796,7 +799,7 @@ Thank you!
 
 
     def importNaicsCodes() {
-        InputStream is = amazonWebService.s3.getObject(new GetObjectRequest("cogda-test", "testingfiles/NaicsCode.csv")).getObjectContent()
+        InputStream is = amazonWebService.s3.getObject(new GetObjectRequest(defaultBucket, "testingfiles/NaicsCode.csv")).getObjectContent()
         CSVReader reader = new CSVReader(new InputStreamReader(is))
         String[] nextLine;
         while ((nextLine = reader.readNext()) != null) {
@@ -821,7 +824,7 @@ Thank you!
     }
 
     def importSicCodes() {
-        InputStream is = amazonWebService.s3.getObject(new GetObjectRequest("cogda-test", "testingfiles/SicCode.csv")).getObjectContent()
+        InputStream is = amazonWebService.s3.getObject(new GetObjectRequest(defaultBucket, "testingfiles/SicCode.csv")).getObjectContent()
         CSVReader reader = new CSVReader(new InputStreamReader(is))
         String[] nextLine;
         SicCode grandParent, parent
@@ -840,7 +843,7 @@ Thank you!
     }
 
     def buildSicNaicsCrosswalk(){
-        InputStream is = amazonWebService.s3.getObject(new GetObjectRequest("cogda-test", "testingfiles/SIC_to_NAICS_Crosswalk.csv")).getObjectContent()
+        InputStream is = amazonWebService.s3.getObject(new GetObjectRequest(defaultBucket, "testingfiles/SIC_to_NAICS_Crosswalk.csv")).getObjectContent()
         CSVReader reader = new CSVReader(new InputStreamReader(is))
         String[] nextLine;
         SicCode sicCode
