@@ -200,6 +200,10 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
                 $scope.editingLineOfBusiness = false;
             };
 
+            $scope.deleteLineOfBusiness = function(index) {
+                $scope.lead.linesOfBusiness.splice(index);
+            }
+
             var saveSuccessCallback = function () {
                 Logger.success("Prospect Saved Successfully", "Success");
                 $location.path('/edit/' + $scope.lead.id);
