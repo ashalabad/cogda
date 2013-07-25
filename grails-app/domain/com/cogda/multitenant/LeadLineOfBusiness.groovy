@@ -18,6 +18,8 @@ class LeadLineOfBusiness {
     Boolean renewal
     Boolean remarket
 
+    static belongsTo = [lead: Lead]
+
     static constraints = {
         targetDate(nullable: true)
         expirationDate(nullable: true)

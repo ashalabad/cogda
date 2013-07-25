@@ -103,7 +103,6 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
 
             $scope.updateLead = function (lead) {
                 Prospect.update(lead).$then(updateSuccessCallback, updateErrorCallBack);
-                $scope.cancelEditLead();
             };
 
 
@@ -121,6 +120,7 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
 
             var updateSuccessCallback = function (response) {
                 Logger.success("Prospect Updated Successfully", "Success");
+                $scope.cancelEditLead();
             };
 
             var updateErrorCallBack = function (response) {

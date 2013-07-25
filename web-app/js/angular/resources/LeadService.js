@@ -3,7 +3,7 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
         'resources.noteType', 'resources.businessTypes', 'resources.leadAddress', 'resources.leadService',
         'resources.leadNote', 'resources.leadContactPhoneNumber', 'resources.leadContactEmailAddress',
         'resources.leadContact', 'resources.leadContactAddress', 'resources.leadLineOfBusiness',
-        'resources.lineOfBusiness', 'resources.lead'])
+        'resources.lineOfBusiness', 'resources.lead', 'ui.bootstrap'])
     .controller('AddAddressController', ['$scope', 'LeadAddress', 'Logger', function ($scope, LeadAddress, Logger) {
         $scope.address = {};
 
@@ -547,8 +547,8 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
             $scope.toggleMin();
 
         }])
-    .controller('EditLeadLineOfBusinessCtrl', ['$scope', 'Logger', 'LineOfBusiness', 'LeadLineOfBusiness',
-        function ($scope, Logger, LineOfBusiness, LeadLineOfBusiness) {
+    .controller('EditLeadLineOfBusinessCtrl', ['$scope', 'Logger', 'LineOfBusiness', 'LeadLineOfBusiness', '$dialog',
+        function ($scope, Logger, LineOfBusiness, LeadLineOfBusiness, $dialog) {
             LineOfBusiness.list().$then(function (response) {
                 $scope.linesOfBusiness = response.data;
             });
@@ -574,12 +574,29 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
             };
 
             $scope.deleteLineOfBusiness = function (lineOfBusiness, idx) {
-                LeadLineOfBusiness.delete(lineOfBusiness, function () {
-                    Logger.success("Contact Phone Number Deleted Successfully", "Success");
-                    $scope.contact.leadLineOfBusinesss.splice(idx, 1);
-                }, function () {
-                    Logger.error("Failed to Delete Contact Phone Number", "Error");
-                });
+                var title = "Delete Line of Business";
+                var msg = "Are you sure you want to delete this Line Of Business";
+                var btns = [
+                    {result: 'cancel', label: 'Cancel'},
+                    {result: 'delete', label: 'Delete', cssClass: 'btn-danger'}
+                ];
+
+                $dialog.messageBox(title, msg, btns)
+                    .open()
+                    .then(function (result) {
+                        if (result == 'delete')
+                            LeadLineOfBusiness.delete({id: lineOfBusiness.id}).$then(deleteLineOfBusinessSuccessCallback, deleteLineOfBusinessErrorCallback);
+                    });
+            };
+
+            var deleteLineOfBusinessSuccessCallback = function (response) {
+                var index = $scope.lead.linesOfBusiness.indexOf($scope.linesOfBusiness);
+                $scope.lead.linesOfBusiness.splice(index, 1);
+                Logger.messageBuilder(response, $scope);
+            };
+
+            var deleteLineOfBusinessErrorCallback = function (response) {
+                Logger.messageBuilder(response, $scope);
             };
 
             var updateSuccessCallback = function (response) {

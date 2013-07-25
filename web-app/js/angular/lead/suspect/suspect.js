@@ -100,7 +100,6 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
 
             $scope.updateLead = function (lead) {
                 Suspect.update(lead).$then(updateSuccessCallback, updateErrorCallBack);
-                $scope.cancelEditLead();
             };
 
             $scope.cancelEditLead = function () {
@@ -117,6 +116,7 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
 
             var updateSuccessCallback = function (response) {
                 Logger.success("Suspect Updated Successfully", "Success");
+                $scope.cancelEditLead();
             };
 
             var updateErrorCallBack = function (response) {
