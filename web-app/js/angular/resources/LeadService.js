@@ -105,6 +105,8 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
             };
             LeadContactAddress.save(contactAddress,function (data) {
                 contactAddress.id = data.id;
+                if ($scope.contact.leadContactAddresses === undefined)
+                    $scope.contact.leadContactAddresses = [];
                 $scope.contact.leadContactAddresses.push(contactAddress);
                 $scope.cancelAddContactAddress();
             }).$then(updateSuccessCallback, updateErrorCallback);
