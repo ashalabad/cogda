@@ -40,7 +40,7 @@
     <tab heading="Lines of Business ({{lead.linesOfBusiness.length}})">
         <g:render template="/lead/leadLineOfBusiness/partials/addEditShowPartial"/>
     </tab>
-    <tab heading="NAICS & SIC Codes ({{lead.sicCodes ? lead.sicCodes.length : 0 + lead.naicsCodes ? lead.naicsCodes.length : 0}})">
+    <tab heading="NAICS & SIC Codes ({{(lead.sicCodes ? lead.sicCodes.length : 0) + (lead.naicsCodes ? lead.naicsCodes.length : 0)}})">
         <legend><g:message code="sicCodes.label"/></legend>
         <g:render template="/sicCode/partials/addEditShowPartial"/>
         <legend><g:message code="naicsCodes.label"/> </legend>
