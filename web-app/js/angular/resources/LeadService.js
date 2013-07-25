@@ -260,6 +260,8 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
                 contactEmailAddress.leadContact = leadContact;
                 LeadContactEmailAddress.save(contactEmailAddress,function (data) {
                     contactEmailAddress.id = data.id;
+                    if ($scope.contact.leadContactEmailAddresses === undefined)
+                        $scope.contact.leadContactEmailAddresses = [];
                     $scope.contact.leadContactEmailAddresses.push(contactEmailAddress);
                     $scope.cancelAddContactEmailAddress();
                 }).$then(updateSuccessCallback, updateErrorCallback);
@@ -329,6 +331,8 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
                 contactPhoneNumber.leadContact = contact;
                 LeadContactPhoneNumber.save(contactPhoneNumber,function (data) {
                     contactPhoneNumber.id = data.id;
+                    if ($scope.contact.leadContactPhoneNumbers === undefined)
+                        $scope.contact.leadContactPhoneNumbers = [];
                     $scope.contact.leadContactPhoneNumbers.push(contactPhoneNumber);
                     $scope.cancelAddContactPhoneNumber();
                 }).$then(updateSuccessCallback, updateErrorCallback);
