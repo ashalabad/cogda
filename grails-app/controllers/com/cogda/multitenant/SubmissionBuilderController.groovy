@@ -9,13 +9,21 @@ import grails.plugins.springsecurity.Secured
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class SubmissionBuilderController {
 
-    static defaultAction = "builder"
-
-    def builder(){
-
+    def index(){
     }
 
-    def showBuilder(){
-        render (view:'showBuilder')
+    def leadPartial(){
+        render (view:'leadPartial')
     }
+
+    def preparePartial(){
+        render (view:'preparePartial')
+    }
+
+
+    def builderPartial(){
+        render (view:'builderPartial')
+    }
+
+
 }

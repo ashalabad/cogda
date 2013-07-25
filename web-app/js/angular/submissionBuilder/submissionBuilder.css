@@ -1,12 +1,37 @@
 .fixedHeightContainer{
     height: 400px;
-    padding:3px;
+    padding:5px;
 }
-.marketContactsContainer{
+
+.prospectContainer{
+    padding-top:10px;
     height:390px;
     overflow:auto;
     background:#fff;
 }
+
+.marketContainer{
+    height:390px;
+    overflow:auto;
+    background:#fff;
+}
+
 .accordion-heading {
-    font-weight: bolder;
+    font-weight: bold;
+    color:#373736;
+}
+
+.blueText {
+     color:#127CC0;
+ }
+
+.whiteText {
+    color:#fff;
+}
+
+.builderSpinner {
+    background: url(/images/spinner.gif) 100% 100% no-repeat transparent;
+    height: 16px;
+    width: 16px;
+    padding: 1em;
 }
