@@ -481,7 +481,6 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
 
         $scope.open = function () {
             sicCodeCopy = angular.copy($scope.lead.sicCodes);
-            ;
             naicsCodeCopy = angular.copy($scope.lead.naicsCodes);
             $scope.shouldBeOpen = true;
         };
@@ -491,6 +490,8 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
             $scope.saveData = false;
             $scope.lead.naicsCodes = naicsCodeCopy;
             $scope.lead.sicCodes = sicCodeCopy;
+            $scope.$parent.lead.naicsCodes = naicsCodeCopy;
+            $scope.$parent.lead.sicCodes = sicCodeCopy;
         };
 
         $scope.save = function () {

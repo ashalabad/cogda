@@ -25,21 +25,29 @@ angular.module('resources.sicCodeTree', ['resources.logger'])
                 var undeterminedNodesCopy;
 
                 scope.$watch('filterText', function (filterText) {
-                    if (filterText !== undefined && (filterText.length >= 2 || filterText.length == 0))
+                    if (filterText !== undefined && (filterText.length >= 2 || filterText.length == 0)) {
                         if (timeoutPromise !== undefined) {
                             $timeout.cancel(timeoutPromise);
                         }
-                    timeoutPromise = $timeout(function () {
-                        $(element).find('#tree').jstree("search", filterText);
-                    }, 500);
+                        timeoutPromise = $timeout(function () {
+                            $(element).find('#tree').jstree("search", filterText);
+                        }, 500);
+                    }
                 });
 
                 scope.$watch('includeRelatedNaicsCodes', function (includeRelatedNaicsCodes) {
                     scope.includeRelatedNaicsCodes = includeRelatedNaicsCodes;
                 });
 
-                scope.$watch('selectedNodes', function(newValue, oldValue) {
-                    if (newValue != oldValue && newValue !== undefined) {
+                scope.$watch('selectedNodes', function (newValue, oldValue) {
+                    if (newValue != oldValue && newValue !== undefined && scope.disableCheckBoxes === "true") {
+                        loadedState = false;
+                        setState();
+                    }
+                });
+
+                scope.$watch('undeterminedNodes', function (newValue, oldValue) {
+                    if (newValue != oldValue && newValue !== undefined && scope.disableCheckBoxes === "true") {
                         loadedState = false;
                         setState();
                     }
@@ -66,11 +74,15 @@ angular.module('resources.sicCodeTree', ['resources.logger'])
                     }
                 };
 
+                var unselectAll = function () {
+                    $(element).find('#tree').jstree("uncheck_all");
+                }
+
                 var setSelected = function (selectedNodes) {
                     if (selectedNodes !== undefined) {
                         var spliceThese = [];
                         $.each(selectedNodes, function () {
-                            if ($('#' + this.id).length > 0) {
+                            if ($(element).find('#' + this.id).length > 0) {
                                 spliceThese.push(this);
                                 $(element).find('#tree').jstree('check_node', '#' + this.id);
                             }
@@ -86,7 +98,7 @@ angular.module('resources.sicCodeTree', ['resources.logger'])
                     if (undeterminedNodes !== undefined) {
                         var spliceThese = [];
                         $.each(undeterminedNodes, function () {
-                            var $target = $('#' + this.id);
+                            var $target = $(element).find('#' + this.id);
                             if ($target.length > 0) {
                                 spliceThese.push(this);
                                 $target.removeClass('jstree-checked jstree-unchecked').addClass('jstree-undetermined');
@@ -104,53 +116,61 @@ angular.module('resources.sicCodeTree', ['resources.logger'])
                         loadedState = true;
                         selectedNodesCopy = angular.copy(scope.selectedNodes);
                         undeterminedNodesCopy = angular.copy(scope.undeterminedNodes);
+                        if (scope.disableCheckBoxes === "true") {
+                            unselectAll();
+                        }
                     }
                     setSelected(selectedNodesCopy);
                     setUndetermined(undeterminedNodesCopy);
                 };
 
-                var setStateAndDisable = function() {
+                var setStateAndDisable = function () {
                     scope.$apply();
                     $(element).find('li').removeAttr('rel');
                     setState();
                     $(element).find('li').attr('rel', 'disabled');
                 };
 
+                var jsonData = {
+                    "ajax": {
+                        "url": function (node) {
+                            return node == -1 ? "/sicCode/activeSicCodes" : "/sicCode/activeSicCodes?parentId=" + node.attr('id');
+                        },
+                        "type": "get",
+                        "success": function (codes) {
+                            var nodes = [];
+                            for (var i = 0; i < codes.length; i++) {
+                                var code = codes[i];
+                                if (code.hasChildSicCodes) {
+                                    code.state = "closed";
+                                }
+                                nodes.push(code);
+                            }
+                            return nodes;
+                        }
+                    }
+                };
+
+                var themes = {
+                    "theme": "default",
+                    "dots": false,
+                    "icons": false
+                };
+
+                var search = {
+                    "case_insensitive": true,
+                    "show_only_matches": true,
+                    "ajax": {
+                        "url": '/sicCode/search'
+                    }
+                };
+
                 var createUncheckable = function () {
                     $(element).find('[type="checkbox"]')[0].disabled = true;
                     $(element).find('#tree').jstree({
-                        "json_data": {
-                            "ajax": {
-                                "url": function (node) {
-                                    return node == -1 ? "/sicCode/activeSicCodes" : "/sicCode/activeSicCodes?parentId=" + node.attr('id');
-                                },
-                                "type": "get",
-                                "success": function (codes) {
-                                    var nodes = [];
-                                    for (var i = 0; i < codes.length; i++) {
-                                        var code = codes[i];
-                                        if (code.hasChildSicCodes) {
-                                            code.state = "closed";
-                                        }
-                                        nodes.push(code);
-                                    }
-                                    return nodes;
-                                }
-                            }
-                        },
-                        "themes": {
-                            "theme": "default",
-                            "dots": false,
-                            "icons": false
-                        },
-                        "search": {
-                            "case_insensitive": true,
-                            "show_only_matches": true,
-                            "ajax": {
-                                "url": '/sicCode/search'
-                            }
-                        },
-
+                        "json_data": jsonData,
+                        "themes": themes,
+                        "search": search,
                         "types": {
                             "types": {
                                 "disabled": {
@@ -159,7 +179,6 @@ angular.module('resources.sicCodeTree', ['resources.logger'])
                                 }
                             }
                         },
-
                         "plugins": ["themes", "json_data", "checkbox", "search", "adv_search", "types"]
                     }, false).delegate("a", "click",function (event, data) {
                             event.preventDefault();
@@ -172,38 +191,9 @@ angular.module('resources.sicCodeTree', ['resources.logger'])
 
                 var createCheckable = function () {
                     $(element).find('#tree').jstree({
-                        "json_data": {
-                            "ajax": {
-                                "url": function (node) {
-                                    return node == -1 ? "/sicCode/activeSicCodes" : "/sicCode/activeSicCodes?parentId=" + node.attr('id');
-                                },
-                                "type": "get",
-                                "success": function (codes) {
-                                    var nodes = [];
-                                    for (var i = 0; i < codes.length; i++) {
-                                        var code = codes[i];
-                                        if (code.hasChildSicCodes) {
-                                            code.state = "closed";
-                                        }
-                                        nodes.push(code);
-                                    }
-                                    return nodes;
-                                }
-                            }
-                        },
-                        "themes": {
-                            "theme": "default",
-                            "dots": false,
-                            "icons": false
-                        },
-                        "search": {
-                            "case_insensitive": true,
-                            "show_only_matches": true,
-                            "ajax": {
-                                "url": '/sicCode/search'
-                            }
-                        },
-
+                        "json_data": jsonData,
+                        "themes": themes,
+                        "search": search,
                         "plugins": ["themes", "json_data", "checkbox", "search", "adv_search"]
                     }, false).delegate("a", "click",function (event, data) {
                             event.preventDefault();
@@ -219,7 +209,7 @@ angular.module('resources.sicCodeTree', ['resources.logger'])
                 };
 
                 if (scope.disableCheckBoxes !== undefined) {
-                    $timeout(createUncheckable, 1000);
+                    createUncheckable();
                 } else {
                     createCheckable();
                 }
