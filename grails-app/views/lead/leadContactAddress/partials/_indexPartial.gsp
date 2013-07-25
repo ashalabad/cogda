@@ -17,7 +17,7 @@
                 </button>
                 <button class="btn btn-danger"
                         type="button"
-                        data-ng-click="deleteContactAddress(address, $index)">
+                        data-ng-click="deleteContactAddress(address)">
                     <i class="icon-remove icon-white"></i>
                     <g:message code="default.button.delete.label"/> <g:message code="contactAddress.label"/>
                 </button>

@@ -2,7 +2,7 @@
     <div class="row">
         <button class="btn btn-danger btn-mini pull-right"
                 type="button"
-                data-ng-click="deleteContactAddress(contactAddress)"
+                data-ng-click="deleteContactAddress(address)"
                 data-ng-hide="editingContactAddress">
             <i class="icon-remove icon-white"></i>
             <g:message code="default.button.delete.label"/> <g:message code="contactAddress.label"/>
