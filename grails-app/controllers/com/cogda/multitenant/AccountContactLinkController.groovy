@@ -78,6 +78,50 @@ class AccountContactLinkController extends GsonBaseController {
         render returnObject as JSON
     }
 
+    def allMarketAccountContactLinks() {
+        accountList(Account.findAllByActiveAndIsMarket(true,true))
+
+    }
+
+    def favoriteMarketAccountContactLinks() {
+        accountList(Account.findAllByActiveAndIsMarketAndFavorite(true,true,true))
+    }
+
+    def accountList(accountInstanceList){
+        def dataToRender = []
+        accountInstanceList.each { Account account ->
+            def accountContactLinkList = AccountContactLink.findAllByAccount(account)
+            accountContactLinkList.each { AccountContactLink accountContactLinkInstance ->
+                def map = [:]
+                map.linkId = accountContactLinkInstance?.linkId
+                map.accountName = accountContactLinkInstance?.account?.accountName
+                map.accountContactName = accountContactLinkInstance?.accountContact?.getFullName()
+                map.accountContactEmail = accountContactLinkInstance?.accountContact?.getPrimaryEmailAddress()
+                dataToRender.add(map)
+            }
+
+        }
+        render dataToRender as GSON
+    }
+
+    def allAccountContactMarketLinks() {
+        accountContactList(AccountContact.findAllByActiveAndDisplayAsMarketOnBuilder(true,true,params))
+    }
+
+    def accountContactList(accountContactInstanceList){
+        def dataToRender = []
+        accountContactInstanceList.each { AccountContact accountContact ->
+            def map = [:]
+            map.id = accountContact.id
+            map.accountContact = accountContact.getFullName()
+            map.accounts = AccountContactLink.findAllByAccountContact(accountContact).collect {it.account}
+            dataToRender.add(map)
+        }
+        render dataToRender as GSON
+    }
+
+
+
     def availableAccountContacts() {
         def accountContactList = AccountContact.findAllByActive(true)
         def memberships = AccountContactLink.findAllByAccount(Account.get(params.id)).collect {it.accountContact}
