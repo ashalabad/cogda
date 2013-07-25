@@ -1,15 +1,9 @@
 package com.cogda.multitenant.lead
 
-import com.cogda.BaseController
 import com.cogda.GsonBaseController
 import com.cogda.common.LeadType
 import com.cogda.common.marshallers.HibernateProxyTypeAdapter
-import com.cogda.multitenant.Lead
-import com.cogda.multitenant.LeadAddress
-import com.cogda.multitenant.LeadContact
-import com.cogda.multitenant.LeadContactEmailAddress
-import com.cogda.multitenant.LeadContactPhoneNumber
-import com.cogda.multitenant.LeadNote
+import com.cogda.multitenant.*
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
@@ -171,22 +165,17 @@ class ProspectController extends GsonBaseController {
     }
 
     def delete() {
-        def prospectInstance = Lead.get(params.id)
-        if (!prospectInstance) {
-
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'lead.label', default: 'Lead'), params.id])
-            redirect(action: "list")
+        def leadInstance = Lead.get(params.id)
+        if (!leadInstance) {
+            respondNotFound PROSPECT_LABEL
             return
         }
 
         try {
-            prospectInstance.delete(flush: true)
-            flash.message = message(code: 'default.deleted.message', args: [message(code: 'lead.label', default: 'Lead'), params.id])
-            redirect(action: "list")
-        }
-        catch (DataIntegrityViolationException e) {
-            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'lead.label', default: 'Lead'), params.id])
-            redirect(action: "show", id: params.id)
+            leadInstance.delete(flush: true)
+            respondDeleted PROSPECT_LABEL
+        } catch (DataIntegrityViolationException e) {
+            respondNotDeleted PROSPECT_LABEL
         }
     }
 
@@ -258,20 +247,6 @@ class ProspectController extends GsonBaseController {
             message(error: it)
         }
         response.status = SC_CONFLICT // 409
-        render responseBody as GSON
-    }
-
-    private void respondDeleted(id) {
-        def responseBody = [:]
-        responseBody.message = message(code: 'default.deleted.message', args: [message(code: 'lead.label', default: 'Lead'), id])
-        response.status = SC_OK  // 200
-        render responseBody as GSON
-    }
-
-    private void respondNotDeleted(id) {
-        def responseBody = [:]
-        responseBody.message = message(code: 'default.not.deleted.message', args: [message(code: 'lead.label', default: 'Lead'), id])
-        response.status = SC_INTERNAL_SERVER_ERROR  // 500
         render responseBody as GSON
     }
 

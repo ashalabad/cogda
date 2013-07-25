@@ -8,7 +8,7 @@
     <div class="span4">
         <button class="btn btn-mini">Build Submission</button>
         <button class="btn btn-mini">View Contact Log</button>
-        <button class="btn btn-danger btn-mini">Delete Prospect</button>
+        <button class="btn btn-danger btn-mini" data-ng-click="deleteProspect(lead)"><g:message code="default.delete.label" args="[message(code:'prospect.label')]"/></button>
     </div>
     <div class="span4 pull-right">
         <form class="form-search">

@@ -74,7 +74,8 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
         }])
     .controller('EditProspectCtrl', ['$scope', '$routeParams', '$location', 'Prospect', 'Logger', 'UnitedStates',
         'SupportedCountryCodes', 'LeadSubTypes', 'NoteType', 'BusinessTypes', 'LineOfBusiness', 'LeadLineOfBusiness',
-        function ($scope, $routeParams, $location, Prospect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes, LineOfBusiness, LeadLineOfBusiness) {
+        '$dialog',
+        function ($scope, $routeParams, $location, Prospect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes, LineOfBusiness, LeadLineOfBusiness, $dialog) {
             $scope.title = 'Prospect';
             $scope.editingLead = false;
             $scope.message = '';
@@ -142,6 +143,32 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
             $scope.cancelEditLineOfBusiness = function () {
                 $scope.editingLineOfBusiness = false;
             };
+
+            $scope.deleteProspect = function (lead) {
+                var title = "Delete Prospect";
+                var msg = "Are you sure you want to delete this Prospect?";
+                var btns = [
+                    {result: 'cancel', label: 'Cancel'},
+                    {result: 'delete', label: 'Delete', cssClass: 'btn-danger'}
+                ];
+
+                $dialog.messageBox(title, msg, btns)
+                    .open()
+                    .then(function(result){
+                        if (result == 'delete')
+                            Prospect.delete({id: lead.id})
+                                .$then(deleteProspectSuccessCallback, deleteProspectErrorCallback);
+                    });
+            };
+
+            var deleteProspectSuccessCallback = function(response) {
+                Logger.success("Prospect Deleted Successfully");
+                $location.path('/list/');
+            };
+
+            var deleteProspectErrorCallback = function(response) {
+                Logger.messageBuilder(response, $scope);
+            };
         }])
     .controller('CreateProspectCtrl', ['$scope', '$routeParams', '$location', 'Prospect', 'Logger', 'UnitedStates',
         'SupportedCountryCodes', 'LeadSubTypes', 'NoteType', 'BusinessTypes', 'DateHelper', 'LineOfBusiness',
@@ -204,7 +231,7 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
                 $scope.editingLineOfBusiness = false;
             };
 
-            $scope.deleteLineOfBusiness = function(index) {
+            $scope.deleteLineOfBusiness = function (index) {
                 $scope.lead.linesOfBusiness.splice(index);
             }
 
@@ -226,7 +253,6 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
                     lead.id = data.id;
                 }).$then(saveSuccessCallback, saveErrorCallback);
             };
-
 
 
         }])
