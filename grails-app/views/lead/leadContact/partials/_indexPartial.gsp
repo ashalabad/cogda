@@ -5,6 +5,7 @@
             %{--<g:render template="/lead/leadContact/partials/showPartial"/>--}%
 
         </div>
+
         <div data-ng-hide="editingContact">
             <tabset>
                 <tab heading="Addresses ({{contact.leadContactAddresses.length }})">
@@ -16,6 +17,7 @@
 
                         <div data-ng-controller="AddLeadContactAddressController">
                             <div class="well" data-ng-show="addingContactAddress">
+                                <legend><g:message code="default.add.label" args="[message(code: 'contactAddress.label')]"/></legend>
                                 <div data-ng-form="contactAddressForm" class="form-horizontal">
                                     <div data-ng-include="" src="'/leadContactAddress/editPartial'"></div>
                                     %{--<g:render template="/lead/leadContactAddress/partials/editPartial"/>--}%
@@ -35,9 +37,7 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <hr>
-
+                            <br/>
                             <button type="button"
                                     class="btn"
                                     data-ng-click="addContactAddress()"
@@ -65,6 +65,7 @@
                             <div data-ng-include src="'/leadContactEmailAddress/indexPartial'"></div>
                             %{--<g:render template="/lead/leadContactEmailAddress/partials/indexPartial"/>--}%
                         </div>
+
                         <div data-ng-include src="'/leadContactEmailAddress/addPartial'"></div>
                         %{--<g:render template="/lead/leadContactEmailAddress/partials/addPartial"/>--}%
                     </fieldset>

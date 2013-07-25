@@ -155,9 +155,9 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
             };
 
             var deleteContactAddressSuccessCallback = function (response) {
-                Logger.success("Contact Address Deleted Successfully", "Success");
                 var index = $scope.contact.leadContactAddresses.indexOf($scope.address);
                 $scope.contact.leadContactAddresses.splice(index, 1);
+                Logger.success("Contact Address Deleted Successfully", "Success");
             };
 
             var deleteContactAddressErrorCallback = function (response) {
@@ -294,8 +294,8 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
                 Logger.formValidationMessageBuilder(response, $scope, $scope.leadContactEmailAddressForm);
             }
         }])
-    .controller('EditLeadContactEmailAddressController', ['$scope', 'LeadContactEmailAddress', 'Logger',
-        function ($scope, LeadContactEmailAddress, Logger) {
+    .controller('EditLeadContactEmailAddressController', ['$scope', 'LeadContactEmailAddress', 'Logger', '$dialog',
+        function ($scope, LeadContactEmailAddress, Logger, $dialog) {
             $scope.editingContactEmailAddress = false;
 
             $scope.editContactEmailAddress = function () {
@@ -312,13 +312,31 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
             };
 
             $scope.deleteContactEmailAddress = function (contactEmailAddress, idx) {
-                LeadContactEmailAddress.delete(contactEmailAddress, function () {
-                    Logger.success("Contact Email Address Deleted Successfully", "Success");
-                    $scope.contact.leadContactEmailAddresses.splice(idx, 1);
-                }, function () {
-                    Logger.error("Failed to Delete Contact Email Address", "Error");
-                });
+                var title = "Delete Contact Email Address";
+                var msg = "Are you sure you want to delete this Contact Email Address?";
+                var btns = [
+                    {result: 'cancel', label: 'Cancel'},
+                    {result: 'delete', label: 'Delete', cssClass: 'btn-danger'}
+                ];
+
+                $dialog.messageBox(title, msg, btns)
+                    .open()
+                    .then(function (result) {
+                        if (result == 'delete')
+                            LeadContactEmailAddress.delete({id: contactEmailAddress.id})
+                                .$then(deleteContactEmailAddressSuccessCallback, deleteContactEmailAddressErrorCallback);
+                    });
             };
+
+            var deleteContactEmailAddressSuccessCallback = function (response) {
+                var index = $scope.contact.leadContactEmailAddresses.indexOf($scope.contactEmailAddress);
+                $scope.contact.leadContactEmailAddresses.splice(index, 1);
+                Logger.success("Contact Email Address Deleted Successfully", "Success");
+            };
+
+            var deleteContactEmailAddressErrorCallback = function (response) {
+                Logger.messageBuilder(response, $scope);
+            }
 
             var updateSuccessCallback = function (response) {
                 Logger.success("Contact Email Address Updated Successfully", "Success");
@@ -416,39 +434,58 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
                 Logger.formValidationMessageBuilder(response, $scope, $scope.leadContactPhoneNumberForm);
             };
         }])
-    .controller('EditLeadNoteController', ['$scope', 'LeadNote', 'Logger', function ($scope, LeadNote, Logger) {
-        $scope.editingLeadNote = false;
-
-        $scope.editLeadNote = function () {
-            $scope.editingLeadNote = true;
-        };
-
-        $scope.cancelEditLeadNote = function () {
+    .controller('EditLeadNoteController', ['$scope', 'LeadNote', 'Logger', '$dialog',
+        function ($scope, LeadNote, Logger, $dialog) {
             $scope.editingLeadNote = false;
-        };
 
-        $scope.updateLeadNote = function (leadNote) {
-            LeadNote.update(leadNote).$then(updateSuccessCallback, updateErrorCallBack);
-            $scope.cancelEditLeadNote();
-        };
+            $scope.editLeadNote = function () {
+                $scope.editingLeadNote = true;
+            };
 
-        $scope.deleteLeadNote = function (leadNote, idx) {
-            LeadNote.delete(leadNote, function () {
-                Logger.success("Note Deleted Successfully", "Success");
-                $scope.lead.leadNotes.splice(idx, 1);
-            }, function () {
-                Logger.error("Failed to Delete Note", "Error");
-            });
-        };
+            $scope.cancelEditLeadNote = function () {
+                $scope.editingLeadNote = false;
+            };
 
-        var updateSuccessCallback = function (response) {
-            Logger.success("Note Updated Successfully", "Success");
-        };
+            $scope.updateLeadNote = function (leadNote) {
+                LeadNote.update(leadNote).$then(updateSuccessCallback, updateErrorCallBack);
+                $scope.cancelEditLeadNote();
+            };
 
-        var updateErrorCallBack = function (response) {
-            Logger.formValidationMessageBuilder(response, $scope, $scope.leadNoteForm);
-        };
-    }])
+            $scope.deleteLeadNote = function (leadNote) {
+                var title = "Delete Note";
+                var msg = "Are you sure you want to delete this Note?";
+                var btns = [
+                    {result: 'cancel', label: 'Cancel'},
+                    {result: 'delete', label: 'Delete', cssClass: 'btn-danger'}
+                ];
+
+                $dialog.messageBox(title, msg, btns)
+                    .open()
+                    .then(function (result) {
+                        if (result == 'delete')
+                            LeadNote.delete({id: leadNote.id})
+                                .$then(deleteLeadNoteSuccessCallback, deleteLeadNoteErrorCallback);
+                    });
+            };
+
+            var deleteLeadNoteSuccessCallback = function (response) {
+                var index = $scope.lead.leadNotes.indexOf($scope.leadNote);
+                $scope.lead.leadNotes.splice(index, 1);
+                Logger.success("Note Deleted Successfully", "Error");
+            };
+
+            var deleteLeadNoteErrorCallback = function (response) {
+                Logger.messageBuilder(response, $scope);
+            };
+
+            var updateSuccessCallback = function (response) {
+                Logger.success("Note Updated Successfully", "Success");
+            };
+
+            var updateErrorCallBack = function (response) {
+                Logger.formValidationMessageBuilder(response, $scope, $scope.leadNoteForm);
+            };
+        }])
     .controller('AddLeadNoteController', ['$scope', 'LeadNote', 'Logger', function ($scope, LeadNote, Logger) {
         $scope.leadNote = {};
 

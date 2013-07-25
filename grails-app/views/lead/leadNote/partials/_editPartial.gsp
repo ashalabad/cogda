@@ -1,4 +1,5 @@
-<fieldset class="embedded"><legend><g:message code="note.label" default="Note"/></legend>
+<fieldset class="embedded">
+    <legend data-ng-hide="addingLeadNote"><g:message code="note.label" default="Note"/></legend>
 
     <div class="control-group fieldcontain"
          data-ng-class="{error: leadNoteForm['leadNote.noteType'].$invalid && leadNoteForm['leadNote.noteType'].$dirty, success: leadNoteForm['leadNote.noteType'].$valid && leadNoteForm['leadNote.noteType'].$dirty}">
@@ -10,9 +11,9 @@
         <div class="controls">
             <div data-ng-repeat="noteType in noteTypes">
                 <label><input type="radio"
-                       data-ng-model="leadNote.noteType"
-                       data-ng-value="noteType"
-                       name='leadNote.noteType'>
+                              data-ng-model="leadNote.noteType"
+                              data-ng-value="noteType"
+                              name='leadNote.noteType'>
                     &nbsp;<span data-ng-bind="noteType.description"></span>
                 </label>
             </div>

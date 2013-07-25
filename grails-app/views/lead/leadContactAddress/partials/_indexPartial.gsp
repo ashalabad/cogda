@@ -7,6 +7,7 @@
 
         <div class="well" data-ng-show="editingContactAddress" data-ng-form="leadContactAddressForm">
             %{--<g:render template="/lead/leadContactAddress/partials/editPartial"/>--}%
+            <legend><g:message code="default.edit.label" args="[message(code: 'contactAddress.label')]"/> </legend>
             <div data-ng-include="" src="'/leadContactAddress/editPartial'"></div>
             <div class="form-actions">
                 <button type="submit"

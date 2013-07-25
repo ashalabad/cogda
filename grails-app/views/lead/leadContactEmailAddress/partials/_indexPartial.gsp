@@ -6,6 +6,7 @@
         </div>
 
         <div class="well" data-ng-show="editingContactEmailAddress" data-ng-form="contactEmailAddressForm">
+            <legend><g:message code="default.edit.label" args="[message(code:'leadContact.emailAddress')]" /></legend>
             <div data-ng-include src="'/leadContactEmailAddress/editPartial'"></div>
             %{--<g:render template="/lead/leadContactEmailAddress/partials/editPartial"/>--}%
             <div class="form-actions">
@@ -17,7 +18,7 @@
                 </button>
                 <button class="btn btn-danger"
                         type="button"
-                        data-ng-click="deleteContactEmailAddress(contactEmailAddress, $index)">
+                        data-ng-click="deleteContactEmailAddress(contactEmailAddress)">
                     <i class="icon-remove icon-white"></i>
                     <g:message code="default.button.delete.label"/> <g:message code="contactEmailAddress.label"/>
                 </button>

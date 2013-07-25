@@ -6,6 +6,7 @@
         </div>
 
         <div class="well" data-ng-show="editingContactPhoneNumber" data-ng-form="contactPhoneNumberForm">
+            <legend><g:message code="default.edit.label" args="[message(code:'lead.phoneNumber.label')]"/></legend>
             <div data-ng-include="" src="'/leadContactPhoneNumber/editPartial'"></div>
             %{--<g:render template="/lead/leadContactPhoneNumber/partials/editPartial"/>--}%
             <div class="form-actions">

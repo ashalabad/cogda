@@ -73,7 +73,7 @@
                         <p class="text-info"><em>{{leadNote.note.notes}}</em></p>
                     </address>
 
-                    <div class="well" data-ng-show="editingLeadNote" data-ng-form="leadNoteForm">
+                    <div data-ng-show="editingLeadNote" data-ng-form="leadNoteForm">
                         <div data-ng-include src="'/leadNote/editPartial'"></div>
                         %{--<g:render template="/lead/leadNote/partials/editPartial"/>--}%
                         <div class="form-actions">
@@ -86,7 +86,7 @@
                             </button>
                             <button class="btn btn-danger"
                                     type="button"
-                                    data-ng-click="deleteLeadNote(leadNote, $index)">
+                                    data-ng-click="deleteLeadNote(leadNote)">
                                 <i class="icon-remove icon-white"></i>
                                 <g:message code="default.button.delete.label" default="Delete"/> <g:message
                                         code="note.label" default="Note"/>

@@ -1,5 +1,5 @@
 <div data-ng-controller="AddLeadNoteController">
-    <div class="well" data-ng-show="addingLeadNote">
+    <div data-ng-show="addingLeadNote">
         <div data-ng-form="leadNoteForm" class="form-horizontal">
             <fieldset class="embedded">
                 <legend>
