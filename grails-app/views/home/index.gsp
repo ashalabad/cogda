@@ -6,9 +6,9 @@
 	<meta name="layout" content="kickstart" />
     <g:set var="layout_nomainmenu"		value="${true}" scope="request"/>
     <g:set var="layout_nosecondarymenu"	value="${true}" scope="request"/>
-    <sec:ifLoggedIn>
-        <r:require module="dashboard"/>
-    </sec:ifLoggedIn>
+    %{--<sec:ifLoggedIn>--}%
+        %{--<r:require module="dashboard"/>--}%
+    %{--</sec:ifLoggedIn>--}%
 </head>
 
 <body>
