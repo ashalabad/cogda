@@ -19,6 +19,8 @@ class AccountContactLink implements Serializable {
      */
     Boolean primaryContact
 
+    String linkId = UUID.randomUUID().toString().replaceAll('-', '')
+
     boolean equals(other) {
         if (!(other instanceof AccountContactLink)) {
             return false
@@ -27,6 +29,10 @@ class AccountContactLink implements Serializable {
         other.account?.id == account?.id &&
                 other.accountContact?.id == accountContact?.id
 
+    }
+
+    static constraints = {
+        linkId(nullable:false, blank:false, unique:true)
     }
 
     int hashCode() {
