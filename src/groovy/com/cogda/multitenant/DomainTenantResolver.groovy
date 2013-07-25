@@ -19,6 +19,8 @@ class DomainTenantResolver implements TenantResolver {
         switch(Environment.current){
             case [Environment.DEVELOPMENT, Environment.TEST]:
                 return developmentResolver(request)
+            case [Environment.current.name == "staging" || Environment.current.name == "develop"]:
+                return stagingResolver(request)
             case Environment.PRODUCTION:
                 return developmentResolver(request)  // We switched over to the cogdalocal.com domain so the developmentResolver now works.
             default:
@@ -51,13 +53,12 @@ class DomainTenantResolver implements TenantResolver {
     }
 
     /**
-     * Temporarily - we are hosting this system at CloudBees - the URL is the following:
-     * cogda.cogda.cloudbees.net
+     * Staging resolver resolves the
      * @param request
      * @return
      */
-    private Integer productionResolver(HttpServletRequest request){
-        if(request.serverName.count(".") <= 3) {
+    private Integer stagingResolver(HttpServletRequest request){
+        if(request.serverName.count(".") <= 2) {
             request.customerAccount = -1
             request.domain = ""
             return null
