@@ -72,6 +72,16 @@ environments {
         grails.serverURL = "http://cogdalocal.com:8080"
         grails.domainURL = "cogdalocal.com:8080"
     }
+    develop {
+        grails.logging.jul.usebridge = true
+        grails.serverURL = "http://develop-cogda.cogda.cloudbees.net"
+        grails.domainURL = "develop-cogda.cogda.cloudbees.net"
+    }
+    staging {
+        grails.logging.jul.usebridge = false
+        grails.serverURL = "http://staging-cogda.cogda.cloudbees.net"
+        grails.domainURL = "staging-cogda.cogda.cloudbees.net"
+    }
     production {
         grails.logging.jul.usebridge = false
         grails.serverURL = "http://cogdatwo.com"
@@ -218,6 +228,9 @@ environments {
     test {
         grails.mail.overrideAddress="chris@cogda.com"
     }
+    develop {
+        grails.mail.overrideAddress="chris@cogda.com"
+    }
     beestest {
         grails.mail.overrideAddress="chris@cogda.com"
     }
@@ -250,23 +263,40 @@ application.name="Cogda"
 
 // Start: AWS-SDK Plugin Configuration - Eventually we will move this configuration to Java Properties files that
 // are loaded at runtime.
-
+// All of the users used to access AWS buckets are part of the Cogda_Web group
+// A specific user is assigned to access a specific bucket.
 environments {
+    // development uses: cogda_development_web user security credentials and can only access the cogda-development bucket.
     development {
         grails.plugin.awssdk.accessKey = "AKIAILS5HGMNXGK47S7Q"
         grails.plugin.awssdk.secretKey = "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"
         grails.plugin.awssdk.default.bucket = "cogda-development"
     }
+    // test uses: cogda_test_web user security credentials and can only access the cogda-test bucket.
     test {
-        grails.plugin.awssdk.accessKey = "AKIAIK4U45JFDKT6YPFQ"
-        grails.plugin.awssdk.secretKey = "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"
+        grails.plugin.awssdk.accessKey = "AKIAJIZ7I3U3MD3UB7YA"
+        grails.plugin.awssdk.secretKey = "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"
         grails.plugin.awssdk.default.bucket = "cogda-test"
     }
+    // beestest uses: cogda_test_web user security credentials and can only access the cogda-test bucket.
     beestest {
-        grails.plugin.awssdk.accessKey = "AKIAIK4U45JFDKT6YPFQ"
-        grails.plugin.awssdk.secretKey = "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"
+        grails.plugin.awssdk.accessKey = "AKIAJIZ7I3U3MD3UB7YA"
+        grails.plugin.awssdk.secretKey = "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"
         grails.plugin.awssdk.default.bucket = "cogda-test"
     }
+    // develop uses: cogda_develop_web user security credentials and can only access the cogda-develop bucket.
+    develop {
+        grails.plugin.awssdk.accessKey = "AKIAJZDDYZWRAICH4RWA"
+        grails.plugin.awssdk.secretKey = "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"
+        grails.plugin.awssdk.default.bucket = "cogda-develop"
+    }
+    // staging uses: cogda_staging_web user security credentials and can only access the cogda-staging bucket.
+    staging {
+        grails.plugin.awssdk.accessKey = "AKIAJXYH36IJYAP676DA"
+        grails.plugin.awssdk.secretKey = "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"
+        grails.plugin.awssdk.default.bucket = "cogda-staging"
+    }
+    // production uses: cogda_production_web user security credentials and can only access the cogda-production bucket.
     production {
         grails.plugin.awssdk.accessKey = "AKIAISMZUW57B2VYTYEQ"
         grails.plugin.awssdk.secretKey = "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"
@@ -275,7 +305,6 @@ environments {
 }
 
 // Start: GSON Plugin
-
 environments {
     development {
         grails.converters.gson.pretty.print=true
