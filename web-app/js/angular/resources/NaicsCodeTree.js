@@ -39,6 +39,13 @@ angular.module('resources.naicsCodeTree', ['resources.logger'])
                     scope.includeRelatedSicCodes = includeRelatedSicCodes;
                 });
 
+                scope.$watch('selectedNodes', function(newValue, oldValue) {
+                    if (newValue != oldValue && newValue !== undefined) {
+                        loadedState = false;
+                        setState();
+                    }
+                });
+
                 var getSelected = function () {
                     scope.selectedNodes = [];
                     scope.undeterminedNodes = [];

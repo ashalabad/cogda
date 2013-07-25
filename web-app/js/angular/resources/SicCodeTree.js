@@ -38,6 +38,13 @@ angular.module('resources.sicCodeTree', ['resources.logger'])
                     scope.includeRelatedNaicsCodes = includeRelatedNaicsCodes;
                 });
 
+                scope.$watch('selectedNodes', function(newValue, oldValue) {
+                    if (newValue != oldValue && newValue !== undefined) {
+                        loadedState = false;
+                        setState();
+                    }
+                });
+
                 var getSelected = function () {
                     scope.selectedNodes = [];
                     scope.undeterminedNodes = [];
@@ -103,7 +110,7 @@ angular.module('resources.sicCodeTree', ['resources.logger'])
                 };
 
                 var setStateAndDisable = function() {
-                    scope.$apply()
+                    scope.$apply();
                     $(element).find('li').removeAttr('rel');
                     setState();
                     $(element).find('li').attr('rel', 'disabled');
