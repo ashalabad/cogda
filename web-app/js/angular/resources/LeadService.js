@@ -86,39 +86,6 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
                 Logger.formValidationMessageBuilder(response, $scope, $scope.leadAddressForm);
             };
         }])
-    .controller('EditContactController', ['$scope', 'LeadContact', 'Logger', function ($scope, LeadContact, Logger) {
-        $scope.editingContact = false;
-
-        $scope.editContact = function () {
-            $scope.editingContact = true;
-        };
-
-        $scope.cancelEditContact = function () {
-            $scope.editingContact = false;
-        };
-
-        $scope.updateContact = function (contact) {
-            LeadContact.update(contact).$then(updateSuccessCallback, updateErrorCallback);
-            $scope.cancelEditContact();
-        };
-
-        $scope.deleteContact = function (contact, idx) {
-            LeadContact.delete(contact, function () {
-                Logger.success("Contact Deleted Succesfully", "Success");
-                $scope.lead.leadContacts.splice(idx, 1);
-            }, function () {
-                Logger.error("Failed to Delete Contact", "Error");
-            });
-        };
-
-        var updateSuccessCallback = function (response) {
-            Logger.success("Contact Updated Successfully", "Success");
-        };
-
-        var updateErrorCallback = function (response) {
-            Logger.formValidationMessageBuilder(response, $scope, $scope.leadContactForm);
-        };
-    }])
     .controller('AddLeadContactAddressController', ['$scope', 'LeadContactAddress', 'Logger', function ($scope, LeadContactAddress, Logger) {
         $scope.address = {};
 
@@ -219,39 +186,57 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
                 Logger.formValidationMessageBuilder(response, $scope, $scope.leadContactForm);
             }
         }])
-    .controller('EditContactController', ['$scope', 'LeadContact', 'Logger', function ($scope, LeadContact, Logger) {
-        $scope.editingContact = false;
-
-        $scope.editContact = function () {
-            $scope.editingContact = true;
-        };
-
-        $scope.cancelEditContact = function () {
+    .controller('EditContactController', ['$scope', 'LeadContact', 'Logger', "$dialog",
+        function ($scope, LeadContact, Logger, $dialog) {
             $scope.editingContact = false;
-        };
 
-        $scope.updateContact = function (contact) {
-            LeadContact.update(contact).$then(updateSuccessCallback, updateErrorCallback);
-            $scope.cancelEditContact()
-        };
+            $scope.editContact = function () {
+                $scope.editingContact = true;
+            };
 
-        $scope.deleteContact = function (contact, idx) {
-            LeadContact.delete(contact, function () {
-                Logger.success("Contact Deleted Successfully", "Success");
-                $scope.lead.leadContacts.splice(idx, 1);
-            }, function () {
-                Logger.error("Failed to Delete Contact", "Error");
-            })
-        };
+            $scope.cancelEditContact = function () {
+                $scope.editingContact = false;
+            };
 
-        var updateSuccessCallback = function (response) {
-            Logger.success("Contact Updated Successfully", "Success");
-        };
+            $scope.updateContact = function (contact) {
+                LeadContact.update(contact).$then(updateSuccessCallback, updateErrorCallback);
+                $scope.cancelEditContact();
+            };
 
-        var updateErrorCallback = function (response) {
-            Logger.formValidationMessageBuilder(response, $scope, $scope.leadContactForm);
-        };
-    }])
+            $scope.deleteContact = function (contact, idx) {
+                var title = "Delete Contact";
+                var msg = "Are you sure you want to delete this Contact?";
+                var btns = [
+                    {result: 'cancel', label: 'Cancel'},
+                    {result: 'delete', label: 'Delete', cssClass: 'btn-danger'}
+                ];
+
+                $dialog.messageBox(title, msg, btns)
+                    .open()
+                    .then(function (result) {
+                        if (result == 'delete')
+                            LeadContact.delete({id: contact.id}).$then(deleteContactSuccessCallback, deleteContactErrorCallback);
+                    });
+            };
+
+            var deleteContactSuccessCallback = function (response) {
+                var index = $scope.lead.leadContacts.indexOf($scope.contact);
+                $scope.lead.leadContacts.splice(index, 1);
+                Logger.success("Successfully deleted Contact", "Success");
+            };
+
+            var deleteContactErrorCallback = function (response) {
+                Logger.messageBuilder(response, $scope);
+            }
+
+            var updateSuccessCallback = function (response) {
+                Logger.success("Contact Updated Successfully", "Success");
+            };
+
+            var updateErrorCallback = function (response) {
+                Logger.formValidationMessageBuilder(response, $scope, $scope.leadContactForm);
+            };
+        }])
     .controller('AddContactEmailAddressController', ['$scope', 'LeadContactEmailAddress', 'Logger',
         function ($scope, LeadContactEmailAddress, Logger) {
             $scope.contactEmailAddress = {};
@@ -590,9 +575,9 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
                 }
             };
 
-            $scope.deleteLineOfBusiness = function (lineOfBusiness, idx) {
+            $scope.deleteLineOfBusiness = function (lineOfBusiness) {
                 var title = "Delete Line of Business";
-                var msg = "Are you sure you want to delete this Line Of Business";
+                var msg = "Are you sure you want to delete this Line Of Business?";
                 var btns = [
                     {result: 'cancel', label: 'Cancel'},
                     {result: 'delete', label: 'Delete', cssClass: 'btn-danger'}

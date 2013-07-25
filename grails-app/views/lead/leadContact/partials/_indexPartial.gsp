@@ -84,7 +84,7 @@
                 </button>
                 <button class="btn btn-danger"
                         type="button"
-                        data-ng-click="deleteContact(contact, $index)">
+                        data-ng-click="deleteContact(contact)">
                     <i class="icon-remove icon-white"></i>
                     <g:message code="default.button.delete.label"/> <g:message code="contact.label" default="Contact"/>
                 </button>
