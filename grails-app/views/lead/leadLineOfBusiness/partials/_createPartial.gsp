@@ -19,7 +19,7 @@
     %{--</tr>--}%
 %{--</table>--}%
 %{--<g:render template="/lead/leadLineOfBusiness/partials/addPartial"/>--}%
-<table class="table table-striped table-bordered">
+<table class="table table-striped table-bordered" data-ng-show="lead.linesOfBusiness.length > 0">
     <tr>
         <th><g:message code="lineOfBusiness.label"/></th>
         <th><g:message code="leadLineOfBusiness.targetDate.label"/></th>
