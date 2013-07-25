@@ -1,10 +1,15 @@
 package com.cogda.multitenant.lead
 
 import com.cogda.GsonBaseController
+import com.cogda.domain.admin.NaicsCode
+import com.cogda.domain.admin.SicCode
 import com.cogda.multitenant.Lead
 import com.google.gson.Gson
 import com.google.gson.JsonElement
+import com.google.gson.reflect.TypeToken
 import grails.plugin.gson.converters.GSON
+
+import java.lang.reflect.Type
 
 /**
  * LeadController
@@ -59,6 +64,26 @@ class LeadController extends GsonBaseController {
             respondUpdated(leadInstance)
         } else {
             respondUnprocessableEntity(leadInstance)
+        }
+    }
+
+    def updateNaicsSicCodes() {
+        def leadInstance = Lead.get(params.id)
+        leadInstance.naicsCodes = []
+        leadInstance.sicCodes = []
+        Gson gson = gsonBuilder.create()
+        Type naicsListType = new TypeToken<ArrayList<NaicsCode>>() {}.getType()
+        Type sicListType = new TypeToken<ArrayList<SicCode>>() {}.getType()
+        def naicsCodes = gson.fromJson(request.GSON.naicsCodes, naicsListType)
+        def sicCodes = gson.fromJson(request.GSON.sicCodes, sicListType)
+        leadInstance.naicsCodes.addAll(naicsCodes)
+        leadInstance.sicCodes.addAll(sicCodes)
+        if (!leadInstance.save(flush: true)) {
+            respondUnprocessableEntity(leadInstance)
+            return
+        } else {
+            respondCreated leadInstance
+            return
         }
     }
 }

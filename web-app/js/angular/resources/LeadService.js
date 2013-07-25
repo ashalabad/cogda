@@ -499,9 +499,15 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
             $scope.$parent.relatedSicCodes = $scope.relatedSicCodes;
             $scope.$parent.relatedNaicsCodes = $scope.relatedNaicsCodes;
             $scope.shouldBeOpen = false;
-            Lead.update($scope.lead,function (data) {
-                $scope.lead = data;
-            }).$then(updateSuccessCallback, updateErrorCallBack);
+            var naicsCodes = [];
+            var sicCodes = [];
+            for (var i = 0; i < $scope.lead.naicsCodes.length; i++) {
+                naicsCodes.push({id: $scope.lead.naicsCodes[i].id});
+            }
+            for (var i = 0; i < $scope.lead.sicCodes.length; i++) {
+                sicCodes.push({id: $scope.lead.sicCodes[i].id});
+            }
+            $http.post("/lead/updateNaicsSicCodes/" + $scope.lead.id, JSON.stringify({naicsCodes: naicsCodes, sicCodes: sicCodes})).then(updateSuccessCallback, updateErrorCallBack);
         };
 
         $scope.opts = {
