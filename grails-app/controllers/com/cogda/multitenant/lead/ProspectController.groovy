@@ -1,6 +1,7 @@
 package com.cogda.multitenant.lead
 
 import com.cogda.BaseController
+import com.cogda.GsonBaseController
 import com.cogda.common.LeadType
 import com.cogda.common.marshallers.HibernateProxyTypeAdapter
 import com.cogda.multitenant.Lead
@@ -26,10 +27,10 @@ import static org.codehaus.groovy.grails.web.servlet.HttpHeaders.LOCATION
  * A controller class handles incoming web requests and performs actions such as redirects, rendering views and so on.
  */
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class ProspectController extends BaseController {
+class ProspectController extends GsonBaseController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
-
+    final static String PROSPECT_LABEL = "prospect.label"
     GsonBuilder gsonBuilder
 
     def index() {
@@ -222,13 +223,23 @@ class ProspectController extends BaseController {
         render gsonRetString
     }
 
-    private void respondUnprocessableEntity(Lead leadInstance) {
-        def responseBody = [:]
-        responseBody.errors = leadInstance.errors.allErrors.collect {
-            message(error: it)
+    private Map getErrorStringsByField(instance){
+        Map stringsByField = [:].withDefault { [] }
+        for(fieldErrors in instance.errors){
+            for(error in fieldErrors.allErrors){
+                String message = message(error:error)
+                stringsByField[error.field] << message
+            }
         }
+        return stringsByField
+    }
+
+    private void respondUnprocessableEntity(instance) {
+        def responseBody = [:]
+        responseBody.errors = getErrorStringsByField(instance)
         response.status = SC_UNPROCESSABLE_ENTITY // 422
         render responseBody as GSON
+        return
     }
 
     private void respondNotFound(id) {
