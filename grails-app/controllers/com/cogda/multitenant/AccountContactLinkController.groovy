@@ -97,6 +97,9 @@ class AccountContactLinkController extends GsonBaseController {
                 map.accountName = accountContactLinkInstance?.account?.accountName
                 map.accountContactName = accountContactLinkInstance?.accountContact?.getFullName()
                 map.accountContactEmail = accountContactLinkInstance?.accountContact?.getPrimaryEmailAddress()
+                map.accountContactPrimary = accountContactLinkInstance?.primaryContact
+                map.accountContactFavorite = accountContactLinkInstance?.accountContact?.favorite
+                map.accountContactId = accountContactLinkInstance?.accountContact?.id
                 dataToRender.add(map)
             }
 
@@ -111,11 +114,15 @@ class AccountContactLinkController extends GsonBaseController {
     def accountContactList(accountContactInstanceList){
         def dataToRender = []
         accountContactInstanceList.each { AccountContact accountContact ->
-            def map = [:]
-            map.id = accountContact.id
-            map.accountContact = accountContact.getFullName()
-            map.accounts = AccountContactLink.findAllByAccountContact(accountContact).collect {it.account}
-            dataToRender.add(map)
+            def accountContactLinkList = AccountContactLink.findAllByAccountContact(accountContact)
+            accountContactLinkList.each { AccountContactLink accountContactLinkInstance ->
+                def map = [:]
+                map.linkId = accountContactLinkInstance?.linkId
+                map.accountName = accountContactLinkInstance?.account?.accountName
+                map.accountContactName = accountContactLinkInstance?.accountContact?.getFullName()
+                dataToRender.add(map)
+            }
+
         }
         render dataToRender as GSON
     }
