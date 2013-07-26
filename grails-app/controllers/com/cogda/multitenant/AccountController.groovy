@@ -21,74 +21,74 @@ class AccountController extends GsonBaseController {
     def list() {
         List accountInstanceList = Account.findAllByActive(true,params)
 
-        Lead.withTransaction {
-            LeadLineOfBusiness.executeUpdate("delete from LeadLineOfBusiness")
-            Lead.executeUpdate("delete from Lead")
-        }
-
-        def user = new com.cogda.domain.security.User()
-        user.username = UUID.randomUUID().toString().replaceAll("-", "")
-        user.enabled = true
-        user.accountExpired = false
-        user.password = "apassword"
-        user.save()
-
-        def businessType = com.cogda.domain.admin.BusinessType.first()
-
-        def leadType = com.cogda.common.LeadType.PROSPECT
-
-        def lead = new com.cogda.multitenant.Lead()
-        lead.clientId = "1234567890"
-        lead.clientName = "Testing Client"
-        lead.businessType = businessType
-        lead.leadType = leadType
-        lead.subType = com.cogda.common.LeadSubType.BUSINESS
-        lead.save()
-
-        def leadLineOfBusiness = new com.cogda.multitenant.LeadLineOfBusiness()
-        leadLineOfBusiness.lineOfBusiness = com.cogda.domain.admin.LineOfBusiness.listOrderByCode([sort:'desc']).first()
-        leadLineOfBusiness.expirationDate = new Date() + 30
-        leadLineOfBusiness.billingCompany = null
-        leadLineOfBusiness.writingCompany = null
-        leadLineOfBusiness.remarket = true // remarket just means competition for this business in Cogda
-        leadLineOfBusiness.renewal = true  // renewal just means that the insurance is a renewal
-        leadLineOfBusiness.targetCommission = new BigDecimal(200.00)
-        leadLineOfBusiness.targetPremium = new BigDecimal(2000.00)
-        leadLineOfBusiness.save()
-
-        lead.addToLinesOfBusiness(leadLineOfBusiness)
-
-        def submission = new com.cogda.domain.Submission()
-        submission.lead = lead
-        submission.parentSubmission = null
-        submission.createdBy = user
-        submission.save()
-
-        def firstChild = new com.cogda.domain.Submission()
-        firstChild.lead = null
-        firstChild.parentSubmission = submission
-        firstChild.createdBy = user
-        firstChild.addToLeadLineOfBusinesses(leadLineOfBusiness)
-        firstChild.save()
-
-        def secondChild = new com.cogda.domain.Submission()
-        secondChild.lead = null
-        secondChild.parentSubmission = firstChild
-        secondChild.createdBy = user
-        secondChild.addToLeadLineOfBusinesses(leadLineOfBusiness)
-        secondChild.save()
-
-        def thirdChild = new com.cogda.domain.Submission()
-        thirdChild.lead = null
-        thirdChild.parentSubmission = secondChild
-        thirdChild.createdBy = user
-        thirdChild.addToLeadLineOfBusinesses(leadLineOfBusiness)
-        thirdChild.save()
-
-        def gson = gsonBuilder.create()
-
-        String jsonString = gson.toJson(submission)
-        println jsonString
+//        Lead.withTransaction {
+//            LeadLineOfBusiness.executeUpdate("delete from LeadLineOfBusiness")
+//            Lead.executeUpdate("delete from Lead")
+//        }
+//
+//        def user = new com.cogda.domain.security.User()
+//        user.username = UUID.randomUUID().toString().replaceAll("-", "")
+//        user.enabled = true
+//        user.accountExpired = false
+//        user.password = "apassword"
+//        user.save()
+//
+//        def businessType = com.cogda.domain.admin.BusinessType.first()
+//
+//        def leadType = com.cogda.common.LeadType.PROSPECT
+//
+//        def lead = new com.cogda.multitenant.Lead()
+//        lead.clientId = "1234567890"
+//        lead.clientName = "Testing Client"
+//        lead.businessType = businessType
+//        lead.leadType = leadType
+//        lead.subType = com.cogda.common.LeadSubType.BUSINESS
+//        lead.save()
+//
+//        def leadLineOfBusiness = new com.cogda.multitenant.LeadLineOfBusiness()
+//        leadLineOfBusiness.lineOfBusiness = com.cogda.domain.admin.LineOfBusiness.listOrderByCode([sort:'desc']).first()
+//        leadLineOfBusiness.expirationDate = new Date() + 30
+//        leadLineOfBusiness.billingCompany = null
+//        leadLineOfBusiness.writingCompany = null
+//        leadLineOfBusiness.remarket = true // remarket just means competition for this business in Cogda
+//        leadLineOfBusiness.renewal = true  // renewal just means that the insurance is a renewal
+//        leadLineOfBusiness.targetCommission = new BigDecimal(200.00)
+//        leadLineOfBusiness.targetPremium = new BigDecimal(2000.00)
+//        leadLineOfBusiness.save()
+//
+//        lead.addToLinesOfBusiness(leadLineOfBusiness)
+//
+//        def submission = new com.cogda.domain.Submission()
+//        submission.lead = lead
+//        submission.parentSubmission = null
+//        submission.createdBy = user
+//        submission.save()
+//
+//        def firstChild = new com.cogda.domain.Submission()
+//        firstChild.lead = null
+//        firstChild.parentSubmission = submission
+//        firstChild.createdBy = user
+//        firstChild.addToLeadLineOfBusinesses(leadLineOfBusiness)
+//        firstChild.save()
+//
+//        def secondChild = new com.cogda.domain.Submission()
+//        secondChild.lead = null
+//        secondChild.parentSubmission = firstChild
+//        secondChild.createdBy = user
+//        secondChild.addToLeadLineOfBusinesses(leadLineOfBusiness)
+//        secondChild.save()
+//
+//        def thirdChild = new com.cogda.domain.Submission()
+//        thirdChild.lead = null
+//        thirdChild.parentSubmission = secondChild
+//        thirdChild.createdBy = user
+//        thirdChild.addToLeadLineOfBusinesses(leadLineOfBusiness)
+//        thirdChild.save()
+//
+//        def gson = gsonBuilder.create()
+//
+//        String jsonString = gson.toJson(submission)
+//        println jsonString
 
         def dataToRender = []
 
