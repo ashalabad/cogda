@@ -73,8 +73,8 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
         }])
     .controller('EditSuspectCtrl', ['$scope', '$routeParams', '$location', 'Suspect', 'Logger', 'UnitedStates',
         'SupportedCountryCodes', 'LeadSubTypes', 'NoteType', 'BusinessTypes', 'LineOfBusiness', 'LeadLineOfBusiness',
-        '$dialog',
-        function ($scope, $routeParams, $location, Suspect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes, LineOfBusiness, LeadLineOfBusiness, $dialog) {
+        '$dialog', 'DateHelper',
+        function ($scope, $routeParams, $location, Suspect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes, LineOfBusiness, LeadLineOfBusiness, $dialog, DateHelper) {
             $scope.title = 'Suspect';
             $scope.editingLead = false;
             $scope.message = '';
@@ -95,12 +95,21 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
 
             Suspect.get($routeParams, function (data) {
                 $scope.lead = data;
+                for (var i = 0; i < $scope.lead.linesOfBusiness.length; i++){
+                    $scope.lead.linesOfBusiness[i].targetDate =  new Date($scope.lead.linesOfBusiness[i].targetDate);
+                    $scope.lead.linesOfBusiness[i].expirationDate = new Date($scope.lead.linesOfBusiness[i].expirationDate);
+                }
             }, function () {
                 Logger.error("Resource Not Found", "Error");
             });
 
             $scope.updateLead = function (lead) {
-                Suspect.update(lead).$then(updateSuccessCallback, updateErrorCallBack);
+                var formattedLead = angular.copy(lead);
+                for (var i = 0; i < formattedLead.linesOfBusiness.length; i++) {
+                    formattedLead.linesOfBusiness[i].targetDate = DateHelper.getFormattedDate(formattedLead.linesOfBusiness[i].targetDate);
+                    formattedLead.linesOfBusiness[i].expirationDate = DateHelper.getFormattedDate(formattedLead.linesOfBusiness[i].expirationDate);
+                }
+                Suspect.update(formattedLead).$then(updateSuccessCallback, updateErrorCallBack);
             };
 
             $scope.cancelEditLead = function () {
@@ -122,22 +131,6 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
 
             var updateErrorCallBack = function (response) {
                 Logger.formValidationMessageBuilder(response, $scope, $scope.leadForm);
-            };
-
-            $scope.updateLineOfBusiness = function (lineOfBusiness) {
-                LeadLineOfBusiness.update(lineOfBusiness).$then(updateSuccessCallback, updateErrorCallBack);
-                var index = $scope.lead.linesOfBusiness.indexOf(lineOfBusiness);
-                $scope.lead.linesOfBusiness[index] = lineOfBusiness;
-                $scope.editingLineOfBusiness = false;
-                return $scope.editingLineOfBusiness;
-            };
-
-            $scope.editLineOfBusiness = function () {
-                $scope.editingLineOfBusiness = true;
-            };
-
-            $scope.cancelEditLineOfBusiness = function () {
-                $scope.editingLineOfBusiness = false;
             };
 
             $scope.deleteSuspect = function (lead) {
@@ -206,8 +199,6 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
             }
 
             $scope.saveLeadLineOfBusiness = function (leadLineOfBusiness) {
-                leadLineOfBusiness.targetDate = DateHelper.getFormattedDate(leadLineOfBusiness.targetDate);
-                leadLineOfBusiness.expirationDate = DateHelper.getFormattedDate(leadLineOfBusiness.expirationDate);
                 $scope.lead.linesOfBusiness.push(leadLineOfBusiness);
                 $scope.cancelAddLeadLineOfBusiness();
             }
@@ -232,7 +223,7 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
             }
 
             var saveSuccessCallback = function () {
-                Logger.success("Prospect Saved Successfully", "Success");
+                Logger.success("Suspect Saved Successfully", "Success");
                 $location.path('/edit/' + $scope.lead.id);
             };
 
@@ -245,7 +236,12 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
             };
 
             $scope.saveSuspect = function (lead) {
-                Suspect.save(lead,function (data) {
+                var formattedLead = angular.copy(lead);
+                for (var i = 0; i < formattedLead.linesOfBusiness.length; i++) {
+                    formattedLead.linesOfBusiness[i].targetDate = DateHelper.getFormattedDate(formattedLead.linesOfBusiness[i].targetDate);
+                    formattedLead.linesOfBusiness[i].expirationDate = DateHelper.getFormattedDate(formattedLead.linesOfBusiness[i].expirationDate);
+                }
+                Suspect.save(formattedLead,function (data) {
                     lead.id = data.id;
                 }).$then(saveSuccessCallback, saveErrorCallback);
             };
