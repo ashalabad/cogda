@@ -27,6 +27,13 @@ modules = {
         resource url:'js/angular/common/helperFuncs.js', disposition: 'head'
     }
 
+    angularStrap {
+        dependsOn 'angular'
+        resource url:'js/bundles/angular/angularStrap/angular-strap.min.js', disposition: 'head'
+        resource url:'js/bundles/angular/angularStrap/my-bootstrap-datepicker.css', disposition: 'head'
+        resource url:'js/bundles/angular/angularStrap/my-bootstrap-datepicker.js', disposition: 'head'
+    }
+
     company {
         dependsOn 'bootstrap', 'bootstrap_utils', 'angular'
         resource url:'js/angular/company/company.js'
@@ -43,6 +50,40 @@ modules = {
         resource url:'js/angular/resources/InternalUserProfile.js'
         resource url:'js/angular/companyProfile/companyProfile.js'
         resource url:'js/angular/companyProfile/companyProfile.css'
+    }
+
+    lead {
+        dependsOn 'bootstrap, bootstrap_utils, angular, angularNaicsCodeTree, angularSicCodeTree, angularStrap'
+        resource url: 'js/angular/resources/LeadSubTypes.js'
+        resource url: 'js/angular/resources/unitedStates.js'
+        resource url: 'js/angular/resources/SupportedCountryCodes.js'
+        resource url: 'js/angular/resources/NoteType.js'
+        resource url: 'js/angular/resources/businessTypes.js'
+        resource url: 'js/angular/resources/LeadAddress.js'
+        resource url: 'js/angular/resources/LeadService.js'
+        resource url: 'js/angular/resources/LeadNote.js'
+        resource url: 'js/angular/resources/LeadContactPhoneNumber.js'
+        resource url: 'js/angular/resources/LeadContactEmailAddress.js'
+        resource url: 'js/angular/resources/LeadContactAddress.js'
+        resource url: 'js/angular/resources/LeadContact.js'
+        resource url: 'js/angular/resources/Lead.js'
+        resource url: 'js/angular/resources/LeadLineOfBusiness.js'
+        resource url: 'js/angular/resources/LineOfBusiness.js'
+        resource url: 'js/angular/resources/LeadUtils.js'
+    }
+
+    suspect {
+        dependsOn 'bootstrap', 'bootstrap_utils', 'angular', 'lead'
+        resource url: 'js/angular/resources/Suspect.js'
+        resource url: 'js/angular/lead/suspect/suspect.js'
+        resource url: 'css/suspect.css'
+    }
+
+    prospect {
+        dependsOn 'bootstrap', 'bootstrap_utils', 'angular', 'lead'
+        resource url: 'js/angular/resources/Prospect.js'
+        resource url: 'js/angular/lead/prospect/prospect.js'
+        resource url: 'css/prospect.css'
     }
 
     dataTables {
@@ -87,6 +128,16 @@ modules = {
         resource url:[dir: 'js/jstree/themes/default', file: 'd.gif']
         resource url:[dir: 'js/jstree/themes/default', file: 'style.css']
         resource url:[dir: 'js/jstree/themes/default', file: 'throbber.gif']
+    }
+
+    angularNaicsCodeTree {
+        dependsOn 'jstree', 'angular'
+        resource url:'js/angular/resources/NaicsCodeTree.js', disposition: 'head'
+    }
+
+    angularSicCodeTree {
+        dependsOn 'jstree, angular'
+        resource url:'js/angular/resources/SicCodeTree.js', disposition: 'head'
     }
 
     naicsCodeTree {

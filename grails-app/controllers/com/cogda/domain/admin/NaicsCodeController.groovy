@@ -1,9 +1,12 @@
 package com.cogda.domain.admin
 
 import com.cogda.BaseController
+import com.cogda.multitenant.Lead
+import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
 import grails.plugin.gson.converters.GSON
 import grails.plugins.springsecurity.Secured
+
 import static javax.servlet.http.HttpServletResponse.*
 
 /**
@@ -13,10 +16,9 @@ import static javax.servlet.http.HttpServletResponse.*
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class NaicsCodeController extends BaseController {
 
-    static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
+    GsonBuilder gsonBuilder
 
-
-    def getActiveNaicsCodes() {
+    def activeNaicsCodes() {
         if (params.parentId) {
             def codes = NaicsCode.findAllByParentNaicsCodeAndActive(NaicsCode.get(params.parentId), true).sort { it.id }
             if (!codes) {
@@ -30,6 +32,21 @@ class NaicsCodeController extends BaseController {
         } else {
             render jsTreeify(NaicsCode.findAllByParentNaicsCodeAndActive(null, true).sort { it.id }, 0) as GSON
         }
+    }
+
+    def activeNaicsCodesForLead() {
+        if (params.id) {
+            def leadInstance = Lead.get(params.id)
+            def sortedCodes = leadInstance.naicsCodes.groupBy {it.level}
+            sortedCodes
+        } else {
+            render[] as GSON
+        }
+    }
+
+    def getAll() {
+        def all = NaicsCode.findAllByIdInList(params.ids)
+        render all as GSON
     }
 
     def search() {
@@ -77,18 +94,38 @@ class NaicsCodeController extends BaseController {
 
     def selectedNaicsCodes() {
         JsonElement jsonElement = GSON.parse(request)
-        jsonElement.checked.each {
-            def naicsCode = NaicsCode.findById(it.getAsLong())
-            println naicsCode.toString()
-            if (SicNaicsCodeCrosswalk.countByNaicsCode(naicsCode) != 0) {
-                println "\t-----Related SIC Codes-----"
-                SicNaicsCodeCrosswalk.findAllByNaicsCode(naicsCode).each { crosswalk ->
-                    println "\t ${crosswalk.sicCode.toString()}"
+        def sicCodes = []
+//        jsonElement.each {
+//            def naicsCode = NaicsCode.findById(it.id.toString().toLong())
+//            sicCodes.addAll(SicNaicsCodeCrosswalk.findAllByNaicsCode(naicsCode).each{
+//                it.sicCode = GrailsHibernateUtil.unwrapIfProxy(it.sicCode)
+//                it.sicCode.parentSicCode = GrailsHibernateUtil.unwrapIfProxy(it.sicCode.parentSicCode)
+//            })
+//            naicsCode.getAllChildNaicsCodes().each { NaicsCode childNaicsCode ->
+//                sicCodes.addAll(SicNaicsCodeCrosswalk.findAllByNaicsCode(childNaicsCode).each{subIt ->
+//                    subIt.sicCode = GrailsHibernateUtil.unwrapIfProxy(subIt.sicCode)
+//                    subIt.sicCode.parentSicCode = GrailsHibernateUtil.unwrapIfProxy(subIt.sicCode.parentSicCode)
+//                })
+//            }
+//        }
+
+        jsonElement.each {
+            def naicsCode = NaicsCode.findById(it.id.toString().toLong())
+            SicNaicsCodeCrosswalk.findAllByNaicsCode(naicsCode).each {
+                sicCodes.add(it.sicCode.id)
+            }
+            naicsCode.getAllChildNaicsCodes().each { NaicsCode childNaicsCode ->
+                SicNaicsCodeCrosswalk.findAllByNaicsCode(childNaicsCode).each { subIt ->
+                    sicCodes.add(subIt.sicCode.id)
                 }
             }
-
         }
-        render "TODO"
+
+        render sicCodes.unique() as GSON
+    }
+
+    def modal() {
+        render(template: '/naicsCode/partials/naicsCodesPartial')
     }
 
     private void respondNotFound(id) {

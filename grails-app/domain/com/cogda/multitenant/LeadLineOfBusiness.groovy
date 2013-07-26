@@ -13,12 +13,12 @@ class LeadLineOfBusiness {
     Date expirationDate
     BigDecimal targetPremium
     BigDecimal targetCommission
-    Company writingCompany
-    Company billingCompany
+    String writingCompany
+    String billingCompany
     Boolean renewal
     Boolean remarket
 
-    static embedded = ['lineOfBusiness']
+    static belongsTo = [lead: Lead]
 
     static constraints = {
         targetDate(nullable: true)
