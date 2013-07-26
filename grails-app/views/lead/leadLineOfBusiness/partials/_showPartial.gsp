@@ -3,11 +3,11 @@
 </td>
 
 <td>
-    {{ leadLineOfBusiness.targetDate | date: mediumDate }}
+    {{ leadLineOfBusiness.targetDate | bsDateFilter | date: shortDate }}
 </td>
 
 <td>
-    {{ leadLineOfBusiness.expirationDate | date: mediumDate }}
+    {{ leadLineOfBusiness.expirationDate | bsDateFilter | date: shortDate }}
 </td>
 
 <td>

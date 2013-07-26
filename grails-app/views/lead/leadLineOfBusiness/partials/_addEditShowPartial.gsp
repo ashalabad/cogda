@@ -37,7 +37,7 @@
     <div class="form-actions">
         <button type="submit"
                 class="btn btn-primary"
-                data-ng-click="updateLineOfBusiness()">
+                data-ng-click="updateLineOfBusiness(leadLineOfBusiness)">
             <i class="icon-pencil icon-white"></i>
             <g:message code="default.button.update.label"/> <g:message code="lineOfBusiness.label" default="Line of Business"/>
         </button>

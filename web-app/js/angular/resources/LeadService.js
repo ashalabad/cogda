@@ -608,37 +608,18 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
             Logger.messageBuilder(response);
         }
     }])
-    .controller('CreateLineOfBusinessCtrl', ['$scope', 'Logger',
-        function ($scope, Logger) {
-            $scope.today = function () {
-                $scope.dt = new Date();
-            };
-
-            $scope.today();
-
-            $scope.clear = function () {
-                $scope.dt = null;
-            };
-
-            $scope.toggleMin = function () {
-                $scope.minDate = ( $scope.minDate ) ? null : new Date();
-            };
-
-            $scope.toggleMin();
-
-        }])
-    .controller('EditLeadLineOfBusinessCtrl', ['$scope', 'Logger', 'LineOfBusiness', 'LeadLineOfBusiness', '$dialog',
-        function ($scope, Logger, LineOfBusiness, LeadLineOfBusiness, $dialog) {
+    .controller('EditLeadLineOfBusinessCtrl', ['$scope', 'Logger', 'LineOfBusiness', 'LeadLineOfBusiness', '$dialog', 'DateHelper',
+        function ($scope, Logger, LineOfBusiness, LeadLineOfBusiness, $dialog, DateHelper) {
             LineOfBusiness.list().$then(function (response) {
                 $scope.linesOfBusiness = response.data;
             });
 
 //            $scope.editingLineOfBusiness = false;
-
+            // two scopes up
+            // since inside ng-repeat
             $scope.editLineOfBusiness = function () {
-//                $scope.editingLineOfBusiness = true;
                 $scope.$parent.$parent.editingLineOfBusiness = true;
-                $scope.$parent.$parent.leadLineOfBusiness = $scope.leadLineOfBusiness;
+                $scope.$parent.$parent.leadLineOfBusiness = angular.copy($scope.leadLineOfBusiness);
             };
 
             $scope.cancelEditLineOfBusiness = function () {
@@ -647,10 +628,10 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
             };
 
             $scope.updateLineOfBusiness = function (lineOfBusiness) {
-                var result = $scope.$parent.updateLineOfBusiness($scope.leadLineOfBusiness);
-                if (!result) {
-                    $scope.cancelEditLineOfBusiness();
-                }
+                var formattedLobCopy = angular.copy(lineOfBusiness);
+                formattedLobCopy.targetDate = DateHelper.getFormattedDate(formattedLobCopy.targetDate);
+                formattedLobCopy.expirationDate = DateHelper.getFormattedDate(formattedLobCopy.expirationDate);
+                LeadLineOfBusiness.update(formattedLobCopy).$then(updateSuccessCallback, updateErrorCallBack);
             };
 
             $scope.deleteLineOfBusiness = function (lineOfBusiness) {
@@ -681,7 +662,14 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
             };
 
             var updateSuccessCallback = function (response) {
-                Logger.success("Contact Phone Number Updated Successfully", "Success");
+                for (var i = 0; i < $scope.$parent.lead.linesOfBusiness.length; i++) {
+                    if ($scope.$parent.lead.linesOfBusiness[i].id == $scope.leadLineOfBusiness.id) {
+                        $scope.$parent.lead.linesOfBusiness[i] = $scope.leadLineOfBusiness;
+                        break;
+                    }
+                }
+                Logger.success("Line Of Business Updated Successfully", "Success");
+                $scope.$parent.editingLineOfBusiness = false;
             };
 
             var updateErrorCallBack = function (response) {
@@ -708,9 +696,10 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
 
             $scope.saveLeadLineOfBusiness = function (leadLineOfBusiness) {
                 leadLineOfBusiness.lead = {id: $scope.lead.id};
-                leadLineOfBusiness.targetDate = DateHelper.getFormattedDate(leadLineOfBusiness.targetDate);
-                leadLineOfBusiness.expirationDate = DateHelper.getFormattedDate(leadLineOfBusiness.expirationDate);
-                LeadLineOfBusiness.save(leadLineOfBusiness,function (data) {
+                var formattedLobCopy = angular.copy(leadLineOfBusiness);
+                formattedLobCopy.targetDate = DateHelper.getFormattedDate(formattedLobCopy.targetDate);
+                formattedLobCopy.expirationDate = DateHelper.getFormattedDate(formattedLobCopy.expirationDate);
+                LeadLineOfBusiness.save(formattedLobCopy,function (data) {
                     leadLineOfBusiness.id = data.id;
                     $scope.lead.linesOfBusiness.push(leadLineOfBusiness);
                     $scope.cancelAddLeadLineOfBusiness();
@@ -720,6 +709,9 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
 
             var updateSuccessCallback = function (response) {
                 Logger.success("Line Of Business Added Successfully", "Success");
+//                var index = $scope.lead.linesOfBusiness.length - 1;
+//                $scope.lead.linesOfBusiness[index].targetDate = DateHelper.getBsFormattedDate($scope.lead.linesOfBusiness[index].targetDate);
+//                $scope.lead.linesOfBusiness[index].expirationDate = DateHelper.getBsFormattedDate($scope.lead.linesOfBusiness[index].targetDate);
             };
 
             var updateErrorCallback = function (response) {

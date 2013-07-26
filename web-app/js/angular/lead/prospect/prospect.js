@@ -74,8 +74,8 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
         }])
     .controller('EditProspectCtrl', ['$scope', '$routeParams', '$location', 'Prospect', 'Logger', 'UnitedStates',
         'SupportedCountryCodes', 'LeadSubTypes', 'NoteType', 'BusinessTypes', 'LineOfBusiness', 'LeadLineOfBusiness',
-        '$dialog',
-        function ($scope, $routeParams, $location, Prospect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes, LineOfBusiness, LeadLineOfBusiness, $dialog) {
+        '$dialog', 'DateHelper',
+        function ($scope, $routeParams, $location, Prospect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes, LineOfBusiness, LeadLineOfBusiness, $dialog, DateHelper) {
             $scope.title = 'Prospect';
             $scope.editingLead = false;
             $scope.message = '';
@@ -98,12 +98,21 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
 
             Prospect.get($routeParams, function (data) {
                 $scope.lead = data;
+                for (var i = 0; i < $scope.lead.linesOfBusiness.length; i++){
+                    $scope.lead.linesOfBusiness[i].targetDate =  new Date($scope.lead.linesOfBusiness[i].targetDate);
+                    $scope.lead.linesOfBusiness[i].expirationDate = new Date($scope.lead.linesOfBusiness[i].expirationDate);
+                }
             }, function () {
                 Logger.error("Resource Not Found", "Error");
             });
 
             $scope.updateLead = function (lead) {
-                Prospect.update(lead).$then(updateSuccessCallback, updateErrorCallBack);
+                var formattedLead = angular.copy(lead);
+                for (var i = 0; i < formattedLead.linesOfBusiness.length; i++) {
+                    formattedLead.linesOfBusiness[i].targetDate = DateHelper.getFormattedDate(formattedLead.linesOfBusiness[i].targetDate);
+                    formattedLead.linesOfBusiness[i].expirationDate = DateHelper.getFormattedDate(formattedLead.linesOfBusiness[i].expirationDate);
+                }
+                Prospect.update(formattedLead).$then(updateSuccessCallback, updateErrorCallBack);
             };
 
 
@@ -126,22 +135,6 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
 
             var updateErrorCallBack = function (response) {
                 Logger.formValidationMessageBuilder(response, $scope, $scope.leadForm);
-            };
-
-            $scope.updateLineOfBusiness = function (lineOfBusiness) {
-                LeadLineOfBusiness.update(lineOfBusiness).$then(updateSuccessCallback, updateErrorCallBack);
-                var index = $scope.lead.linesOfBusiness.indexOf(lineOfBusiness);
-                $scope.lead.linesOfBusiness[index] = lineOfBusiness;
-                $scope.editingLineOfBusiness = false;
-                return $scope.editingLineOfBusiness;
-            };
-
-            $scope.editLineOfBusiness = function () {
-                $scope.editingLineOfBusiness = true;
-            };
-
-            $scope.cancelEditLineOfBusiness = function () {
-                $scope.editingLineOfBusiness = false;
             };
 
             $scope.deleteProspect = function (lead) {
@@ -210,8 +203,6 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
             }
 
             $scope.saveLeadLineOfBusiness = function (leadLineOfBusiness) {
-                leadLineOfBusiness.targetDate = DateHelper.getFormattedDate(leadLineOfBusiness.targetDate);
-                leadLineOfBusiness.expirationDate = DateHelper.getFormattedDate(leadLineOfBusiness.expirationDate);
                 $scope.lead.linesOfBusiness.push(leadLineOfBusiness);
                 $scope.cancelAddLeadLineOfBusiness();
             }
@@ -249,7 +240,12 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
             };
 
             $scope.saveProspect = function (lead) {
-                Prospect.save(lead,function (data) {
+                var formattedLead = angular.copy(lead);
+                for (var i = 0; i < formattedLead.linesOfBusiness.length; i++) {
+                    formattedLead.linesOfBusiness[i].targetDate = DateHelper.getFormattedDate(formattedLead.linesOfBusiness[i].targetDate);
+                    formattedLead.linesOfBusiness[i].expirationDate = DateHelper.getFormattedDate(formattedLead.linesOfBusiness[i].expirationDate);
+                }
+                Prospect.save(formattedLead,function (data) {
                     lead.id = data.id;
                 }).$then(saveSuccessCallback, saveErrorCallback);
             };

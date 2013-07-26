@@ -17,7 +17,27 @@ angular.module('common.helperFuncs', []).factory('SelectHelper',function () {
             return date === undefined ? date : $filter('date')(date, dateFormat);
         };
 
-        return {
-            getFormattedDate: getFormattedDate
+        var getBsFormattedDate = function (date) {
+            var dateFormat = "MM/dd/yyyy";
+            return date === undefined ? date : $filter('date')(new Date(date), dateFormat);
         };
-    }]);
+
+        return {
+            getFormattedDate: getFormattedDate,
+            getBsFormattedDate: getBsFormattedDate
+        };
+    }])
+    .filter('bsDateFilter', function () {
+        return function (d) {
+            if (d instanceof Date) {
+                return new Date(d.getTime() + (new Date()).getTimezoneOffset() * 60000);
+            } else {
+                var date = new Date(d);
+                if (isNaN(date.getTime()))
+                    return d;
+                else {
+                    return new Date(date.getTime() + (new Date()).getTimezoneOffset() * 60000);
+                }
+            }
+        }
+    });
