@@ -3,7 +3,7 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
         'resources.noteType', 'resources.businessTypes', 'resources.leadAddress', 'resources.leadService',
         'resources.leadNote', 'resources.leadContactPhoneNumber', 'resources.leadContactEmailAddress',
         'resources.leadContact', 'resources.leadContactAddress', 'resources.leadLineOfBusiness',
-        'resources.lineOfBusiness', 'resources.lead', 'ui.bootstrap'])
+        'resources.lineOfBusiness', 'resources.lead', 'ui.bootstrap', 'lead.Utils'])
     .controller('AddAddressController', ['$scope', 'LeadAddress', 'Logger', function ($scope, LeadAddress, Logger) {
         $scope.address = {};
 
@@ -608,8 +608,8 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
             Logger.messageBuilder(response);
         }
     }])
-    .controller('EditLeadLineOfBusinessCtrl', ['$scope', 'Logger', 'LineOfBusiness', 'LeadLineOfBusiness', '$dialog', 'DateHelper',
-        function ($scope, Logger, LineOfBusiness, LeadLineOfBusiness, $dialog, DateHelper) {
+    .controller('EditLeadLineOfBusinessCtrl', ['$scope', 'Logger', 'LineOfBusiness', 'LeadLineOfBusiness', '$dialog', 'DateHelper', 'LeadUtils',
+        function ($scope, Logger, LineOfBusiness, LeadLineOfBusiness, $dialog, DateHelper, LeadUtils) {
             LineOfBusiness.list().$then(function (response) {
                 $scope.linesOfBusiness = response.data;
             });
@@ -628,6 +628,7 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
             };
 
             $scope.updateLineOfBusiness = function (lineOfBusiness) {
+                lineOfBusiness.lineOfBusiness = LeadUtils.getLobFromSelect(lineOfBusiness, $scope.linesOfBusiness);
                 var formattedLobCopy = angular.copy(lineOfBusiness);
                 formattedLobCopy.targetDate = DateHelper.getFormattedDate(formattedLobCopy.targetDate);
                 formattedLobCopy.expirationDate = DateHelper.getFormattedDate(formattedLobCopy.expirationDate);
@@ -677,8 +678,8 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
             };
 
         }])
-    .controller('AddLeadLineOfBusinessCtrl', ['$scope', 'Logger', 'LeadLineOfBusiness', 'LineOfBusiness', 'DateHelper',
-        function ($scope, Logger, LeadLineOfBusiness, LineOfBusiness, DateHelper) {
+    .controller('AddLeadLineOfBusinessCtrl', ['$scope', 'Logger', 'LeadLineOfBusiness', 'LineOfBusiness', 'DateHelper', 'LeadUtils',
+        function ($scope, Logger, LeadLineOfBusiness, LineOfBusiness, DateHelper, LeadUtils) {
             $scope.leadLineOfBusiness = {};
             $scope.addingLeadLineOfBusiness = false;
 
@@ -696,6 +697,7 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
 
             $scope.saveLeadLineOfBusiness = function (leadLineOfBusiness) {
                 leadLineOfBusiness.lead = {id: $scope.lead.id};
+                leadLineOfBusiness.lineOfBusiness = LeadUtils.getLobFromSelect(leadLineOfBusiness, $scope.linesOfBusiness);
                 var formattedLobCopy = angular.copy(leadLineOfBusiness);
                 formattedLobCopy.targetDate = DateHelper.getFormattedDate(formattedLobCopy.targetDate);
                 formattedLobCopy.expirationDate = DateHelper.getFormattedDate(formattedLobCopy.expirationDate);
@@ -709,9 +711,6 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
 
             var updateSuccessCallback = function (response) {
                 Logger.success("Line Of Business Added Successfully", "Success");
-//                var index = $scope.lead.linesOfBusiness.length - 1;
-//                $scope.lead.linesOfBusiness[index].targetDate = DateHelper.getBsFormattedDate($scope.lead.linesOfBusiness[index].targetDate);
-//                $scope.lead.linesOfBusiness[index].expirationDate = DateHelper.getBsFormattedDate($scope.lead.linesOfBusiness[index].targetDate);
             };
 
             var updateErrorCallback = function (response) {

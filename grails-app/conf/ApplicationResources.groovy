@@ -68,6 +68,7 @@ modules = {
         resource url: 'js/angular/resources/Lead.js'
         resource url: 'js/angular/resources/LeadLineOfBusiness.js'
         resource url: 'js/angular/resources/LineOfBusiness.js'
+        resource url: 'js/angular/resources/LeadUtils.js'
     }
 
     suspect {

@@ -5,8 +5,9 @@
                 <g:message code="lineOfBusiness.label"/>
             </label>
             <div class="controls">
-                <select id="lineOfBusiness" data-ng-model="leadLineOfBusiness.lineOfBusiness"
-                    data-ng-options="lob.description group by lob.lineOfBusinessCategory.description for lob in linesOfBusiness">
+                <select id="lineOfBusiness" data-ng-model="leadLineOfBusiness.lineOfBusiness.id"
+                    data-ng-options="lob.id as lob.description group by lob.lineOfBusinessCategory.description for lob in linesOfBusiness">
+
                     <option value="">-- choose Line Of Business --</option>
                 </select>
             </div>

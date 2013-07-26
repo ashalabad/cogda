@@ -40,4 +40,15 @@ angular.module('common.helperFuncs', []).factory('SelectHelper',function () {
                 }
             }
         }
+    })
+    .filter('findById', function () {
+        return function (input, id) {
+            var i = 0, len = input.length;
+            for (; i < len; i++) {
+                if (+input[i].id == +id) {
+                    return input[i];
+                }
+            }
+            return undefined;
+        }
     });
