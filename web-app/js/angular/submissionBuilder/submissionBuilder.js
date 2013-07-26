@@ -80,7 +80,7 @@ angular.module('submissionBuilderApp', ['resources.restApi','resources.AccountCo
     .controller('submissionBuilderCtrl', ['$scope','AccountContactLink',
         function($scope,AccountContactLink){
 
-            $scope.oneAtATime = false;
+            $scope.oneAtATime = true;
             $scope.testMe = false;
 
             $scope.lead = {
