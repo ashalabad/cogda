@@ -23,7 +23,7 @@
         </div>
         <div class="span3 well well-small minWell" data-ng-show="formattedPrimaryContact">
             <h4 class="text-center"><g:message code="account.primaryContact.label"/></h4>
-            <div data-ng-bind-html-unsafe="formattedPrimaryContact" class="text-center"></div><br>
+            <div data-ng-bind-html-unsafe="formattedPrimaryContact" class="text-center"></div>
             <button type="button" class="btn btn-mini pull-right" data-ng-click="showAccountContact(primaryAccountContact)" ><i class="icon-eye-open"></i> <g:message code="default.button.show.label" /></button>
         </div>
         <div class="span3" data-ng-hide="formattedPrimaryContact">
@@ -36,7 +36,7 @@
             <button type="button" class="btn btn-mini" data-ng-click="createSubmission()"><i class="icon-plus"></i> <g:message code="default.create.label" args="[message(code:'submission.label')]" /></button>
             <button type="button" class="btn btn-mini" data-ng-click="attachDocument()"><i class="icon-upload"></i> <g:message code="default.attach.label" args="[message(code:'document.label')]" /></button>
             <div class="btn-group">
-                <a class="btn btn-mini dropdown-toggle" data-toggle="dropdown" href="#">
+                <a class="btn btn-mini dropdown-toggle btnDropdownPixelDrop" data-toggle="dropdown" href="#">
                     <i class="icon-plus"></i> <g:message code="default.add.label" args="[message(code:'accountContact.contact.label')]" />
                     <span class="caret"></span>
                 </a>
