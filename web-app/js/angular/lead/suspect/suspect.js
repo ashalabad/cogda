@@ -1,7 +1,7 @@
 angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.naicsCodeTree', 'resources.sicCodeTree',
         'resources.restApi', 'common.helperFuncs', 'resources.logger', 'ngGrid',
         'resources.suspect', 'resources.unitedStates', 'resources.SupportedCountryCodes', 'resources.leadSubTypes',
-        'resources.noteType', 'resources.businessTypes', 'resources.leadService'])
+        'resources.noteType', 'resources.businessTypes', 'resources.leadService', 'lead.Utils'])
 
     .config(function ($routeProvider) {
         $routeProvider.
@@ -160,8 +160,9 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
             };
         }])
     .controller('CreateSuspectCtrl', ['$scope', '$routeParams', '$location', 'Suspect', 'Logger', 'UnitedStates',
-        'SupportedCountryCodes', 'LeadSubTypes', 'NoteType', 'BusinessTypes', 'DateHelper', 'LineOfBusiness',
-        function ($scope, $routeParams, $location, Suspect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes, DateHelper, LineOfBusiness) {
+        'SupportedCountryCodes', 'LeadSubTypes', 'NoteType', 'BusinessTypes', 'DateHelper', 'LineOfBusiness', '$filter',
+        'LeadUtils',
+        function ($scope, $routeParams, $location, Suspect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes, DateHelper, LineOfBusiness, $filter, LeadUtils) {
             $scope.lead = {};
             $scope.lead.leadAddresses = [];
             $scope.lead.leadAddresses.push({primaryAddress: true});
@@ -199,11 +200,13 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
             }
 
             $scope.saveLeadLineOfBusiness = function (leadLineOfBusiness) {
+                leadLineOfBusiness.lineOfBusiness = LeadUtils.getLobFromSelect(leadLineOfBusiness, $scope.linesOfBusiness);
                 $scope.lead.linesOfBusiness.push(leadLineOfBusiness);
                 $scope.cancelAddLeadLineOfBusiness();
             }
 
             $scope.updateLineOfBusiness = function (lineOfBusiness) {
+                lineOfBusiness.lineOfBusiness = LeadUtils.getLobFromSelect(lineOfBusiness, $scope.linesOfBusiness);
                 $scope.lead.linesOfBusiness[$scope.index] = lineOfBusiness;
                 $scope.editingLineOfBusiness = false;
             };
@@ -245,6 +248,10 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
                     lead.id = data.id;
                 }).$then(saveSuccessCallback, saveErrorCallback);
             };
+
+            var getLobFromSelect = function(leadLineOfBusiness) {
+                return leadLineOfBusiness.lineOfBusiness === undefined ? undefined : $filter('findById')($scope.linesOfBusiness, leadLineOfBusiness.lineOfBusiness.id);
+           }
 
         }])
     .controller('ShowSuspectCtrl', ['$scope', '$routeParams', '$location', 'Suspect', 'Logger',
