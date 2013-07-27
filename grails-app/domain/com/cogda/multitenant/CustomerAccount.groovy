@@ -1,9 +1,12 @@
 package com.cogda.multitenant
 import grails.plugin.multitenant.core.Tenant
+import groovy.transform.ToString
+
 /**
  * CustomerAccount
  * A domain class describes the data object and it's mapping to the database
  */
+@ToString(includeNames=true, includeFields=true)
 class CustomerAccount implements Tenant {
     private static List<String> DISALLOWED_SUBDOMAINS = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L",
             "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
