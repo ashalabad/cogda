@@ -99,35 +99,52 @@ environments {
             appenders {
                 console name:'stdout', layout:pattern(conversionPattern: '%d [%t] %-5p %c - %m%n'), threshold: org.apache.log4j.Level.DEBUG
             }
-            error  'org.codehaus.groovy.grails.web.servlet',        // controllers
-                   'org.codehaus.groovy.grails.web.pages',          // GSP
-                   'org.codehaus.groovy.grails.web.sitemesh',       // layouts
-                   'org.codehaus.groovy.grails.web.mapping.filter', // URL mapping
-                   'org.codehaus.groovy.grails.web.mapping',        // URL mapping
-                   'org.codehaus.groovy.grails.commons',            // core / classloading
-                   'org.codehaus.groovy.grails.plugins',            // plugins
-                   'org.codehaus.groovy.grails.orm.hibernate',      // hibernate integration
-                   'org.springframework',
-                   'org.hibernate',
-                   'net.sf.ehcache.hibernate'
-
+            error  'org.codehaus.groovy.grails.web.servlet'         // controllers
+            error  'org.codehaus.groovy.grails.web.pages'           // GSP
+            error  'org.codehaus.groovy.grails.web.sitemesh'        // layouts
+            error  'org.codehaus.groovy.grails.web.mapping.filter'  // URL mapping
+            error  'org.codehaus.groovy.grails.web.mapping'         // URL mapping
+            error  'org.codehaus.groovy.grails.commons'             // core / classloading
+            error  'org.codehaus.groovy.grails.plugins'             // plugins
+            error  'org.codehaus.groovy.grails.orm.hibernate'       // hibernate integration
+            error  'org.codehaus.groovy.grails'
+            error  'org.apache.commons'
+            error  'net.sf.ehcache'
+            error  'grails.plugins'
+            error  'grails.plugin'
+            error  'com.amazonaws'
+            error  'org.grails.plugin'
+            error  'grails.spring'
+            error  'org.apache'
+            error  'grails.util'
+            error  'org.springframework'
+            error  'org.hibernate'
+            error  'grails.app.resourceMappers'
+            error  'grails.app.filters.kickstart'
             error  'grails.app.controllers.com.cogda'
             error  'grails.app.domain.com.cogda'
             error  'grails.app.taglib'
             error  'grails.app.conf'
             debug  'grails.app.filters.cogda'
-            error  'grails.app.taglib'
-            error  'grails.app.services.com.cogda'
+            debug  'grails.app.filters.com.cogda'
+            debug  'grails.app.services.com.cogda'
+            debug  'grails.app.controllers.com.cogda'
+            debug  'grails.app.domain.com.cogda'
+            debug  'grails.app.taglib.com.cogda'
             error  'org.codehaus.groovy.grails.plugins'
-            debug  'java.grails.plugin.multitenant.core'
-            debug  'java.grails.plugin.multitenant.singledb.hibernate'
-//            error  'com.cogda'
-//            error  'cogda'
+            error  'grails.plugin.gson.spring'
+            error  'java.grails.plugin.multitenant.core'
+            error  'java.grails.plugin.multitenant.singledb.hibernate'
+            debug  'com.cogda.multitenant.DomainTenantResolver'
+            error  'groovy.org.grails.plugin.resource'
+            error  'javax.servlet'
+            error  'org.codehaus.groovy.grails.web.servlet'
+            debug  'cogda.DomainFilters'
             root {
                 error 'stdout'
-//                info 'stdout'
-//                warn 'stdout'
-//                debug 'stdout'
+                info 'stdout'
+                warn 'stdout'
+                debug 'stdout'
                 additivity = true
             }
         }
