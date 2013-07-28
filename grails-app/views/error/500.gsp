@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title><g:message code="error.503.title"/></title>
+		<title><g:message code="error.500.title"/></title>
 		<meta name="layout" content="kickstart" />
 		<g:set var="layout_nomainmenu"		value="${true}" scope="request"/>
 		<g:set var="layout_nosecondarymenu"	value="${true}" scope="request"/>
@@ -15,13 +15,13 @@
 		<div class="big-message">
 			<div class="container">
 				<h1>
-					<g:message code="error.503.callout"/>
+					<g:message code="error.500.callout"/>
 				</h1>
 				<h2>
-					<g:message code="error.503.title"/>
+					<g:message code="error.500.title"/>
 				</h2>
 				<p>
-					<g:message code="error.503.message"/>
+					<g:message code="error.500.message"/>
 				</p>
 				
 				<div class="actions">
