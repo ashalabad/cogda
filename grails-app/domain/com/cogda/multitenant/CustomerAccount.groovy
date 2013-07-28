@@ -45,4 +45,13 @@ class CustomerAccount implements Tenant {
         }
         return Boolean.TRUE
     }
+
+    /**
+     * Sets the subDomain to lowerCase regardless of the case
+     * that was passed into this domain class.
+     * @param subDomain
+     */
+    void setSubDomain(String subDomain){
+        this.subDomain = subDomain?.toLowerCase()
+    }
 }
