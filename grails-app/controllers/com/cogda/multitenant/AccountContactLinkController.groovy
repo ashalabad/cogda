@@ -100,6 +100,7 @@ class AccountContactLinkController extends GsonBaseController {
                 map.accountContactPrimary = accountContactLinkInstance?.primaryContact
                 map.accountContactFavorite = accountContactLinkInstance?.accountContact?.favorite
                 map.accountContactId = accountContactLinkInstance?.accountContact?.id
+                map.accountContactUserProfile = accountContactLinkInstance?.accountContact?.userProfile
                 dataToRender.add(map)
             }
 

@@ -37,7 +37,7 @@ class Submission {
 	static hasMany		= [requestForActions:RequestForAction,
                            childSubmissions:Submission,
                            leadLineOfBusinesses:LeadLineOfBusiness,
-                           submissionDocuments:SubmissionDocument]
+                           ]
 
     static constraints = {
         lead(nullable:true, validator: { Lead lead, Submission submission ->

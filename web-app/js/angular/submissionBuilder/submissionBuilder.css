@@ -16,6 +16,21 @@
     background:#fff;
 }
 
+.lobContainer {
+    height:225px;
+    overflow:auto;
+    background:#fff;
+    /*border:1px #303 solid;*/
+}
+
+.docContainer{
+    height:300px;
+    overflow:auto;
+    background:#fff;
+    /*border:1px #303 solid;*/
+
+}
+
 .accordion-heading {
     font-weight: bold;
     color:#373736;

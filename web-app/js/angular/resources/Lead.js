@@ -1,3 +1,3 @@
-angular.module('resources.lead', ['resources.restApi']).factory('Lead', ['RestApi', function(RestApi) {
+angular.module('resources.Lead', ['resources.restApi']).factory('Lead', ['RestApi', function(RestApi) {
     return RestApi.getRest('/lead/');
 }]);

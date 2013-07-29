@@ -3,7 +3,7 @@
         <h3><g:message code="submissionBuilder.label"/></h3>
     </div>
     <div class="span8">
-        <h3 class="blueText text-center">{{ lead.clientName }}</h3>
+        <h3 class="blueText text-center">{{ submission.lead.clientName }}</h3>
     </div>
 </div>
 <div class = "row">
@@ -17,15 +17,19 @@
             </button>
         </h4>
 
-        <div class="well">
-            <ul class="unstyled" data-ng-repeat="leadLineOfBusiness in lead.leadLineOfBusinesses">
-                <li>
-                    <label class="checkbox">
-                        <input type="checkbox" />
-                        {{leadLineOfBusiness.lineOfBusiness.description}}<br>{{leadLineOfBusiness.expirationDate}}
-                    </label>
-                </li>
-            </ul>
+        <div class="lobContainer">
+            <div class="well well-small">
+                <ul class="unstyled" data-ng-repeat="lineOfBusiness in submission.lead.linesOfBusiness | orderBy: 'lineOfBusiness.description'">
+                    <li>
+                        <label class="checkbox">
+                            <input type="checkbox" />
+                            <span popover-title="{{lineOfBusiness.lineOfBusiness.description}} Details" popover="{{formatLOBDetails(lineOfBusiness)}}" popover-trigger="hover" popover-placement="right">
+                                {{lineOfBusiness.lineOfBusiness.description}} - {{lineOfBusiness.expirationDate | date:'M/d/yy @ h:mm a'}}
+                            </span>
+                        </label>
+                    </li>
+                </ul>
+            </div>
         </div>
 
         <h4>
@@ -36,16 +40,19 @@
             </button>
         </h4>
 
-        <div class="well">
-            <ul class="unstyled" data-ng-repeat="file in lead.files">
-                <li>
-                    <label class="checkbox">
-                        <input type="checkbox" name="selectedFile" />
-                        {{ file.fileName }}
-                    </label>
-                </li>
-            </ul>
+        <div class="docContainer">
+            <div class="well well-small">
+                <ul class="unstyled" data-ng-repeat="file in submission.lead.files">
+                    <li>
+                        <label class="checkbox">
+                            <input type="checkbox" name="selectedFile" />
+                            {{ file.fileName }}
+                        </label>
+                    </li>
+                </ul>
+            </div>
         </div>
+
     </div>
     <div class="span8">
         <h4>Step 3: Select Your Markets</h4>
@@ -64,19 +71,7 @@
                             <div class="marketContainer">
                                 <accordion-group heading="{{accountContactLink.accountName}}" data-ng-repeat="accountContactLink in allMarkets | filter:marketCriteria | orderBy:'accountName' | unique:'accountName'">
                                     <ul class="inline" data-ng-repeat="accountContactLinkInner in allMarkets | filter: accountContactLink.accountName | orderBy: 'accountContactName'">
-                                        <li class="inline">
-                                            <label class="checkbox">
-                                                <input type="checkbox" name="{{accountContactLinkInner.linkId}}" data-ng-click="toggleAccountContactLink(accountContactLinkInner.linkId,this.name)"/>
-                                                <span data-ng-show="accountContactLinkInner.accountContactPrimary" class="label label-success"><i class="icon-asterisk"></i></span>
-                                                <span data-ng-show="accountContactLinkInner.accountContactFavorite" class="label label-warning"><i class="icon-star"></i></span>
-                                                <strong>
-                                                    <span class="blueText">
-                                                        %{--<a data-ng-href="/account#/accountContact/{{accountContactLinkInner.accountContactId}}" target="_blank">{{accountContactLinkInner.accountContactName}}</a> |--}%
-                                                        {{accountContactLinkInner.accountContactName}} | {{accountContactLinkInner.accountContactEmail}}
-                                                    </span>
-                                                </strong>
-                                            </label>
-                                        </li>
+                                        <g:render template="marketList" />
                                     </ul>
                                 </accordion-group>
                             </div>
@@ -90,19 +85,7 @@
                             <div class="marketContainer">
                                 <accordion-group heading="{{accountContactLink.accountName}}" data-ng-repeat="accountContactLink in favoriteMarkets | filter:marketCriteria | orderBy:'accountName' | unique:'accountName'">
                                     <ul class="inline" data-ng-repeat="accountContactLinkInner in favoriteMarkets | filter: accountContactLink.accountName | orderBy: 'accountContactName'">
-                                        <li class="inline">
-                                            <label class="checkbox">
-                                                <input type="checkbox" name="{{accountContactLinkInner.linkId}}" data-ng-click="toggleAccountContactLink(accountContactLinkInner.linkId,this.checked)"/>
-                                                <span data-ng-show="accountContactLinkInner.accountContactPrimary" class="label label-success"><i class="icon-asterisk"></i></span>
-                                                <span data-ng-show="accountContactLinkInner.accountContactFavorite" class="label label-warning"><i class="icon-star"></i></span>
-                                                <strong>
-                                                    <span class="blueText">
-                                                        %{--<a data-ng-href="/account#/accountContact/{{accountContactLinkInner.accountContactId}}" target="_blank">{{accountContactLinkInner.accountContactName}}</a> |--}%
-                                                    {{accountContactLinkInner.accountContactName}} | {{accountContactLinkInner.accountContactEmail}}
-                                                    </span>
-                                                </strong>
-                                            </label>
-                                        </li>
+                                        <g:render template="marketList" />
                                     </ul>
                                 </accordion-group>
                             </div>

@@ -1,4 +1,4 @@
-angular.module('submissionBuilderApp', ['resources.restApi','resources.AccountContactLink', 'common.helperFuncs', 'resources.logger', 'ui.bootstrap', 'ui.utils'])
+angular.module('submissionBuilderApp', ['resources.restApi','resources.AccountContactLink','resources.Lead','resources.SubmissionBuilder', 'common.helperFuncs', 'resources.logger', 'ui.bootstrap', 'ui.utils'])
 
     .config(function ($routeProvider) {
         $routeProvider.
@@ -12,39 +12,20 @@ angular.module('submissionBuilderApp', ['resources.restApi','resources.AccountCo
     })
 
 
-    .controller('submissionBuilderLeadCtrl', ['$scope', '$location', '$filter',
-        function($scope, $location,$filter){
+    .controller('submissionBuilderLeadCtrl', ['$scope', '$location', '$filter','Lead',
+        function($scope, $location,$filter,Lead){
 
             $scope.leadList = [];
             $scope.searchString='';
-            $scope.leadListFromController =  [  //TODO: Replace this with the controller call
-                {
-                    id:1,
-                    clientName: "Jaynes Construction, Co."
-                },
-                {
-                    id:2,
-                    clientName: "Semper Auc"
-                },
-                {
-                    id:3,
-                    clientName: "Donec Mauris"
-                },
-                {
-                    id:4,
-                    clientName: "Vestibulum"
-                },
-                {
-                    id:5,
-                    clientName: "VitaeT"
-                }
-            ];
 
             $scope.$watch('searchString', function(val) {
                 if(val.length >0)
                 {
-                    $scope.leadList = $filter('filter')($scope.leadListFromController,val);
-                    $scope.leadList = $filter('orderBy')($scope.leadList,'clientName');
+                    Lead.search({searchString:val},function(data){
+                        $scope.leadList = $filter('filter')(data,val);
+                        $scope.leadList = $filter('orderBy')($scope.leadList,'clientName');
+                    },angular.noop());
+
                 }
                 else
                     $scope.clearSearch();
@@ -56,102 +37,35 @@ angular.module('submissionBuilderApp', ['resources.restApi','resources.AccountCo
             };
 
 
-//            $scope.buildSubmission = function buildSubmission(leadInstance){
-//                $location.path('/prepare/' + leadInstance.id);
-//            };
             $scope.buildSubmission = function buildSubmission(leadInstance){
-                $location.path('/build/' + leadInstance.id);
+                $location.path('/prepare/' + leadInstance.id);
             };
         }
     ])
 
-//    .controller('submissionBuilderPrepareCtrl', ['$scope','Submission','$location','$routeParams',
-//        function($scope,Submission,$location,$routeParams){
-//
-//            Submission.create({id:$routeParams.id},function (data) {
-//                $location.path('/build' + data.id);
-//            },angular.noop());
-//
-//
-//        }
-//    ])
+    .controller('submissionBuilderPrepareCtrl', ['$scope','SubmissionBuilder','$location','$routeParams',
+        function($scope,SubmissionBuilder,$location,$routeParams){
+            SubmissionBuilder.createParentSubmission({id:$routeParams.id},function (data) {
+                $location.path('/build/' + data.id);
+            },angular.noop());
 
 
-    .controller('submissionBuilderCtrl', ['$scope','AccountContactLink',
-        function($scope,AccountContactLink){
+        }
+    ])
+
+
+    .controller('submissionBuilderCtrl', ['$scope','AccountContactLink','SubmissionBuilder','$location','$routeParams','Lead','$filter',
+        function($scope,AccountContactLink,SubmissionBuilder,$location,$routeParams,Lead,$filter){
 
             $scope.oneAtATime = true;
-            $scope.testMe = false;
 
-            $scope.lead = {
-                id: 1,
-                businessType: {
-                    id: 4,
-                    code: "Construction",
-                    codeFrom: 11,
-                    codeTo: 11,
-                    description: "Construction"
-                },
-                clientId: "123456789",
-                clientName: "Jaynes Construction, Co.",
-                leadType: "PROSPECT",
-                leadSubType: "BUSINESS",
-                customerServiceRepresentative:"",
-                leadNotes: [],
-                files: [],
-                leadContacts: [],
-                leadAddresses: [],
-                leadLineOfBusinesses: [
-                    {
-                        expirationDate: '12/31/2013 11:59:59',
-                        targetDate:     '10/31/2013 11:59:59',
-                        targetPremium:  5000.00,
-                        targetCommission: 500.00,
-                        lineOfBusiness:{
-                            code: "AR-S",
-                            description: "Accts Rec/Val Papers",
-                            intCode: 1
-                        },
-                        renewal: true,
-                        remarket: true
-                    },
-                    {
-                        expirationDate: '12/31/2013 11:59:59',
-                        targetDate:     '10/31/2013 11:59:59',
-                        targetPremium:  5000.00,
-                        targetCommission: 500.00,
-                        lineOfBusiness:{
-                            code: "TRAN",
-                            description: "Transportation",
-                            intCode: 58
-                        },
-                        renewal: true,
-                        remarket: true
-                    }
-                ],
-                naicsCodes: [
-                    {
-                        id: 4,
-                        code: "23",
-                        description: "Construction"
-                    }
-                ],
-                sicCodes: [],
-                files: [
-                    {
-                        id: 1,
-                        fileName: "AccordApp.pdf"
-                    },
-                    {
-                        id: 2,
-                        fileName: "AOR.pdf"
-                    },
-                    {
-                        id: 3,
-                        fileName: "Trailer.jpg"
-                    }
-                ]
-            };
+            SubmissionBuilder.get({id:$routeParams.id},function (data) {
+                $scope.submission = data;
+                console.log($scope.submission);
+                SubmissionBuilder.createChildSubmission({id:$scope.submission.id},function(data){
+                    $scope.childSubmission = data;
+                },angular.noop());
+            },angular.noop());
 
             $scope.marketCriteria = "";
 
@@ -173,6 +87,16 @@ angular.module('submissionBuilderApp', ['resources.restApi','resources.AccountCo
 //                $("input[name='"+linkId+"']").attr('checked',val);
 //                console.log(linkId + " - checked: " + val);
             };
+
+            $scope.formatLOBDetails = function formatLOBDetails(lob){
+                var result = "";
+                if(lob.targetDate)
+                    result += " Target Date: " + $filter('date')(lob.targetDate,['M/d/yy @ h:mm a']);
+                if(lob.targetPremium)
+                    result += " Target Premium: " + $filter('currency')(lob.targetPremium);
+
+                return result;
+            }
 
 
         }]);
