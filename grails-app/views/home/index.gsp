@@ -49,7 +49,7 @@
 		<div class="row-fluid">
 	    	<div class="span4">
 		    	<div class="center">
-					<img class="frontpageImage" src="${resource(dir: 'images/frontpage',file: 'bs-docs-twitter-github.png')}" />
+					<img class="frontpageImage" src="${resource(plugin: 'kickstart-with-bootstrap', dir: 'images/frontpage',file: 'bs-docs-twitter-github.png')}" />
 					<h3>Bootstrap 2.3.0</h3>
 				</div>
 				<p>
