@@ -1,9 +1,11 @@
 package com.cogda.domain
 
+import com.cogda.ConstraintUnitSpec
 import com.cogda.domain.admin.CompanyType
 import com.cogda.multitenant.Company
 import grails.test.mixin.domain.DomainClassUnitTestMixin
 import spock.lang.Specification
+import spock.lang.Unroll
 
 import static org.junit.Assert.*
 
@@ -14,9 +16,10 @@ import org.junit.*
 /**
  * See the API for {@link grails.test.mixin.support.GrailsUnitTestMixin} for usage instructions
  */
-@Mock([CompanyProfile, Company, CompanyType])
+@TestFor(CompanyProfile)
+@Mock([Company, CompanyType])
 @TestMixin([DomainClassUnitTestMixin])
-class CompanyProfileSpec extends Specification{
+class CompanyProfileSpec extends ConstraintUnitSpec{
 
     Company rootCompany
     CompanyProfile companyProfile
@@ -29,6 +32,7 @@ class CompanyProfileSpec extends Specification{
     }
 
     void setup(){
+        mockForConstraintsTests(CompanyProfile)
         companyType = new CompanyType()
         companyType.intCode = 0
         companyType.code = "MGA"
@@ -82,5 +86,21 @@ class CompanyProfileSpec extends Specification{
         expect:
             CompanyProfile.rootCompanyProfile == companyProfile
             Company.findAllByParentCompany(rootCompany).size() == 5
+    }
+
+    @Unroll("test CompanyProfile all constraints #field is #error")
+    def "test constraints on the CompanyProfile"(){
+        when:
+        CompanyProfile cp = new CompanyProfile("$field":val)
+
+        then:
+        validateConstraints(cp, field, error)
+
+        where:
+        error             | field                 | val
+        'url'             | 'companyWebsite'      | getUrl(false)
+        'size'            | 'companyDescription'  | getLongString(15001)
+        'size'            | 'businessSpecialties' | getLongString(15001)
+        'size'            | 'associations'        | getLongString(15001)
     }
 }
