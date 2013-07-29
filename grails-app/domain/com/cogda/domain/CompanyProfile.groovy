@@ -43,12 +43,11 @@ class CompanyProfile {
     }
 
     static constraints = {
-        companyDescription(nullable:true)
         companyWebsite(nullable:true, url:true)
         published(nullable:true)
-        companyDescription(nullable:true, maxSize:15000)
-        businessSpecialties(nullable:true, maxSize:15000)
-        associations(nullable:true, maxSize:15000)
+        companyDescription(nullable:true, size:0..15000)
+        businessSpecialties(nullable:true, size:0..15000)
+        associations(nullable:true, size:0..15000)
     }
 
     /**
