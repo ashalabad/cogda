@@ -1,4 +1,8 @@
 <td>
+    {{ leadLineOfBusiness.lineOfBusiness.lineOfBusinessCategory.description }}
+</td>
+
+<td>
     {{ leadLineOfBusiness.lineOfBusiness.description }}
 </td>
 

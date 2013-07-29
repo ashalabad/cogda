@@ -2,15 +2,15 @@ angular.module('lead.Utils', ['common.helperFuncs']).factory('LeadUtils', ['$fil
 
     var getLobFromSelect = function (leadLineOfBusiness, linesOfBusiness) {
         return leadLineOfBusiness.lineOfBusiness === undefined ? undefined : $filter('findById')(linesOfBusiness, leadLineOfBusiness.lineOfBusiness.id);
-    }
+    };
 
     var getLobFromSelect = function (leadLineOfBusiness, linesOfBusiness) {
         return leadLineOfBusiness.lineOfBusiness === undefined ? undefined : $filter('findById')(linesOfBusiness, leadLineOfBusiness.lineOfBusiness.id);
-    }
+    };
 
-    var entityFromSelect = function(entity, propertyName, selectOptions) {
+    var entityFromSelect = function (entity, propertyName, selectOptions) {
         return entity[propertyName] === undefined ? undefined : $filter('findById')(selectOptions, entity[propertyName].id);
-    }
+    };
 
     return {
         getLobFromSelect: getLobFromSelect

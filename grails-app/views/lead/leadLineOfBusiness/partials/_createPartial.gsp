@@ -1,26 +1,7 @@
 <legend><g:message code="lineOfBusiness.label"/> </legend>
-%{--<table class="table table-striped table-bordered" data-ng-hide="editingLineOfBusiness">--}%
-    %{--<tr>--}%
-        %{--<th><g:message code="lineOfBusiness.label"/></th>--}%
-        %{--<th><g:message code="leadLineOfBusiness.targetDate.label"/></th>--}%
-        %{--<th><g:message code="leadLineOfBusiness.expirationDate.label"/></th>--}%
-        %{--<th><g:message code="leadLineOfBusiness.targetPremium.label"/></th>--}%
-        %{--<th><g:message code="leadLineOfBusiness.targetCommission.label"/></th>--}%
-        %{--<th><g:message code="leadLineOfBusiness.writingCompany.label"/></th>--}%
-        %{--<th><g:message code="leadLineOfBusiness.billingCompany.label"/></th>--}%
-        %{--<th><g:message code="leadLineOfBusiness.renewal.label"/></th>--}%
-        %{--<th><g:message code="leadLineOfBusiness.remarket.label"/></th>--}%
-        %{--<th><g:message code="default.button.edit.label"/></th>--}%
-        %{--<th><g:message code="default.button.delete.label"/></th>--}%
-    %{--</tr>--}%
-
-    %{--<tr data-ng-repeat="leadLineOfBusiness in lead.linesOfBusiness">--}%
-        %{--<g:render template="/lead/leadLineOfBusiness/partials/showPartial"/>--}%
-    %{--</tr>--}%
-%{--</table>--}%
-%{--<g:render template="/lead/leadLineOfBusiness/partials/addPartial"/>--}%
 <table class="table table-striped table-bordered" data-ng-show="lead.linesOfBusiness.length > 0">
     <tr>
+        <th><g:message code="lineOfBusiness.category.label"/></th>
         <th><g:message code="lineOfBusiness.label"/></th>
         <th><g:message code="leadLineOfBusiness.targetDate.label"/></th>
         <th><g:message code="leadLineOfBusiness.expirationDate.label"/></th>

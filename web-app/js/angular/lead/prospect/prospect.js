@@ -2,7 +2,7 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
         'resources.restApi', 'common.helperFuncs', 'resources.logger', 'ngGrid', 'resources.lineOfBusiness',
         'resources.prospect', 'resources.unitedStates', 'resources.SupportedCountryCodes', 'resources.leadSubTypes',
         'resources.noteType', 'resources.businessTypes', 'resources.leadService', 'resources.leadLineOfBusiness',
-        'lead.Utils'])
+        'lead.Utils', 'ui.unique'])
 
     .config(function ($routeProvider) {
         $routeProvider.

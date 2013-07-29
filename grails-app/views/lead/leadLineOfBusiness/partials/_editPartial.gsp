@@ -1,13 +1,27 @@
 <fieldset>
     <div data-ng-form="leadLineOfBusinessForm">
         <div class="control-group fieldcontain">
+            <label for="lineOfBusinessCategory" class="control-label">
+                <g:message code="lineOfBusiness.category.label"/>
+            </label>
+
+            <div class="controls">
+                <select id="lineOfBusinessCategory"
+                        data-ng-model="leadLineOfBusiness.lineOfBusiness.lineOfBusinessCategory.id"
+                        data-ng-options="lob.lineOfBusinessCategory.id as lob.lineOfBusinessCategory.description for lob in linesOfBusiness | unique:'lineOfBusinessCategory.id'">
+                    <option value="">-- choose Category --</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="control-group fieldcontain">
             <label for="lineOfBusiness" class="control-label">
                 <g:message code="lineOfBusiness.label"/>
             </label>
+
             <div class="controls">
                 <select id="lineOfBusiness" data-ng-model="leadLineOfBusiness.lineOfBusiness.id"
-                    data-ng-options="lob.id as lob.description group by lob.lineOfBusinessCategory.description for lob in linesOfBusiness">
-
+                        data-ng-options="lob.id as lob.description for lob in linesOfBusiness | filter: {lineOfBusinessCategory.id: leadLineOfBusiness.lineOfBusiness.lineOfBusinessCategory.id}">
                     <option value="">-- choose Line Of Business --</option>
                 </select>
             </div>

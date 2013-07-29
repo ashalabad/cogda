@@ -1,5 +1,6 @@
 <table class="table table-striped table-bordered" data-ng-hide="editingLineOfBusiness">
     <tr>
+        <th><g:message code="lineOfBusiness.category.label"/></th>
         <th><g:message code="lineOfBusiness.label"/></th>
         <th><g:message code="leadLineOfBusiness.targetDate.label"/></th>
         <th><g:message code="leadLineOfBusiness.expirationDate.label"/></th>
