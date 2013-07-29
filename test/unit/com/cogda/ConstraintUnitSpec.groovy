@@ -12,6 +12,10 @@ abstract class ConstraintUnitSpec extends Specification {
         valid ? "dexter@miamipd.gov" : "dexterm@m"
     }
 
+    String getUrl(Boolean valid){
+        valid ? "http://www.google.com" : "sl.kd.s"
+    }
+
     void validateConstraints(obj, field, error) {
         def validated = obj.validate()
         if (error && error != 'valid') {
