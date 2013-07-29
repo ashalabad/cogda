@@ -1,7 +1,7 @@
-angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.naicsCodeTree', 'resources.sicCodeTree',
-        'resources.restApi', 'common.helperFuncs', 'resources.logger', 'ngGrid',
-        'resources.suspect', 'resources.unitedStates', 'resources.SupportedCountryCodes', 'resources.leadSubTypes',
-        'resources.noteType', 'resources.businessTypes', 'resources.leadService', 'lead.Utils'])
+ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.naicsCodeTree', 'resources.sicCodeTree',
+         'resources.restApi', 'common.helperFuncs', 'resources.logger', 'ngGrid', 'resources.suspect',
+         'resources.unitedStates', 'resources.SupportedCountryCodes', 'resources.leadSubTypes', 'resources.noteType',
+         'resources.businessTypes', 'resources.leadService', 'lead.Utils', 'ui.unique'])
 
     .config(function ($routeProvider) {
         $routeProvider.
@@ -95,8 +95,8 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
 
             Suspect.get($routeParams, function (data) {
                 $scope.lead = data;
-                for (var i = 0; i < $scope.lead.linesOfBusiness.length; i++){
-                    $scope.lead.linesOfBusiness[i].targetDate =  new Date($scope.lead.linesOfBusiness[i].targetDate);
+                for (var i = 0; i < $scope.lead.linesOfBusiness.length; i++) {
+                    $scope.lead.linesOfBusiness[i].targetDate = new Date($scope.lead.linesOfBusiness[i].targetDate);
                     $scope.lead.linesOfBusiness[i].expirationDate = new Date($scope.lead.linesOfBusiness[i].expirationDate);
                 }
             }, function () {
@@ -143,19 +143,19 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
 
                 $dialog.messageBox(title, msg, btns)
                     .open()
-                    .then(function(result){
+                    .then(function (result) {
                         if (result == 'delete')
                             Suspect.delete({id: lead.id})
                                 .$then(deleteSuspectSuccessCallback, deleteSuspectErrorCallback);
                     });
             };
 
-            var deleteSuspectSuccessCallback = function(response) {
+            var deleteSuspectSuccessCallback = function (response) {
                 Logger.success("Suspect Deleted Successfully");
                 $location.path('/list/');
             };
 
-            var deleteSuspectErrorCallback = function(response) {
+            var deleteSuspectErrorCallback = function (response) {
                 Logger.messageBuilder(response, $scope);
             };
         }])
@@ -221,7 +221,7 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
                 $scope.editingLineOfBusiness = false;
             };
 
-            $scope.deleteLineOfBusiness = function(index) {
+            $scope.deleteLineOfBusiness = function (index) {
                 $scope.lead.linesOfBusiness.splice(index);
             }
 
@@ -249,9 +249,9 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
                 }).$then(saveSuccessCallback, saveErrorCallback);
             };
 
-            var getLobFromSelect = function(leadLineOfBusiness) {
+            var getLobFromSelect = function (leadLineOfBusiness) {
                 return leadLineOfBusiness.lineOfBusiness === undefined ? undefined : $filter('findById')($scope.linesOfBusiness, leadLineOfBusiness.lineOfBusiness.id);
-           }
+            }
 
         }])
     .controller('ShowSuspectCtrl', ['$scope', '$routeParams', '$location', 'Suspect', 'Logger',
