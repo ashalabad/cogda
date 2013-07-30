@@ -13,9 +13,8 @@ class LeadLineOfBusiness {
     Date expirationDate
     BigDecimal targetPremium
     BigDecimal targetCommission
-    String writingCompany
-    String billingCompany
-    Boolean renewal
+    BigDecimal commissionRate
+    String currentCarrier
     Boolean remarket
 
     static belongsTo = [lead: Lead]
@@ -25,9 +24,8 @@ class LeadLineOfBusiness {
         expirationDate(nullable: true)
         targetPremium(nullable: true)
         targetCommission(nullable: true)
-        writingCompany(nullable: true)
-        billingCompany(nullable: true)
-        renewal(nullable: true)
+        commissionRate(nullable: true)
+        currentCarrier(nullable: true)
         remarket(nullable: true)
     }
 }

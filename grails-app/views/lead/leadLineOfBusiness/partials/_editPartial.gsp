@@ -37,7 +37,9 @@
                 <div class="input-append">
                     <input type="text" id="targetDate" class="input-medium"
                            data-ng-model="leadLineOfBusiness.targetDate"
-                           data-date-format="mm/dd/yyyy" data-bs-datepicker>
+                           data-date-format="mm/dd/yyyy"
+                           placeholder="<g:message code="leadLineOfBusiness.targetDate.label"/>"
+                           data-bs-datepicker>
                     <button type="button" class="btn" data-toggle="mydatepicker"><i class="icon-calendar"></i>
                     </button>
                 </div>
@@ -54,6 +56,8 @@
                 <div class="input-append">
                     <input type="text" id="expirationDate" class="input-medium"
                            data-ng-model="leadLineOfBusiness.expirationDate"
+                           placeholder="<g:message code="leadLineOfBusiness.expirationDate.label"
+                                                   default="Expiration Date"/>"
                            data-date-format="mm/dd/yyyy" data-bs-datepicker>
                     <button type="button" class="btn" data-toggle="mydatepicker"><i class="icon-calendar"></i>
                     </button>
@@ -69,6 +73,7 @@
 
             <div class="controls">
                 <input type="number" id="targetPremium" class="input-medium" min="0"
+                       placeholder="<g:message code="leadLineOfBusiness.targetPremium.label" default="Target Premium"/>"
                        data-ng-model="leadLineOfBusiness.targetPremium">
             </div>
         </div>
@@ -81,43 +86,37 @@
 
             <div class="controls">
                 <input type="number" id="targetCommission" class="input-medium" min="0"
+                       placeholder="<g:message code="leadLineOfBusiness.targetCommission.label"
+                                               default="Target Commission"/>"
                        data-ng-model="leadLineOfBusiness.targetCommission">
             </div>
         </div>
 
         <div class="control-group fieldcontain">
-            <label for="writingCompany" class="control-label">
-                <g:message code="leadLineOfBusiness.writingCompany.label" default="Writing Company"/><span
+            <label for="commissionRate" class="control-label">
+                <g:message code="leadLineOfBusiness.commissionRate.label" default="Commission Rate"/><span
                     class="required-indicator">*</span>
             </label>
 
             <div class="controls">
-                <input type="text" id="writingCompany" class="input-medium"
-                       data-ng-model="leadLineOfBusiness.writingCompany">
+                <input type="number" id="commissionRate" class="input-medium" min="0"
+                       placeholder="<g:message code="leadLineOfBusiness.commissionRate.label"
+                                               default="Commission Rate"/>"
+                       data-ng-model="leadLineOfBusiness.commissionRate">
             </div>
         </div>
 
         <div class="control-group fieldcontain">
-            <label for="billingCompany" class="control-label">
-                <g:message code="leadLineOfBusiness.billingCompany.label" default="Billing Company"/><span
+            <label for="currentCarrier" class="control-label">
+                <g:message code="leadLineOfBusiness.currentCarrier.label" default="Current Carrier"/><span
                     class="required-indicator">*</span>
             </label>
 
             <div class="controls">
-                <input type="text" id="billingCompany" class="input-medium"
-                       data-ng-model="leadLineOfBusiness.billingCompany">
-            </div>
-        </div>
-
-        <div class="control-group fieldcontain">
-            <label for="renewal" class="control-label">
-                <g:message code="leadLineOfBusiness.renewal.label" default="Renewal"/><span
-                    class="required-indicator">*</span>
-            </label>
-
-            <div class="controls">
-                <input type="checkbox" id="renewal" class="input-medium"
-                       data-ng-model="leadLineOfBusiness.renewal">
+                <input type="text" id="currentCarrier" class="input-medium"
+                       placeholder="<g:message code="leadLineOfBusiness.currentCarrier.label"
+                                               default="Current Carrier"/>"
+                       data-ng-model="leadLineOfBusiness.currentCarrier">
             </div>
         </div>
 

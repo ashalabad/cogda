@@ -7,12 +7,11 @@
         <th><g:message code="leadLineOfBusiness.expirationDate.label"/></th>
         <th><g:message code="leadLineOfBusiness.targetPremium.label"/></th>
         <th><g:message code="leadLineOfBusiness.targetCommission.label"/></th>
-        <th><g:message code="leadLineOfBusiness.writingCompany.label"/></th>
-        <th><g:message code="leadLineOfBusiness.billingCompany.label"/></th>
-        <th><g:message code="leadLineOfBusiness.renewal.label"/></th>
+        <th><g:message code="leadLineOfBusiness.commissionRate.label"/></th>
+        <th><g:message code="leadLineOfBusiness.currentCarrier.label"/></th>
         <th><g:message code="leadLineOfBusiness.remarket.label"/></th>
-        <th><g:message code="default.button.edit.label"/></th>
-        <th><g:message code="default.button.delete.label"/></th>
+        <th></th>
+        <th></th>
     </tr>
 
     <tr data-ng-repeat="leadLineOfBusiness in lead.linesOfBusiness">

@@ -15,20 +15,17 @@
 </td>
 
 <td>
-    {{ leadLineOfBusiness.targetPremium }}
+    {{ leadLineOfBusiness.targetPremium | currency }}
 </td>
 
 <td>
-    {{ leadLineOfBusiness.targetCommission }}
+    {{ leadLineOfBusiness.targetCommission | currency }}
 </td>
 <td>
-    {{ leadLineOfBusiness.writingCompany }}
+    {{ leadLineOfBusiness.commissionRate }}
 </td>
 <td>
-    {{ leadLineOfBusiness.billingCompany }}
-</td>
-<td>
-    {{ leadLineOfBusiness.renewal }}
+    {{ leadLineOfBusiness.currentCarrier }}
 </td>
 <td>
     {{ leadLineOfBusiness.remarket }}
