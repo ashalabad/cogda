@@ -1,13 +1,4 @@
 <fieldset class="embedded">
-    <tabset>
-        <tab data-ng-repeat="contact in lead.leadContacts  | orderBy:'primaryContact':'reverse' | filter:searchString"
-             heading="Contact - {{contact.firstName}} {{contact.lastName}}">
-            <div data-ng-include="" src="'/leadContact/indexPartial'"></div>
-            %{--<g:render template="/lead/leadContact/partials/indexPartial"/>--}%
-
-        </tab>
-    </tabset>
-
     <div data-ng-controller="AddLeadContactController">
         <div class="well" data-ng-show="addingContact">
             <div data-ng-form="contactForm" class="form-horizontal">
@@ -44,5 +35,17 @@
             <i class="icon-plus"></i>
             <g:message code="default.add.label" args="[message(code: 'contact.label')]"/>
         </button>
+        <br/>
+        <br/>
+        <div data-ng-hide="addingContact">
+        <tabset data-ng-hide="addingContact">
+            <tab data-ng-repeat="contact in lead.leadContacts  | orderBy:'primaryContact':'reverse' | filter:searchString"
+                 heading="Contact - {{contact.firstName}} {{contact.lastName}}">
+                <div data-ng-include="" src="'/leadContact/indexPartial'"></div>
+                %{--<g:render template="/lead/leadContact/partials/indexPartial"/>--}%
+
+            </tab>
+        </tabset>
+        </div>
     </div>
 </fieldset>

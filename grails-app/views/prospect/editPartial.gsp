@@ -48,6 +48,9 @@
             </tab>
 
             <tab heading="Notes">
+                <div data-ng-include="" src="'/leadNote/addPartial'"></div>
+                <br/>
+                %{--<g:render template="/lead/leadNote/partials/addPartial"/>--}%
                 <ul class="inline">
                     <li data-ng-repeat="leadNote in lead.leadNotes | orderBy:'lastUpdated' | filter:searchString"
                         class="span11 well well-small">
@@ -93,10 +96,6 @@
                         </div>
                     </li>
                 </ul>
-
-                <div data-ng-include="" src="'/leadNote/addPartial'"></div>
-                %{--<g:render template="/lead/leadNote/partials/addPartial"/>--}%
-
             </tab>
         </tabset>
     </fieldset>

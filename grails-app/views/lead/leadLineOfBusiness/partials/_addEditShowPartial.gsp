@@ -1,3 +1,7 @@
+<div data-ng-controller="AddLeadLineOfBusinessCtrl" data-ng-hide="editingLineOfBusiness">
+    <g:render template="/lead/leadLineOfBusiness/partials/addPartial"/>
+</div>
+<br/>
 <table class="table table-striped table-bordered" data-ng-hide="editingLineOfBusiness">
     <tr>
         <th><g:message code="lineOfBusiness.category.label"/></th>
@@ -53,8 +57,4 @@
             <i class="icon-ban-circle"></i>
             <g:message code="default.button.cancel.label"/></button>
     </div>
-</div>
-
-<div data-ng-controller="AddLeadLineOfBusinessCtrl" data-ng-hide="editingLineOfBusiness">
-    <g:render template="/lead/leadLineOfBusiness/partials/addPartial"/>
 </div>

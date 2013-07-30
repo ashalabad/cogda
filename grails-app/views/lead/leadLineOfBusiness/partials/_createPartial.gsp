@@ -1,4 +1,7 @@
 <legend><g:message code="lineOfBusiness.label"/> </legend>
+<g:render template="/lead/leadLineOfBusiness/partials/addPartial"/>
+<br/>
+<br/>
 <table class="table table-striped table-bordered" data-ng-show="lead.linesOfBusiness.length > 0">
     <tr>
         <th><g:message code="lineOfBusiness.category.label"/></th>
@@ -56,4 +59,4 @@
     </div>
 </div>
 
-<g:render template="/lead/leadLineOfBusiness/partials/addPartial"/>
+
