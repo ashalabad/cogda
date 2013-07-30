@@ -7,8 +7,8 @@ import com.cogda.multitenant.Lead
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.reflect.TypeToken
+import grails.converters.JSON
 import grails.plugin.gson.converters.GSON
-
 import java.lang.reflect.Type
 
 /**
@@ -85,5 +85,28 @@ class LeadController extends GsonBaseController {
             respondCreated leadInstance
             return
         }
+    }
+
+    def search() {
+        def leadInstanceList = Lead.findAllByClientNameLike("%${params.searchString}%")
+        def dataToRender = []
+        leadInstanceList.each {
+            def map = [:]
+            map.id = it.id
+            map.clientName = it.clientName
+            dataToRender.add(map)
+        }
+        render dataToRender as GSON
+    }
+
+    def get() {
+        def leadInstance = Lead.get(params.id)
+//        if (leadInstance) {
+//            respondFound leadInstance
+//        } else {
+//            respondNotFound LEAD_LABEL
+//        }
+        if(leadInstance)
+            render leadInstance as JSON
     }
 }

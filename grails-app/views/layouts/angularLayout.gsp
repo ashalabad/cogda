@@ -36,12 +36,13 @@
 <g:render template="/_menu/navbar"/>
 
 <!-- Enable to overwrite Header by individual page -->
-<g:if test="${pageProperty(name: 'page.header')}">
-    <g:pageProperty name="page.header"/>
-</g:if>
-<g:else>
-    <g:render template="/layouts/header"/>
-</g:else>
+%{--<g:if test="${pageProperty(name: 'page.header')}">--}%
+    %{--<g:pageProperty name="page.header"/>--}%
+%{--</g:if>--}%
+%{--<g:else>--}%
+    %{--<g:render template="/layouts/header"/>--}%
+%{--</g:else>--}%
+
 
 <g:render template="/layouts/content"/>
 
@@ -49,9 +50,9 @@
 <g:if test="${pageProperty(name: 'page.footer')}">
     <g:pageProperty name="page.footer"/>
 </g:if>
-<g:else>
-    <g:render template="/layouts/footer"/>
-</g:else>
+%{--<g:else>--}%
+    %{--<g:render template="/layouts/footer"/>--}%
+%{--</g:else>--}%
 
 <!-- Enable to insert additional components (e.g., modals, javascript, etc.) by any individual page -->
 <g:if test="${pageProperty(name: 'page.include.bottom')}">

@@ -3,7 +3,7 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
         'resources.noteType', 'resources.businessTypes', 'resources.leadAddress', 'resources.leadService',
         'resources.leadNote', 'resources.leadContactPhoneNumber', 'resources.leadContactEmailAddress',
         'resources.leadContact', 'resources.leadContactAddress', 'resources.leadLineOfBusiness',
-        'resources.lineOfBusiness', 'resources.lead', 'ui.bootstrap', 'lead.Utils'])
+        'resources.lineOfBusiness', 'resources.Lead', 'ui.bootstrap', 'lead.Utils'])
     .controller('AddAddressController', ['$scope', 'LeadAddress', 'Logger', function ($scope, LeadAddress, Logger) {
         $scope.address = {};
 

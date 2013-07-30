@@ -1,0 +1,52 @@
+.fixedHeightContainer{
+    height: 400px;
+    padding:5px;
+}
+
+.prospectContainer{
+    padding-top:10px;
+    height:390px;
+    overflow:auto;
+    background:#fff;
+}
+
+.marketContainer{
+    height:390px;
+    overflow:auto;
+    background:#fff;
+}
+
+.lobContainer {
+    height:225px;
+    overflow:auto;
+    background:#fff;
+    /*border:1px #303 solid;*/
+}
+
+.docContainer{
+    height:300px;
+    overflow:auto;
+    background:#fff;
+    /*border:1px #303 solid;*/
+
+}
+
+.accordion-heading {
+    font-weight: bold;
+    color:#373736;
+}
+
+.blueText {
+     color:#127CC0;
+ }
+
+.whiteText {
+    color:#fff;
+}
+
+.builderSpinner {
+    background: url(/images/spinner.gif) 100% 100% no-repeat transparent;
+    height: 16px;
+    width: 16px;
+    padding: 1em;
+}

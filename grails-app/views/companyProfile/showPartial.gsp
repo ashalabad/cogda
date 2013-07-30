@@ -43,10 +43,12 @@
 
     <div class="control-group fieldcontain">
         <label class="control-label">
-            <g:message code="companyProfile.website" />
+            <g:message code="companyProfile.companyWebsite" />
         </label>
         <div class="controls">
-            {{ companyProfile.website }}
+            <a data-ng-href="{{companyProfile.companyWebsite}}" target="_blank">
+                {{ companyProfile.companyWebsite }}
+            </a>
             <span class="help-inline"></span>
         </div>
     </div>
@@ -87,10 +89,15 @@
         </label>
         <div class="controls">
 
-            <ul data-ng-repeat = "companyProfileContact in companyProfile.companyProfileContacts">
+            <ul class="unstyled" data-ng-repeat = "companyProfileContact in companyProfile.companyProfileContacts | orderBy:lastName" >
                 <li>
-                    {{ companyProfileContact.userProfile.firstName }}
-                    {{ companyProfileContact.userProfile.lastName }}
+                    <a data-ng-click="showNotImpMessage = !showNotImpMessage">
+                    {{ companyProfileContact.userProfile.firstName }} {{ companyProfileContact.userProfile.lastName }}
+
+                    </a>
+                    &nbsp;
+                    <span data-ng-show="showNotImpMessage" class="label label-warning">&raquo; Will link to the public User Profile
+                    </span>
                 </li>
             </ul>
 
@@ -100,17 +107,36 @@
 
     <div class="control-group fieldcontain">
         <label class="control-label">
-            <g:message code="companyProfile.companyProfileAddresses.label" />
+            <g:message code="companyProfile.companyProfileAddresses.label" />(es)
         </label>
         <div class="controls">
 
-            <ul data-ng-repeat = "companyProfileContact in companyProfile.companyProfileContacts">
-                <li>
-                    {{ companyProfileContact.userProfile.firstName }}
-                    {{ companyProfileContact.userProfile.lastName }}
-                </li>
-            </ul>
 
+            <div data-ng-repeat = "companyProfileAddress in companyProfile.companyProfileAddresses">
+                <address>
+                    <p data-ng-show="companyProfileAddress.address.addressOne">
+                        <strong>
+
+                            {{companyProfileAddress.address.addressOne}}
+                        </strong>
+                    </p>
+                    <p data-ng-show="companyProfileAddress.address.addressTwo">
+                        {{companyProfileAddress.address.addressTwo}}
+                    </p>
+                    <p data-ng-show="companyProfileAddress.address.addressThree">
+                        {{companyProfileAddress.address.addressThree}}
+                    </p>
+                    <p data-ng-show="companyProfileAddress.address.city">
+                        {{companyProfileAddress.address.city}}
+                    </p>
+                    <p data-ng-show="companyProfileAddress.address.state">
+                        {{companyProfileAddress.address.state}}
+                    </p>
+                    <p data-ng-show="companyProfileAddress.address.country">
+                        {{companyProfileAddress.address.country | uppercase }}
+                    </p>
+                </address>
+            </div>
             <span class="help-inline"></span>
         </div>
     </div>
@@ -123,7 +149,9 @@
 
             <ul class = "unstyled" data-ng-repeat = "companyProfilePhoneNumber in companyProfile.companyProfilePhoneNumbers">
                 <li>
-                    {{ companyProfilePhoneNumber.phoneNumber }}  {{ companyProfilePhoneNumber.primary ? 'Primary' : '' }}
+                    ({{companyProfilePhoneNumber.label}}) {{ companyProfilePhoneNumber.phoneNumber }}
+
+                    <span class="label label-info" data-ng-show="companyProfilePhoneNumber.primary">{{ companyProfilePhoneNumber.primary ? 'Primary' : '' }}</span>
                 </li>
             </ul>
 

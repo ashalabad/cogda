@@ -1,0 +1,1 @@
+<div class="span6 offset3 text-center lead">Loading Submission Builder<br><span class="builderSpinner"></span></div>

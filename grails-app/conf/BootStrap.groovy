@@ -121,9 +121,14 @@ class BootStrap {
 
         if (Environment.current == Environment.TEST) {
             createCompanyTypes()
+            if(!CustomerAccount.findBySubDomain("CHOCOTACO")){
+                CustomerAccount customerAccount = new CustomerAccount()
+                customerAccount.subDomain = "CHOCOTACO"
+                assert customerAccount.validate()
+                assert customerAccount.save()
+                assert CustomerAccount.findBySubDomain("CHOCOTACO")
+            }
         }
-
-
 
         if (Environment.current != Environment.TEST) {
 

@@ -20,6 +20,7 @@ modules = {
         resource url:'js/bundles/angular/angular-resource.js', disposition: 'head'
         resource url:'js/bundles/angular/ui-bootstrap-tpls-0.4.0.min.js', disposition: 'head'
         resource url:'js/bundles/angular/angular-ui/modules/unique.js', disposition: 'head'
+        resource url:'js/bundles/angular/ui-utils.min.js', disposition: 'head'
         resource url:'js/bundles/angular/ng-grid-2.0.7.debug.js', disposition: 'head'
         resource url:'js/bundles/toastr/toastr.js', disposition: 'head'
         resource url:'js/angular/resources/restApi.js', disposition: 'head'
@@ -161,5 +162,14 @@ modules = {
         resource url:[dir: 'js/jqueryFileUpload/js',         file:'jquery.fileupload.js']
         resource url:[dir: 'js/jqueryFileUpload/js',         file:'jquery.fileupload-process.js']
         resource url:[dir: 'js/jqueryFileUpload/js',         file:'jquery.fileupload-validate.js']
+    }
+
+    submissionBuilder {
+        dependsOn 'bootstrap', 'bootstrap_utils', 'angular'
+        resource url:'js/angular/resources/AccountContactLink.js', disposition: 'head'
+        resource url:'js/angular/resources/Lead.js', disposition: 'head'
+        resource url:'js/angular/resources/SubmissionBuilder.js', disposition: 'head'
+        resource url:'js/angular/submissionBuilder/submissionBuilder.js'
+        resource url:'js/angular/submissionBuilder/submissionBuilder.css'
     }
 }
