@@ -1,3 +1,4 @@
+<legend>{{title}}</legend>
 <div class="control-group fieldcontain"
      data-ng-class="{error: leadForm.subType.$invalid && leadForm.subType.$dirty, success: leadForm.subType.$valid && leadForm.subType.$dirty }">
     <label class="control-label">
@@ -76,19 +77,19 @@
 <div class="control-group fieldcontain"
      data-ng-class="{error: leadForm.customerServiceRepresentative.$invalid && leadForm.customerServiceRepresentative.$dirty, success: leadForm.customerServiceRepresentative.$valid}">
     <label for="customerServiceRepresentative" class="control-label"><g:message
-            code="lead.customerServiceRepresentative.label" default="Customer Service Representative"/>
+            code="lead.customerServiceRepresentative.label" default="Customer Service Representative"/></label>
 
-        <div class="controls">
-            <input type="text" id="customerServiceRepresentative" name="customerServiceRepresentative"
-                   data-ng-model="lead.customerServiceRepresentative" required/>
-            <span class="label label-important"
-                  data-ng-show="leadForm['customerServiceRepresentative'].$invalid && leadForm.customerServiceRepresentative.$dirty">${message(code: 'default.invalid.message')}</span>
+    <div class="controls">
+        <input type="text" id="customerServiceRepresentative" name="customerServiceRepresentative"
+               data-ng-model="lead.customerServiceRepresentative" required/>
+        <span class="label label-important"
+              data-ng-show="leadForm['customerServiceRepresentative'].$invalid && leadForm.customerServiceRepresentative.$dirty">${message(code: 'default.invalid.message')}</span>
 
-            <span class="label label-important"
-                  data-ng-show="errors.clientId">{{ errors.clientId}}</span>
-            <label class="error valid"
-                   data-ng-show="leadForm['customerServiceRepresentative'].$valid ">${message(code: 'default.ok.message')}</label>
-        </div>
+        <span class="label label-important"
+              data-ng-show="errors.clientId">{{ errors.customerServiceRepresentative }}</span>
+        <label class="error valid"
+               data-ng-show="leadForm['customerServiceRepresentative'].$valid ">${message(code: 'default.ok.message')}</label>
+    </div>
 </div>
 
 <div class="form-actions">
