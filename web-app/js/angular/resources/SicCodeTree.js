@@ -54,6 +54,12 @@ angular.module('resources.sicCodeTree', ['resources.logger'])
                     }
                 });
 
+                scope.$watch('businessType', function(newValue, oldValue) {
+                    if (newValue != oldValue) {
+                        $(element).find('#tree').jstree('refresh');
+                    }
+                });
+
                 var getSelected = function () {
                     scope.selectedNodes = [];
                     scope.undeterminedNodes = [];
