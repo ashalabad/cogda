@@ -28,26 +28,26 @@
                 <div data-ng-include="" src="'/lead/showPartial'"></div>
                 %{--<g:render template="/lead/partials/showPartial"/>--}%
             </tab>
-            <tab heading="Lines of Business ({{lead.linesOfBusiness.length}})">
+            <tab heading="Lines of Business">
                 <g:render template="/lead/leadLineOfBusiness/partials/addEditShowPartial"/>
             </tab>
-            <tab heading="NAICS & SIC Codes ({{(lead.sicCodes ? lead.sicCodes.length : 0) + (lead.naicsCodes ? lead.naicsCodes.length : 0)}})">
+            <tab heading="NAICS & SIC Codes">
                 <legend><g:message code="sicCodes.label"/></legend>
                 <g:render template="/sicCode/partials/addEditShowPartial"/>
                 <legend><g:message code="naicsCodes.label"/></legend>
                 <g:render template="/naicsCode/partials/addEditShowPartial"/>
             </tab>
-            <tab heading="Addresses ({{lead.leadAddresses.length}})">
+            <tab heading="Addresses">
                 <g:render template="/lead/leadAddress/partials/addEditShowPartial"/>
             </tab>
-            <tab heading="Contacts ({{lead.leadContacts.length}})">
+            <tab heading="Contacts">
                 <g:render template="/lead/leadContact/partials/addEditShowPartial"/>
             </tab>
-            <tab heading="Documents ({{lead.files.length}})">
+            <tab heading="Documents">
                 <div class="well">Coming Soon...</div>
             </tab>
 
-            <tab heading="Notes ({{lead.leadNotes.length}})">
+            <tab heading="Notes">
                 <ul class="inline">
                     <li data-ng-repeat="leadNote in lead.leadNotes | orderBy:'lastUpdated' | filter:searchString"
                         class="span11 well well-small">
