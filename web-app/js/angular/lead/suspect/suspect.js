@@ -14,8 +14,8 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
     .controller('ListSuspectCtrl', ['$scope', '$routeParams', '$location', 'RestApi', 'Logger',
         function ($scope, $routeParams, $location, RestApi, Logger) {
             $scope.suspects = [];
-            $scope.showDetails = '<div class="ngCellText"><button id="showBtn" type="button" class="btn-mini btn-primary" ng-click="show(row.entity)" ><i class="icon-eye-open"></i>Details</button></div>';
-            $scope.editDetails = '<div class="ngCellText"><button id="editBtn" type="button" class="btn-mini btn-primary" ng-click="edit(row.entity)" ><i class="icon-edit"></i>Edit</button></div>';
+            $scope.showDetails = '<div class="ngCellText"><button id="showBtn" type="button" class="btn-mini" ng-click="show(row.entity)" ><i class="icon-eye-open"></i>Details</button></div>';
+            $scope.editDetails = '<div class="ngCellText"><button id="editBtn" type="button" class="btn-mini" ng-click="edit(row.entity)" ><i class="icon-edit"></i>Edit</button></div>';
             $scope.rowTemplate = '<div ng-style="{\'cursor\': row.cursor, \'z-index\': col.zIndex() }" ng-repeat="col in renderedColumns" ng-class="col.colIndex()" data-ng-dblclick="edit(row)" class="ngCell {{col.cellClass}}" ng-cell></div>';
             $scope.selectedSuspects = [];
             $scope.pagingOptions = {
@@ -48,8 +48,9 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
                     {field: 'phoneNumber', displayName: 'Phone Number'},
                     {field: 'email', displayName: 'Email'},
                     {field: 'createdOn', displayName: 'Created On'},
-                    {cellTemplate: $scope.showDetails, displayName: "Details", width: '7%'},
-                    {cellTemplate: $scope.editDetails, displayName: "Edit", width: 'auto'}
+                    {cellTemplate: $scope.editDetails, displayName: "", width: 'auto'},
+                    {cellTemplate: $scope.showDetails, displayName: "", width: '7%'}
+
                 ],
                 selectedItems: $scope.selectedItems,
                 enableColumnResize: true,
