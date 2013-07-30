@@ -1,7 +1,7 @@
- angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.naicsCodeTree', 'resources.sicCodeTree',
-         'resources.restApi', 'common.helperFuncs', 'resources.logger', 'ngGrid', 'resources.suspect',
-         'resources.unitedStates', 'resources.SupportedCountryCodes', 'resources.leadSubTypes', 'resources.noteType',
-         'resources.businessTypes', 'resources.leadService', 'lead.Utils', 'ui.unique'])
+angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.naicsCodeTree', 'resources.sicCodeTree',
+        'resources.restApi', 'common.helperFuncs', 'resources.logger', 'ngGrid', 'resources.suspect',
+        'resources.unitedStates', 'resources.SupportedCountryCodes', 'resources.leadSubTypes', 'resources.noteType',
+        'resources.businessTypes', 'resources.leadService', 'lead.Utils', 'ui.unique'])
 
     .config(function ($routeProvider) {
         $routeProvider.
@@ -165,7 +165,7 @@
         function ($scope, $routeParams, $location, Suspect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes, DateHelper, LineOfBusiness, $filter, LeadUtils) {
             $scope.lead = {};
             $scope.lead.leadAddresses = [];
-            $scope.lead.leadAddresses.push({primaryAddress: true});
+            $scope.leadAddress = {primaryAddress: true, address: {}};
             $scope.lead.leadContacts = [];
             $scope.lead.leadContacts.push({primaryContact: true, leadContactEmailAddresses: [
                 {primaryEmailAddress: true}
@@ -252,10 +252,22 @@
                     formattedLead.linesOfBusiness[i].targetDate = DateHelper.getFormattedDate(formattedLead.linesOfBusiness[i].targetDate);
                     formattedLead.linesOfBusiness[i].expirationDate = DateHelper.getFormattedDate(formattedLead.linesOfBusiness[i].expirationDate);
                 }
+                if (checkLeadAddress($scope.leadAddress))
+                    formattedLead.leadAddresses.push($scope.leadAddress);
                 Suspect.save(formattedLead,function (data) {
                     lead.id = data.id;
                 }).$then(saveSuccessCallback, saveErrorCallback);
             };
+
+            var checkLeadAddress = function (leadAddress) {
+                return leadAddress.address.addressOne !== undefined ||
+                    leadAddress.address.addressTwo !== undefined ||
+                    leadAddress.address.addressThree !== undefined ||
+                    leadAddress.address.city !== undefined ||
+                    leadAddress.address.state != undefined ||
+                    leadAddress.address.country != undefined ||
+                    leadAddress.address.zipcode !== undefined;
+            }
 
             var getLobFromSelect = function (leadLineOfBusiness) {
                 return leadLineOfBusiness.lineOfBusiness === undefined ? undefined : $filter('findById')($scope.linesOfBusiness, leadLineOfBusiness.lineOfBusiness.id);
