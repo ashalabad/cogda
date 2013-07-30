@@ -114,10 +114,17 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
             };
 
             $scope.cancelEditLead = function () {
+                $scope.lead = $scope.leadCopy;
+                $scope.leadCopy = {};
+                closeEditLead();
+            };
+
+            var closeEditLead = function() {
                 $scope.editingLead = false;
             };
 
             $scope.editLead = function () {
+                $scope.leadCopy = angular.copy($scope.lead);
                 $scope.editingLead = true;
             };
 
@@ -127,7 +134,7 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
 
             var updateSuccessCallback = function (response) {
                 Logger.success("Suspect Updated Successfully", "Success");
-                $scope.cancelEditLead();
+                closeEditLead();
             };
 
             var updateErrorCallBack = function (response) {
