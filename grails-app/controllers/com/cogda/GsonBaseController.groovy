@@ -22,11 +22,11 @@ class GsonBaseController {
         return instance.class.name + ".label"
     }
 
-    private boolean requestIsJson() {
+    public boolean requestIsJson() {
         GSON.isJson(request)
     }
 
-    private void respondFound(instance) {
+    public void respondFound(instance) {
         response.status = SC_OK  // 200
         Gson gson = gsonBuilder.create()
         def gsonRetString = gson.toJsonTree(instance);
@@ -34,7 +34,7 @@ class GsonBaseController {
         return
     }
 
-    private void respondCreated(instance) {
+    public void respondCreated(instance) {
         response.status = SC_CREATED // 201
         response.addHeader LOCATION, createLink(action: 'get', id: instance.id)
         Gson gson = gsonBuilder.create()
@@ -43,7 +43,7 @@ class GsonBaseController {
         return
     }
 
-    private void respondUpdated(instance) {
+    public void respondUpdated(instance) {
         response.status = SC_OK // 200
         Gson gson = gsonBuilder.create()
         def gsonRetString = gson.toJsonTree(instance);
@@ -51,7 +51,7 @@ class GsonBaseController {
         return
     }
 
-    private Map getErrorStringsByField(instance){
+    public Map getErrorStringsByField(instance){
         Map stringsByField = [:].withDefault { [] }
         for(fieldErrors in instance.errors){
             for(error in fieldErrors.allErrors){
@@ -62,7 +62,7 @@ class GsonBaseController {
         return stringsByField
     }
 
-    private void respondUnprocessableEntity(instance) {
+    public void respondUnprocessableEntity(instance) {
         def responseBody = [:]
         responseBody.errors = getErrorStringsByField(instance)
         response.status = SC_UNPROCESSABLE_ENTITY // 422
@@ -70,7 +70,7 @@ class GsonBaseController {
         return
     }
 
-    private void respondNotFound(String entityLabel) {
+    public void respondNotFound(String entityLabel) {
         def responseBody = [:]
         responseBody.message = message(code: 'default.not.found.message', args: [message(code:entityLabel)])
         response.status = SC_NOT_FOUND // 404
@@ -78,7 +78,7 @@ class GsonBaseController {
         return
     }
 
-    private void respondConflict(instance) {
+    public void respondConflict(instance) {
         instance.errors.rejectValue('version', 'default.optimistic.locking.failure.alt',
                 'Another user has updated this item while you were editing')
         def responseBody = [:]
@@ -88,7 +88,7 @@ class GsonBaseController {
         return
     }
 
-    private void respondDeleted(String entityLabel) {
+    public void respondDeleted(String entityLabel) {
         def responseBody = [:]
         responseBody.message = message(code: 'default.deleted.message', args: [message(code:  entityLabel)])
         response.status = SC_OK  // 200
@@ -96,14 +96,14 @@ class GsonBaseController {
         return
     }
 
-    private void respondNotDeleted(String entityLabel) {
+    public void respondNotDeleted(String entityLabel) {
         def responseBody = [:]
         responseBody.message = message(code: 'default.not.deleted.message', args: [message(code:  entityLabel)])
         response.status = SC_INTERNAL_SERVER_ERROR  // 500
         render responseBody as GSON
     }
 
-    private void respondNotAcceptable() {
+    public void respondNotAcceptable() {
         response.status = SC_NOT_ACCEPTABLE  // 406
         response.contentLength = 0
         response.outputStream.flush()
