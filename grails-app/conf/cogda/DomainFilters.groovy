@@ -8,7 +8,7 @@ import org.apache.commons.logging.LogFactory
  * A filters class is used to execute code before and after a controller action is executed and also after a view is rendered
  */
 class DomainFilters {
-//    private static final log = LogFactory.getLog(this)
+    private static final log = LogFactory.getLog(this)
 
     def filters = {
 

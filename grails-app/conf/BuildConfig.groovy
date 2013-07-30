@@ -43,10 +43,10 @@ grails.project.dependency.resolution = {
 
         runtime 'mysql:mysql-connector-java:5.1.22'
         // Workaround to resolve dependency issue with aws-java-sdk and http-builder (dependent on httpcore:4.0)
-        build 'org.apache.httpcomponents:httpcore:4.1'
-        build 'org.apache.httpcomponents:httpclient:4.1'
-        runtime 'org.apache.httpcomponents:httpcore:4.1'
-        runtime 'org.apache.httpcomponents:httpclient:4.1'
+        build 'org.apache.httpcomponents:httpcore:4.2'
+        build 'org.apache.httpcomponents:httpclient:4.2'
+        runtime 'org.apache.httpcomponents:httpcore:4.2'
+        runtime 'org.apache.httpcomponents:httpclient:4.2'
         test "org.spockframework:spock-grails-support:0.7-groovy-2.0"
         compile 'com.google.code.gson:gson:2.2.4'
     }
@@ -56,7 +56,7 @@ grails.project.dependency.resolution = {
         runtime ":hibernate:$grailsVersion"
         runtime ":jquery:1.8.3"
         runtime ":resources:1.1.6"
-        runtime ':aws-sdk:1.4.3'
+        runtime ':aws-sdk:1.5.0'
 
         compile ":jquery-ui:1.8.24"
 
