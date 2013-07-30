@@ -80,12 +80,9 @@ class GsonBaseController {
 
     private void respondConflict(instance) {
         instance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-                [message(code: getClassNameLabel(instance))] as Object[],
                 'Another user has updated this item while you were editing')
         def responseBody = [:]
-        responseBody.errors = instance.errors.allErrors.collect {
-            message(error: it)
-        }
+        responseBody.errors = getErrorStringsByField(instance)
         response.status = SC_CONFLICT // 409
         render responseBody as GSON
         return
