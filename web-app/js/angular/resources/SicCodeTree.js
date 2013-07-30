@@ -14,7 +14,8 @@ angular.module('resources.sicCodeTree', ['resources.logger'])
                 undeterminedNodes: '=',
                 includeRelatedNaicsCodes: '=',
                 relatedNaicsCodes: '=',
-                disableCheckBoxes: '@'
+                disableCheckBoxes: '@',
+                businessType: '='
             },
             templateUrl: '/js/angular/resources/SicCodeTree.html',
 
@@ -134,7 +135,14 @@ angular.module('resources.sicCodeTree', ['resources.logger'])
                 var jsonData = {
                     "ajax": {
                         "url": function (node) {
-                            return node == -1 ? "/sicCode/activeSicCodes" : "/sicCode/activeSicCodes?parentId=" + node.attr('id');
+                            if (scope.businessType === undefined) {
+                                return node == -1 ?
+                                    "/sicCode/activeSicCodes" :
+                                    "/sicCode/activeSicCodes?parentId=" + node.attr('id');
+                            } else {
+                                var baseUrl = "/sicCode/activeSicCodesByBusinessType?businessTypeId=" + scope.businessType.id;
+                                return node == -1 ? baseUrl : "/sicCode/activeSicCodes?parentId=" + node.attr('id');
+                            }
                         },
                         "type": "get",
                         "success": function (codes) {
@@ -161,7 +169,7 @@ angular.module('resources.sicCodeTree', ['resources.logger'])
                     "case_insensitive": true,
                     "show_only_matches": true,
                     "ajax": {
-                        "url": '/sicCode/search'
+                        "url": scope.businessType === undefined ? '/sicCode/search' : '/sicCode/search?businessTypeId=' + scope.businessType.id
                     }
                 };
 
@@ -208,11 +216,15 @@ angular.module('resources.sicCodeTree', ['resources.logger'])
                         });
                 };
 
+                var displayTree = function () {
                 if (scope.disableCheckBoxes !== undefined) {
                     createUncheckable();
                 } else {
                     createCheckable();
                 }
+                }
+
+                displayTree();
             }
         };
     }]);

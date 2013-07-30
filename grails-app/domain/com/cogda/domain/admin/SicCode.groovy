@@ -1,5 +1,7 @@
 package com.cogda.domain.admin
 
+import java.util.regex.Pattern
+
 /**
  * SicCode
  * A domain class describes the data object and it's mapping to the database
@@ -24,6 +26,8 @@ class SicCode {
     /* Automatic timestamping of GORM */
     Date dateCreated
     Date lastUpdated
+
+    static transients = ["allChildSicCodes", "rootParent"]
 
     static constraints = {
         code(nullable: false, unique: ['parentSicCode'])
@@ -75,5 +79,28 @@ class SicCode {
             children.addAll(it.getAllChildSicCodes())
         }
         return children
+    }
+
+    def getAllChildSicCodes(String filter) {
+        def children = []
+
+        children.addAll(childSicCodes.findAll { SicCode child ->
+            def regex = Pattern.compile(Pattern.quote(filter), Pattern.CASE_INSENSITIVE)
+            return regex.matcher(child.description).find() || regex.matcher(child.code).find()
+        })
+        childSicCodes.each {
+            children.addAll(it.getAllChildSicCodes(filter))
+        }
+        return children
+    }
+
+    def getRootParent() {
+        def current = this
+        def currentParent = this.parentSicCode
+        while (currentParent) {
+            current = currentParent
+            currentParent = currentParent.parentSicCode
+        }
+        return current
     }
 }

@@ -3,5 +3,6 @@
      data-undetermined-nodes="undeterminedNaicsNodes"
      data-include-related-sic-codes="includeRelatedSicCodes"
      data-related-sic-codes="relatedSicCodes"
-     data-disable-check-boxes="true">
+     data-disable-check-boxes="true"
+     data-business-type="lead.businessType">
 </div>

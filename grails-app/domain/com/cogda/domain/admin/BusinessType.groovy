@@ -43,6 +43,8 @@ class BusinessType {
 	Date	dateCreated
 	Date	lastUpdated
 
+    static transients = ['naicsCode']
+
     static constraints = {
         intCode(nullable:false)
         code(nullable:false, unique: true)
@@ -51,4 +53,7 @@ class BusinessType {
         codeTo(nullable:true)
     }
 
+    def getNaicsCode() {
+        return codeFrom == codeTo ? codeFrom : "${codeFrom}-${codeTo}"
+    }
 }

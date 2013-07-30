@@ -34,10 +34,20 @@ class NaicsCodeController extends BaseController {
         }
     }
 
+    def activeNaicsCodesByBusinessType() {
+        if (params.businessTypeId) {
+            def businessTypeInstance = BusinessType.get(params.businessTypeId)
+            if (businessTypeInstance) {
+                // include 0 to treeify if lazy loading
+                render jsTreeify(NaicsCode.findByCode(businessTypeInstance.naicsCode)) as GSON
+            }
+        }
+    }
+
     def activeNaicsCodesForLead() {
         if (params.id) {
             def leadInstance = Lead.get(params.id)
-            def sortedCodes = leadInstance.naicsCodes.groupBy {it.level}
+            def sortedCodes = leadInstance.naicsCodes.groupBy { it.level }
             sortedCodes
         } else {
             render[] as GSON
@@ -51,7 +61,16 @@ class NaicsCodeController extends BaseController {
 
     def search() {
         if (params.search_string) {
-            def codes = NaicsCode.findAllByDescriptionLikeOrCodeLike("%${params.search_string}%", "%${params.search_string}%")
+            def codes
+            if (params.businessTypeId) {
+                def businessTypeInstance = BusinessType.get(params.businessTypeId)
+                if (businessTypeInstance) {
+                    def naicsCodeInstance = NaicsCode.findByCode(businessTypeInstance.naicsCode)
+                    codes = naicsCodeInstance.getAllChildNaicsCodes(params.search_string)
+                }
+            } else {
+                codes = NaicsCode.findAllByDescriptionLikeOrCodeLike("%${params.search_string}%", "%${params.search_string}%")
+            }
             def parents = codes.collect { it.aggregateParentIds() }
             Set<NaicsCode> flattenedParents = new HashSet<NaicsCode>(parents.flatten())
             def formattedCodeIds = flattenedParents.collect { "\"#${it.id}\"" }
@@ -134,4 +153,5 @@ class NaicsCodeController extends BaseController {
         response.status = SC_NOT_FOUND // 404
         render responseBody as GSON
     }
+
 }

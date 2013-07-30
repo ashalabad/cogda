@@ -33,6 +33,28 @@ class SicCodeController extends BaseController {
         }
     }
 
+    def activeSicCodesByBusinessType() {
+        if (params.businessTypeId) {
+            def businessTypeInstance = BusinessType.get(params.businessTypeId)
+            def naicsCodeInstance = NaicsCode.findByCode(businessTypeInstance.naicsCode)
+            def allSicCodes = []
+            naicsCodeInstance.allChildNaicsCodes.collect { NaicsCode naicsCode ->
+                def crosswalks = SicNaicsCodeCrosswalk.findAllByNaicsCode(naicsCode)
+                allSicCodes.addAll(crosswalks*.sicCode)
+            }
+            Set<SicCode> distinctSicCodes = new HashSet<SicCode>(allSicCodes)
+            Set<SicCode> distinctRootSicCodes = new HashSet<SicCode>(distinctSicCodes*.rootParent)
+            render jsTreeify(distinctRootSicCodes.sort { it.id }) as GSON
+        }
+    }
+
+    def getRootParent() {
+        if (params.id) {
+            def sicCodeInstance = SicCode.get(params.id)
+            println sicCodeInstance.rootParent
+        }
+    }
+
     def search() {
         if (params.search_string) {
             def codes = SicCode.findAllByDescriptionLikeOrCodeLike("%${params.search_string}%", "%${params.search_string}%")

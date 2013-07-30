@@ -14,7 +14,8 @@ angular.module('resources.naicsCodeTree', ['resources.logger'])
                 undeterminedNodes: '=',
                 includeRelatedSicCodes: '=',
                 relatedSicCodes: '=',
-                disableCheckBoxes: '@'
+                disableCheckBoxes: '@',
+                businessType: '='
             },
             templateUrl: '/js/angular/resources/NaicsCodeTree.html',
 
@@ -76,7 +77,7 @@ angular.module('resources.naicsCodeTree', ['resources.logger'])
 
                 var unselectAll = function () {
                     $(element).find('#tree').jstree("uncheck_all");
-                }
+                };
 
                 var setSelected = function (selectedNodes) {
                     if (selectedNodes !== undefined) {
@@ -116,9 +117,9 @@ angular.module('resources.naicsCodeTree', ['resources.logger'])
                         loadedState = true;
                         selectedNodesCopy = angular.copy(scope.selectedNodes);
                         undeterminedNodesCopy = angular.copy(scope.undeterminedNodes);
-                    if (scope.disableCheckBoxes === "true") {
-                        unselectAll();
-                    }
+                        if (scope.disableCheckBoxes === "true") {
+                            unselectAll();
+                        }
                     }
                     setSelected(selectedNodesCopy);
                     setUndetermined(undeterminedNodesCopy);
@@ -134,7 +135,14 @@ angular.module('resources.naicsCodeTree', ['resources.logger'])
                 var jsonData = {
                     "ajax": {
                         "url": function (node) {
-                            return node == -1 ? "/naicsCode/activeNaicsCodes" : "/naicsCode/activeNaicsCodes?parentId=" + node.attr('id');
+                            if (scope.businessType === undefined) {
+                                return node == -1 ?
+                                    "/naicsCode/activeNaicsCodes" :
+                                    "/naicsCode/activeNaicsCodes?parentId=" + node.attr('id');
+                            } else {
+                                var baseUrl = "/naicsCode/activeNaicsCodesByBusinessType?businessTypeId=" + scope.businessType.id;
+                                return node == -1 ? baseUrl : "/naicsCode/activeNaicsCodes?parentId=" + node.attr('id');
+                            }
                         },
                         "type": "get",
                         "success": function (codes) {
@@ -161,7 +169,7 @@ angular.module('resources.naicsCodeTree', ['resources.logger'])
                     "case_insensitive": true,
                     "show_only_matches": true,
                     "ajax": {
-                        "url": '/naicsCode/search'
+                        "url": scope.businessType === undefined ? '/naicsCode/search' : '/naicsCode/search?businessTypeId=' + scope.businessType.id
                     }
                 };
 
@@ -208,11 +216,15 @@ angular.module('resources.naicsCodeTree', ['resources.logger'])
                         });
                 };
 
-                if (scope.disableCheckBoxes !== undefined) {
-                    createUncheckable();
-                } else {
-                    createCheckable();
-                }
+                var displayTree = function () {
+                    if (scope.disableCheckBoxes !== undefined) {
+                        createUncheckable();
+                    } else {
+                        createCheckable();
+                    }
+                };
+
+                displayTree();
             }
         };
     }]);

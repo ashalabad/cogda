@@ -8,7 +8,8 @@
              data-selected-nodes="lead.sicCodes"
              data-undetermined-nodes="undeterminedSicNodes"
              data-include-related-naics-codes="includeRelatedNaicsCodes"
-             data-related-naics-codes="relatedNaicsCodes">
+             data-related-naics-codes="relatedNaicsCodes"
+             data-business-type="lead.businessType">
         </div>
     </div>
 
