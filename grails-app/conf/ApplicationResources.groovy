@@ -30,9 +30,9 @@ modules = {
 
     angularStrap {
         dependsOn 'angular'
-        resource url:'js/bundles/angular/angularStrap/angular-strap.min.js', disposition: 'head'
-        resource url:'js/bundles/angular/angularStrap/my-bootstrap-datepicker.css', disposition: 'head'
-        resource url:'js/bundles/angular/angularStrap/my-bootstrap-datepicker.js', disposition: 'head'
+        resource url:'js/bundles/angular/angularstrap/angular-strap.min.js', disposition: 'head'
+        resource url:'js/bundles/angular/angularstrap/my-bootstrap-datepicker.css', disposition: 'head'
+        resource url:'js/bundles/angular/angularstrap/my-bootstrap-datepicker.js', disposition: 'head'
     }
 
     company {
@@ -56,7 +56,7 @@ modules = {
     lead {
         dependsOn 'bootstrap, bootstrap_utils, angular, angularNaicsCodeTree, angularSicCodeTree, angularStrap'
         resource url: 'js/angular/resources/LeadSubTypes.js'
-        resource url: 'js/angular/resources/unitedStates.js'
+        resource url: 'js/angular/resources/UnitedStates.js'
         resource url: 'js/angular/resources/SupportedCountryCodes.js'
         resource url: 'js/angular/resources/NoteType.js'
         resource url: 'js/angular/resources/businessTypes.js'
@@ -74,14 +74,14 @@ modules = {
     }
 
     suspect {
-        dependsOn 'bootstrap', 'bootstrap_utils', 'angular', 'lead'
+        dependsOn 'lead'
         resource url: 'js/angular/resources/Suspect.js'
         resource url: 'js/angular/lead/suspect/suspect.js'
         resource url: 'css/suspect.css'
     }
 
     prospect {
-        dependsOn 'bootstrap', 'bootstrap_utils', 'angular', 'lead'
+        dependsOn 'lead'
         resource url: 'js/angular/resources/Prospect.js'
         resource url: 'js/angular/lead/prospect/prospect.js'
         resource url: 'css/prospect.css'
