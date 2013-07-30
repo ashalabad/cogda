@@ -1,7 +1,6 @@
 package com.cogda
 
 import com.cogda.domain.security.User
-import com.cogda.multitenant.Company
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import grails.plugin.gson.adapters.GrailsDomainDeserializer
