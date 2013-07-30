@@ -17,7 +17,7 @@
         <div id="sicTree"></div>
     </div>
     <div class="modal-footer">
-        <a class="btn btn-primary" href="#" data-dismiss="modal" onclick="${treeHandler}"><i class="icon-save"></i> Save</a>
+        <a class="btn btn-primary" href="#" data-dismiss="modal" data-ng-click="${treeHandler}"><i class="icon-save"></i> Save</a>
     </div>
 </div>
 

@@ -1,6 +1,6 @@
 package com.cogda.multitenant
 
-import com.cogda.domain.lead.contact.LeadContactPhoneNumberController
+import com.cogda.multitenant.lead.contact.LeadContactPhoneNumberController
 import grails.test.mixin.*
 
 /**

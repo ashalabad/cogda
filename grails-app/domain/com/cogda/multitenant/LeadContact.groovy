@@ -36,6 +36,7 @@ class LeadContact {
         firstName(blank: false, nullable: false, size: 1..50)
         middleName(nullable: true)
         lastName(blank: false, nullable: false, size: 1..50)
+        primaryContact(nullable: true)
     }
 
     String getFullName() {

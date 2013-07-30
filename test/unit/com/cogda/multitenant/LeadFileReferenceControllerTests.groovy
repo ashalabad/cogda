@@ -1,6 +1,6 @@
 package com.cogda.multitenant
 
-import com.cogda.domain.lead.LeadFileReferenceController
+import com.cogda.multitenant.lead.LeadFileReferenceController
 import grails.test.mixin.*
 
 /**

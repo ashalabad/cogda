@@ -22,7 +22,7 @@
         </form>
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-ng-click="cancel()"><i class="icon-remove"></i> ${message(code:'default.button.cancel.label')}</button>
         <button type="button" class="btn btn-primary" data-ng-click="updateAccount()" ><i class="icon-save"></i> ${message(code:'default.button.update.label')}</button>
+        <button type="button" class="btn" data-ng-click="cancel()"><i class="icon-remove"></i> ${message(code:'default.button.cancel.label')}</button>
     </div>
 </div>

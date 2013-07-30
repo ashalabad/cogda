@@ -101,6 +101,7 @@ class GsonBaseController {
         responseBody.message = message(code: 'default.not.deleted.message', args: [message(code:  entityLabel)])
         response.status = SC_INTERNAL_SERVER_ERROR  // 500
         render responseBody as GSON
+        return
     }
 
     public void respondNotAcceptable() {

@@ -33,7 +33,7 @@ class Account {
     static transients = ["primaryEmailAddress", "primaryAccountEmailAddress", "primaryAccountContact", "primaryAccountContactName"]
 
     static constraints = {
-        accountName(nullable:false, blank:false) //TODO: Dropped unique, need to add custom validator. Refer to issue #27
+        accountName(nullable:false, blank:false) //TODO: Dropped unique, need to add custom validator. Refer to issue #27  | ** Submission Builder relies on accountName being Unique
         accountCode(nullable:true)
         isMarket(nullable:true)
         active(nullable:true)

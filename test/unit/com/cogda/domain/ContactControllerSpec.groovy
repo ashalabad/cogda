@@ -138,7 +138,7 @@ class ContactControllerSpec extends Specification{
         controller.list()
 
         then:
-        assert response.contentAsString.contains(/{"aaData":[/)
+        assert response.contentAsString.contains(/{"aaData":/)
 
     }
 

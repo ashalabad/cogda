@@ -13,21 +13,19 @@ class LeadLineOfBusiness {
     Date expirationDate
     BigDecimal targetPremium
     BigDecimal targetCommission
-    Company writingCompany
-    Company billingCompany
-    Boolean renewal
+    BigDecimal commissionRate
+    String currentCarrier
     Boolean remarket
 
-    static embedded = ['lineOfBusiness']
+    static belongsTo = [lead: Lead]
 
     static constraints = {
         targetDate(nullable: true)
         expirationDate(nullable: true)
         targetPremium(nullable: true)
         targetCommission(nullable: true)
-        writingCompany(nullable: true)
-        billingCompany(nullable: true)
-        renewal(nullable: true)
+        commissionRate(nullable: true)
+        currentCarrier(nullable: true)
         remarket(nullable: true)
     }
 }

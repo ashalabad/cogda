@@ -78,7 +78,7 @@ class AccountContact {
      * Retrieves the primary AccountContactEmailAddress
      * @return String emailAddress
      */
-    public String getPrimaryAccountEmailAddress(){
+    public String getPrimaryEmailAddress(){
         AccountContactEmailAddress accountContactEmailAddress = this.accountContactEmailAddresses?.find {
             it.primaryEmailAddress == Boolean.TRUE
         }
@@ -89,7 +89,7 @@ class AccountContact {
      * Retrieves the primary AccountContactPhoneNumber
      * @return String phoneNumber
      */
-    public String getPrimaryAccountPhoneNumber(){
+    public String getPrimaryPhoneNumber(){
         AccountContactPhoneNumber accountContactPhoneNumber = this.accountContactPhoneNumbers?.find {
             it.primaryPhoneNumber == Boolean.TRUE
         }

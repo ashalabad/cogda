@@ -37,6 +37,13 @@ import org.codehaus.groovy.grails.commons.GrailsApplication
  */
 class CustomerAccountService {
 
+    /**
+     * CurrentTenant currentTenant - the ThreadLocal CurrentTenant if
+     * there is a currently active tenant.  Used when we are resolving a currently
+     * active tenant when locating folders and files.
+     */
+    CurrentTenant currentTenant
+
     private static final log = LogFactory.getLog(this)
 
     /**
@@ -220,6 +227,7 @@ class CustomerAccountService {
         final String pathPrefix = "customerAccounts/"
         final String companiesFolder = "companies"
         final String clientsFolder = "clients"
+        final String leadsFolder = "leads"
         final String imagesFolder = "images"
         final String documentsFolder = "documents"
         final String tempFolder = "temp"
@@ -230,49 +238,56 @@ class CustomerAccountService {
             InputStream is = new ByteArrayInputStream(s.getBytes("UTF-8"));
             String fileName = "a.txt"
 
+            ObjectMetadata objectMetadata = new ObjectMetadata()
+            objectMetadata.setServerSideEncryption(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+
             String customerAccountRoot = pathPrefix + customerAccountUuid + "/"
             // create the customerAccountRoot - at the defaultBucket "customerAccounts/${customerAccount.accountId}/"
-            amazonWebService.s3.putObject(defaultBucket, customerAccountRoot + fileName, is, new ObjectMetadata())
+            amazonWebService.s3.putObject(defaultBucket, customerAccountRoot + fileName, is, objectMetadata)
 
             // create the customerAccountDocuments - at the defaultBucket "customerAccounts/${customerAccount.accountId}/documents"
             String customerAccountDocuments = customerAccountRoot + documentsFolder + "/"
-            amazonWebService.s3.putObject(defaultBucket, customerAccountDocuments + fileName, is, new ObjectMetadata())
+            amazonWebService.s3.putObject(defaultBucket, customerAccountDocuments + fileName, is, objectMetadata)
 
             // create the temp folder for the customerAccount "customerAccounts/${customerAccount.accountId}/temp"
             String customerAccountTemp = customerAccountRoot + tempFolder + "/"
-            amazonWebService.s3.putObject(defaultBucket, customerAccountTemp + fileName, is, new ObjectMetadata())
+            amazonWebService.s3.putObject(defaultBucket, customerAccountTemp + fileName, is, objectMetadata)
 
             // create the images folder for the customerAccount "customerAccounts/${customerAccount.accountId}/images"
             String customerAccountImages = customerAccountRoot + imagesFolder + "/"
-            amazonWebService.s3.putObject(defaultBucket, customerAccountImages + fileName, is, new ObjectMetadata())
+            amazonWebService.s3.putObject(defaultBucket, customerAccountImages + fileName, is, objectMetadata)
 
             // create the companies folder for the customerAccount "customerAccounts/${customerAccount.accountId}/companies"
             String customerAccountCompanies = customerAccountRoot + companiesFolder + "/"
-            amazonWebService.s3.putObject(defaultBucket, customerAccountCompanies + fileName, is, new ObjectMetadata())
+            amazonWebService.s3.putObject(defaultBucket, customerAccountCompanies + fileName, is, objectMetadata)
 
             // create the company folder for the customerAccount "customerAccounts/${customerAccount.accountId}/companies/${company.accountId}/
             String customerAccountRootCompany = customerAccountCompanies + companyAccountId + "/"
-            amazonWebService.s3.putObject(defaultBucket, customerAccountRootCompany + fileName, is, new ObjectMetadata())
+            amazonWebService.s3.putObject(defaultBucket, customerAccountRootCompany + fileName, is, objectMetadata)
 
             // create the company folder for the customerAccount "customerAccounts/${customerAccount.accountId}/companies/${company.accountId}/documents
             String customerAccountRootCompanyDocuments = customerAccountRootCompany + documentsFolder + "/"
-            amazonWebService.s3.putObject(defaultBucket, customerAccountRootCompanyDocuments + fileName, is, new ObjectMetadata())
+            amazonWebService.s3.putObject(defaultBucket, customerAccountRootCompanyDocuments + fileName, is, objectMetadata)
 
             // create the users folder for the customerAccount "customerAccounts/${customerAccount.accountId}/users"
             String customerAccountRootUsers = customerAccountRoot + usersFolder + "/"
-            amazonWebService.s3.putObject(defaultBucket, customerAccountRootUsers + fileName, is, new ObjectMetadata())
+            amazonWebService.s3.putObject(defaultBucket, customerAccountRootUsers + fileName, is, objectMetadata)
 
             // create the folder for the customerAccount's first user "customerAccounts/${customerAccount.accountId}/users/${user.accountId}/"
             String customerAccountFirstUser = customerAccountRootUsers + userAccountId + "/"
-            amazonWebService.s3.putObject(defaultBucket, customerAccountFirstUser + fileName, is, new ObjectMetadata())
+            amazonWebService.s3.putObject(defaultBucket, customerAccountFirstUser + fileName, is, objectMetadata)
 
             // create the folder for the customerAccount's first user "customerAccounts/${customerAccount.accountId}/users/${user.accountId}/images/"
             String customerAccountFirstUserImages = customerAccountFirstUser + imagesFolder + "/"
-            amazonWebService.s3.putObject(defaultBucket, customerAccountFirstUserImages + fileName, is, new ObjectMetadata())
+            amazonWebService.s3.putObject(defaultBucket, customerAccountFirstUserImages + fileName, is, objectMetadata)
 
             // create the folder for the customerAccount's first user "customerAccounts/${customerAccount.accountId}/users/${user.accountId}/documents/"
             String customerAccountFirstUserDocuments = customerAccountFirstUser + documentsFolder + "/"
-            amazonWebService.s3.putObject(defaultBucket, customerAccountFirstUserDocuments + fileName, is, new ObjectMetadata())
+            amazonWebService.s3.putObject(defaultBucket, customerAccountFirstUserDocuments + fileName, is, objectMetadata)
+
+            // create the folder for the customerAccount's leads "customerAccounts/${customerAccount.accountId}/leads/"
+            String customerAccountLeadsDocuments = customerAccountRoot + leadsFolder + "/"
+            amazonWebService.s3.putObject(defaultBucket, customerAccountLeadsDocuments + fileName, is, objectMetadata)
 
         } catch (AmazonS3Exception e){
             e.printStackTrace()
@@ -453,5 +468,19 @@ class CustomerAccountService {
         protocol = protocol.substring(0, end)
         customerAccountBaseUrl = protocol + customerAccountBaseUrl
         return customerAccountBaseUrl
+    }
+
+    /**
+     * Retrieves the currently active CustomerAccount via the CurrentTenant that is
+     * injected into this service.
+     * This method Will return null if there is no active CustomerAccount
+     * @return CustomerAccount
+     */
+    public CustomerAccount getActiveCustomerAccount(){
+        if(currentTenant){
+            CustomerAccount customerAccount = CustomerAccount.get(currentTenant.get())
+            return customerAccount
+        }
+        return null
     }
 }

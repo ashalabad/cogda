@@ -10,11 +10,15 @@ beans = {
 
     // Activate these bean definitions
     // Documentation http://grails.org/doc/latest/guide/single.html#14.2%20Configuring%20Additional%20Beans
-    tenantResolver(DomainTenantResolver)
+    tenantResolver(DomainTenantResolver){
+        grailsApplication = ref('grailsApplication')
+    }
     tenantRepository(CachingTenantRepository)
     customObjectMarshallers(CustomObjectMarshallers) {
         marshallers = [
                 new RegistrationMarshaller()
         ]
     }
+
+
 }

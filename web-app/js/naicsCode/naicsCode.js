@@ -3,7 +3,7 @@ $(function () {
         "json_data": {
             "ajax": {
                 "url": function (node) {
-                    return node == -1 ? "/naicsCode/getActiveNaicsCodes" : "/naicsCode/getActiveNaicsCodes?parentId=" + node.attr('id');
+                    return node == -1 ? "/naicsCode/activeNaicsCodes" : "/naicsCode/activeNaicsCodes?parentId=" + node.attr('id');
                 },
                 "type": "get",
                 "success": function (codes) {

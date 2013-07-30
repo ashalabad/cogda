@@ -301,6 +301,9 @@ angular.module('companyProfileApp', ['resources.restApi', 'common.helperFuncs', 
                 companyProfileAddress.companyProfile = companyProfile;  // make sure that the companyProfile is associated with this companyProfileAddress
                 CompanyProfileAddress.save(companyProfileAddress, function(data){
                     companyProfileAddress.id = data.id;
+                    if(!$scope.companyProfile.companyProfileAddresses){
+                        $scope.companyProfile.companyProfileAddresses = [];
+                    }
                     $scope.companyProfile.companyProfileAddresses.push(companyProfileAddress);
                     $scope.cancelAddCompanyProfileAddress();
 
@@ -371,10 +374,12 @@ angular.module('companyProfileApp', ['resources.restApi', 'common.helperFuncs', 
 
         $scope.filterUserProfileResults = function(item) {
             var foundOne = false;
-            for(var i = 0; i < $scope.companyProfile.companyProfileContacts.length; i++){
-                if($scope.companyProfile.companyProfileContacts[i].userProfile.id == item.id){
-                    foundOne = true;
-                    break;
+            if($scope.companyProfile.companyProfileContacts){
+                for(var i = 0; i < $scope.companyProfile.companyProfileContacts.length; i++){
+                    if($scope.companyProfile.companyProfileContacts[i].userProfile.id == item.id){
+                        foundOne = true;
+                        break;
+                    }
                 }
             }
             return !foundOne;
@@ -406,6 +411,9 @@ angular.module('companyProfileApp', ['resources.restApi', 'common.helperFuncs', 
                 userProfile:userProfile
             };
             CompanyProfileContact.save(companyProfileContact, function(data){
+                if(!$scope.companyProfile.companyProfileContacts){
+                    $scope.companyProfile.companyProfileContacts = [];
+                }
                 $scope.companyProfile.companyProfileContacts.push(data);
                 $scope.searchResults.splice(idx, 1);
             }, function(){

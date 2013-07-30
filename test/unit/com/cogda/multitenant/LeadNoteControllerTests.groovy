@@ -1,6 +1,6 @@
 package com.cogda.multitenant
 
-import com.cogda.domain.lead.LeadNoteController
+import com.cogda.multitenant.lead.LeadNoteController
 import grails.test.mixin.*
 
 /**
