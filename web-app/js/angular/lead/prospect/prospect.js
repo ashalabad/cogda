@@ -170,7 +170,7 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
         function ($scope, $routeParams, $location, Prospect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes, DateHelper, LineOfBusiness, $filter, LeadUtils) {
             $scope.lead = {};
             $scope.lead.leadAddresses = [];
-            $scope.lead.leadAddresses.push({primaryAddress: true});
+            $scope.leadAddress = {primaryAddress: true, address: {}};
             $scope.lead.leadContacts = [];
             $scope.lead.leadContacts.push({primaryContact: true, leadContactEmailAddresses: [
                 {primaryEmailAddress: true}
@@ -257,11 +257,22 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
                     formattedLead.linesOfBusiness[i].targetDate = DateHelper.getFormattedDate(formattedLead.linesOfBusiness[i].targetDate);
                     formattedLead.linesOfBusiness[i].expirationDate = DateHelper.getFormattedDate(formattedLead.linesOfBusiness[i].expirationDate);
                 }
+                if (checkLeadAddress($scope.leadAddress))
+                    formattedLead.leadAddresses.push($scope.leadAddress);
                 Prospect.save(formattedLead,function (data) {
                     lead.id = data.id;
                 }).$then(saveSuccessCallback, saveErrorCallback);
             };
 
+            var checkLeadAddress = function (leadAddress) {
+                return leadAddress.address.addressOne !== undefined ||
+                    leadAddress.address.addressTwo !== undefined ||
+                    leadAddress.address.addressThree !== undefined ||
+                    leadAddress.address.city !== undefined ||
+                    leadAddress.address.state != undefined ||
+                    leadAddress.address.country != undefined ||
+                    leadAddress.address.zipcode !== undefined;
+            }
 
         }])
     .controller('ShowProspectCtrl', ['$scope', '$routeParams', '$location', 'Prospect', 'Logger',
