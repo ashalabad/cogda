@@ -85,7 +85,7 @@
                                     </a>
                                 </li>
                                 <li class="">
-                                    <a href="/suspect/create">
+                                    <a href="/suspect#/create">
                                         <i class="icon-plus-sign"></i>
                                         <g:message code = "suspect.menu.create.label"/>
                                     </a>
@@ -112,7 +112,7 @@
                                 </a>
                             </li>
                             <li class="">
-                                <a href="/prospect/create">
+                                <a href="/prospect#/create">
                                     <i class="icon-plus-sign"></i>
                                     <g:message code = "prospect.menu.create.label"/>
                                 </a>

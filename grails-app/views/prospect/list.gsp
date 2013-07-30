@@ -5,7 +5,7 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<meta name="layout" content="kickstart" />
-	<g:set var="entityName" value="${message(code: 'suspect.label', default: 'Suspect')}" />
+	<g:set var="entityName" value="${message(code: 'prospect.label', default: 'Prospect')}" />
 	<title><g:message code="default.list.label" args="[entityName]" /></title>
     <g:set var="layout_nosecondarymenu"	value="true" scope="request"/>
     <g:set var="layout_nomainmenu"		value="true" scope="request"/>
@@ -22,11 +22,11 @@
         &nbsp;
     </div>
 </div>
-<section id="list-suspect" class="first">
+<section id="list-prospect" class="first">
 
     <h2><g:message code="default.list.label" args="[entityName]" /></h2>
 
-	<table class="table table-bordered" id='suspectList'>
+	<table class="table table-bordered" id='prospectList'>
 		<thead>
 			<tr>
 

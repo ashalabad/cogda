@@ -791,7 +791,7 @@ Thank you!
 
 
     def importNaicsCodes() {
-        InputStream is = amazonWebService.s3.getObject(new GetObjectRequest(grailsApplication.config.grails.plugin.awssdk.default.bucket, "testingfiles/NaicsCode.csv")).getObjectContent()
+        InputStream is = amazonWebService.s3.getObject(new GetObjectRequest(grailsApplication.config.grails.plugin.awssdk.default.bucket, "testingfiles/updatedCodes/NaicsCode.csv")).getObjectContent()
         CSVReader reader = new CSVReader(new InputStreamReader(is))
         String[] nextLine;
         while ((nextLine = reader.readNext()) != null) {
@@ -799,11 +799,11 @@ Thank you!
             def desc = nextLine[1]?.trim()
             if(code && code != ""){
 
-                if(code.length() == 2) //root level
+                if(code.length() == 2 || code.contains("-")) //root level
                     new NaicsCode(code: code,description: desc).save()
 
                 else{
-                    def parentCode = code[0..code.length()-2]
+                    def parentCode = nextLine.length == 3 ? nextLine[2].trim() : code[0..code.length()-2]
                     new NaicsCode(
                         code: code,
                         description: desc,
@@ -835,7 +835,7 @@ Thank you!
     }
 
     def buildSicNaicsCrosswalk(){
-        InputStream is = amazonWebService.s3.getObject(new GetObjectRequest(grailsApplication.config.grails.plugin.awssdk.default.bucket, "testingfiles/SIC_to_NAICS_Crosswalk.csv")).getObjectContent()
+        InputStream is = amazonWebService.s3.getObject(new GetObjectRequest(grailsApplication.config.grails.plugin.awssdk.default.bucket, "testingfiles/updatedCodes/SIC_to_NAICS_Crosswalk.csv")).getObjectContent()
         CSVReader reader = new CSVReader(new InputStreamReader(is))
         String[] nextLine;
         SicCode sicCode
