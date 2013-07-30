@@ -40,16 +40,22 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
             $scope.editingAddress = false;
 
             $scope.editAddress = function () {
+                $scope.addressCopy = angular.copy($scope.address);
                 $scope.editingAddress = true;
             };
 
             $scope.cancelEditAddress = function () {
+                $scope.address  = $scope.addressCopy;
+                closeEditAddress();
+            };
+
+            var closeEditAddress = function() {
                 $scope.editingAddress = false;
             };
 
             $scope.updateAddress = function (address) {
                 LeadAddress.update(address).$then(updateSuccessCallback, updateErrorCallback);
-                $scope.cancelEditAddress();
+                closeEditAddress();
             };
 
             $scope.deleteAddress = function (address) {
@@ -126,16 +132,22 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
             $scope.editingContactAddress = false;
 
             $scope.editContactAddress = function () {
+                $scope.contactAddressCopy = angular.copy($scope.address);
                 $scope.editingContactAddress = true;
             };
 
             $scope.cancelEditContactAddress = function () {
+                $scope.address = $scope.contactAddressCopy;
+                closeEditContactAddress();
+            };
+
+            var closeEditContactAddress = function() {
                 $scope.editingContactAddress = false;
             };
 
             $scope.updateContactAddress = function (address) {
                 LeadContactAddress.update(address).$then(updateSuccessCallback, updateErrorCallback);
-                $scope.cancelEditContactAddress();
+                closeEditContactAddress();
             };
 
             $scope.deleteContactAddress = function (address) {
@@ -211,16 +223,22 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
             $scope.editingContact = false;
 
             $scope.editContact = function () {
+                $scope.contactCopy = angular.copy($scope.contact);
                 $scope.editingContact = true;
             };
 
             $scope.cancelEditContact = function () {
+                $scope.contact = $scope.contactCopy;
+                closeEditContact()
+            };
+
+            var closeEditContact = function() {
                 $scope.editingContact = false;
             };
 
             $scope.updateContact = function (contact) {
                 LeadContact.update(contact).$then(updateSuccessCallback, updateErrorCallback);
-                $scope.cancelEditContact();
+                closeEditContact();
             };
 
             $scope.deleteContact = function (contact, idx) {
@@ -299,16 +317,22 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
             $scope.editingContactEmailAddress = false;
 
             $scope.editContactEmailAddress = function () {
+                $scope.copyContactEmailAddress = angular.copy($scope.contactEmailAddress);
                 $scope.editingContactEmailAddress = true;
             };
 
             $scope.cancelEditContactEmailAddress = function () {
+                $scope.contactEmailAddress = $scope.copyContactEmailAddress;
+                $scope.editingContactEmailAddress = false;
+            };
+
+            var closeEditContactEmailAddress = function() {
                 $scope.editingContactEmailAddress = false;
             };
 
             $scope.updateContactEmailAddress = function (contactEmailAddress) {
                 LeadContactEmailAddress.update(contactEmailAddress).$then(updateSuccessCallback, updateErrorCallback);
-                $scope.cancelEditContactEmailAddress();
+                closeEditContactEmailAddress();
             };
 
             $scope.deleteContactEmailAddress = function (contactEmailAddress, idx) {
@@ -387,16 +411,22 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
             $scope.editingContactPhoneNumber = false;
 
             $scope.editContactPhoneNumber = function () {
+                $scope.contactPhoneNumberCopy = angular.copy($scope.contactPhoneNumber);
                 $scope.editingContactPhoneNumber = true;
             };
 
             $scope.cancelEditContactPhoneNumber = function () {
+                $scope.contactPhoneNumber = $scope.contactPhoneNumberCopy;
+                closeEditContactPhoneNumber();
+            };
+
+            var closeEditContactPhoneNumber = function() {
                 $scope.editingContactPhoneNumber = false;
             };
 
             $scope.updateContactPhoneNumber = function (contactPhoneNumber) {
                 LeadContactPhoneNumber.update(contactPhoneNumber).$then(updateSuccessCallback, updateErrorCallBack);
-                $scope.cancelEditContactPhoneNumber();
+                closeEditContactPhoneNumber();
             };
 
             $scope.deleteContactPhoneNumber = function (contactPhoneNumber) {
@@ -439,16 +469,22 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
             $scope.editingLeadNote = false;
 
             $scope.editLeadNote = function () {
+                $scope.leadNoteCopy = angular.copy($scope.leadNote);
                 $scope.editingLeadNote = true;
             };
 
             $scope.cancelEditLeadNote = function () {
-                $scope.editingLeadNote = false;
+                $scope.leadNote = $scope.leadNoteCopy;
+                closeEditLeadNote();
             };
+
+            var closeEditLeadNote = function() {
+                $scope.editingLeadNote = false;
+            }
 
             $scope.updateLeadNote = function (leadNote) {
                 LeadNote.update(leadNote).$then(updateSuccessCallback, updateErrorCallBack);
-                $scope.cancelEditLeadNote();
+                closeEditLeadNote();
             };
 
             $scope.deleteLeadNote = function (leadNote) {

@@ -118,10 +118,17 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
 
 
             $scope.cancelEditLead = function () {
+                $scope.lead = $scope.leadCopy;
+                $scope.leadCopy = {};
+                closeEditLead();
+            };
+
+            var closeEditLead = function() {
                 $scope.editingLead = false;
             };
 
             $scope.editLead = function () {
+                $scope.leadCopy = angular.copy($scope.lead);
                 $scope.editingLead = true;
             };
 
@@ -131,7 +138,7 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
 
             var updateSuccessCallback = function (response) {
                 Logger.success("Prospect Updated Successfully", "Success");
-                $scope.cancelEditLead();
+                closeEditLead();
             };
 
             var updateErrorCallBack = function (response) {
