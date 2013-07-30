@@ -79,7 +79,7 @@ class GsonBaseController {
     }
 
     private void respondConflict(instance) {
-        instance.errors.rejectValue('version', 'default.optimistic.locking.failure',
+        instance.errors.rejectValue('version', 'default.optimistic.locking.failure.alt',
                 'Another user has updated this item while you were editing')
         def responseBody = [:]
         responseBody.errors = getErrorStringsByField(instance)
