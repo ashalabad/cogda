@@ -91,7 +91,7 @@
             $scope.businessTypes = BusinessTypes.list();
             LineOfBusiness.list().$then(function (response) {
                 $scope.linesOfBusiness = response.data;
-            })
+            });
 
             Suspect.get($routeParams, function (data) {
                 $scope.lead = data;
@@ -180,7 +180,7 @@
 
             LineOfBusiness.list().$then(function (response) {
                 $scope.linesOfBusiness = response.data;
-            })
+            });
 
             $scope.countryCodes = SupportedCountryCodes.list();
             $scope.leadSubTypes = LeadSubTypes.list();
@@ -192,18 +192,26 @@
 
             $scope.addLeadLineOfBusiness = function () {
                 $scope.leadLineOfBusiness = {};
+                if ($scope.lead.linesOfBusiness.length > 0) {
+                    var modelLob = $scope.lead.linesOfBusiness[0];
+                    $scope.leadLineOfBusiness.lineOfBusiness = { lineOfBusinessCategory: modelLob.lineOfBusiness.lineOfBusinessCategory };
+                    $scope.leadLineOfBusiness.targetDate = modelLob.targetDate;
+                    $scope.leadLineOfBusiness.expirationDate = modelLob.expirationDate;
+                    $scope.leadLineOfBusiness.currentCarrier = modelLob.currentCarrier;
+                    $scope.leadLineOfBusiness.remarket = modelLob.remarket;
+                }
                 $scope.addingLeadLineOfBusiness = true;
             };
 
             $scope.cancelAddLeadLineOfBusiness = function () {
                 $scope.addingLeadLineOfBusiness = false;
-            }
+            };
 
             $scope.saveLeadLineOfBusiness = function (leadLineOfBusiness) {
                 leadLineOfBusiness.lineOfBusiness = LeadUtils.getLobFromSelect(leadLineOfBusiness, $scope.linesOfBusiness);
                 $scope.lead.linesOfBusiness.push(leadLineOfBusiness);
                 $scope.cancelAddLeadLineOfBusiness();
-            }
+            };
 
             $scope.updateLineOfBusiness = function (lineOfBusiness) {
                 lineOfBusiness.lineOfBusiness = LeadUtils.getLobFromSelect(lineOfBusiness, $scope.linesOfBusiness);
@@ -223,7 +231,7 @@
 
             $scope.deleteLineOfBusiness = function (index) {
                 $scope.lead.linesOfBusiness.splice(index);
-            }
+            };
 
             var saveSuccessCallback = function () {
                 Logger.success("Suspect Saved Successfully", "Success");
