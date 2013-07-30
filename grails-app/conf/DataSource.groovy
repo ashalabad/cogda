@@ -76,7 +76,7 @@ environments {
         dataSource {
             username = "cogdadevelop"
             password = "Sm00thCRiMaNail"
-            dbCreate = "create-drop" // one of 'create', 'create-drop', 'update', 'validate', ''
+            dbCreate = "update" // one of 'create', 'create-drop', 'update', 'validate', ''
             pooled = true
             driverClassName = "com.mysql.jdbc.Driver"
             url = "jdbc:mysql://ec2-50-19-213-178.compute-1.amazonaws.com/cogda_develop"
