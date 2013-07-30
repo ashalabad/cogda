@@ -688,6 +688,14 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
             });
 
             $scope.addLeadLineOfBusiness = function () {
+                if ($scope.lead.linesOfBusiness.length > 0) {
+                    var modelLob = $scope.lead.linesOfBusiness[0];
+                    $scope.leadLineOfBusiness.lineOfBusiness = { lineOfBusinessCategory: modelLob.lineOfBusiness.lineOfBusinessCategory };
+                    $scope.leadLineOfBusiness.targetDate = modelLob.targetDate;
+                    $scope.leadLineOfBusiness.expirationDate = modelLob.expirationDate;
+                    $scope.leadLineOfBusiness.currentCarrier = modelLob.currentCarrier;
+                    $scope.leadLineOfBusiness.remarket = modelLob.remarket;
+                }
                 $scope.addingLeadLineOfBusiness = true;
             };
 
