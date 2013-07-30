@@ -48,13 +48,6 @@ class SicCodeController extends BaseController {
         }
     }
 
-    def getRootParent() {
-        if (params.id) {
-            def sicCodeInstance = SicCode.get(params.id)
-            println sicCodeInstance.rootParent
-        }
-    }
-
     def search() {
         if (params.search_string) {
             def codes = SicCode.findAllByDescriptionLikeOrCodeLike("%${params.search_string}%", "%${params.search_string}%")
