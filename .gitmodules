@@ -1,3 +1,6 @@
 [submodule "plugins/grails-gson"]
 	path = plugins/grails-gson
 	url = https://github.com/cogda/grails-gson.git
+[submodule "plugins/grails-aws-sdk"]
+	path = plugins/grails-aws-sdk
+	url = https://github.com/agorapulse/grails-aws-sdk.git
