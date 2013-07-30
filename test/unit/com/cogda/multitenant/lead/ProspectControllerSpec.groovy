@@ -1,4 +1,4 @@
-package com.cogda.domain.lead
+package com.cogda.multitenant.lead
 
 
 

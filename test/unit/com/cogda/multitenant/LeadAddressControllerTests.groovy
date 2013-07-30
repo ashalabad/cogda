@@ -1,6 +1,6 @@
 package com.cogda.multitenant
 
-import com.cogda.domain.lead.LeadAddressController
+import com.cogda.multitenant.lead.LeadAddressController
 import grails.test.mixin.*
 
 /**

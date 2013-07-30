@@ -1,6 +1,6 @@
 package com.cogda.multitenant
 
-import com.cogda.domain.lead.SuspectController
+import com.cogda.multitenant.lead.SuspectController
 import grails.test.mixin.*
 import spock.lang.Specification
 
