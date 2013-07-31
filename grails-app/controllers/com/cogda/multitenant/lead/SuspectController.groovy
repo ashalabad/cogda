@@ -58,10 +58,13 @@ class SuspectController extends GsonBaseController {
     }
 
     def list() {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+//        params.max = Math.min(params.max ? params.int('max') : 10, 100)
         response.addIntHeader X_PAGINATION_TOTAL, Lead.countByLeadType(LeadType.SUSPECT) as int
         def criteria = Lead.createCriteria()
-        def suspectInstanceList = criteria.list(params) {
+//        def suspectInstanceList = criteria.list(params) {
+//            eq('leadType', LeadType.SUSPECT)
+//        }
+        def suspectInstanceList = criteria.list() {
             eq('leadType', LeadType.SUSPECT)
         }
         def dataToRender = []

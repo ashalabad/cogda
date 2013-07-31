@@ -30,14 +30,14 @@ angular.module('common.helperFuncs', []).factory('SelectHelper',function () {
     .filter('bsDateFilter', function () {
         return function (d) {
             if (d instanceof Date) {
+                if (isNaN(d.getTime()))
+                    return "";
                 return new Date(d.getTime() + (new Date()).getTimezoneOffset() * 60000);
             } else {
                 var date = new Date(d);
                 if (isNaN(date.getTime()))
-                    return d;
-                else {
-                    return new Date(date.getTime() + (new Date()).getTimezoneOffset() * 60000);
-                }
+                    return "";
+                return new Date(date.getTime() + (new Date()).getTimezoneOffset() * 60000);
             }
         }
     })

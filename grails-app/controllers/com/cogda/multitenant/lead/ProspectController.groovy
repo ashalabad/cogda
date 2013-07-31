@@ -57,10 +57,13 @@ class ProspectController extends GsonBaseController {
     }
 
     def list() {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+//        params.max = Math.min(params.max ? params.int('max') : 10, 100)
         response.addIntHeader X_PAGINATION_TOTAL, Lead.countByLeadType(LeadType.PROSPECT) as int
         def criteria = Lead.createCriteria()
-        def prospectInstanceList = criteria.list(params) {
+//        def prospectInstanceList = criteria.list(params) {
+//            eq('leadType', LeadType.PROSPECT)
+//        }
+        def prospectInstanceList = criteria.list() {
             eq('leadType', LeadType.PROSPECT)
         }
         def dataToRender = []

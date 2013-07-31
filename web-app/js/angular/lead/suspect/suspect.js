@@ -55,7 +55,7 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
                 selectedItems: $scope.selectedItems,
                 enableColumnResize: true,
                 multiSelect: false,
-                enablePaging: true,
+//                enablePaging: true,
                 showFooter: true,
                 pagingOptions: $scope.pagingOptions,
 //                cellTemplate: '<div style="word-wrap: normal" title="{{row.getProperty(col.field)}}">{{row.getProperty(col.field)}}</div>',
