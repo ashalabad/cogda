@@ -485,6 +485,7 @@ class BootStrap {
         Integer count = 0
         reader.readNext() // skip column names
         Random random = new Random()
+        Boolean makeProspect = true;
         while ((nextLine = reader.readNext()) != null) {
             customerAccount.withThisTenant {
                 Lead.withTransaction {
@@ -507,11 +508,16 @@ class BootStrap {
                     Lead testLead = new Lead()
                     def businessTypeId = random.nextInt(BusinessType.count()) + 1
                     BusinessType businessType = BusinessType.get(businessTypeId)
-                    LineOfBusiness lineOfBusiness = LineOfBusiness.get(random.nextInt(LineOfBusiness.count()))
-                    LeadLineOfBusiness leadLineOfBusiness = new LeadLineOfBusiness()
-                    leadLineOfBusiness.lineOfBusiness = lineOfBusiness
-                    testLead.addToLinesOfBusiness(leadLineOfBusiness)
-                    testLead.leadType = LeadType.SUSPECT
+                    if (makeProspect){
+                        LineOfBusiness lineOfBusiness = LineOfBusiness.get(random.nextInt(LineOfBusiness.count()))
+                        LeadLineOfBusiness leadLineOfBusiness = new LeadLineOfBusiness()
+                        leadLineOfBusiness.lineOfBusiness = lineOfBusiness
+                        testLead.addToLinesOfBusiness(leadLineOfBusiness)
+                        testLead.leadType = LeadType.PROSPECT
+                    } else {
+                        testLead.leadType = LeadType.SUSPECT
+                    }
+                    makeProspect = !makeProspect;
                     testLead.clientName = csvCompany
                     testLead.clientId = csvDunsNumber
                     testLead.subType = random.nextInt(2) == 0 ? LeadSubType.BUSINESS : LeadSubType.INDIVIDUAL
@@ -523,7 +529,7 @@ class BootStrap {
                     testLead.addToLeadContacts(leadContact)
                     testLead.businessType = businessType
                     LeadAddress leadAddress = new LeadAddress()
-                    leadAddress.address = new Address(city: csvCity, state: csvState, zipcode: csvZip, county: csvCounty)
+                    leadAddress.address = new Address(city: csvCity, state: csvState, zipcode: csvZip, county: csvCounty, addressOne: "123 Fake Street")
                     testLead.addToLeadAddresses(leadAddress)
 
                     if (!testLead.save()) {
