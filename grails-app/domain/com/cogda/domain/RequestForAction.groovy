@@ -9,12 +9,12 @@ import com.cogda.domain.security.User
 class RequestForAction {
 
     /* Default (injected) attributes of GORM */
-	Long	id
-	Long	version
+    Long	id
+    Long	version
 
     /* Automatic timestamping of GORM */
-	Date	dateCreated
-	Date	lastUpdated
+    Date	dateCreated
+    Date	lastUpdated
     Date    dueDate
     Date    dateCompleted
 
@@ -28,7 +28,7 @@ class RequestForAction {
 
     String message
 
-	static hasMany		= [assignees:User,requestForActionTypes:RequestForActionType]	// tells GORM to associate other domain objects for a 1-n or n-m mapping
+    static hasMany		= [assignees:String,requestForActionTypes:RequestForActionType,submissionLeadLineOfBusinesses:SubmissionLeadLineOfBusiness]	// tells GORM to associate other domain objects for a 1-n or n-m mapping
 
 
     static mapping = {
@@ -38,6 +38,11 @@ class RequestForAction {
     static constraints = {
         message maxSize:15000
         submission nullable: true
+        submissionLeadLineOfBusinesses(validator: { Set submissionLeadLineOfBusinesses, Submission submission ->
+            if(submission && submission.isChild() && !submissionLeadLineOfBusinesses){
+                return ['submission.child.leadLineOfBusinesses.required']
+            }
+        })
     }
 
     /*

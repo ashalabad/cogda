@@ -15,12 +15,12 @@ class Submission {
     Lead lead
 
     /* Default (injected) attributes of GORM */
-	Long	id
-	Long	version
+    Long	id
+    Long	version
 
     /* Automatic timestamping of GORM */
-	Date	dateCreated
-	Date	lastUpdated
+    Date	dateCreated
+    Date	lastUpdated
 
     /**
      * The user that created the Submission
@@ -34,10 +34,10 @@ class Submission {
 
     static transients = ['child']
 
-	static hasMany		= [requestForActions:RequestForAction,
-                           childSubmissions:Submission,
-                           leadLineOfBusinesses:LeadLineOfBusiness,
-                           ]
+    static hasMany =[
+            requestForActions:RequestForAction,
+            childSubmissions:Submission,
+    ]//TODO: add submission Document
 
     static constraints = {
         lead(nullable:true, validator: { Lead lead, Submission submission ->
@@ -51,11 +51,7 @@ class Submission {
         parentSubmission(nullable: true)
         createdBy(nullable:false)
         submissionId(nullable:false, unique:true)
-        leadLineOfBusinesses(validator: { Set leadLineOfBusinesses, Submission submission ->
-            if(submission.isChild() && !leadLineOfBusinesses){
-                return ['submission.child.leadLineOfBusinesses.required']
-            }
-        })
+
     }
 
     /**
