@@ -75,8 +75,8 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
         }])
     .controller('EditProspectCtrl', ['$scope', '$routeParams', '$location', 'Prospect', 'Logger', 'UnitedStates',
         'SupportedCountryCodes', 'LeadSubTypes', 'NoteType', 'BusinessTypes', 'LineOfBusiness', 'LeadLineOfBusiness',
-        '$dialog', 'DateHelper',
-        function ($scope, $routeParams, $location, Prospect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes, LineOfBusiness, LeadLineOfBusiness, $dialog, DateHelper) {
+        '$dialog', 'DateHelper', '$filter',
+        function ($scope, $routeParams, $location, Prospect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes, LineOfBusiness, LeadLineOfBusiness, $dialog, DateHelper, $filter) {
             $scope.title = 'Prospect';
             $scope.editingLead = false;
             $scope.message = '';
@@ -99,13 +99,44 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
 
             Prospect.get($routeParams, function (data) {
                 $scope.lead = data;
-                for (var i = 0; i < $scope.lead.linesOfBusiness.length; i++){
-                    $scope.lead.linesOfBusiness[i].targetDate =  new Date($scope.lead.linesOfBusiness[i].targetDate);
+                for (var i = 0; i < $scope.lead.linesOfBusiness.length; i++) {
+                    $scope.lead.linesOfBusiness[i].targetDate = new Date($scope.lead.linesOfBusiness[i].targetDate);
                     $scope.lead.linesOfBusiness[i].expirationDate = new Date($scope.lead.linesOfBusiness[i].expirationDate);
                 }
+                $scope.undeterminedSicNodes = getUndeterminedNodeIds($scope.lead.sicCodes, 'parentSicCode');
+                $scope.undeterminedNaicsNodes = getUndeterminedNodeIds($scope.lead.naicsCodes, 'parentNaicsCode');
+                console.log($scope.undeterminedNaicsNodes);
+                console.log($scope.undeterminedSicNodes);
             }, function () {
                 Logger.error("Resource Not Found", "Error");
             });
+
+            var getUndeterminedNodeIds = function (nodes, propertyName) {
+                var undeterminedNodes = [];
+                for (var i = 0; i < nodes.length; i++) {
+                    var node = nodes[i];
+                    var allParents = getAllParentIds(node, propertyName);
+                    for (var j = 0; j < allParents.length; j++) {
+                        var undeterminedParentId = allParents[j];
+                        if (undeterminedNodes.indexOf(undeterminedParentId) === -1 && $filter('findById')(nodes, undeterminedParentId) === undefined) {
+                            undeterminedNodes.push({id: undeterminedParentId});
+                        }
+                    }
+                }
+                return undeterminedNodes;
+            };
+
+            var getAllParentIds = function (node, propertyName) {
+                var parents = [];
+                if (node[propertyName] !== undefined) {
+                    parents.push(node[propertyName].id);
+                    var grandparentIds = getAllParentIds(node[propertyName], propertyName);
+                    for (var i = 0; i < grandparentIds.length; i++) {
+                        parents.push(grandparentIds[i]);
+                    }
+                }
+                return parents
+            };
 
             $scope.updateLead = function (lead) {
                 var formattedLead = angular.copy(lead);
@@ -123,7 +154,7 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
                 closeEditLead();
             };
 
-            var closeEditLead = function() {
+            var closeEditLead = function () {
                 $scope.editingLead = false;
             };
 
@@ -155,19 +186,19 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
 
                 $dialog.messageBox(title, msg, btns)
                     .open()
-                    .then(function(result){
+                    .then(function (result) {
                         if (result == 'delete')
                             Prospect.delete({id: lead.id})
                                 .$then(deleteProspectSuccessCallback, deleteProspectErrorCallback);
                     });
             };
 
-            var deleteProspectSuccessCallback = function(response) {
+            var deleteProspectSuccessCallback = function (response) {
                 Logger.success("Prospect Deleted Successfully");
                 $location.path('/list/');
             };
 
-            var deleteProspectErrorCallback = function(response) {
+            var deleteProspectErrorCallback = function (response) {
                 Logger.messageBuilder(response, $scope);
             };
         }])
