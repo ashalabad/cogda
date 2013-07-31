@@ -45,11 +45,11 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
             };
 
             $scope.cancelEditAddress = function () {
-                $scope.address  = $scope.addressCopy;
+                $scope.address = $scope.addressCopy;
                 closeEditAddress();
             };
 
-            var closeEditAddress = function() {
+            var closeEditAddress = function () {
                 $scope.editingAddress = false;
             };
 
@@ -141,7 +141,7 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
                 closeEditContactAddress();
             };
 
-            var closeEditContactAddress = function() {
+            var closeEditContactAddress = function () {
                 $scope.editingContactAddress = false;
             };
 
@@ -232,7 +232,7 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
                 closeEditContact()
             };
 
-            var closeEditContact = function() {
+            var closeEditContact = function () {
                 $scope.editingContact = false;
             };
 
@@ -326,7 +326,7 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
                 $scope.editingContactEmailAddress = false;
             };
 
-            var closeEditContactEmailAddress = function() {
+            var closeEditContactEmailAddress = function () {
                 $scope.editingContactEmailAddress = false;
             };
 
@@ -420,7 +420,7 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
                 closeEditContactPhoneNumber();
             };
 
-            var closeEditContactPhoneNumber = function() {
+            var closeEditContactPhoneNumber = function () {
                 $scope.editingContactPhoneNumber = false;
             };
 
@@ -478,7 +478,7 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
                 closeEditLeadNote();
             };
 
-            var closeEditLeadNote = function() {
+            var closeEditLeadNote = function () {
                 $scope.editingLeadNote = false;
             }
 

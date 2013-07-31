@@ -44,7 +44,7 @@ class SicCodeController extends BaseController {
             }
             Set<SicCode> distinctSicCodes = new HashSet<SicCode>(allSicCodes)
             Set<SicCode> distinctRootSicCodes = new HashSet<SicCode>(distinctSicCodes*.rootParent)
-            render jsTreeify(distinctRootSicCodes.sort { it.id }) as GSON
+            render jsTreeify(distinctRootSicCodes.sort { it.id }, 0) as GSON
         }
     }
 

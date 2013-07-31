@@ -39,7 +39,7 @@ class NaicsCodeController extends BaseController {
             def businessTypeInstance = BusinessType.get(params.businessTypeId)
             if (businessTypeInstance) {
                 // include 0 to treeify if lazy loading
-                render jsTreeify(NaicsCode.findByCode(businessTypeInstance.naicsCode)) as GSON
+                render jsTreeify(NaicsCode.findByCode(businessTypeInstance.naicsCode), 0) as GSON
             }
         }
     }
