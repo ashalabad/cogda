@@ -56,7 +56,7 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
                 selectedItems: $scope.selectedItems,
                 enableColumnResize: true,
                 multiSelect: false,
-                enablePaging: true,
+//                enablePaging: true,
                 showFooter: true,
                 pagingOptions: $scope.pagingOptions,
 //                cellTemplate: '<div style="word-wrap: normal" title="{{row.getProperty(col.field)}}">{{row.getProperty(col.field)}}</div>',
@@ -100,13 +100,13 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
             Prospect.get($routeParams, function (data) {
                 $scope.lead = data;
                 for (var i = 0; i < $scope.lead.linesOfBusiness.length; i++) {
-                    $scope.lead.linesOfBusiness[i].targetDate = new Date($scope.lead.linesOfBusiness[i].targetDate);
-                    $scope.lead.linesOfBusiness[i].expirationDate = new Date($scope.lead.linesOfBusiness[i].expirationDate);
+                    if ($scope.lead.linesOfBusiness[i].targetDate !== undefined)
+                        $scope.lead.linesOfBusiness[i].targetDate = new Date($scope.lead.linesOfBusiness[i].targetDate);
+                    if ($scope.lead.linesOfBusiness[i].expirationDate)
+                        $scope.lead.linesOfBusiness[i].expirationDate = new Date($scope.lead.linesOfBusiness[i].expirationDate);
                 }
                 $scope.undeterminedSicNodes = getUndeterminedNodeIds($scope.lead.sicCodes, 'parentSicCode');
                 $scope.undeterminedNaicsNodes = getUndeterminedNodeIds($scope.lead.naicsCodes, 'parentNaicsCode');
-                console.log($scope.undeterminedNaicsNodes);
-                console.log($scope.undeterminedSicNodes);
             }, function () {
                 Logger.error("Resource Not Found", "Error");
             });

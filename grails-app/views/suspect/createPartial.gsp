@@ -12,7 +12,7 @@
             <legend>
                 <g:message code="suspect.label"/>
             </legend>
-            <g:render template="/lead/partials/createPartial"/>
+            <g:render template="partials/createPartial"/>
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary" id="suspectFormSave" data-ng-click="saveSuspect(lead)"
                         %{--data-ng-disabled="!canSave()"--}%

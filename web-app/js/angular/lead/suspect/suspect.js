@@ -55,7 +55,7 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
                 selectedItems: $scope.selectedItems,
                 enableColumnResize: true,
                 multiSelect: false,
-                enablePaging: true,
+//                enablePaging: true,
                 showFooter: true,
                 pagingOptions: $scope.pagingOptions,
 //                cellTemplate: '<div style="word-wrap: normal" title="{{row.getProperty(col.field)}}">{{row.getProperty(col.field)}}</div>',
@@ -74,8 +74,8 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
         }])
     .controller('EditSuspectCtrl', ['$scope', '$routeParams', '$location', 'Suspect', 'Logger', 'UnitedStates',
         'SupportedCountryCodes', 'LeadSubTypes', 'NoteType', 'BusinessTypes', 'LineOfBusiness', 'LeadLineOfBusiness',
-        '$dialog', 'DateHelper',
-        function ($scope, $routeParams, $location, Suspect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes, LineOfBusiness, LeadLineOfBusiness, $dialog, DateHelper) {
+        '$dialog', 'DateHelper', '$window',
+        function ($scope, $routeParams, $location, Suspect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes, LineOfBusiness, LeadLineOfBusiness, $dialog, DateHelper, $window) {
             $scope.title = 'Suspect';
             $scope.editingLead = false;
             $scope.message = '';
@@ -97,8 +97,10 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
             Suspect.get($routeParams, function (data) {
                 $scope.lead = data;
                 for (var i = 0; i < $scope.lead.linesOfBusiness.length; i++) {
-                    $scope.lead.linesOfBusiness[i].targetDate = new Date($scope.lead.linesOfBusiness[i].targetDate);
-                    $scope.lead.linesOfBusiness[i].expirationDate = new Date($scope.lead.linesOfBusiness[i].expirationDate);
+                    if ($scope.lead.linesOfBusiness[i].targetDate !== undefined)
+                        $scope.lead.linesOfBusiness[i].targetDate = new Date($scope.lead.linesOfBusiness[i].targetDate);
+                    if ($scope.lead.linesOfBusiness[i].expirationDate != undefined)
+                        $scope.lead.linesOfBusiness[i].expirationDate = new Date($scope.lead.linesOfBusiness[i].expirationDate);
                 }
             }, function () {
                 Logger.error("Resource Not Found", "Error");
@@ -119,7 +121,7 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
                 closeEditLead();
             };
 
-            var closeEditLead = function() {
+            var closeEditLead = function () {
                 $scope.editingLead = false;
             };
 
@@ -165,6 +167,33 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
 
             var deleteSuspectErrorCallback = function (response) {
                 Logger.messageBuilder(response, $scope);
+            };
+
+            var convertToProspectSuccessCallback = function (response) {
+                Logger.success("Suspect Converted to Prospect");
+                console.log('absUrl:');
+                console.log($location.absUrl());
+                var currentUrl = $location.absUrl();
+                $window.location.replace(currentUrl.replace('suspect', 'prospect'));
+            };
+
+            var convertToProspectErrorCallback = function (response) {
+                Logger.messageBuilder(response, $scope);
+            };
+
+            $scope.convertToProspect = function (lead) {
+                var title = "Convert Suspect";
+                var msg = "Are you sure you want to convert this Suspect to a Prospect?";
+                var btns = [
+                    {result: 'cancel', label: 'Cancel'},
+                    {result: 'convert', label: 'Convert', cssClass: 'btn-primary'}
+                ];
+                $dialog.messageBox(title, msg, btns)
+                    .open()
+                    .then(function (result) {
+                        if (result == 'convert')
+                            Suspect.update({id: lead.id, leadType: "PROSPECT"}).$then(convertToProspectSuccessCallback, convertToProspectErrorCallback);
+                    });
             };
         }])
     .controller('CreateSuspectCtrl', ['$scope', '$routeParams', '$location', 'Suspect', 'Logger', 'UnitedStates',

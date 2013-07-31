@@ -1,6 +1,8 @@
 import au.com.bytecode.opencsv.CSVReader
 import com.amazonaws.services.s3.model.GetObjectRequest
 import com.cogda.common.GenderEnum
+import com.cogda.common.LeadSubType
+import com.cogda.common.LeadType
 import com.cogda.common.MarkupLanguage
 import com.cogda.common.RegistrationStatus
 import com.cogda.domain.Address
@@ -39,6 +41,12 @@ import com.cogda.multitenant.CustomerAccount
 import com.cogda.domain.admin.SupportedCountryCode
 import com.cogda.multitenant.CustomerAccountService
 import com.cogda.domain.Note
+import com.cogda.multitenant.Lead
+import com.cogda.multitenant.LeadAddress
+import com.cogda.multitenant.LeadContact
+import com.cogda.multitenant.LeadContactEmailAddress
+import com.cogda.multitenant.LeadContactPhoneNumber
+import com.cogda.multitenant.LeadLineOfBusiness
 import com.cogda.util.DataPopulatorService
 import grails.plugin.awssdk.AmazonWebService
 import grails.plugins.springsecurity.SpringSecurityService
@@ -173,6 +181,7 @@ class BootStrap {
                     createRennaissanceAccountDummyData(raisRegistration)
                     createRennaissanceUserDummyData(raisRegistration)
                     createRennaissanceUserProfileDummyData(raisRegistration)
+                    createRennaisanceLeadDummyData(raisRegistration)
                 }
             }
 
@@ -464,6 +473,71 @@ class BootStrap {
                 }
             }
             count++
+        }
+    }
+
+    def createRennaisanceLeadDummyData(Registration registration) {
+        CustomerAccount customerAccount = CustomerAccount.findBySubDomain(registration.subDomain)
+        InputStream is = amazonWebService.s3.getObject(new GetObjectRequest(grailsApplication.config.grails.plugin.awssdk.default.bucket, "testingfiles/LeadImportFile.csv")).getObjectContent()
+//        InputStream is = new FileInputStream("/home/chewy/LeadsImportFile.csv")
+        CSVReader reader = new CSVReader(new InputStreamReader(is))
+        String[] nextLine
+        Integer count = 0
+        reader.readNext() // skip column names
+        Random random = new Random()
+        Boolean makeProspect = true;
+        while ((nextLine = reader.readNext()) != null) {
+            customerAccount.withThisTenant {
+                Lead.withTransaction {
+                    def csvDunsNumber = nextLine[0]?.trim()
+                    def csvCompany = nextLine[1]?.trim()
+                    def csvPhone = nextLine[2]?.trim()
+                    def csvWebAddress = nextLine[3]?.trim()
+                    def csvLineOfBusiness = nextLine[4]?.trim()
+                    def csvFirstName = nextLine[5]?.trim()
+                    def csvLastName = nextLine[6]?.trim()
+                    def csvEmailAddress = nextLine[7]?.trim()
+                    def csvBusinessType = nextLine[8]?.trim()
+                    def csvExpirationDate = nextLine[9]?.trim()
+                    def csvStage = nextLine[10]?.trim()
+                    def csvCity = nextLine[11]?.trim()
+                    def csvState = nextLine[12]?.trim()
+                    def csvZip = nextLine[13]?.trim()
+                    def csvCounty = nextLine[14]?.trim()
+
+                    Lead testLead = new Lead()
+                    def businessTypeId = random.nextInt(BusinessType.count()) + 1
+                    BusinessType businessType = BusinessType.get(businessTypeId)
+                    if (makeProspect){
+                        LineOfBusiness lineOfBusiness = LineOfBusiness.get(random.nextInt(LineOfBusiness.count()))
+                        LeadLineOfBusiness leadLineOfBusiness = new LeadLineOfBusiness()
+                        leadLineOfBusiness.lineOfBusiness = lineOfBusiness
+                        testLead.addToLinesOfBusiness(leadLineOfBusiness)
+                        testLead.leadType = LeadType.PROSPECT
+                    } else {
+                        testLead.leadType = LeadType.SUSPECT
+                    }
+                    makeProspect = !makeProspect;
+                    testLead.clientName = csvCompany
+                    testLead.clientId = csvDunsNumber
+                    testLead.subType = random.nextInt(2) == 0 ? LeadSubType.BUSINESS : LeadSubType.INDIVIDUAL
+                    LeadContact leadContact = new LeadContact(primaryContact: true)
+                    leadContact.firstName = csvFirstName
+                    leadContact.lastName = csvLastName
+                    leadContact.addToLeadContactEmailAddresses(new LeadContactEmailAddress(emailAddress: csvEmailAddress, primaryEmailAddress: true))
+                    leadContact.addToLeadContactPhoneNumbers(new LeadContactPhoneNumber(phoneNumber: csvPhone, primaryPhoneNumber: true))
+                    testLead.addToLeadContacts(leadContact)
+                    testLead.businessType = businessType
+                    LeadAddress leadAddress = new LeadAddress()
+                    leadAddress.address = new Address(city: csvCity, state: csvState, zipcode: csvZip, county: csvCounty, addressOne: "123 Fake Street")
+                    testLead.addToLeadAddresses(leadAddress)
+
+                    if (!testLead.save()) {
+                        println "Lead $testLead was NOT saved successfully ${testLead.errors}"
+                        println "BusinessTypeId: $businessTypeId"
+                    }
+                }
+            }
         }
     }
 
