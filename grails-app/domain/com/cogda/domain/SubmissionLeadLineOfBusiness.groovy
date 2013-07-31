@@ -45,17 +45,18 @@ class SubmissionLeadLineOfBusiness {
 
 
     static constraints = {
-        submission nullable: false
-        leadLineOfBusiness nullable: false
-        targetDate nullable: true,
+        submission(nullable: false)
+        leadLineOfBusiness(nullable: false)
+        targetDate( nullable: true,
             validator: { Date targetDate, SubmissionLeadLineOfBusiness submissionLeadLineOfBusiness ->
                 // verify that the targetDate is less than submissionLeadLineOfBusiness.leadLineOfBusiness.expirationDate
                 if(targetDate >= submissionLeadLineOfBusiness.leadLineOfBusiness.expirationDate){
                     return ['submissionLeadLineOfBusiness.leadLineOfBusiness.targetDate.exceeds.expirationDate']
                 }
             }
-        targetPremium nullable: true
-        targetCommission nullable: true
+        )
+        targetPremium(nullable: true)
+        targetCommission(nullable: true)
     }
 
 }

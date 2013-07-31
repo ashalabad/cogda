@@ -28,8 +28,7 @@ class RequestForAction {
 
     String message
 
-    static hasMany		= [assignees:String,requestForActionTypes:RequestForActionType,submissionLeadLineOfBusinesses:SubmissionLeadLineOfBusiness]	// tells GORM to associate other domain objects for a 1-n or n-m mapping
-
+    static hasMany		= [assignees:String, requestForActionTypes:RequestForActionType, submissionLeadLineOfBusinesses:SubmissionLeadLineOfBusiness]
 
     static mapping = {
         message type:'text'
