@@ -11,7 +11,7 @@ class LeadLineOfBusiness {
     /**
      * inject LeadService
      */
-    LeadService leadService
+    transient leadService
 
     LineOfBusiness lineOfBusiness
     Date targetDate
