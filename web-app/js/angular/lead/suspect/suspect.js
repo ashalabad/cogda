@@ -74,8 +74,8 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
         }])
     .controller('EditSuspectCtrl', ['$scope', '$routeParams', '$location', 'Suspect', 'Logger', 'UnitedStates',
         'SupportedCountryCodes', 'LeadSubTypes', 'NoteType', 'BusinessTypes', 'LineOfBusiness', 'LeadLineOfBusiness',
-        '$dialog', 'DateHelper', '$window',
-        function ($scope, $routeParams, $location, Suspect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes, LineOfBusiness, LeadLineOfBusiness, $dialog, DateHelper, $window) {
+        '$dialog', 'DateHelper', '$window', 'LeadUtils',
+        function ($scope, $routeParams, $location, Suspect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes, LineOfBusiness, LeadLineOfBusiness, $dialog, DateHelper, $window, LeadUtils) {
             $scope.title = 'Suspect';
             $scope.editingLead = false;
             $scope.message = '';
@@ -90,6 +90,7 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
             $scope.leadSubTypes = LeadSubTypes.list();
             $scope.noteTypes = NoteType.list();
             $scope.businessTypes = BusinessTypes.list();
+            $scope.shouldConvertToProspect = false;
             LineOfBusiness.list().$then(function (response) {
                 $scope.linesOfBusiness = response.data;
             });
@@ -182,47 +183,28 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
             };
 
             $scope.convertToProspect = function (lead) {
-                var title = "Convert Suspect";
-                var msg = "Are you sure you want to convert this Suspect to a Prospect?";
-                var btns = [
-                    {result: 'cancel', label: 'Cancel'},
-                    {result: 'convert', label: 'Convert', cssClass: 'btn-primary'}
-                ];
-                $dialog.messageBox(title, msg, btns)
-                    .open()
-                    .then(function (result) {
-                        if (result == 'convert')
-                            Suspect.update({id: lead.id, leadType: "PROSPECT"}).$then(convertToProspectSuccessCallback, convertToProspectErrorCallback);
-                    });
+                $scope.shouldConvertToProspect = true;
             };
-        }])
-    .controller('CreateSuspectCtrl', ['$scope', '$routeParams', '$location', 'Suspect', 'Logger', 'UnitedStates',
-        'SupportedCountryCodes', 'LeadSubTypes', 'NoteType', 'BusinessTypes', 'DateHelper', 'LineOfBusiness', '$filter',
-        'LeadUtils',
-        function ($scope, $routeParams, $location, Suspect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes, DateHelper, LineOfBusiness, $filter, LeadUtils) {
-            $scope.lead = {};
-            $scope.lead.leadAddresses = [];
-            $scope.leadAddress = {primaryAddress: true, address: {}};
-            $scope.lead.leadContacts = [];
-            $scope.lead.leadContacts.push({primaryContact: true, leadContactEmailAddresses: [
-                {primaryEmailAddress: true}
-            ], leadContactPhoneNumbers: [
-                {primaryPhoneNumber: true}
-            ]});
-            $scope.errors = [];
-            $scope.message = '';
-            UnitedStates.list().$then(function (response) {
-                $scope.states = response.data;
-            });
 
-            LineOfBusiness.list().$then(function (response) {
-                $scope.linesOfBusiness = response.data;
-            });
+            $scope.opts = {
+                dialogFade: true,
+                backdropFade: true
+            };
 
-            $scope.countryCodes = SupportedCountryCodes.list();
-            $scope.leadSubTypes = LeadSubTypes.list();
-            $scope.noteTypes = NoteType.list();
-            $scope.businessTypes = BusinessTypes.list();
+            $scope.performConvert =function (lead) {
+                var formattedLead = angular.copy(lead);
+                for (var i = 0; i < formattedLead.linesOfBusiness.length; i++) {
+                    formattedLead.linesOfBusiness[i].targetDate = DateHelper.getFormattedDate(formattedLead.linesOfBusiness[i].targetDate);
+                    formattedLead.linesOfBusiness[i].expirationDate = DateHelper.getFormattedDate(formattedLead.linesOfBusiness[i].expirationDate);
+                }
+                Suspect.update({id: formattedLead.id, leadType: "PROSPECT", linesOfBusiness: formattedLead.linesOfBusiness}).$then(convertToProspectSuccessCallback, convertToProspectErrorCallback);
+            };
+
+            $scope.cancelConvertToProspect = function() {
+                $scope.shouldConvertToProspect = false;
+                $scope.lead.linesOfBusiness = [];
+            };
+
             $scope.lead.linesOfBusiness = [];
 
             $scope.addingLeadLineOfBusiness = false;
@@ -269,6 +251,34 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
             $scope.deleteLineOfBusiness = function (index) {
                 $scope.lead.linesOfBusiness.splice(index);
             };
+        }])
+    .controller('CreateSuspectCtrl', ['$scope', '$routeParams', '$location', 'Suspect', 'Logger', 'UnitedStates',
+        'SupportedCountryCodes', 'LeadSubTypes', 'NoteType', 'BusinessTypes', 'DateHelper', 'LineOfBusiness', '$filter',
+        'LeadUtils',
+        function ($scope, $routeParams, $location, Suspect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes, DateHelper, LineOfBusiness, $filter, LeadUtils) {
+            $scope.lead = {};
+            $scope.lead.leadAddresses = [];
+            $scope.leadAddress = {primaryAddress: true, address: {}};
+            $scope.lead.leadContacts = [];
+            $scope.lead.leadContacts.push({primaryContact: true, leadContactEmailAddresses: [
+                {primaryEmailAddress: true}
+            ], leadContactPhoneNumbers: [
+                {primaryPhoneNumber: true}
+            ]});
+            $scope.errors = [];
+            $scope.message = '';
+            UnitedStates.list().$then(function (response) {
+                $scope.states = response.data;
+            });
+
+            LineOfBusiness.list().$then(function (response) {
+                $scope.linesOfBusiness = response.data;
+            });
+
+            $scope.countryCodes = SupportedCountryCodes.list();
+            $scope.leadSubTypes = LeadSubTypes.list();
+            $scope.noteTypes = NoteType.list();
+            $scope.businessTypes = BusinessTypes.list();
 
             var saveSuccessCallback = function () {
                 Logger.success("Suspect Saved Successfully", "Success");
@@ -284,14 +294,9 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
             };
 
             $scope.saveSuspect = function (lead) {
-                var formattedLead = angular.copy(lead);
-                for (var i = 0; i < formattedLead.linesOfBusiness.length; i++) {
-                    formattedLead.linesOfBusiness[i].targetDate = DateHelper.getFormattedDate(formattedLead.linesOfBusiness[i].targetDate);
-                    formattedLead.linesOfBusiness[i].expirationDate = DateHelper.getFormattedDate(formattedLead.linesOfBusiness[i].expirationDate);
-                }
                 if (checkLeadAddress($scope.leadAddress))
-                    formattedLead.leadAddresses.push($scope.leadAddress);
-                Suspect.save(formattedLead,function (data) {
+                    lead.leadAddresses.push($scope.leadAddress);
+                Suspect.save(lead,function (data) {
                     lead.id = data.id;
                 }).$then(saveSuccessCallback, saveErrorCallback);
             };

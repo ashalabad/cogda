@@ -57,6 +57,10 @@ class SuspectController extends GsonBaseController {
         render(view: 'showPartial')
     }
 
+    def convertToProspectPartial() {
+        render(template: 'partials/convertToProspectPartial')
+    }
+
     def list() {
 //        params.max = Math.min(params.max ? params.int('max') : 10, 100)
         response.addIntHeader X_PAGINATION_TOTAL, Lead.countByLeadType(LeadType.SUSPECT) as int
