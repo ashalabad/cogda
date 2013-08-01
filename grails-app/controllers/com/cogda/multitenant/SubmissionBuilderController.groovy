@@ -34,15 +34,31 @@ class SubmissionBuilderController extends GsonBaseController {
         render (view:'builderPartial')
     }
 
+    def listPartial(){
+        render (view:'listPartial')
+    }
+
     def get() {
         def submissionInstance = Submission.get(params.id)
-//        if (submissionInstance) {
-//            respondFound submissionInstance
-//        } else {
-//            respondNotFound 'submission.label'
-//        }
-        JSON.use('deep')
-        render submissionInstance as JSON
+        def parentSubmission = new Expando()
+
+        Map lead = [:]
+        lead.clientName = submissionInstance.lead.clientName
+        lead.linesOfBusiness = []
+        lead.docs = []
+        def lineOfBusinessList = submissionInstance.lead.linesOfBusiness
+        lineOfBusinessList.each { LeadLineOfBusiness leadLineOfBusiness ->
+            Map lineOfBusiness = [:]
+            lineOfBusiness.id = leadLineOfBusiness.id
+            lineOfBusiness.expirationDate = leadLineOfBusiness.expirationDate
+            lineOfBusiness.targetPremium = leadLineOfBusiness.targetPremium
+            lineOfBusiness.targetDate = leadLineOfBusiness.targetDate
+            lineOfBusiness.description = leadLineOfBusiness.lineOfBusiness.description
+            lead.linesOfBusiness.add(lineOfBusiness)
+        }
+
+        parentSubmission.lead = lead
+        render parentSubmission as JSON
     }
 
     def createParentSubmission(){

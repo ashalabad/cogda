@@ -129,15 +129,21 @@
 
 
                     <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="/submissionBuilder" data-target="#">
+                        <a class="dropdown-toggle" data-toggle="dropdown" data-target="#">
                             <i class="icon-briefcase"></i>
-                            <g:message code="submissionBuilder.menu.label"/>
+                            Submissions
                             <b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu">
                             <li class="">
-                                <a href="/submissionBuilder">
+                                <a href="/submissionBuilder/">
                                     <i class="icon-folder-open"></i>
+                                    List Submissions
+                                </a>
+                            </li>
+                            <li class="">
+                                <a href="/submissionBuilder#/lead/">
+                                    <i class="icon-sitemap"></i>
                                     <g:message code = "submissionBuilder.build.menu.label"/>
                                 </a>
                             </li>
