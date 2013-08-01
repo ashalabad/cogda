@@ -1,3 +1,4 @@
+
 .inner-list-address {
     margin-bottom: 0;
 }
@@ -38,10 +39,6 @@ label.error {
     margin: 1.0em 0 0.5em;
 }
 
-#applicationNavBar {
-    margin-top: 55px;
-}
-
 .pretty {
     padding-top: 10px;
     padding-bottom: 10px;
@@ -56,3 +53,66 @@ label.error {
     min-height:100px;
     max-height:200px;
 }
+#zenbox_tab {
+    margin-left: -15px;
+    top: auto !important;
+    bottom: 5%;
+}
+
+/* HEADER CHANGES*/
+
+#Header {
+    background-color: #215b87;
+    background-image: none;
+}
+@media (min-width: 980px){
+    #Header {
+        /*margin-top: -55px;*/
+    }
+}
+#Header .inner {
+    padding: 0;
+    background: transparent url('http://cogda.com/wp-content/themes/TheCorporation/images/featured-bg.jpg') no-repeat top center;
+}
+
+#Header .inner .container .title {
+    font-size: 22px;
+    float: left;
+    line-height: 40px;
+}
+
+
+/* END HEADER CHANGES */
+
+/* FOOTER CHANGES */
+
+.footer {
+    background: #282828 url('http://cogda.com/wp-content/themes/TheCorporation/images/footer-top-bg.png') repeat-x;
+    border-top:  4px solid #e2e2e2;
+    color: #b9b9b9;
+    text-shadow: 1px 1px 2px #0a0a0a;
+    padding: 0;
+}
+
+.footer .container {
+    background: url('http://cogda.com/wp-content/themes/TheCorporation/images/footer-light.jpg') no-repeat top center;
+    padding: 25px 0 0 30px;
+}
+/* END FOOTER CHANGES */
+
+/* START GENERAL CONTENT CHANGES */
+
+#applicationNavBar {
+    margin-top: 55px;
+}
+@media (max-width: 980px){
+    #applicationNavBar {
+        margin-top: 0;
+    }
+}
+#content a.forgotlink {
+    font-size: .8em;
+}
+
+
+/* END GENERAL CONTENT CHANGES */

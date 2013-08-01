@@ -172,4 +172,13 @@ modules = {
         resource url:'js/angular/submissionBuilder/submissionBuilder.js'
         resource url:'js/angular/submissionBuilder/submissionBuilder.css'
     }
+
+    submissionDialog {
+        dependsOn 'bootstrap', 'bootstrap_utils', 'angular'
+        resource url:'js/angular/resources/AccountContactLink.js',       disposition: 'head'
+        resource url:'js/angular/resources/Lead.js',                     disposition: 'head'
+        resource url:'js/angular/resources/Submission.js',               disposition: 'head'
+        resource url:'js/angular/submissionDialog/submissionDialog.js'
+        resource url:'js/angular/submissionDialog/submissionDialog.css'
+    }
 }

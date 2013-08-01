@@ -15,12 +15,12 @@ class Submission {
     Lead lead
 
     /* Default (injected) attributes of GORM */
-	Long	id
-	Long	version
+    Long	id
+    Long	version
 
     /* Automatic timestamping of GORM */
-	Date	dateCreated
-	Date	lastUpdated
+    Date	dateCreated
+    Date	lastUpdated
 
     /**
      * The user that created the Submission
@@ -32,12 +32,13 @@ class Submission {
      */
     Submission parentSubmission
 
-    static transients = ['child']
+    static transients = ['child', 'submissionAccountContactLinks']
 
-	static hasMany		= [requestForActions:RequestForAction,
-                           childSubmissions:Submission,
-                           leadLineOfBusinesses:LeadLineOfBusiness,
-                           ]
+    static hasMany =[
+            requestForActions:RequestForAction,
+            childSubmissions:Submission,
+            submissionLeadLineOfBusinesses:SubmissionLeadLineOfBusiness
+    ]//TODO: add submission Document
 
     static constraints = {
         lead(nullable:true, validator: { Lead lead, Submission submission ->
@@ -51,8 +52,8 @@ class Submission {
         parentSubmission(nullable: true)
         createdBy(nullable:false)
         submissionId(nullable:false, unique:true)
-        leadLineOfBusinesses(validator: { Set leadLineOfBusinesses, Submission submission ->
-            if(submission.isChild() && !leadLineOfBusinesses){
+        submissionLeadLineOfBusinesses(validator: { Set submissionLeadLineOfBusinesses, Submission submission ->
+            if(submission && submission.isChild() && !submissionLeadLineOfBusinesses){
                 return ['submission.child.leadLineOfBusinesses.required']
             }
         })
@@ -81,5 +82,14 @@ class Submission {
             return sub.lead
         }
         return null  // TODO: Throw exception if no Lead is found on any of the Submissions.
+    }
+
+    /**
+     * Retrieves the associated SubmissionAccountContactLink domain
+     * classes for this Submission object.
+     * @return List of SubmissionAccountContactLink objects
+     */
+    List getSubmissionAccountContactLinks(){
+        return SubmissionAccountContactLink.findAllBySubmission(this)
     }
 }

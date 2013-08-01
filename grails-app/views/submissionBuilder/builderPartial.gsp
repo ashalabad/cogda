@@ -26,8 +26,8 @@
                             <li>
                                 <label class="checkbox">
                                     <input type="checkbox" data-ng-model="lobs[lineOfBusiness.id]" />
-                                    <span popover-title="{{lineOfBusiness.lineOfBusiness.description}} Details" popover="{{formatLOBDetails(lineOfBusiness)}}" popover-trigger="hover" popover-placement="right">
-                                        {{lineOfBusiness.lineOfBusiness.description}} - {{lineOfBusiness.expirationDate | date:'MM/dd/yy'}}
+                                    <span popover-title="{{lineOfBusiness.description}} Details" popover="{{formatLOBDetails(lineOfBusiness)}}" popover-trigger="hover" popover-placement="right">
+                                        {{lineOfBusiness.description}} - {{lineOfBusiness.expirationDate | date:'MM/dd/yy'}}
                                     </span>
                                 </label>
                             </li>
@@ -45,7 +45,7 @@
 
                 <div class="docContainer">
                     <div class="well well-small" >
-                        <ul class="unstyled" data-ng-repeat="doc in master.parentSubmission.lead.docs">
+                        <ul class="unstyled" data-ng-repeat="doc in testDocs">
                             <li>
                                 <label class="checkbox">
                                     <input type="checkbox" data-ng-model="docs[doc.id]" />
@@ -68,12 +68,13 @@
                     </form>
                     <br>
                     <tabset>
-                        <tab heading="All Markets">
+
+                        <tab heading="Favorite Markets">
                             <accordion close-others="oneAtATime">
                                 <div class="fixedHeightContainer">
                                     <div class="marketContainer">
-                                        <accordion-group heading="{{accountContactLink.accountName}}" data-ng-repeat="accountContactLink in allMarkets | filter:marketCriteria | orderBy:'accountName' | unique:'accountName'">
-                                            <ul class="inline" data-ng-repeat="accountContactLinkInner in allMarkets | filter: accountContactLink.accountName | orderBy: 'accountContactName'">
+                                        <accordion-group heading="{{accountContactLink.accountName}}" data-ng-repeat="accountContactLink in favoriteMarkets | filter:marketCriteria | orderBy:'accountName' | unique:'accountName'">
+                                            <ul class="inline" data-ng-repeat="accountContactLinkInner in favoriteMarkets | filter: accountContactLink.accountName | orderBy: 'accountContactName'">
                                                 <g:render template="marketList" />
                                             </ul>
                                         </accordion-group>
@@ -82,12 +83,12 @@
                             </accordion>
                         </tab>
 
-                        <tab heading="Favorite Markets">
+                        <tab heading="All Markets">
                             <accordion close-others="oneAtATime">
                                 <div class="fixedHeightContainer">
                                     <div class="marketContainer">
-                                        <accordion-group heading="{{accountContactLink.accountName}}" data-ng-repeat="accountContactLink in favoriteMarkets | filter:marketCriteria | orderBy:'accountName' | unique:'accountName'">
-                                            <ul class="inline" data-ng-repeat="accountContactLinkInner in favoriteMarkets | filter: accountContactLink.accountName | orderBy: 'accountContactName'">
+                                        <accordion-group heading="{{accountContactLink.accountName}}" data-ng-repeat="accountContactLink in allMarkets | filter:marketCriteria | orderBy:'accountName' | unique:'accountName'">
+                                            <ul class="inline" data-ng-repeat="accountContactLinkInner in allMarkets | filter: accountContactLink.accountName | orderBy: 'accountContactName'">
                                                 <g:render template="marketList" />
                                             </ul>
                                         </accordion-group>
@@ -132,7 +133,7 @@
 
 
                 </div>
-                <button data-ng-show="editingSubmission==false" class="btn btn-primary pull-right" data-ng-click="buildSubmission()"><i class="icon-sitemap"></i> Build Submission</button>
+                <button data-ng-show="editingSubmission==false" class="btn btn-primary pull-right" data-ng-click="buildSubmissions()"><i class="icon-sitemap"></i> Build Submission</button>
                 <button data-ng-show="editingSubmission==true" class="btn pull-right" data-ng-click="cancelUpdate()"><i class="icon-undo"></i> Cancel</button>
                 <button data-ng-show="editingSubmission==true" class="btn btn-primary pull-right" data-ng-click="updateSubmission(); submissionsTab.active=true"><i class="icon-save"></i> Update Submission</button>
 
@@ -140,44 +141,72 @@
         </div>
     </tab>
     <tab heading="Submissions ({{master.childSubmissions.length}})" data-ng-model="submissionsTab" active="submissionsTab.active">
-        <div data-ng-show="editingSubmission==true" class="alert alert-info">Currently Editing submission #{{index}}</div>
-        <button data-ng-hide="master.childSubmissions.length == 0 || editingSubmission==true" data-ng-hide="editingSubmission==true" class="btn btn-primary pull-right" data-ng-click="sendSubmissions()"><i class="icon-envelope"></i> Send Submissions</button>
+        %{--<div data-ng-show="editingSubmission==true" class="alert alert-info">Currently Editing submission #{{index}}</div>--}%
         <div class="row">
             <div class="span12">
                 <ul class="inline">
                     <li data-ng-repeat="submission in master.childSubmissions | orderBy:'index'" class="span5 well well-small">
-                        <h5>Submission #{{submission.index}}
-                            <div class="btn btn-mini btn-danger pull-right" data-ng-hide="editingSubmission==true" data-ng-click="deleteSubmission(submission)"><i class="icon-remove"></i> Delete</div>
-                            <div class="btn btn-mini pull-right" data-ng-hide="editingSubmission==true" data-ng-click="editSubmission(submission); submissionBuilderTab.active=true"><i class="icon-edit"></i> Edit</div>
-                        </h5>
-                        <div class="btn btn-block" data-ng-click="lobCollapse{{submission.index}} = !lobCollapse{{submission.index}}">Lines of Business</div>
-                        <ul collapse="lobCollapse{{submission.index}}">
-                            <li data-ng-repeat="lob in submission.lobs">
-                                {{filterAndPrintLOB(lob)}}
-                            </li>
-                        </ul>
-                        <div class="btn btn-block" data-ng-click="docCollapse{{submission.index}} = !docCollapse{{submission.index}}">Submission Documents</div>
-                        <ul collapse="docCollapse{{submission.index}}">
-                            <li data-ng-repeat="doc in submission.docs">
-                            </li>
-                        </ul>
-                        <div class="btn btn-block" data-ng-click="marketCollapse{{submission.index}} = !marketCollapse{{submission.index}}">Markets</div>
-                        <ul collapse="marketCollapse{{submission.index}}">
-                            <li data-ng-repeat="market in submission.markets">
-                                {{filterAndPrintMarket(market)}}
-                            </li>
-                        </ul>
+
+                        <div class="row ">
+                            <div class="span5">
+                                <div class="btn btn-mini btn-danger pull-right" data-ng-hide="editingSubmission==true" data-ng-click="deleteSubmission(submission)"><i class="icon-remove"></i> Delete</div>
+                                <h4 data-ng-repeat="market in submission.markets">
+                                    {{filterAndPrintMarket(market)}}
+                                    %{--<div class="btn btn-mini pull-right" data-ng-hide="editingSubmission==true" data-ng-click="editSubmission(submission); submissionBuilderTab.active=true"><i class="icon-edit"></i> Edit</div>--}%
+                                </h4>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="span5">
+                                <div class="btn pull-right"><i class="icon-pencil"> Message</i></div>
+                                <label for="targetDate"><strong>Target Date:</strong>
+                                    <input id="targetDate" class="input-small" type="text" value="{{getLobTargetDate(submission.lobs[0])}}" />
+                                </label>
+                            </div>
+                        </div>
+
+                        <table class="table table-condensed">
+                            <thead>
+                                <tr><th></th><th>LOB</th><th>Target Premium</th></tr>
+                            </thead>
+                            <tbody>
+                            <tr data-ng-repeat="lob in submission.lobs">
+                                <td>
+                                    <div class="btn btn-mini btn-danger" data-ng-click="removeLOBFromSubmission($parent.$index, lob)"><i class="icon-remove"></i></div>
+                                </td>
+                                <td>
+                                    {{getLobDescription(lob)}}
+                                </td>
+                                <td>
+                                    <input class="inline" type="text" value="{{getLobPremium(lob)}}" />
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                        <table class="table">
+                            <tbody>
+                            <tr data-ng-repeat="doc in submission.docs">
+                                <td>
+                                    <i class="icon-file"></i> {{getTestDocName(doc)}}
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+
                     </li>
                 </ul>
             </div>
         </div>
+        <button data-ng-hide="master.childSubmissions.length == 0 || editingSubmission==true" data-ng-hide="editingSubmission==true" class="btn btn-primary pull-right" data-ng-click="sendSubmissions()"><i class="icon-envelope"></i> Send Submissions</button>
     </tab>
 </tabset>
 
 
 %{--<div class="row">--}%
     %{--<div class="span12">--}%
-        %{--<pre>master = {{master.childSubmissions | json}}</pre>--}%
+        %{--<pre>childSubmissions = {{master.childSubmissions | json}}</pre>--}%
         %{--<pre>markets = {{markets | json}}</pre>--}%
         %{--<pre>lobs = {{lobs | json}}</pre>--}%
     %{--</div>--}%
