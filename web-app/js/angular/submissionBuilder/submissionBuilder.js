@@ -1,16 +1,123 @@
-angular.module('submissionBuilderApp', ['resources.restApi','resources.AccountContactLink','resources.Lead','resources.SubmissionBuilder', 'common.helperFuncs', 'resources.logger', 'ui.bootstrap', 'ui.utils'])
+angular.module('submissionBuilderApp', ['resources.restApi','resources.AccountContactLink','resources.Lead','resources.SubmissionBuilder', 'common.helperFuncs', 'resources.logger', 'ui.bootstrap', 'ui.utils','ngGrid'])
 
     .config(function ($routeProvider) {
         $routeProvider.
+            when('/', {templateUrl: '/submissionBuilder/listPartial', controller: 'submissionBuilderListCtrl'}).
             when('/build/:id', {templateUrl: '/submissionBuilder/builderPartial', controller: 'submissionBuilderCtrl'}).
             when('/lead', {templateUrl: '/submissionBuilder/leadPartial', controller: 'submissionBuilderLeadCtrl' }).
             when('/prepare/:id', {templateUrl: '/submissionBuilder/preparePartial', controller: 'submissionBuilderPrepareCtrl' }).
 //            when('/create', {templateUrl: '/account/createPartial', controller: 'CreateAccountCtrl' }).
 //            when('/show/:id', {templateUrl: '/account/showPartial', controller: 'ShowAccountCtrl' }).
 //            when('/accountContact/:id', {templateUrl: '/account/showAccountContactPartial', controller: 'AccountContactCtrl' }).
-            otherwise({ redirectTo: '/lead' });
+            otherwise({ redirectTo: '/' });
     })
 
+    .controller('submissionBuilderListCtrl', ['$scope','$location',
+        function ($scope,$location) {
+
+            $scope.submissionData = [
+                {
+                    dateSent:"07/28/13",
+                    from:'Maria Schiller (Renaissance Alliance)',
+                    prospect:'Pine Construction',
+                    subject:'Submission for Pine Construction',
+                    targetDate:'08/25/13',
+                    targetDayDiff:'25',
+                    expirationDate:'10/01/13',
+                    lobs:'BUIL,CAMT,CROP,GLEX',
+                    status:"Submitted",
+                    response:"Not Submitted",
+                    market:"A & M Services"
+                },
+                {
+                    dateSent:"07/28/13",
+                    from:'Joanna Christopoulos (Renaissance Alliance)',
+                    prospect:'Smith Electronics Corp',
+                    subject:'Submission for Smith Electronics Corp',
+                    targetDate:'08/25/13',
+                    targetDayDiff:'25',
+                    expirationDate:'11/01/13',
+                    lobs:'UM-S,STOC,VALU,POLL',
+                    status:"Submitted",
+                    response:"Submitted",
+                    market:"AIG"
+                },
+                {
+                    dateSent:"07/28/13",
+                    from:'Laurie Lajzer (Renaissance Alliance)',
+                    prospect:'Kone Elevators',
+                    subject:'Submission for Kone Elevators',
+                    targetDate:'08/25/13',
+                    targetDayDiff:'25',
+                    expirationDate:'12/20/13',
+                    lobs:'BR-I,SIGN,CROP,SPEL',
+                    status:"Submitted",
+                    response:"Not Submitted",
+                    market:"Litchfield Mutual"
+                },
+                {
+                    dateSent:"07/28/13",
+                    from:'Maria Schiller (Renaissance Alliance)',
+                    prospect:'Phillips Networking',
+                    subject:'Submission for Phillips Networking',
+                    targetDate:'08/25/13',
+                    targetDayDiff:'25',
+                    expirationDate:'11/08/13',
+                    lobs:'RCFL,NE&O,CROP,POLL',
+                    status:"Submitted",
+                    response:"Not Submitted",
+                    market:"Hanover CT"
+                },
+                {
+                    dateSent:"07/28/13",
+                    from:'Beth Poplawski (Renaissance Alliance)',
+                    prospect:'Brantley Trucking',
+                    subject:'Submission for Brantley Trucking',
+                    targetDate:'08/25/13',
+                    targetDayDiff:'25',
+                    expirationDate:'10/15/13',
+                    lobs:'CBOP,PROF,SIGN,SPEL',
+                    status:"Submitted",
+                    response:"Not Submitted",
+                    market:"Pilgrim Insurance Co."
+                }
+            ];
+
+            $scope.totalServerItems = 5;
+
+            $scope.pageHeader = "Submissions";
+            $scope.actionButtons = '<button type="button" class="btn btn-mini" ><i class="icon-folder-open"></i> Open</button> ';
+//            $scope.sortInfo = { fields:['accountName'], directions: ['asc']};
+            $scope.submissionGridOptions = {
+                data: 'submissionData',
+                totalServerItems: 'totalServerItems',
+                enableRowSelection: false,
+//                sortInfo:$scope.sortInfo,
+                showFilter: true,
+                showFooter: true,
+                footerRowHeight: 30,
+                columnDefs: [
+                    {field:'dateSent',displayName:'Date Sent'},
+                    {field:'from',displayName:'From'},
+                    {field:'prospect',displayName:'Prospect'},
+                    {field:'subject',displayName:'Subject'},
+                    {field:'targetDate',displayName:'Target Date'},
+                    {field:'targetDayDiff',displayName:'+/- Days'},
+                    {field:'expirationDate',displayName:'XDate'},
+                    {field:'lobs',displayName:'LOBs'},
+                    {field:'status',displayName:'My Status'},
+                    {field:'response',displayName:'Market Status'},
+                    {field:'market',displayName:'Market'},
+                    {displayName:'', cellTemplate: $scope.actionButtons, sortable:false}
+                ]
+            };
+
+
+//            $scope.showSubmission = function showSubmission(row){
+//                $location.path('/show/' + row.entity.ngRowId);
+//            };
+
+        }])
 
     .controller('submissionBuilderLeadCtrl', ['$scope', '$location', '$filter','Lead',
         function($scope, $location,$filter,Lead){
@@ -67,75 +174,24 @@ angular.module('submissionBuilderApp', ['resources.restApi','resources.AccountCo
                 parentSubmission:"",
                 childSubmissions: []
             };
-//            $scope.master = {
-//                parentSubmission:"",
-//                childSubmissions: [
-//                {
-//                    "lobs": [
-//                        {
-//                            "1": true,
-//                            "3": true,
-//                            "4": true
-//                        }
-//                    ],
-//                    "docs": [
-//                        {}
-//                    ],
-//                    "markets": [
-//                        {
-//                            "10ded992789b4f5d9aa8a922858767e0": false,
-//                            "8f25760a214b45a0bc4d0cca422b4c2f": false,
-//                            "f363f27632634d52b59dd55cd16fcb27": false,
-//                            "d2a868965be9409187c133dc04c759b2": true,
-//                            "514135f222c246bf9b839ff95ed0459c": true
-//                        }
-//                    ],
-//                    "index": 1
-//                },
-//                {
-//                    "lobs": [
-//                        {
-//                            "3": true,
-//                            "4": true
-//                        }
-//                    ],
-//                    "docs": [
-//                        {}
-//                    ],
-//                    "markets": [
-//                        {
-//                            "71f81ed490574741a9f35e7011c40a63": true
-//                        }
-//                    ],
-//                    "index": 2
-//                },
-//                {
-//                    "lobs": [
-//                        {
-//                            "1": false,
-//                            "2": true,
-//                            "3": true,
-//                            "4": true
-//                        }
-//                    ],
-//                    "docs": [
-//                        {}
-//                    ],
-//                    "markets": [
-//                        {
-//                            "2b7d144cfa3c416daa94940078133690": true,
-//                            "a370e0a44b5a4aa3b5eca76b2b24e415": true,
-//                            "31653245e9574cb09e43d28c4c5f2a10": true,
-//                            "6117f779717240759bf5453002582053": true
-//                        }
-//                    ],
-//                    "index": 3
-//                }
-//            ]
-//            };
+
+            $scope.testDocs = [
+                {
+                    id:1,
+                    docName:"AcordApp.pdf"
+                },
+                {
+                    id:2,
+                    docName:"LossHistory.pdf"
+                },
+                {
+                    id:3,
+                    docName:"SupplementalApp.pdf"
+                }
+            ];
 
             SubmissionBuilder.get({id:$routeParams.id},function (data) {
-                $scope.master.parentSubmission = data;
+                $scope.master.parentSubmission = data.properties;
             },angular.noop());
 
             $scope.marketCriteria = "";
@@ -156,7 +212,7 @@ angular.module('submissionBuilderApp', ['resources.restApi','resources.AccountCo
             $scope.formatLOBDetails = function formatLOBDetails(lob){
                 var result = "";
                 if(lob.targetDate)
-                    result += " Target Date: " + $filter('date')(lob.targetDate,['MM/dd/yy @ h:mm a']);
+                    result += " Target Date: " + $filter('date')(lob.targetDate,['MM/dd/yy']);
                 if(lob.targetPremium)
                     result += " Target Premium: " + $filter('currency')(lob.targetPremium);
 
@@ -169,29 +225,37 @@ angular.module('submissionBuilderApp', ['resources.restApi','resources.AccountCo
                 $scope.markets = {};
             };
 
-            $scope.buildSubmission = function buildSubmission(){
+            $scope.buildSubmissions = function buildSubmissions(){
+                angular.forEach($scope.markets, function(value, key){
+                    if(value==true)
+                        $scope.buildSubmission(key);
+                },angular.noop());
+
+                $scope.clear();
+                Logger.success("Success","Submission Created");
+            };
+
+            $scope.buildSubmission = function buildSubmission(market){
                 var submission = {};
                 submission.lobs = [];
                 submission.docs = [];
                 submission.markets = [];
+                submission.markets.push(market);
                 submission.index = $scope.index;
 
                 angular.forEach($scope.lobs, function(value, key){
                     if(value==true)
                         submission.lobs.push(key);
                 },angular.noop());
+
                 angular.forEach($scope.docs, function(value, key){
                     if(value==true)
                         submission.docs.push(key);
                 },angular.noop());
-                angular.forEach($scope.markets, function(value, key){
-                    if(value==true)
-                        submission.markets.push(key);
-                },angular.noop());
+
                 $scope.master.childSubmissions.push(submission);
                 $scope.index ++;
-                $scope.clear();
-                Logger.success("Success","Submission Created");
+
             };
 
             $scope.deleteSubmission = function deleteSubmission(submission){
@@ -207,54 +271,58 @@ angular.module('submissionBuilderApp', ['resources.restApi','resources.AccountCo
                     });
             };
 
-            $scope.editSubmission = function editSubmission(submission){
-                $scope.clear();
-                $scope.editingSubmission = true;
-                $scope.tempArrayIndex = $scope.master.childSubmissions.indexOf(submission);
-                $scope.tempIndex = $scope.index;
-                $scope.index = submission.index;
-                angular.forEach(submission.lobs, function(v,i){
-                    $scope.lobs[v]=true;
-                },angular.noop());
-                angular.forEach(submission.docs, function(v,i){
-                    $scope.docs[v]=true;
-                },angular.noop());
-                angular.forEach(submission.markets, function(v,i){
-                    $scope.markets[v]=true;
-                },angular.noop());
-
+            $scope.sendSubmissions = function sendSubmissions(){
+                $location.path('/list/');
             };
 
-            $scope.updateSubmission = function updateSubmission(){
-                var submission = {};
-                submission.lobs = [];
-                submission.docs = [];
-                submission.markets = [];
-                submission.index = $scope.index;
+//            $scope.editSubmission = function editSubmission(submission){
+//                $scope.clear();
+//                $scope.editingSubmission = true;
+//                $scope.tempArrayIndex = $scope.master.childSubmissions.indexOf(submission);
+//                $scope.tempIndex = $scope.index;
+//                $scope.index = submission.index;
+//                angular.forEach(submission.lobs, function(v,i){
+//                    $scope.lobs[v]=true;
+//                },angular.noop());
+//                angular.forEach(submission.docs, function(v,i){
+//                    $scope.docs[v]=true;
+//                },angular.noop());
+//                angular.forEach(submission.markets, function(v,i){
+//                    $scope.markets[v]=true;
+//                },angular.noop());
+//
+//            };
 
-                $scope.master.childSubmissions.splice($scope.tempArrayIndex,1);
-
-                angular.forEach($scope.lobs, function(value, key){
-                    if(value==true)
-                        submission.lobs.push(key);
-                },angular.noop());
-                angular.forEach($scope.docs, function(value, key){
-                    if(value==true)
-                        submission.docs.push(key);
-                },angular.noop());
-                angular.forEach($scope.markets, function(value, key){
-                    if(value==true)
-                        submission.markets.push(key);
-                },angular.noop());
-
-
-                $scope.master.childSubmissions.push(submission);
-
-                $scope.editingSubmission = false;
-                $scope.index = $scope.tempIndex;
-                $scope.clear();
-                Logger.success("Success","Submission Updated");
-            };
+//            $scope.updateSubmission = function updateSubmission(){
+//                var submission = {};
+//                submission.lobs = [];
+//                submission.docs = [];
+//                submission.markets = [];
+//                submission.index = $scope.index;
+//
+//                $scope.master.childSubmissions.splice($scope.tempArrayIndex,1);
+//
+//                angular.forEach($scope.lobs, function(value, key){
+//                    if(value==true)
+//                        submission.lobs.push(key);
+//                },angular.noop());
+//                angular.forEach($scope.docs, function(value, key){
+//                    if(value==true)
+//                        submission.docs.push(key);
+//                },angular.noop());
+//                angular.forEach($scope.markets, function(value, key){
+//                    if(value==true)
+//                        submission.markets.push(key);
+//                },angular.noop());
+//
+//
+//                $scope.master.childSubmissions.push(submission);
+//
+//                $scope.editingSubmission = false;
+//                $scope.index = $scope.tempIndex;
+//                $scope.clear();
+//                Logger.success("Success","Submission Updated");
+//            };
 
             $scope.cancelUpdate = function cancelUpdate(){
                 $scope.editingSubmission = false;
@@ -263,9 +331,19 @@ angular.module('submissionBuilderApp', ['resources.restApi','resources.AccountCo
             };
 
 
-            $scope.filterAndPrintLOB = function filterAndPrintLOB(lob){
+            $scope.getLobDescription = function getLobDescription(lob){
                 var lobInstance = $scope.filterItem(lob,$scope.master.parentSubmission.lead.linesOfBusiness);
-                return lobInstance.lineOfBusiness.description + " - " + $filter('date')(lobInstance.expirationDate,['MM/dd/yy']);
+                return lobInstance.description;
+            };
+
+            $scope.getLobPremium = function getLobPremium(lob){
+                var lobInstance = $scope.filterItem(lob,$scope.master.parentSubmission.lead.linesOfBusiness);
+                return $filter('currency')(lobInstance.targetPremium);
+            };
+
+            $scope.getLobTargetDate = function getLobTargetDate(lob){
+                var lobInstance = $scope.filterItem(lob,$scope.master.parentSubmission.lead.linesOfBusiness);
+                return $filter('date')(lobInstance.targetDate,['MM/dd/yy']);
             };
 
             $scope.filterAndPrintMarket = function filterAndPrintMarket(market){
@@ -273,7 +351,7 @@ angular.module('submissionBuilderApp', ['resources.restApi','resources.AccountCo
                 angular.forEach($scope.allMarkets, function(v,i){
                     if(v.linkId == market) {result = v;}
                 },angular.noop());
-                return result.accountContactName;
+                return result.accountContactName + "  (" + result.accountName + ")";
             };
 
             $scope.filterItem = function filterItem(item,array){
@@ -282,6 +360,18 @@ angular.module('submissionBuilderApp', ['resources.restApi','resources.AccountCo
                     if(v.id == item) {result = v;}
                 },angular.noop());
                 return result;
+            };
+
+            $scope.getTestDocName = function getTestDocName(doc){
+                var result;
+                angular.forEach($scope.testDocs, function(v,i){
+                    if(v.id == doc) {result = v;}
+                },angular.noop());
+                return result.docName;
+            };
+
+            $scope.removeLOBFromSubmission = function removeLOBFromSubmission(submission,lob){
+                $scope.master.childSubmissions[submission].lobs.splice($scope.master.childSubmissions[submission].lobs.indexOf(lob),1);
             };
 
 
