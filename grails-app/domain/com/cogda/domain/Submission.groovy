@@ -32,11 +32,12 @@ class Submission {
      */
     Submission parentSubmission
 
-    static transients = ['child']
+    static transients = ['child', 'submissionAccountContactLinks']
 
     static hasMany =[
             requestForActions:RequestForAction,
             childSubmissions:Submission,
+            submissionLeadLineOfBusinesses:SubmissionLeadLineOfBusiness
     ]//TODO: add submission Document
 
     static constraints = {
@@ -51,7 +52,11 @@ class Submission {
         parentSubmission(nullable: true)
         createdBy(nullable:false)
         submissionId(nullable:false, unique:true)
-
+        submissionLeadLineOfBusinesses(validator: { Set submissionLeadLineOfBusinesses, Submission submission ->
+            if(submission && submission.isChild() && !submissionLeadLineOfBusinesses){
+                return ['submission.child.leadLineOfBusinesses.required']
+            }
+        })
     }
 
     /**
@@ -77,5 +82,14 @@ class Submission {
             return sub.lead
         }
         return null  // TODO: Throw exception if no Lead is found on any of the Submissions.
+    }
+
+    /**
+     * Retrieves the associated SubmissionAccountContactLink domain
+     * classes for this Submission object.
+     * @return List of SubmissionAccountContactLink objects
+     */
+    List getSubmissionAccountContactLinks(){
+        return SubmissionAccountContactLink.findAllBySubmission(this)
     }
 }

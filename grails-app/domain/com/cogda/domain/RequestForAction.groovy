@@ -26,9 +26,11 @@ class RequestForAction {
 
     RequestForAction parentRequestForAction
 
+    String subject
+
     String message
 
-    static hasMany		= [assignees:String, requestForActionTypes:RequestForActionType, submissionLeadLineOfBusinesses:SubmissionLeadLineOfBusiness]
+    static hasMany		= [assignees:String, requestForActionTypes:RequestForActionType]
 
     static mapping = {
         message type:'text'
@@ -37,18 +39,5 @@ class RequestForAction {
     static constraints = {
         message maxSize:15000
         submission nullable: true
-        submissionLeadLineOfBusinesses(validator: { Set submissionLeadLineOfBusinesses, Submission submission ->
-            if(submission && submission.isChild() && !submissionLeadLineOfBusinesses){
-                return ['submission.child.leadLineOfBusinesses.required']
-            }
-        })
     }
-
-    /*
-     * Methods of the Domain Class
-     */
-//	@Override	// Override toString for a nicer / more descriptive UI 
-//	public String toString() {
-//		return "${name}";
-//	}
 }
