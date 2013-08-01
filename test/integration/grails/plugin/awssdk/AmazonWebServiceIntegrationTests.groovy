@@ -16,7 +16,7 @@ import org.codehaus.groovy.grails.commons.GrailsApplication
 import static org.junit.Assert.*
 import org.junit.*
 
-class AmazonWebServiceTests {
+class AmazonWebServiceIntegrationTests {
 
     GrailsApplication grailsApplication
 
