@@ -184,7 +184,21 @@ class BootStrap {
                 }
             }
 
+            if(!Registration.findBySubDomain("cochraneandporter")){
+                createCochranePorterRegistration()
+                def cochraneRegistration = Registration.findBySubDomain("cochraneandporter")
+                if(cochraneRegistration){
+                    customerAccountService.onboardCustomerAccount(cochraneRegistration)
+                }
+            }
 
+            if(!Registration.findBySubDomain("gaudreaugroup")){
+                createGaudreauGroupRegistration()
+                def gaudreauRegistration = Registration.findBySubDomain("gaudreaugroup")
+                if(gaudreauRegistration){
+                    customerAccountService.onboardCustomerAccount(gaudreauRegistration)
+                }
+            }
             //Create the email templates
             createInitialAccountActivationEmail()
             createReminderAccountActivationEmail()
@@ -590,6 +604,91 @@ class BootStrap {
                 registration.county = "CLARKE"
                 registration.registrationStatus = RegistrationStatus.APPROVED
                 registration.subDomain = "libertymutual"
+
+                registration.validate()
+
+                if(!registration.hasErrors() && registration.save()){
+                    println "Registration ${registration.subDomain} save succeeded!"
+                }else{
+                    println "Registration save failed: ${registration.errors}"
+                    registration.errors.each {
+                        println it
+                    }
+                }
+            }
+        }
+    }
+
+    def createCochranePorterRegistration(){
+
+        if (!Registration.findBySubDomain("cochraneandporter")) {
+
+            Registration.withTransaction {
+
+                Registration registration = new Registration()
+
+                registration.firstName = "Christian"
+                registration.lastName = "Jaynes"
+                registration.username = "cochrane"
+                registration.emailAddress = "cjaynes@cogda.com"
+                registration.password = springSecurityService.encodePassword("password")
+                registration.companyName = "Cochrane & Porter Insurance Agency. Inc."
+                registration.companyType = CompanyType.findByCode("Agency/Retailer")
+                registration.existingCompany = null
+                registration.companyTypeOther = null
+                registration.phoneNumber = "800-514-2667"
+                registration.streetAddressOne = "981 Worcester Street"
+                registration.streetAddressTwo = "Suite 200"
+                registration.streetAddressThree = ""
+                registration.city = "Wellesley"
+                registration.state = "MA"
+                registration.zipcode = "02842"
+                registration.county = "NORFOLK USA"
+                registration.registrationStatus = RegistrationStatus.APPROVED
+                registration.subDomain = "cochraneandporter"
+
+                registration.validate()
+
+                if(!registration.hasErrors() && registration.save()){
+                    println "Registration ${registration.subDomain} save succeeded!"
+                }else{
+                    println "Registration save failed: ${registration.errors}"
+                    registration.errors.each {
+                        println it
+                    }
+                }
+            }
+        }
+    }
+
+    // createGaudreauGroupRegistration
+    def createGaudreauGroupRegistration(){
+
+        if (!Registration.findBySubDomain("gaudreaugroup")) {
+
+            Registration.withTransaction {
+
+                Registration registration = new Registration()
+
+                registration.firstName = "Christian"
+                registration.lastName = "Jaynes"
+                registration.username = "gaudreau"
+                registration.emailAddress = "cjaynes@cogda.com"
+                registration.password = springSecurityService.encodePassword("password")
+                registration.companyName = "The Gaudreau Group"
+                registration.companyType = CompanyType.findByCode("Agency/Retailer")
+                registration.existingCompany = null
+                registration.companyTypeOther = null
+                registration.phoneNumber = "413.543.3534"
+                registration.streetAddressOne = "1984 Boston Road"
+                registration.streetAddressTwo = ""
+                registration.streetAddressThree = ""
+                registration.city = "Willbraham"
+                registration.state = "MA"
+                registration.zipcode = "01095"
+                registration.county = ""
+                registration.registrationStatus = RegistrationStatus.APPROVED
+                registration.subDomain = "gaudreaugroup"
 
                 registration.validate()
 
