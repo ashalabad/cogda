@@ -1,12 +1,12 @@
 
-<ul class="nav nav-pills">
-    <li><a href="#">Bind</a></li>
-    <li><a href="#">Assign Owner</a></li>
-    <li><a href="#">Decline</a></li>
-    <li><a href="#">Close</a></li>
-    <li><a href="#">Share</a></li>
-    <li><a href="#">Document Viewer</a></li>
-    <li><a href="#">Export to Email</a></li>
+<ul class="unstyled inline">
+    <li><a href="#" class="btn btn-mini"><i class="icon-exchange"></i> Bind</a></li>
+    <li><a href="#" class="btn btn-mini"><i class="icon-user"></i> Assign Owner</a></li>
+    <li><a href="#" class="btn btn-mini"><i class="icon-remove-sign"></i> Decline</a></li>
+    <li><a href="#" class="btn btn-mini"><i class="icon-remove"></i> Close</a></li>
+    <li><a href="#" class="btn btn-mini"><i class="icon-share"></i> Share</a></li>
+    <li><a href="#" class="btn btn-mini"><i class="icon-folder-open-alt"></i>  Document Viewer</a></li>
+    <li><a href="#" class="btn btn-mini"><i class="icon-envelope"></i> Export to Email</a></li>
 </ul>
 
     <div class="row">
@@ -71,48 +71,93 @@
     </table>
 
 <ul class="nav nav-pills">
-    <li class="active"><a href="#">Conversations</a></li>
-    <li><a href="">Quotes</a></li>
-    <li><a href="">Notes</a></li>
+    <li data-ng-class="{active:isActive('conversations')}" ><a href="" data-ng-click="activate('conversations')">Conversations</a></li>
+    <li data-ng-class="{active:isActive('quotes')}"><a href="" data-ng-click="activate('quotes')">Quotes</a></li>
+    <li data-ng-class="{active:isActive('notes')}"><a href=""  data-ng-click="activate('notes')">Notes</a></li>
 </ul>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>
-                <i class="icon-paper-clip"></i>
-            </th>
-            <th>Subject</th>
-            <th>From</th>
-            <th>Sent</th>
-            <th>Due</th>
-        </tr>
-    </thead>
-    <tbody data-ng-repeat="requestForAction in requestForActions">
-       <tr >
-           <td>
-            &nbsp;
-           </td>
-           <td>
-               {{ requestForAction.subject }}
-           </td>
 
-           <td>
-               {{ requestForAction.from }}
-           </td>
+<div data-ng-show="isActive('conversations')">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>
+                    <i class="icon-paper-clip"></i>
+                </th>
+                <th>Subject</th>
+                <th>From</th>
+                <th>Sent</th>
+                <th>Due</th>
+            </tr>
+        </thead>
+        <tbody data-ng-repeat="requestForAction in requestForActions">
+           <tr >
+               <td>
+                &nbsp;
+               </td>
+               <td>
+                   {{ requestForAction.subject }}
+               </td>
 
-           <td>
-               {{ requestForAction.sentDate }}
-           </td>
+               <td>
+                   {{ requestForAction.from }}
+               </td>
 
-           <td>
-               {{ requestForAction.dueDate }}
-           </td>
-       </tr>
+               <td>
+                   {{ requestForAction.sentDate }}
+               </td>
 
-    </tbody>
-</table>
+               <td>
+                   {{ requestForAction.dueDate }}
+               </td>
+           </tr>
 
+        </tbody>
+    </table>
+</div>
+
+<div data-ng-show="isActive('quotes')" id="quotesDiv">
+
+</div>
+
+<div data-ng-show="isActive('notes')" id="notesDiv">
+
+    <div data-ng-form = "noteForm" class="form-horizontal">
+        <fieldset class="embedded">
+            <legend>
+                Add Note
+            </legend>
+
+            <label><input type = "radio" value="visit" name="noteType">Visit</label>
+            <label><input type = "radio" value="call"  name="noteType">Call</label>
+            <label><input type = "radio" value="other" name="noteType">Other</label>
+
+            <textarea name="noteText">
+
+            </textarea>
+
+
+            <div class="form-actions">
+                <button type="submit"
+                        class="btn btn-primary"
+                        data-ng-click="saveNote(noteForm)"
+                        data-ng-disabled="!canSaveNote(notesForm)">
+                    <i class="icon-plus icon-white"></i>
+                   Save Note</button>
+            </div>
+        </fieldset>
+
+    </div>
+
+    <ul class="unstyled" data-ng-repeat="note in notes">
+        <li>
+            <strong>{{ note.noteType }}</strong>
+            <strong>{{ note.dateCreated | date }}</strong>
+            {{ note.noteText }}
+        </li>
+    </ul>
+
+</div>
 
 
 

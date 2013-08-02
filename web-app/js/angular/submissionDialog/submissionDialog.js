@@ -120,6 +120,69 @@ angular.module('submissionDialogApp', ['resources.restApi','resources.AccountCon
 
             $scope.isCollapsed = false;
 
+            $scope.activePill = "conversations";
+            $scope.activate = function(pillName){
+                $scope.activePill= pillName;
+            };
+            $scope.isActive = function(pillName){
+                return ($scope.activePill == pillName);
+            };
+
+            $scope.notes = [
+                {
+                    noteText: 'A visit',
+                    noteType: 'visit',
+                    dateCreated: new Date(),
+                    lastUpdated: new Date(),
+                    id: 1
+                }
+
+            ];
+
+            var defaultNote = {
+                noteText: '',
+                dateCreated: new Date(),
+                lastUpdated: null,
+                id: null
+            };
+
+            $scope.canSaveNote = function(noteForm){
+                return (noteForm.noteType && noteForm.noteText)
+            }
+
+            $scope.saveNote = function(noteForm){
+
+                if(!noteForm.id){
+                    var newNote = {
+                        noteText: noteForm.noteText,
+                        noteType: noteForm.noteType,
+                        dateCreated: new Date(),
+                        lastUpdated: new Date(),
+                        id: $scope.notes.length + 1
+                    };
+                    $scope.notes.push(newNote);
+                    return;
+                }
+
+                if(noteForm.id){
+                    // edit mode
+
+                }
+
+            }
+
+            $scope.getNote = function(idx){
+
+            }
+
+            $scope.editNote = function(note, idx){
+
+            }
+
+            $scope.deleteNote = function(idx){
+                $scope.notes.splice(idx, 1);
+            }
+
         }
     ])
 
