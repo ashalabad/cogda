@@ -483,4 +483,33 @@ class CustomerAccountService {
         }
         return null
     }
+
+    /**
+     * This method verifies that a CustomerAccount is a Cogda Solutions, LLC.
+     * CustomerAccount - these types of accounts are used to live test certain
+     * features and also to onboard new CustomerAccounts via the registration
+     * system.
+     * @param customerAccountId
+     * @return Boolean true if this is a Cogda Solutions, LLC. internal customer account
+     */
+    public Boolean isInternalCustomerAccount(Long customerAccountId){
+        CustomerAccount customerAccount = CustomerAccount.get(customerAccountId)
+        if(customerAccount){
+            return isInternalCustomerAccount(customerAccount)
+        }else{
+            return false
+        }
+    }
+
+    /**
+     * This method verifies that a CustomerAccount is a Cogda Solutions, LLC.
+     * CustomerAccount - these types of accounts are used to live test certain
+     * features and also to onboard new CustomerAccounts via the registration
+     * system.
+     * @param customerAccount
+     * @return Boolean true if this is a Cogda Solutions, LLC. internal customer account
+     */
+    public Boolean isInternalCustomerAccount(CustomerAccount customerAccount){
+        return customerAccount.internalSystemAccount
+    }
 }
