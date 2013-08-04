@@ -38,6 +38,11 @@ class CompanySettings {
 	Date	dateCreated
 	Date	lastUpdated
 
+    String  storageRegion
+    String  keyPublicEncoded
+    String  keyPrivateEncoded
+    String  cipherAlgorithm
+
 	static belongsTo	= [company:Company]	// tells GORM to cascade commands: e.g., delete this object if the "parent" is deleted.
 
     static mapping = {
@@ -63,6 +68,10 @@ class CompanySettings {
         logoutNotification(nullable:true)
         targetDateRequired(nullable:true)
         targetPremiumRequired(nullable:true)
+        storageRegion(nullable: true)
+        keyPublicEncoded(nullable: true)
+        keyPrivateEncoded(nullable: true)
+        cipherAlgorithm(nullable: true)
     }
 
     /*

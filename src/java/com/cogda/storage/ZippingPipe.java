@@ -10,7 +10,6 @@ import java.util.zip.ZipOutputStream;
 /**
  * Zipping pipe
  * reads from the input stream and produces zipped input stream
- * This class is not thread-safe
  */
 public class ZippingPipe extends InputStream {
 
@@ -19,6 +18,7 @@ public class ZippingPipe extends InputStream {
     private PipedOutputStream pipedOut;
     private ZipOutputStream zipOutputStream;
     private byte[] buffer=new byte[8192];
+    private boolean flushed=false;
 
     /**
      * Zip Pipe constructor
@@ -27,10 +27,11 @@ public class ZippingPipe extends InputStream {
      * @throws IOException
      */
     public ZippingPipe(String entryName, InputStream input) throws IOException {
+        this.input=input;
         pipedInput=new PipedInputStream();
         pipedOut=new PipedOutputStream(pipedInput);
         zipOutputStream=new ZipOutputStream(pipedOut);
-        zipOutputStream.putNextEntry(new ZipEntry("data"));
+        zipOutputStream.putNextEntry(new ZipEntry(entryName));
     }
 
     /**
@@ -45,28 +46,28 @@ public class ZippingPipe extends InputStream {
     @Override
     public int read() throws IOException {
         pushFromInput();
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        return pipedInput.read();
     }
     @Override
-    public int read(byte[] buffer){
+    public int read(byte[] buffer) throws IOException {
         pushFromInput();
-        return 0;
+        return pipedInput.read(buffer);
     }
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
         pushFromInput();
-        return super.read(b, off, len);    //To change body of overridden methods use File | Settings | File Templates.
+        return pipedInput.read(b, off, len);
     }
 
     @Override
     public long skip(long n) throws IOException {
-        return 0;    //To change body of overridden methods use File | Settings | File Templates.
+        return 0;
     }
 
     @Override
     public int available() throws IOException {
         pushFromInput();
-        return super.available();    //To change body of overridden methods use File | Settings | File Templates.
+        return pipedInput.available();
     }
 
     @Override
@@ -76,21 +77,48 @@ public class ZippingPipe extends InputStream {
 
     @Override
     public synchronized void mark(int readlimit) {
-
+        pipedInput.mark(readlimit);
     }
 
     @Override
     public synchronized void reset() throws IOException {
-
+           pipedInput.reset();
     }
 
     @Override
     public boolean markSupported() {
-        return false;
+        return pipedInput.markSupported();
     }
 
-    private void pushFromInput()
+    /**
+     * Push data from the input stream
+     * @throws IOException
+     */
+    private synchronized void pushFromInput() throws IOException
     {
+        while(!flushed && pipedInput.available()==0)
+            moveFromInput();
+    }
+
+    /**
+     * Move data from the input stream to the zip pipe
+     * @throws IOException
+     */
+    private void moveFromInput() throws IOException
+    {
+        if(flushed)
+            return;
+        int read=input.read(buffer);
+        if(read==-1) {
+            if(!flushed) {
+                flushed=true;
+                zipOutputStream.closeEntry();
+                zipOutputStream.finish();
+                pipedOut.flush();
+                pipedOut.close();
+            }
+        } else
+            zipOutputStream.write(buffer,0,read);
 
     }
 }
