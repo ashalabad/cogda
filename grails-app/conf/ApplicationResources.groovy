@@ -181,4 +181,11 @@ modules = {
         resource url:'js/angular/submissionDialog/submissionDialog.js'
         resource url:'js/angular/submissionDialog/submissionDialog.css'
     }
+
+    registrationApproval {
+        dependsOn 'bootstrap, bootstrap_utils, angular'
+        resource url:'js/angular/resources/RegistrationApproval.js',              disposition: 'head'
+        resource url:'js/angular/registrationApproval/registrationApproval.js'
+        resource url:'js/angular/registrationApproval/registrationApproval.css'
+    }
 }
