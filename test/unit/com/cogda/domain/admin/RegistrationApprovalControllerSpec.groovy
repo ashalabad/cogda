@@ -321,7 +321,7 @@ class RegistrationApprovalControllerSpec extends Specification{
         response.json.lastName             == registration.lastName
     }
 
-    def "delete an existing Regisrtation"(){
+    def "delete an existing Registration"(){
         given: "an existing id"
         def looseCurrentTenantMock = mockFor(CurrentTenant, true)
         looseCurrentTenantMock.demand.get(1..1) { internalCustomerAccount.id.toInteger() }
