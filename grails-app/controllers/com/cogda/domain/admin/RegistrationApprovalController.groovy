@@ -43,6 +43,21 @@ class RegistrationApprovalController extends GsonBaseController {
         return isValidRequest()
     }
 
+    @Secured(['ROLE_ADMINISTRATOR'])
+    def index(){
+
+    }
+
+    @Secured(['ROLE_ADMINISTRATOR'])
+    def listPartial(){
+        render(view:"listPartial")
+    }
+
+    @Secured(['ROLE_ADMINISTRATOR'])
+    def detailPartial(){
+        render(view:"detailPartial")
+    }
+
     /**
      * Validate Request is used to determine if the current tenant maps to a CustomerAccount with
      * internalSystemAccount = true
