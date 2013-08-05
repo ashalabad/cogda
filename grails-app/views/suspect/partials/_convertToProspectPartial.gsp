@@ -2,7 +2,7 @@
     <div class="modal-header">
         <h3>Convert to Prospect</h3>
     </div>
-    <div class="modal-body" style="max-height: 768px">
+    <div class="modal-body" style="max-height: 500px">
         <form>
             <div data-ng-include="" src="'/leadLineOfBusiness/createPartial'"></div>
         </form>
