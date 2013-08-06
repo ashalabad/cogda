@@ -750,10 +750,10 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
                     $scope.lead.linesOfBusiness.push(leadLineOfBusiness);
                     $scope.cancelAddLeadLineOfBusiness();
                 }).$then(updateSuccessCallback, updateErrorCallback);
-                $scope.leadLineOfBusiness = {};
             };
 
             var updateSuccessCallback = function (response) {
+                $scope.leadLineOfBusiness = {};
                 Logger.success("Line Of Business Added Successfully", "Success");
             };
 
