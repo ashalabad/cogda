@@ -28,25 +28,6 @@
         </div>
 
         <div class="control-group fieldcontain">
-            <label for="targetDate" class="control-label">
-                <g:message code="leadLineOfBusiness.targetDate.label" default="Target Date"/><span
-                    class="required-indicator">*</span>
-            </label>
-
-            <div class="controls">
-                <div class="input-append">
-                    <input type="text" id="targetDate" class="input-medium"
-                           data-ng-model="leadLineOfBusiness.targetDate"
-                           data-date-format="mm/dd/yyyy"
-                           placeholder="<g:message code="leadLineOfBusiness.targetDate.label"/>"
-                           data-bs-datepicker>
-                    <button type="button" class="btn" data-toggle="mydatepicker"><i class="icon-calendar"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <div class="control-group fieldcontain">
             <label for="expirationDate" class="control-label">
                 <g:message code="leadLineOfBusiness.expirationDate.label" default="Expiration Date"/><span
                     class="required-indicator">*</span>
@@ -54,11 +35,30 @@
 
             <div class="controls">
                 <div class="input-append">
-                    <input type="text" id="expirationDate" class="input-medium"
+                    <input type="text" id="expirationDate" class="input-small"
                            data-ng-model="leadLineOfBusiness.expirationDate"
                            placeholder="<g:message code="leadLineOfBusiness.expirationDate.label"
                                                    default="Expiration Date"/>"
-                           data-date-format="mm/dd/yyyy" data-bs-datepicker>
+                           data-date-format="mm/dd/yyyy" data-start-date="new Date()" data-bs-datepicker>
+                    <button type="button" class="btn" data-toggle="mydatepicker"><i class="icon-calendar"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="control-group fieldcontain">
+            <label for="targetDate" class="control-label">
+                <g:message code="leadLineOfBusiness.targetDate.label" default="Target Date"/><span
+                    class="required-indicator">*</span>
+            </label>
+
+            <div class="controls">
+                <div class="input-append">
+                    <input type="text" id="targetDate" class="input-small"
+                           data-ng-model="leadLineOfBusiness.targetDate"
+                           data-date-format="mm/dd/yyyy" data-start-date="new Date()" data-end-date="{{leadLineOfBusiness.expirationDate | bsDateFilter | date:shortDate }}"
+                           placeholder="<g:message code="leadLineOfBusiness.targetDate.label"/>"
+                           data-bs-datepicker>
                     <button type="button" class="btn" data-toggle="mydatepicker"><i class="icon-calendar"></i>
                     </button>
                 </div>
@@ -131,5 +131,8 @@
                        data-ng-model="leadLineOfBusiness.remarket">
             </div>
         </div>
+        <pre class="container">
+            leadLineOfBusinessForm: {{leadLineOfBusinessForm.$error|json}}
+        </pre>
     </div>
 </fieldset>
