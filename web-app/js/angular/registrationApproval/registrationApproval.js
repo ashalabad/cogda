@@ -37,7 +37,6 @@ angular.module('registrationApprovalApp', ['ui.bootstrap', 'resources.restApi', 
             };
 
             $scope.isProcessable = function(item) {
-                console.log(item.companyName + " new Company: " + item.newCompany);
                 return (item.registrationStatusValue != "APPROVED" && item.newCompany);
             };
 
@@ -85,6 +84,11 @@ angular.module('registrationApprovalApp', ['ui.bootstrap', 'resources.restApi', 
             $scope.approveButtonClickable = false;
             $scope.rejectButtonClickable = true;
             $scope.registration = RegistrationApproval.get({id:$routeParams.id});
+
+            $scope.isRejectable = function(){
+                return ($scope.registration.registrationStatus != "REJECTED" &&
+                        $scope.registration.registrationStatus != "APPROVED")
+            }
 
             $scope.isRejectButtonClickable = function(){
                 return $scope.rejectButtonClickable;
@@ -136,7 +140,6 @@ angular.module('registrationApprovalApp', ['ui.bootstrap', 'resources.restApi', 
              */
             var approveErrorCallback = function(response){
                 $scope.toggleProcessingApproval();
-                Logger.error("Rejected Sub Domain Value " + $scope.subDomain, "Field Error");
                 $scope.subDomain = "";
                 // apply errors to the $scope.errors object
                 Logger.errorValidationMessageBuilder(response, $scope);
