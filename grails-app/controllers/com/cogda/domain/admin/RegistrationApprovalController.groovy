@@ -77,7 +77,9 @@ class RegistrationApprovalController extends GsonBaseController {
     @Secured(['ROLE_ADMINISTRATOR'])
     def list(){
         params.max = Math.min(params.max ? params.int('max') : 10, 100)  // always pass in max so you get a PagedResultSet returned.
-
+        params.offset = params.sort ? params.int('sort') : 0
+        params.sort = params.sort ?: 'dateCreated'
+        params.order  = params.order  ?: 'desc'
         List registrations = Registration.list(params)
         response.addIntHeader X_PAGINATION_TOTAL, registrations.totalCount
 
