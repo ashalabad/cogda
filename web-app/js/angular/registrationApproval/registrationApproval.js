@@ -23,23 +23,56 @@ angular.module('registrationApprovalApp', ['ui.bootstrap', 'resources.restApi', 
             $scope.processDetails = '<div class="ngCellText"><button  type="button" class="btn btn-info btn-mini" data-ng-click="process(row.entity)" data-ng-hide="!isProcessable(row.entity)" ><i class="icon-edit"></i>Process</button></div>';
             $scope.rowTemplate = '<div data-ng-style="{\'cursor\': row.cursor, \'z-index\': col.zIndex() }" ng-repeat="col in renderedColumns" ng-class="col.colIndex()" data-ng-dblclick="show(row)" class="ngCell {{col.cellClass}}" ng-cell></div>';
             $scope.selectedRegistrationApprovals = [];
+
+            /* Implementing Paging */
+            $scope.totalServerItems = 0;
+
             $scope.pagingOptions = {
                 pageSizes: [10, 25, 50, 100],
                 pageSize: 10,
                 currentPage: 1
             };
-            $scope.process = function (item) {
-                $location.path('/process/' + item.id);
-            };
 
-            $scope.show = function (item) {
-                $location.path('/show/' + item.id);
-            };
+//            $scope.setPagingData = function(data, page, pageSize){
+//                var pagedData = data.slice((page - 1) * pageSize, page * pageSize);
+//                $scope.myData = pagedData;
+//                $scope.totalServerItems = data.length;
+//                if (!$scope.$$phase) {
+//                    $scope.$apply();
+//                }
+//            };
 
-            $scope.isProcessable = function(item) {
-                return (item.registrationStatusValue != "APPROVED" && item.newCompany);
-            };
+//            $scope.getPagedDataAsync = function (pageSize, page, searchText) {
+//                setTimeout(function () {
+//                    var data;
+//                    if (searchText) {
+//                        var ft = searchText.toLowerCase();
+//                        $http.get('largeLoad.json').success(function (largeLoad) {
+//                            data = largeLoad.filter(function(item) {
+//                                return JSON.stringify(item).toLowerCase().indexOf(ft) != -1;
+//                            });
+//                            $scope.setPagingData(data,page,pageSize);
+//                        });
+//                    } else {
+//                        $http.get('largeLoad.json').success(function (largeLoad) {
+//                            $scope.setPagingData(largeLoad,page,pageSize);
+//                        });
+//                    }
+//                }, 100);
+//            };
 
+//            $scope.getPagedDataAsync($scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage);
+
+//            $scope.$watch('pagingOptions', function (newVal, oldVal) {
+//                if (newVal !== oldVal && newVal.currentPage !== oldVal.currentPage) {
+//                    $scope.getPagedDataAsync($scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage, $scope.filterOptions.filterText);
+//                }
+//            }, true);
+//            $scope.$watch('filterOptions', function (newVal, oldVal) {
+//                if (newVal !== oldVal) {
+//                    $scope.getPagedDataAsync($scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage, $scope.filterOptions.filterText);
+//                }
+//            }, true);
             $scope.filteringText = '';
 
             $scope.filterOptions = {
@@ -73,6 +106,22 @@ angular.module('registrationApprovalApp', ['ui.bootstrap', 'resources.restApi', 
                 $scope.registrationApprovals = list;
                 $scope.total = parseInt(headers('X-Pagination-Total'));
             }, angular.noop());
+
+            /* End paging implementation */
+
+            $scope.process = function (item) {
+                $location.path('/process/' + item.id);
+            };
+
+            $scope.show = function (item) {
+                $location.path('/show/' + item.id);
+            };
+
+            $scope.isProcessable = function(item) {
+                return (item.registrationStatusValue != "APPROVED" && item.newCompany);
+            };
+
+
 
 
         }])
