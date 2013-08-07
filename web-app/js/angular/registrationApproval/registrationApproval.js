@@ -3,27 +3,33 @@ angular.module('registrationApprovalApp', ['ui.bootstrap', 'resources.restApi', 
     .config(function ($routeProvider) {
         $routeProvider
             .when('/list', {templateUrl: '/registrationApproval/listPartial', controller: 'ListRegistrationApprovalController'})
+            .when('/process/:id', {templateUrl: '/registrationApproval/processPartial', controller: 'ApproveRegistrationApprovalController'})
+            .when('/show/:id', {templateUrl: '/registrationApproval/detailPartial', controller: 'ShowRegistrationApprovalController'})
             .otherwise({ redirectTo: '/list' });
     })
     .controller('ListRegistrationApprovalController', ['$scope', '$routeParams', '$location', 'RestApi', 'Logger', 'RegistrationApproval',
         function ($scope, $routeParams, $location, RestApi, Logger, RegistrationApproval) {
 
             $scope.registrationApprovals = [];
-            $scope.showDetails = '<div class="ngCellText"><button id="showBtn" type="button" class="btn btn-primary btn-mini" ng-click="show(row.entity)" ><i class="icon-eye-open"></i>Details</button></div>';
-            $scope.editDetails = '<div class="ngCellText"><button id="editBtn" type="button" class="btn btn-primary btn-mini" ng-click="edit(row.entity)" ><i class="icon-edit"></i>Edit</button></div>';
-            $scope.rowTemplate = '<div ng-style="{\'cursor\': row.cursor, \'z-index\': col.zIndex() }" ng-repeat="col in renderedColumns" ng-class="col.colIndex()" data-ng-dblclick="edit(row)" class="ngCell {{col.cellClass}}" ng-cell></div>';
+            $scope.showDetails = '<div class="ngCellText"><button  type="button" class="btn btn-primary btn-mini" data-ng-click="show(row.entity)" ><i class="icon-eye-open"></i>Details</button></div>';
+            $scope.processDetails = '<div class="ngCellText"><button  type="button" class="btn btn-info btn-mini" data-ng-click="process(row.entity)" data-ng-hide="isApproved(row.entity)" ><i class="icon-edit"></i>Process</button></div>';
+            $scope.rowTemplate = '<div data-ng-style="{\'cursor\': row.cursor, \'z-index\': col.zIndex() }" ng-repeat="col in renderedColumns" ng-class="col.colIndex()" data-ng-dblclick="show(row)" class="ngCell {{col.cellClass}}" ng-cell></div>';
             $scope.selectedRegistrationApprovals = [];
             $scope.pagingOptions = {
                 pageSizes: [10, 25, 50, 100],
                 pageSize: 10,
                 currentPage: 1
             };
-            $scope.edit = function (item) {
-                $location.path('/edit/' + item.id);
+            $scope.process = function (item) {
+                $location.path('/process/' + item.id);
             };
 
             $scope.show = function (item) {
-                $location.path('/edit/' + item.id);
+                $location.path('/show/' + item.id);
+            };
+
+            $scope.isApproved = function(item) {
+                return (item.registrationStatusValue == "APPROVED");
             };
 
             $scope.filteringText = '';
@@ -37,13 +43,13 @@ angular.module('registrationApprovalApp', ['ui.bootstrap', 'resources.restApi', 
                 data: 'registrationApprovals',
                 columnDefs: [
                     {field: 'companyName', displayName: 'Company Name'},
-                    {field: 'companyType.code', displayName: 'Company Type'},
+                    {field: 'companyTypeCode', displayName: 'Company Type'},
                     {field: 'firstName', displayName: 'First'},
                     {field: 'lastName', displayName: 'Last'},
                     {field: 'emailAddress', displayName: 'Email'},
                     {field: 'phoneNumber', displayName: 'Phone #'},
-                    {field: 'registrationStatus', displayName: 'Status'},
-                    {cellTemplate: $scope.editDetails, displayName: "", width: 'auto'},
+                    {field: 'registrationStatusValue', displayName: 'Status'},
+                    {cellTemplate: $scope.processDetails, displayName: "", width: '10%'},
                     {cellTemplate: $scope.showDetails, displayName: "", width: '7%'}
                 ],
                 selectedItems: $scope.selectedItems,
@@ -61,4 +67,77 @@ angular.module('registrationApprovalApp', ['ui.bootstrap', 'resources.restApi', 
             }, angular.noop());
 
 
-        }]);
+        }])
+
+    .controller('ApproveRegistrationApprovalController', ['$scope', '$routeParams', '$location', 'RestApi', 'Logger', 'RegistrationApproval',
+        function ($scope, $routeParams, $location, RestApi, Logger, RegistrationApproval) {
+            $scope.errors = {};
+            $scope.registration = {};
+            $scope.approveButtonClickable = false;
+            $scope.registration = RegistrationApproval.get({id:$routeParams.id});
+
+            $scope.isApproveButtonClickable = function(){
+                return $scope.processRegistrationForm.$valid;
+            };
+
+            $scope.toggleApproveButtonClickable = function(){
+                $scope.approveButtonClickable = !$scope.approveButtonClickable;
+            };
+
+            var processingApproval = false;
+            $scope.isProcessingApproval = function(){
+                return processingApproval;
+            }
+            $scope.toggleProcessingApproval = function(){
+                processingApproval = !processingApproval;
+            }
+
+            $scope.approveRegistration = function(processRegistrationForm) {
+                $scope.toggleProcessingApproval();
+
+                var approvalRequest = {
+                    id: $routeParams.id,
+                    subDomain: $scope.subDomain
+                };
+
+                RegistrationApproval.approve(approvalRequest).$then(approveSuccessCallback, approveErrorCallback);
+            }
+
+            /**
+             * approveSuccessCallback - success handler for successful approval
+             * @param response
+             */
+            var approveSuccessCallback = function(response){
+                Logger.success("Registration Approved Successfully - Customer On-boarding Process Completed", "Success"); // apply the success message to toastr
+                $location.path('/list');
+            };
+
+            /**
+             * approveErrorCallback - error handler for unsuccessful approval
+             * @param response
+             */
+            var approveErrorCallback = function(response){
+                $scope.toggleProcessingApproval();
+                Logger.error("Rejected Sub Domain Value " + $scope.subDomain, "Field Error");
+                $scope.subDomain = "";
+                // apply errors to the $scope.errors object
+                switch (response.status) {
+                    case 422: // validation error - display errors alongside form fields
+                        $scope.errors = response.data.errors;
+                        for(i in $scope.errors){
+                            for(var j = 0; j < $scope.errors[i].length; j++){
+                                Logger.error($scope.errors[i][j], "Field Error");
+                            }
+                        }
+                        break;
+                    default:
+                        error("Unhandled Error Thrown", "Error " + response.status);
+                }
+            }
+
+            $scope.rejectRegistration = function(processRegistrationForm) {
+                $scope.toggleProcessingApproval();
+                console.log(processRegistrationForm);
+            }
+        }])
+;
