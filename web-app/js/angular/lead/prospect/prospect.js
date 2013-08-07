@@ -230,7 +230,7 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
             $scope.noteTypes = NoteType.list();
             $scope.businessTypes = BusinessTypes.list();
             $scope.lead.linesOfBusiness = [];
-
+            $scope.editingLineOfBusiness = false;
             $scope.addingLeadLineOfBusiness = false;
 
             $scope.addLeadLineOfBusiness = function () {
