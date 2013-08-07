@@ -273,7 +273,7 @@ class BootStrap {
         if(!customerAccount){
             log.error "Unable to create admin customer account users - customerAccount with subDomain: $adminCustomerAccountSubdomain was not found"
         }else{
-            def userList = ['lfleming', 'tpatterson', 'lpilgrim', 'srich', 'selias', 'cjaynes', 'gricker', 'delias', 'julia', 'clacasa', 'msabau']
+            def userList = ['lfleming', 'tpatterson', 'lpilgrim', 'srich', 'selias', 'cjaynes', 'gricker', 'delias', 'julia', 'clacasa', 'msabau', 'jclark']
             customerAccount.withThisTenant {
                 List cogdaRoles = ["ROLE_COGDA_ADMINISTRATOR", "ROLE_COGDA_ADMIN_REGISTRATION"]
                 createCogdaOnlyRoles(cogdaRoles)
