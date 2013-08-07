@@ -121,18 +121,7 @@ angular.module('registrationApprovalApp', ['ui.bootstrap', 'resources.restApi', 
                 Logger.error("Rejected Sub Domain Value " + $scope.subDomain, "Field Error");
                 $scope.subDomain = "";
                 // apply errors to the $scope.errors object
-                switch (response.status) {
-                    case 422: // validation error - display errors alongside form fields
-                        $scope.errors = response.data.errors;
-                        for(i in $scope.errors){
-                            for(var j = 0; j < $scope.errors[i].length; j++){
-                                Logger.error($scope.errors[i][j], "Field Error");
-                            }
-                        }
-                        break;
-                    default:
-                        error("Unhandled Error Thrown", "Error " + response.status);
-                }
+                Logger.errorValidationMessageBuilder(response, $scope);
             }
 
             $scope.rejectRegistration = function(processRegistrationForm) {
