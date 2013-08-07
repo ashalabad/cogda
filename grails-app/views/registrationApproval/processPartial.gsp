@@ -46,7 +46,7 @@
 
         <h3><g:message code="registrationApproval.currentRegistration.label"/>
 
-        <span class="pull-right">
+        <span class="pull-right" data-ng-show="isRejectable()">
             <button class="btn btn-danger" data-ng-click="rejectRegistration(processRegistrationForm)"
                     data-ng-show="!isProcessingApproval()" data-ng-disabled="!isRejectButtonClickable()">
                 <i class="icon-remove"></i>&nbsp;
