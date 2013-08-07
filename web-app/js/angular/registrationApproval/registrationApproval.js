@@ -56,7 +56,7 @@ angular.module('registrationApprovalApp', ['ui.bootstrap', 'resources.restApi', 
                     {field: 'firstName', displayName: 'First'},
                     {field: 'lastName', displayName: 'Last'},
                     {field: 'emailAddress', displayName: 'Email'},
-                    {field: 'phoneNumber', displayName: 'Phone #'},
+                    {field: 'phoneNumber', displayName: 'Phone'},
                     {field: 'registrationStatusValue', displayName: 'Status'},
                     {cellTemplate: $scope.processDetails, displayName: "", width: '10%'},
                     {cellTemplate: $scope.showDetails, displayName: "", width: '7%'}
