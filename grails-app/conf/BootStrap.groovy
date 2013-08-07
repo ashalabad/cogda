@@ -282,6 +282,8 @@ class BootStrap {
                         User user = new User()
                         user.username = username
                         user.password = password
+                        user.enabled  = true
+                        user.accountExpired = false
                         userService.createWithStringRoles(user, cogdaRoles)
                         if(user.hasErrors()){
                             log.error "Errors thrown adding User with username $username for customerAccount ${customerAccount.subDomain} -> ${user.errors.allErrors}"
