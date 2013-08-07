@@ -48,7 +48,7 @@
 
         <span class="pull-right">
             <button class="btn btn-danger" data-ng-click="rejectRegistration(processRegistrationForm)"
-                    data-ng-show="!isProcessingApproval()">
+                    data-ng-show="!isProcessingApproval()" data-ng-disabled="!isRejectButtonClickable()">
                 <i class="icon-remove"></i>&nbsp;
                 <g:message code="registrationApproval.reject.button"/>
             </button>
