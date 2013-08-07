@@ -275,9 +275,7 @@ class BootStrap {
         }else{
             def userList = ['lfleming', 'tpatterson', 'lpilgrim', 'srich', 'selias', 'cjaynes', 'gricker', 'delias', 'julia', 'clacasa', 'msabau', 'jclark']
             customerAccount.withThisTenant {
-                List cogdaRoles = ["ROLE_COGDA_ADMINISTRATOR", "ROLE_COGDA_ADMIN_REGISTRATION"]
-                createCogdaOnlyRoles(cogdaRoles)
-
+                List cogdaRoles = ["ROLE_ADMINISTRATOR", "ROLE_USER"]
                 String password = "cogda1" // cogda one
                 userList.each { String username ->
                     if(!User.findByUsername(username)){
@@ -293,20 +291,6 @@ class BootStrap {
             }
         }
     }
-
-    private void createCogdaOnlyRoles(cogdaRoles){
-
-        cogdaRoles.each { String authority ->
-            if(!Role.findByAuthority(authority)){
-                Role role = new Role(authority: authority, systemInternalRole: true)
-                role.save()
-                if(role.hasErrors()){
-                    log.error "createCogdaOnlyRoles Error saving System Role with authority: $authority"
-                }
-            }
-        }
-    }
-
 
     def createRennaissanceUserDummyData(Registration registration){
         CustomerAccount customerAccount = CustomerAccount.findBySubDomain(registration.subDomain)
