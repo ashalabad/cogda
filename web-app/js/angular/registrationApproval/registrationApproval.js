@@ -7,6 +7,14 @@ angular.module('registrationApprovalApp', ['ui.bootstrap', 'resources.restApi', 
             .when('/show/:id', {templateUrl: '/registrationApproval/detailPartial', controller: 'ShowRegistrationApprovalController'})
             .otherwise({ redirectTo: '/list' });
     })
+    .controller('ShowRegistrationApprovalController', ['$scope', '$routeParams', '$location', 'RestApi', 'Logger', 'RegistrationApproval',
+        function ($scope, $routeParams, $location, RestApi, Logger, RegistrationApproval) {
+
+            $scope.registration = {};
+            $scope.registration = RegistrationApproval.get({id:$routeParams.id});
+
+        }])
+
     .controller('ListRegistrationApprovalController', ['$scope', '$routeParams', '$location', 'RestApi', 'Logger', 'RegistrationApproval',
         function ($scope, $routeParams, $location, RestApi, Logger, RegistrationApproval) {
 
