@@ -20,7 +20,7 @@ angular.module('registrationApprovalApp', ['ui.bootstrap', 'resources.restApi', 
 
             $scope.registrationApprovals = [];
             $scope.showDetails = '<div class="ngCellText"><button  type="button" class="btn btn-primary btn-mini" data-ng-click="show(row.entity)" ><i class="icon-eye-open"></i>Details</button></div>';
-            $scope.processDetails = '<div class="ngCellText"><button  type="button" class="btn btn-info btn-mini" data-ng-click="process(row.entity)" data-ng-hide="isApproved(row.entity)" ><i class="icon-edit"></i>Process</button></div>';
+            $scope.processDetails = '<div class="ngCellText"><button  type="button" class="btn btn-info btn-mini" data-ng-click="process(row.entity)" data-ng-hide="!isProcessable(row.entity)" ><i class="icon-edit"></i>Process</button></div>';
             $scope.rowTemplate = '<div data-ng-style="{\'cursor\': row.cursor, \'z-index\': col.zIndex() }" ng-repeat="col in renderedColumns" ng-class="col.colIndex()" data-ng-dblclick="show(row)" class="ngCell {{col.cellClass}}" ng-cell></div>';
             $scope.selectedRegistrationApprovals = [];
             $scope.pagingOptions = {
@@ -36,8 +36,9 @@ angular.module('registrationApprovalApp', ['ui.bootstrap', 'resources.restApi', 
                 $location.path('/show/' + item.id);
             };
 
-            $scope.isApproved = function(item) {
-                return (item.registrationStatusValue == "APPROVED");
+            $scope.isProcessable = function(item) {
+                console.log(item.companyName + " new Company: " + item.newCompany);
+                return (item.registrationStatusValue != "APPROVED" && item.newCompany);
             };
 
             $scope.filteringText = '';
