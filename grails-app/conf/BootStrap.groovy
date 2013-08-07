@@ -47,6 +47,7 @@ import com.cogda.multitenant.LeadContact
 import com.cogda.multitenant.LeadContactEmailAddress
 import com.cogda.multitenant.LeadContactPhoneNumber
 import com.cogda.multitenant.LeadLineOfBusiness
+import com.cogda.security.UserService
 import com.cogda.util.DataPopulatorService
 import grails.plugin.awssdk.AmazonWebService
 import grails.plugins.springsecurity.SpringSecurityService
@@ -70,6 +71,7 @@ class BootStrap {
     GrailsApplication grailsApplication
     AmazonWebService amazonWebService
     DataPopulatorService dataPopulatorService
+    UserService userService
     def messageSource
 
     def init = { servletContext ->
@@ -208,6 +210,13 @@ class BootStrap {
                     customerAccountService.onboardCustomerAccount(gaudreauRegistration)
                 }
             }
+            String adminCustomerAccountSubdomain = 'cogdasolutions'
+            if(!CustomerAccount.findBySubDomain(adminCustomerAccountSubdomain)){
+                // create the new cogdasolutions.cogdatwo.com administration site
+                createAdminCustomerAccount(adminCustomerAccountSubdomain)
+                createAdminCustomerAccountUsers(adminCustomerAccountSubdomain)
+            }
+
             //Create the email templates
             createInitialAccountActivationEmail()
             createReminderAccountActivationEmail()
@@ -216,12 +225,88 @@ class BootStrap {
             createVerifiedSuccessfullyEmail()
             createResetPasswordEmail()
             createUserInvitationEmail()
-
-
         }
     }
     def destroy = {
     }
+
+    def createAdminCustomerAccount(adminCustomerAccountSubdomain){
+        Map regHolder = [:]
+        regHolder.firstName = "Christopher"
+        regHolder.lastName = "Kwiatkowski"
+        regHolder.username = "cogdachris"
+        regHolder.emailAddress = "chris@cogda.com"
+        regHolder.password = springSecurityService.encodePassword("password")
+        regHolder.companyName = "Cogda Solutions LLC."
+        regHolder.companyType = CompanyType.findByCode("Wholesaler (MGA, Broker)")
+        regHolder.existingCompany = null
+        regHolder.companyTypeOther = null
+        regHolder.phoneNumber = "706-255-9087"
+        regHolder.streetAddressOne = "1 Press Place"
+        regHolder.streetAddressTwo = ""
+        regHolder.streetAddressThree = ""
+        regHolder.city = "Athens"
+        regHolder.state = "GA"
+        regHolder.zipcode = "30601"
+        regHolder.county = "Clarke"
+        regHolder.registrationStatus = RegistrationStatus.APPROVED
+        regHolder.subDomain = adminCustomerAccountSubdomain
+        customerAccountService.onboardCustomerAccount(regHolder)
+        CustomerAccount customerAccount = CustomerAccount.findBySubDomain(adminCustomerAccountSubdomain)
+        log.debug "Successfully saved new CustomerAccount with subDomain: ${adminCustomerAccountSubdomain}"
+        convertCustomerAccountToInternalSystemAccount(customerAccount)
+    }
+
+    def convertCustomerAccountToInternalSystemAccount(CustomerAccount customerAccount){
+        log.warn("Converting CustomerAccount with subDomain ${customerAccount.subDomain} to an internalSystemAccount")
+        customerAccount.internalSystemAccount = true
+        if(customerAccount.save()){
+            log.warn("Successfully converted CustomerAccount with subDomain ${customerAccount.subDomain} to an internalSystemAccount")
+        }else{
+            log.error("Was unable to convert CustomerAccount with subDomain ${customerAccount.subDomain} to an internalSystemAccount due to errors in saving -> ${customerAccount.errors.allErrors}")
+        }
+        return customerAccount
+    }
+
+    def createAdminCustomerAccountUsers(adminCustomerAccountSubdomain){
+        def customerAccount = CustomerAccount.findBySubDomain(adminCustomerAccountSubdomain)
+        if(!customerAccount){
+            log.error "Unable to create admin customer account users - customerAccount with subDomain: $adminCustomerAccountSubdomain was not found"
+        }else{
+            def userList = ['lfleming', 'tpatterson', 'lpilgrim', 'srich', 'selias', 'cjaynes', 'gricker', 'delias', 'julia', 'clacasa', 'msabau']
+            customerAccount.withThisTenant {
+                List cogdaRoles = ["ROLE_COGDA_ADMINISTRATOR", "ROLE_COGDA_ADMIN_REGISTRATION"]
+                createCogdaOnlyRoles(cogdaRoles)
+
+                String password = "cogda1" // cogda one
+                userList.each { String username ->
+                    if(!User.findByUsername(username)){
+                        User user = new User()
+                        user.username = username
+                        user.password = password
+                        userService.createWithStringRoles(user, cogdaRoles)
+                        if(user.hasErrors()){
+                            log.error "Errors thrown adding User with username $username for customerAccount ${customerAccount.subDomain} -> ${user.errors.allErrors}"
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void createCogdaOnlyRoles(cogdaRoles){
+
+        cogdaRoles.each { String authority ->
+            if(!Role.findByAuthority(authority)){
+                Role role = new Role(authority: authority, systemInternalRole: true)
+                role.save()
+                if(role.hasErrors()){
+                    log.error "createCogdaOnlyRoles Error saving System Role with authority: $authority"
+                }
+            }
+        }
+    }
+
 
     def createRennaissanceUserDummyData(Registration registration){
         CustomerAccount customerAccount = CustomerAccount.findBySubDomain(registration.subDomain)

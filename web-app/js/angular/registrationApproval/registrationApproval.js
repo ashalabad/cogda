@@ -74,7 +74,16 @@ angular.module('registrationApprovalApp', ['ui.bootstrap', 'resources.restApi', 
             $scope.errors = {};
             $scope.registration = {};
             $scope.approveButtonClickable = false;
+            $scope.rejectButtonClickable = true;
             $scope.registration = RegistrationApproval.get({id:$routeParams.id});
+
+            $scope.isRejectButtonClickable = function(){
+                return $scope.rejectButtonClickable;
+            }
+
+            $scope.toggleRejectButtonClickable = function(){
+                $scope.rejectButtonClickable = !$scope.rejectButtonClickable;
+            }
 
             $scope.isApproveButtonClickable = function(){
                 return $scope.processRegistrationForm.$valid;
@@ -125,8 +134,32 @@ angular.module('registrationApprovalApp', ['ui.bootstrap', 'resources.restApi', 
             }
 
             $scope.rejectRegistration = function(processRegistrationForm) {
-                $scope.toggleProcessingApproval();
-                console.log(processRegistrationForm);
+                $scope.toggleApproveButtonClickable();
+                $scope.toggleRejectButtonClickable();
+                RegistrationApproval.reject($routeParams).$then(rejectSuccessCallback, rejectErrorCallback);
             }
+
+            /**
+             * rejectSuccessCallback - success handler for successful approval
+             * @param response
+             */
+            var rejectSuccessCallback = function(response){
+                Logger.success("Registration Rejected Successfully", "Success"); // apply the success message to toastr
+                $location.path('/list');
+            };
+
+            /**
+             * approveErrorCallback - error handler for unsuccessful approval
+             * @param response
+             */
+            var rejectErrorCallback = function(response){
+                $scope.toggleApproveButtonClickable();
+                $scope.toggleRejectButtonClickable();
+                Logger.error("Rejected Sub Domain Value " + $scope.subDomain, "Field Error");
+                $scope.subDomain = "";
+                // apply errors to the $scope.errors object
+                Logger.errorValidationMessageBuilder(response, $scope);
+            }
+
         }])
 ;

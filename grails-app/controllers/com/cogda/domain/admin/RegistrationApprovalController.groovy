@@ -2,21 +2,23 @@ package com.cogda.domain.admin
 
 import com.cogda.GsonBaseController
 import com.cogda.common.RegistrationStatus
-import com.cogda.domain.onboarding.RegisterCommand
+import com.cogda.common.marshallers.HibernateProxyTypeAdapter
 import com.cogda.domain.onboarding.Registration
 import com.cogda.domain.onboarding.RegistrationService
+import com.cogda.dto.RegistrationApprovalDto
 import com.cogda.multitenant.CustomerAccount
 import com.cogda.multitenant.CustomerAccountService
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
+import grails.converters.JSON
 import grails.plugin.gson.converters.GSON
 import grails.plugin.multitenant.core.CurrentTenant
 import grails.plugins.springsecurity.Secured
+import grails.validation.Validateable
+import org.apache.commons.beanutils.BeanUtils
 import org.springframework.dao.DataIntegrityViolationException
 
 import static javax.servlet.http.HttpServletResponse.*
-import static org.codehaus.groovy.grails.web.servlet.HttpHeaders.*
 import static grails.plugin.gson.http.HttpConstants.*
 /**
  * RegistrationApprovalController
@@ -58,6 +60,11 @@ class RegistrationApprovalController extends GsonBaseController {
         render(view:"detailPartial")
     }
 
+    @Secured(['ROLE_ADMINISTRATOR'])
+    def processPartial(){
+        render(view:"processPartial")
+    }
+
     /**
      * Validate Request is used to determine if the current tenant maps to a CustomerAccount with
      * internalSystemAccount = true
@@ -70,10 +77,23 @@ class RegistrationApprovalController extends GsonBaseController {
     @Secured(['ROLE_ADMINISTRATOR'])
     def list(){
         params.max = Math.min(params.max ? params.int('max') : 10, 100)  // always pass in max so you get a PagedResultSet returned.
+
         List registrations = Registration.list(params)
         response.addIntHeader X_PAGINATION_TOTAL, registrations.totalCount
+
+        // do the conversion
+        List registrationDtos = registrations.collect { Registration registration ->
+            RegistrationApprovalDto registrationApprovalDto = new RegistrationApprovalDto()
+            registrationApprovalDto.companyTypeCode = registration?.companyType.code
+            registrationApprovalDto.companyTypeDescription = registration?.companyType?.description
+            registrationApprovalDto.existingCompanyId = registration?.existingCompany?.id
+            registrationApprovalDto.registrationStatusValue = registration.registrationStatus.name()
+            BeanUtils.copyProperties(registrationApprovalDto, registration)
+            registrationApprovalDto
+        }
+
         response.status = SC_OK  // 200
-        render registrations as GSON
+        render registrationDtos as GSON
     }
 
     @Secured(['ROLE_ADMINISTRATOR'])
@@ -95,17 +115,20 @@ class RegistrationApprovalController extends GsonBaseController {
 
     @Secured(['ROLE_ADMINISTRATOR'])
     def approve(){
+
         if (!Registration.exists(params.id)) {
             respondNotFound INSTANCE_LABEL
             return
         }
-        JsonElement jsonElement = GSON.parse(request)
+
         RegistrationApprovalCommand command = new RegistrationApprovalCommand()
-        command.id = params.id
-        command.subDomain = jsonElement.subDomain
+        JsonElement jsonElement = request.GSON
+        command.id = jsonElement.id.asLong
+        command.subDomain = jsonElement.subDomain.asString
 
         if(command.validate()){
             Registration registrationInstance = Registration.get(params.id)
+            registrationInstance.subDomain = command.subDomain
             registrationService.approveRegistration(registrationInstance)
             if (!registrationInstance.hasErrors()) {
                 respondUpdated registrationInstance
@@ -121,7 +144,10 @@ class RegistrationApprovalController extends GsonBaseController {
     def get() {
         Registration registrationInstance = Registration.get(params.id)
         if (registrationInstance) {
-            respondFound registrationInstance
+            response.status = SC_OK // 200
+            Gson gson = gsonBuilder.registerTypeAdapterFactory(HibernateProxyTypeAdapter.FACTORY).create()
+            def gsonRetString = gson.toJsonTree(registrationInstance)
+            render gsonRetString
         } else {
             respondNotFound INSTANCE_LABEL
         }
@@ -144,6 +170,7 @@ class RegistrationApprovalController extends GsonBaseController {
     }
 }
 
+@Validateable
 class RegistrationApprovalCommand{
     /**
      * The Registration id
@@ -169,10 +196,13 @@ class RegistrationApprovalCommand{
                 return ['registrationApproval.registrationStatus.rejected']
             }
         })
-        subDomain(nullable:false, blank:false, validator: { val, obj ->
-
+        subDomain(nullable:false, blank:false, minSize:2, matches:"[A-Za-z]+", validator: { val, obj ->
             if(CustomerAccount.findBySubDomain(val.toLowerCase())){
                 return ['registrationApproval.subDomain.already.exists']
+            }
+            if(CustomerAccount.DISALLOWED_SUBDOMAINS.collect { it.toUpperCase() }
+                    .contains(val.toUpperCase())){
+                return ['customerAccount.subDomain.invalid']
             }
         })
     }
