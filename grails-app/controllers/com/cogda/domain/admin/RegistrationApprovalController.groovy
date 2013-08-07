@@ -184,7 +184,7 @@ class RegistrationApprovalCommand{
 
     static constraints = {
 
-        id(nullable:false, validator: { val, obj ->
+        id(nullable:false, blank:false, validator: { val, obj ->
             if(!Registration.exists(val)){
                 return ['registrationApproval.id.doesnotexist']
             }
