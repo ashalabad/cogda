@@ -8,7 +8,7 @@
 
         <h3><g:message code="registrationApproval.label"/></h3>
 
-            <form name="processRegistrationForm" method="post" class="form-horizontal" data-ng-show="!isProcessingApproval()">
+            <form name="processRegistrationForm" method="post" class="form" data-ng-show="!isProcessingApproval()">
                 <fieldset class="form">
                     <div class="control-group fieldcontain">
                         <label for="subDomain" class="control-label">
