@@ -52,8 +52,8 @@ class FileStorageServiceSpec {
         generateKeyPair(wrongCompany.companySettings)
         UserProfile.metaClass.static.findByUser={User user->
             switch (user.username){
-                case "user":return new UserProfile(company:company)
-                case "wrong-user":return new UserProfile(company: wrongCompany)
+                case "createdBy":return new UserProfile(company:company)
+                case "wrong-createdBy":return new UserProfile(company: wrongCompany)
                 default: throw new Exception(user.username)
             }
         }
@@ -64,7 +64,7 @@ class FileStorageServiceSpec {
         }
 
         user=new User(
-                username: "user",
+                username: "createdBy",
                 password: "password",
                 enabled: true,
                 accountLocked: false
@@ -75,7 +75,7 @@ class FileStorageServiceSpec {
                 flush: true)
 
         wrongUser=new User(
-                username: "wrong-user",
+                username: "wrong-createdBy",
                 password: "password",
                 enabled: true,
                 accountLocked: false

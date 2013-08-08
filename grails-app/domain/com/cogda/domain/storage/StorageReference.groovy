@@ -18,6 +18,7 @@ class StorageReference {
 
     String  md5
     String  fileReference
+    User    user
 
     static hasOne = [user:User]
     static mapping = {

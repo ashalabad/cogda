@@ -91,7 +91,7 @@ class FileStorageService {
         item.delete()
     }
     /**
-     * Retrieve the region and the PKI materials from current user company profile
+     * Retrieve the region and the PKI materials from current createdBy company profile
      */
     CompanyStorageSettings getKeyPairAndRegion() {
         def user=securityService.currentUser as User
@@ -129,7 +129,7 @@ class FileStorageService {
     }
 
     /**
-     * Verify company settings of the current user and a user that was saved with the item
+     * Verify company settings of the current createdBy and a createdBy that was saved with the item
      * @param currentUser
      * @param savedUser
      */
