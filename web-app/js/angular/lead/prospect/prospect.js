@@ -16,9 +16,9 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
     .controller('ListProspectCtrl', ['$scope', '$routeParams', '$location', 'RestApi', 'Logger',
         function ($scope, $routeParams, $location, RestApi, Logger) {
             $scope.prospects = [];
-            $scope.showDetails = '<div class="ngCellText"><button id="showBtn" type="button" class="btn-mini" ng-click="show(row.entity)" ><i class="icon-eye-open"></i>Details</button></div>';
-            $scope.editDetails = '<div class="ngCellText"><button id="editBtn" type="button" class="btn-mini" ng-click="edit(row.entity)" ><i class="icon-edit"></i>Edit</button></div>';
-            $scope.rowTemplate = '<div ng-style="{\'cursor\': row.cursor, \'z-index\': col.zIndex() }" ng-repeat="col in renderedColumns" ng-class="col.colIndex()" data-ng-dblclick="edit(row)" class="ngCell {{col.cellClass}}" ng-cell></div>';
+            $scope.showDetails = '<div class="ngCellText"><button id="showBtn" type="button" class="btn-mini" data-ng-click="show(row.entity)" ><i class="icon-eye-open"></i>Details</button></div>';
+            $scope.editDetails = '<div class="ngCellText"><button id="editBtn" type="button" class="btn-mini" data-ng-click="edit(row.entity)" ><i class="icon-edit"></i>Edit</button></div>';
+            $scope.rowTemplate = '<div data-ng-style="{\'cursor\': row.cursor, \'z-index\': col.zIndex() }" data-ng-repeat="col in renderedColumns" data-ng-class="col.colIndex()" data-ng-dblclick="edit(row)" class="ngCell {{col.cellClass}}" ng-cell></div>';
             $scope.selectedProspects = [];
             $scope.pagingOptions = {
                 pageSizes: [10, 25, 50, 100],
@@ -229,21 +229,24 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
             $scope.leadSubTypes = LeadSubTypes.list();
             $scope.noteTypes = NoteType.list();
             $scope.businessTypes = BusinessTypes.list();
-            $scope.lead.linesOfBusiness = [];
+            $scope.lead.linesOfBusiness = [{}];
             $scope.editingLineOfBusiness = false;
             $scope.addingLeadLineOfBusiness = false;
 
             $scope.addLeadLineOfBusiness = function () {
-                $scope.leadLineOfBusiness = {};
+                var leadLineOfBusiness = {};
                 if ($scope.lead.linesOfBusiness.length > 0) {
                     var modelLob = $scope.lead.linesOfBusiness[0];
-                    $scope.leadLineOfBusiness.lineOfBusiness = { lineOfBusinessCategory: modelLob.lineOfBusiness.lineOfBusinessCategory };
-                    $scope.leadLineOfBusiness.targetDate = modelLob.targetDate;
-                    $scope.leadLineOfBusiness.expirationDate = modelLob.expirationDate;
-                    $scope.leadLineOfBusiness.currentCarrier = modelLob.currentCarrier;
-                    $scope.leadLineOfBusiness.remarket = modelLob.remarket;
+                    if (modelLob.lineOfBusiness !== undefined) {
+                        leadLineOfBusiness.lineOfBusiness = { lineOfBusinessCategory: modelLob.lineOfBusiness.lineOfBusinessCategory };
+                    }
+                    leadLineOfBusiness.targetDate = modelLob.targetDate;
+                    leadLineOfBusiness.expirationDate = modelLob.expirationDate;
+                    leadLineOfBusiness.currentCarrier = modelLob.currentCarrier;
+                    leadLineOfBusiness.remarket = modelLob.remarket;
                 }
-                $scope.addingLeadLineOfBusiness = true;
+                $scope.lead.linesOfBusiness.push(leadLineOfBusiness);
+//                $scope.addingLeadLineOfBusiness = true;
             };
 
             $scope.cancelAddLeadLineOfBusiness = function () {

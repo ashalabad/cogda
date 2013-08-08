@@ -1,68 +1,30 @@
 <legend><g:message code="lineOfBusiness.label"/></legend>
-<g:render template="/lead/leadLineOfBusiness/partials/addPartial"/>
+<button type="button"
+        class="btn"
+        data-ng-click="addLeadLineOfBusiness()"
+        data-ng-hide="addingLeadLineOfBusiness">
+    <i class="icon-plus"></i>
+    <g:message code="default.add.label" args="[message(code: 'leadLineOfBusiness.label')]"/>
+</button>
 <br/>
 <br/>
-<span>
-    <section id="no-more-tables">
-        <table class="table table-striped table-bordered" data-ng-show="lead.linesOfBusiness.length > 0">
-            <thead>
-            <tr>
-                <th><g:message code="lineOfBusiness.category.label"/></th>
-                <th><g:message code="lineOfBusiness.label"/></th>
-                <th><g:message code="leadLineOfBusiness.targetDate.label"/></th>
-                <th><g:message code="leadLineOfBusiness.expirationDate.label"/></th>
-                <th><g:message code="leadLineOfBusiness.targetPremium.label"/></th>
-                <th><g:message code="leadLineOfBusiness.targetCommission.label"/></th>
-                <th><g:message code="leadLineOfBusiness.commissionRate.label"/></th>
-                <th><g:message code="leadLineOfBusiness.currentCarrier.label"/></th>
-                <th><g:message code="leadLineOfBusiness.remarket.label"/></th>
-                <th></th>
-                <th></th>
-            </tr>
-            </thead>
-            <tr data-ng-repeat="leadLineOfBusiness in lead.linesOfBusiness">
-                <g:render template="/lead/leadLineOfBusiness/partials/showPartial"/>
-                <td><button class="btn btn-info btn-mini"
-                            type="button"
-                            data-ng-click="editLineOfBusiness($index)"
-                            data-ng-hide="editingLineOfBusiness">
-                    <i class="icon-edit icon-white"></i>
-                    <g:message code="default.button.edit.label"/>
-                </button></td>
-                <td><button class="btn btn-danger btn-mini"
-                            type="button"
-                            data-ng-click="deleteLineOfBusiness($index)"
-                            data-ng-hide="editingLineOfBusiness">
-                    <i class="icon-remove icon-white"></i>
-                    <g:message code="default.button.delete.label"/>
-                </button></td>
-            </tr>
-        </table>
-
-        <div data-ng-show="editingLineOfBusiness">
-            <g:render template="/lead/leadLineOfBusiness/partials/editPartial"/>
-            <div class="form-actions">
-                <button type="submit"
-                        class="btn btn-primary"
-                        data-ng-click="updateLineOfBusiness(leadLineOfBusiness)">
-                    <i class="icon-pencil icon-white"></i>
-                    <g:message code="default.button.update.label"/> <g:message code="lineOfBusiness.label"
-                                                                               default="Line of Business"/>
-                </button>
-                <button class="btn btn-danger"
-                        type="button"
-                        data-ng-click="deleteLineOfBusiness(leadLineOfBusiness)">
-                    <i class="icon-remove icon-white"></i>
-                    <g:message code="default.button.delete.label"/> <g:message code="lineOfBusiness.label"
-                                                                               default="Line of Business"/>
-                </button>
-                <button type="button"
-                        class="btn"
-                        data-ng-click="cancelEditLineOfBusiness()">
-                    <i class="icon-ban-circle"></i>
-                    <g:message code="default.button.cancel.label"/></button>
-            </div>
-        </div>
-    </section>
-</span>
-
+<table id="no-more-tables" class="table table-striped table-bordered table-nonfluid"
+       data-ng-show="lead.linesOfBusiness.length > 0">
+    <thead>
+    <tr>
+        <th style="width: 12.5%"><g:message code="lineOfBusiness.category.label"/></th>
+        <th style="width: 12.5%"><g:message code="lineOfBusiness.label"/></th>
+        <th style="width: 13.5%"><g:message code="leadLineOfBusiness.expirationDate.label"/></th>
+        <th style="width: 13.5%"><g:message code="leadLineOfBusiness.targetDate.label"/></th>
+        <th style="width: 11.5%"><g:message code="leadLineOfBusiness.targetPremium.label"/></th>
+        <th style="width: 11.5%"><g:message code="leadLineOfBusiness.targetCommission.label"/></th>
+        <th style="width: 10%"><g:message code="leadLineOfBusiness.commissionRate.label"/></th>
+        <th style="width: 10%"><g:message code="leadLineOfBusiness.currentCarrier.label"/></th>
+        <th style="width: 8%"><g:message code="leadLineOfBusiness.remarket.label"/></th>
+        <th style="width: 4%"></th>
+    </tr>
+    </thead>
+    <tr data-ng-repeat="leadLineOfBusiness in lead.linesOfBusiness">
+        <g:render template="/lead/leadLineOfBusiness/partials/editInRowPartial"/>
+    </tr>
+</table>

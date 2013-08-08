@@ -102,9 +102,8 @@
                    data-ng-show="leadForm['clientId'].$valid ">${message(code: 'default.ok.message')}</label>
         </div>
     </div>
-
-    <g:render template="/lead/leadAddress/partials/createPartial"/>
-
-    <g:render template="/lead/leadContact/partials/createPartial"/>
-    <div data-ng-include="" src="'/leadLineOfBusiness/createPartial'"></div>
 </fieldset>
+<g:render template="/lead/leadAddress/partials/createPartial"/>
+
+<g:render template="/lead/leadContact/partials/createPartial"/>
+<div data-ng-include="" src="'/leadLineOfBusiness/createPartial'"></div>

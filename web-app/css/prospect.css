@@ -71,10 +71,12 @@
 }
 
 .table-nonfluid {
-    /*width: auto;*/
+    table-layout: fixed;
+    max-width: none;
+    /*font-size: 90%;*/
 }
 
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1218px) {
 
     /* Force table to not be like tables anymore */
     #no-more-tables table,
@@ -126,9 +128,21 @@
     #no-more-tables td:before { content: attr(data-title); }
 }
 
-/*td input, td select {*/
-    /*width: 100%;*/
-    /*box-sizing: border-box;*/
-    /*-webkit-box-sizing:border-box;*/
-    /*-moz-box-sizing: border-box;*/
+/*input::-webkit-outer-spin-button,*/
+/*input::-webkit-inner-spin-button {*/
+    /* display: none; <- Crashes Chrome on hover */
+    /*-webkit-appearance: none;*/
+    /*margin: 0; *//* <-- Apparently some margin are still there even though it's hidden */
+/*}*/
+td select,
+td input {
+    box-sizing: border-box;
+    -webkit-box-sizing:border-box;
+    -moz-box-sizing: border-box;
+    /*font-size: 90%;*/
+}
+
+/*td input.font-table,*/
+/*td input[type="number"] {*/
+    /*font-size: 90%;*/
 /*}*/
