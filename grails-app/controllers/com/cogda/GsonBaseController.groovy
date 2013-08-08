@@ -5,7 +5,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
 import grails.plugin.gson.converters.GSON
-
+import grails.validation.Validateable
 import org.springframework.dao.DataIntegrityViolationException
 import static javax.servlet.http.HttpServletResponse.*
 import static org.codehaus.groovy.grails.web.servlet.HttpHeaders.*
@@ -51,7 +51,7 @@ class GsonBaseController {
         return
     }
 
-    public Map getErrorStringsByField(instance){
+    private Map getErrorStringsByField(instance){
         Map stringsByField = [:].withDefault { [] }
         for(fieldErrors in instance.errors){
             for(error in fieldErrors.allErrors){

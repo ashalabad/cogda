@@ -16,6 +16,14 @@ class Role {
      */
     Boolean systemRole
 
+    /**
+     * Roles that are marked as a systemInternalRole
+     * can only be used by the Cogda System Admins -
+     * These are only available to those individuals
+     * that are a part of the admin.cogda.com CustomerAccount.
+     */
+    Boolean systemInternalRole
+
 	static mapping = {
 		cache true
 	}
@@ -24,6 +32,9 @@ class Role {
 		authority(blank: false, unique: 'tenantId')
         description(nullable:true, maxSize:250)
         systemRole(nullable:true)
+        systemInternalRole(nullable:true, validator: { Boolean val, Role role ->
+
+        })
 	}
 
     /**

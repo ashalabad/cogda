@@ -101,7 +101,6 @@ angular.module('accountApp', ['resources.Account','resources.AccountContact','re
                 dialog.close();
             };
 
-
             $scope.updateAccount = function(accountInstance){
                 Account.update(accountInstance).$then(updateSuccessCallback, updateErrorCallback);
             };

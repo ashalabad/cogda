@@ -30,6 +30,11 @@
                     <g:render template="/_menu/company"/>
                     <sec:ifAllGranted roles = "ROLE_ADMINISTRATOR">
 					    <g:render template="/_menu/admin"/>
+
+                        <mt:isAnInternalCustomerAccount>
+                            <g:render template="/_menu/cogdaAdmin"/>
+                        </mt:isAnInternalCustomerAccount>
+
                     </sec:ifAllGranted>
 <%-- 					<g:render template="/_menu/search"/> --%>
 	  			</div>

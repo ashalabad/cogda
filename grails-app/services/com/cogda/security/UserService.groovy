@@ -149,9 +149,9 @@ class UserService {
      * @param username
      * @param password
      * @param encodePassword
-     * @return
+     * @return User user
      */
-    def createUser(String username, String password, boolean encodePassword = true){
+    public User createUser(String username, String password, boolean encodePassword = true){
         // Create the user
         User user = new User()
         user.username = username
