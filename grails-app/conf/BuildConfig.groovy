@@ -96,3 +96,4 @@ grails.project.dependency.resolution = {
     }
 }
 grails.plugin.location.'grails-gson' = "plugins/grails-gson"
+grails.plugin.location.'grails-aws-sdk' = "plugins/grails-aws-sdk"
