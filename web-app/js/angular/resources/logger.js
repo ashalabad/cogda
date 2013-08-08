@@ -1,6 +1,6 @@
 'use strict';
 angular.module('resources.logger', []).factory('Logger', function () {
-    toastr.options.timeOut = 3000; // 2 second toast timeout
+    toastr.options.timeOut = 4000; // 2 second toast timeout
     toastr.options.positionClass = 'toast-top-right';
 
     var logger = {
@@ -10,7 +10,9 @@ angular.module('resources.logger', []).factory('Logger', function () {
         warning: warning,
         log: log, // straight to console; bypass toast
         messageBuilder:messageBuilder,
-        formValidationMessageBuilder: formValidationMessageBuilder
+        formValidationMessageBuilder: formValidationMessageBuilder,
+        formsValidationMessageBuilder: formsValidationMessageBuilder,
+        errorValidationMessageBuilder: errorValidationMessageBuilder
     };
 
     /**
@@ -103,13 +105,62 @@ angular.module('resources.logger', []).factory('Logger', function () {
         }
     }
 
+    function formsValidationMessageBuilder(response, $scope, forms){
+        switch (response.status) {
+            case 422: // validation error - display errors alongside form fields
+                $scope.errors = response.data.errors;
+                applyFormsErrorValidity($scope, response.data.errors, forms);
+                if(response.data.message){
+                    error(response.data.message, "Error");
+                }else{
+                    error("Errors", "Error");
+                }
+                break;
+            default:
+                error("Unhandled Error Thrown", "Error " + response.status);
+        }
+    }
+
+    function applyFormsErrorValidity($scope, errors, forms){
+        form.$setValidity("", false);
+        for(var i in errors){
+            console.log(i);
+            for (var j in forms){
+                if (j[i] !== undefined) {
+                    j[i].$setValidity(i, false);
+                }
+            }
+
+        }
+    }
+
     function applyFormErrorValidity($scope, errors, form){
         form.$setValidity("", false);
         for(var i in errors){
+            console.log(i)
             form[i].$setValidity(i, false);
         }
     }
 
+    /**
+     * Displays validation error messages in toastr
+     * @param response
+     * @param $scope
+     */
+    function errorValidationMessageBuilder(response, $scope){
+        switch (response.status) {
+            case 422: // validation error - display errors alongside form fields
+                $scope.errors = response.data.errors;
+                for(var i in $scope.errors){
+                    for(var j = 0; j < $scope.errors[i].length; j++){
+                        error($scope.errors[i][j], "Field Error");
+                    }
+                }
+                break;
+            default:
+                error("Unhandled Error Thrown", "Error " + response.status);
+        }
+    }
 
     // IE and google chrome workaround
     // http://code.google.com/p/chromium/issues/detail?id=48662

@@ -28,5 +28,7 @@ class LeadAddress {
 
     static constraints = {
         leadAddressType(nullable: true)
+        address(nullable: true)
+        primaryAddress(nullable: true)
     }
 }

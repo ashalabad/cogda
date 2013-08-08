@@ -1,6 +1,6 @@
 package com.cogda.multitenant
 
-import com.cogda.domain.lead.LeadLineOfBusinessController
+import com.cogda.multitenant.lead.LeadLineOfBusinessController
 import grails.test.mixin.*
 
 /**

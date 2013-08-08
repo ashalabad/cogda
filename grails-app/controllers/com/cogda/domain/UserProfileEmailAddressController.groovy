@@ -1,27 +1,22 @@
 package com.cogda.domain
 
-import com.cogda.common.marshallers.JavaUtilSetExclusionStrategy
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
+import com.cogda.GsonBaseController
 import com.google.gson.JsonElement
 import grails.plugin.gson.converters.GSON
 import grails.plugins.springsecurity.Secured
 import org.springframework.dao.DataIntegrityViolationException
 
-import javax.annotation.PostConstruct
-
 import static javax.servlet.http.HttpServletResponse.*
-import static org.codehaus.groovy.grails.web.servlet.HttpHeaders.*
-import static grails.plugin.gson.http.HttpConstants.*
+
 
 /**
  * UserProfileEmailAddressController
  * A controller class handles incoming web requests and performs actions such as redirects, rendering views and so on.
  */
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class UserProfileEmailAddressController {
+class UserProfileEmailAddressController extends GsonBaseController{
 
-    GsonBuilder gsonBuilder
+    final static String INSTANCE_LABEL = "userProfile.label"
 
     def save() {
         if (!requestIsJson()) {
@@ -41,7 +36,7 @@ class UserProfileEmailAddressController {
         if (userProfileEmailAddressInstance) {
             respondFound userProfileEmailAddressInstance
         } else {
-            respondNotFound params.id
+            respondNotFound INSTANCE_LABEL
         }
     }
 
@@ -53,7 +48,7 @@ class UserProfileEmailAddressController {
 
         def userProfileEmailAddressInstance = UserProfileEmailAddress.get(params.id)
         if (!userProfileEmailAddressInstance) {
-            respondNotFound params.id
+            respondNotFound INSTANCE_LABEL
             return
         }
 
@@ -77,15 +72,15 @@ class UserProfileEmailAddressController {
     def delete() {
         def userProfileEmailAddressInstance = UserProfileEmailAddress.get(params.id)
         if (!userProfileEmailAddressInstance) {
-            respondNotFound params.id
+            respondNotFound INSTANCE_LABEL
             return
         }
 
         try {
             userProfileEmailAddressInstance.delete(flush: true)
-            respondDeleted params.id
+            respondDeleted INSTANCE_LABEL
         } catch (DataIntegrityViolationException e) {
-            respondNotDeleted params.id
+            respondNotDeleted INSTANCE_LABEL
         }
     }
 
@@ -123,7 +118,7 @@ class UserProfileEmailAddressController {
             render(template:"userProfileEmailAddressForm", model:[userProfileEmailAddressInstance:userProfileEmailAddressInstance])
             return
         } else {
-            respondNotFound params.id
+            respondNotFound INSTANCE_LABEL
         }
     }
 
@@ -131,87 +126,12 @@ class UserProfileEmailAddressController {
     def show(){
         UserProfileEmailAddress userProfileEmailAddressInstance = UserProfileEmailAddress.get(params.id)
         if(!userProfileEmailAddressInstance){
-            respondNotFound params.id
+            respondNotFound INSTANCE_LABEL
             return
         }
 
         render(template:"/userProfileEmailAddress/showUserProfileEmailAddress", model:[userProfileEmailAddressInstance: userProfileEmailAddressInstance])
         return
-    }
-
-    private boolean requestIsJson() {
-        GSON.isJson(request)
-    }
-
-    private void respondFound(UserProfileEmailAddress userProfileEmailAddressInstance) {
-        response.status = SC_OK
-        Gson gson = gsonBuilder.create()
-        def gsonRetString = gson.toJsonTree(userProfileEmailAddressInstance);
-        render gsonRetString
-    }
-
-    private void respondCreated(UserProfileEmailAddress userProfileEmailAddressInstance) {
-        response.status = SC_CREATED // 201
-        response.addHeader LOCATION, createLink(action: 'get', id: userProfileEmailAddressInstance.id)
-        Gson gson = gsonBuilder.addSerializationExclusionStrategy(new JavaUtilSetExclusionStrategy()).create()
-        def gsonRetString = gson.toJsonTree(userProfileEmailAddressInstance)
-        render gsonRetString
-    }
-
-    private void respondUpdated(UserProfileEmailAddress userProfileEmailAddressInstance) {
-        response.status = SC_OK // 200
-        Gson gson = gsonBuilder.addSerializationExclusionStrategy(new JavaUtilSetExclusionStrategy()).create()
-        def gsonRetString = gson.toJsonTree(userProfileEmailAddressInstance);
-        render gsonRetString
-    }
-
-    private void respondUnprocessableEntity(UserProfileEmailAddress userProfileEmailAddressInstance) {
-        def responseBody = [:]
-        responseBody.errors = userProfileEmailAddressInstance.errors.allErrors.collect {
-            message(error: it)
-        }
-        response.status = SC_UNPROCESSABLE_ENTITY // 422
-        render responseBody as GSON
-    }
-
-    private void respondNotFound(id) {
-        def responseBody = [:]
-        responseBody.message = message(code: 'default.not.found.message', args: [message(code: 'userProfileEmailAddress.label', default: 'UserProfileEmailAddress'), id])
-        response.status = SC_NOT_FOUND // 404
-        render responseBody as GSON
-    }
-
-    private void respondConflict(UserProfileEmailAddress userProfileEmailAddressInstance) {
-        userProfileEmailAddressInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-                [message(code: 'userProfileEmailAddress.label', default: 'UserProfileEmailAddress')] as Object[],
-                'Another user has updated this UserProfileEmailAddress while you were editing')
-        def responseBody = [:]
-        responseBody.errors = userProfileEmailAddressInstance.errors.allErrors.collect {
-            message(error: it)
-        }
-        response.status = SC_CONFLICT // 409
-        render responseBody as GSON
-    }
-
-    private void respondDeleted(id) {
-        def responseBody = [:]
-        responseBody.message = message(code: 'default.deleted.message', args: [message(code: 'userProfileEmailAddress.label', default: 'UserProfileEmailAddress'), id])
-        response.status = SC_OK  // 200
-        render responseBody as GSON
-    }
-
-    private void respondNotDeleted(id) {
-        def responseBody = [:]
-        responseBody.message = message(code: 'default.not.deleted.message', args: [message(code: 'userProfileEmailAddress.label', default: 'UserProfileEmailAddress'), id])
-        response.status = SC_INTERNAL_SERVER_ERROR  // 500
-        render responseBody as GSON
-    }
-
-    private void respondNotAcceptable() {
-        response.status = SC_NOT_ACCEPTABLE  // 406
-        response.contentLength = 0
-        response.outputStream.flush()
-        response.outputStream.close()
     }
 
     private void respondUserProfileNotFound(id){

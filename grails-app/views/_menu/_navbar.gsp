@@ -16,8 +16,6 @@
 
        		<div class="nav-collapse">
        		
-
-
 	  			<div class="pull-left">
 					<%--Left-side entries--%>
 	  			</div>
@@ -26,11 +24,17 @@
 					<%--Right-side entries--%>
 					<%--NOTE: the following menus are in reverse order due to "pull-right" alignment (i.e., right to left)--%>
 <%--					<g:render template="/_menu/language"/> --%>
-					<g:render template="/_menu/info"/>
+					%{--<g:render template="/_menu/info"/>--}%
+                    <g:render template="/_menu/registration"/>
 					<g:render template="/_menu/user"/><!-- NOTE: the renderDialog for the "Register" modal dialog MUST be placed outside the NavBar (at least for Bootstrap 2.1.1): see bottom of main.gsp -->
                     <g:render template="/_menu/company"/>
                     <sec:ifAllGranted roles = "ROLE_ADMINISTRATOR">
 					    <g:render template="/_menu/admin"/>
+
+                        <mt:isAnInternalCustomerAccount>
+                            <g:render template="/_menu/cogdaAdmin"/>
+                        </mt:isAnInternalCustomerAccount>
+
                     </sec:ifAllGranted>
 <%-- 					<g:render template="/_menu/search"/> --%>
 	  			</div>

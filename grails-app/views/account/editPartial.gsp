@@ -59,12 +59,11 @@
                         </div>
                     </div>
                 </div>
-
             </fieldset>
-            <div class="form-actions">
-                <button type="button" class="btn btn-danger" data-ng-click="cancel()"><i class="icon-remove"></i> <g:message code="default.button.cancel.label"/></button>
-                <button type="button" class="btn btn-primary" data-ng-click="updateAccount(account)"><i class="icon-save"></i> <g:message code="default.button.save.label"/></button>
-            </div>
         </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-ng-click="updateAccount(account)"><i class="icon-save"></i> <g:message code="default.button.save.label"/></button>
+        <button type="button" class="btn" data-ng-click="cancel()"><i class="icon-remove"></i> <g:message code="default.button.cancel.label"/></button>
     </div>
 </div>

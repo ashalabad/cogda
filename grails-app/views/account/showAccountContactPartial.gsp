@@ -71,8 +71,8 @@
                         </div>
                     </fieldset>
                     <div class="span6">
+                        <button type="button" class="btn btn-mini pull-right" data-ng-click="cancelAccountContactEdit()"><i class="icon-remove"></i> <g:message code="default.button.cancel.label"/></button>
                         <button type="button" class="btn btn-mini btn-primary pull-right" data-ng-click="updateAccountContact()"><i class="icon-save"></i> <g:message code="default.button.save.label"/></button>
-                        <button type="button" class="btn btn-mini btn-danger pull-right" data-ng-click="cancelAccountContactEdit()"><i class="icon-remove"></i> <g:message code="default.button.cancel.label"/></button>
                     </div>
                     <br>
                 </form>
@@ -86,6 +86,21 @@
     <div class="row">
         <div class="span12">
             <tabset>
+                <tab heading="Accounts">
+                    <div class="row">
+                        <div class="span12">
+                            <button type="button" class="btn pull-left" data-ng-click="addAccountContactLink()"><i class="icon-link"></i> <g:message code="accountContactLink.link.label" args="[message(code:'account.label')]" /></button>
+                        </div>
+                    </div>
+                    <br>
+                    <ul class="inline">
+                        <li data-ng-repeat="account in accounts" class="span5 well fixedAddressWellHeight">
+                            <button type="button" class="btn btn-mini btn-danger pull-right" data-ng-click="unlinkAccount(account)" ><i class="icon-link"></i> <g:message code="accountContactLink.unlink.label" args="[message(code:'account.label')]" /></button>
+                            <button type="button" class="btn btn-mini pull-right" data-ng-click="showAccount(account)" ><i class="icon-eye-open"></i> <g:message code="default.button.show.label" /></button>
+                            <div data-ng-bind-html-unsafe="formatAccount(account)"></div>
+                        </li>
+                    </ul>
+                </tab>
                 <tab heading="Email Addresses ">
                     <div class="row">
                         <div class="span12">

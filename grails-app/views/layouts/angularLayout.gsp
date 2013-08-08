@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <%-- <html lang="${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).toString().replace('_', '-')}"> --%>
 <html lang="${session.'org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE'}">
@@ -26,8 +27,8 @@
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
     <!--[if lt IE 9]>
-		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-	<![endif]-->
+<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
 
     <%-- For Javascript see end of body --%>
 </head>
@@ -42,6 +43,7 @@
 <g:else>
     <g:render template="/layouts/header"/>
 </g:else>
+
 
 <g:render template="/layouts/content"/>
 
@@ -73,7 +75,7 @@
                 url:         "https://cogda.zendesk.com",
                 tabTooltip:  "Support",
                 tabImageURL: "https://assets.zendesk.com/external/zenbox/images/tab_support.png",
-                tabColor:    "black",
+                tabColor:    "#215b87",
                 tabPosition: "Left"
             });
         }

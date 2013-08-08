@@ -1,6 +1,8 @@
 import au.com.bytecode.opencsv.CSVReader
 import com.amazonaws.services.s3.model.GetObjectRequest
 import com.cogda.common.GenderEnum
+import com.cogda.common.LeadSubType
+import com.cogda.common.LeadType
 import com.cogda.common.MarkupLanguage
 import com.cogda.common.RegistrationStatus
 import com.cogda.domain.Address
@@ -39,6 +41,13 @@ import com.cogda.multitenant.CustomerAccount
 import com.cogda.domain.admin.SupportedCountryCode
 import com.cogda.multitenant.CustomerAccountService
 import com.cogda.domain.Note
+import com.cogda.multitenant.Lead
+import com.cogda.multitenant.LeadAddress
+import com.cogda.multitenant.LeadContact
+import com.cogda.multitenant.LeadContactEmailAddress
+import com.cogda.multitenant.LeadContactPhoneNumber
+import com.cogda.multitenant.LeadLineOfBusiness
+import com.cogda.security.UserService
 import com.cogda.util.DataPopulatorService
 import grails.plugin.awssdk.AmazonWebService
 import grails.plugins.springsecurity.SpringSecurityService
@@ -62,6 +71,7 @@ class BootStrap {
     GrailsApplication grailsApplication
     AmazonWebService amazonWebService
     DataPopulatorService dataPopulatorService
+    UserService userService
     def messageSource
 
     def init = { servletContext ->
@@ -121,9 +131,14 @@ class BootStrap {
 
         if (Environment.current == Environment.TEST) {
             createCompanyTypes()
+            if(!CustomerAccount.findBySubDomain("CHOCOTACO")){
+                CustomerAccount customerAccount = new CustomerAccount()
+                customerAccount.subDomain = "CHOCOTACO"
+                assert customerAccount.validate()
+                assert customerAccount.save()
+                assert CustomerAccount.findBySubDomain("CHOCOTACO")
+            }
         }
-
-
 
         if (Environment.current != Environment.TEST) {
 
@@ -168,6 +183,7 @@ class BootStrap {
                     createRennaissanceAccountDummyData(raisRegistration)
                     createRennaissanceUserDummyData(raisRegistration)
                     createRennaissanceUserProfileDummyData(raisRegistration)
+                    createRennaisanceLeadDummyData(raisRegistration)
                 }
             }
 
@@ -179,6 +195,27 @@ class BootStrap {
                 }
             }
 
+            if(!Registration.findBySubDomain("cochraneandporter")){
+                createCochranePorterRegistration()
+                def cochraneRegistration = Registration.findBySubDomain("cochraneandporter")
+                if(cochraneRegistration){
+                    customerAccountService.onboardCustomerAccount(cochraneRegistration)
+                }
+            }
+
+            if(!Registration.findBySubDomain("gaudreaugroup")){
+                createGaudreauGroupRegistration()
+                def gaudreauRegistration = Registration.findBySubDomain("gaudreaugroup")
+                if(gaudreauRegistration){
+                    customerAccountService.onboardCustomerAccount(gaudreauRegistration)
+                }
+            }
+            String adminCustomerAccountSubdomain = 'cogdasolutions'
+            if(!CustomerAccount.findBySubDomain(adminCustomerAccountSubdomain)){
+                // create the new cogdasolutions.cogdatwo.com administration site
+                createAdminCustomerAccount(adminCustomerAccountSubdomain)
+                createAdminCustomerAccountUsers(adminCustomerAccountSubdomain)
+            }
 
             //Create the email templates
             createInitialAccountActivationEmail()
@@ -188,11 +225,73 @@ class BootStrap {
             createVerifiedSuccessfullyEmail()
             createResetPasswordEmail()
             createUserInvitationEmail()
-
-
         }
     }
     def destroy = {
+    }
+
+    def createAdminCustomerAccount(adminCustomerAccountSubdomain){
+        Map regHolder = [:]
+        regHolder.firstName = "Christopher"
+        regHolder.lastName = "Kwiatkowski"
+        regHolder.username = "cogdachris"
+        regHolder.emailAddress = "chris@cogda.com"
+        regHolder.password = springSecurityService.encodePassword("password")
+        regHolder.companyName = "Cogda Solutions LLC."
+        regHolder.companyType = CompanyType.findByCode("Wholesaler (MGA, Broker)")
+        regHolder.existingCompany = null
+        regHolder.companyTypeOther = null
+        regHolder.phoneNumber = "706-255-9087"
+        regHolder.streetAddressOne = "1 Press Place"
+        regHolder.streetAddressTwo = ""
+        regHolder.streetAddressThree = ""
+        regHolder.city = "Athens"
+        regHolder.state = "GA"
+        regHolder.zipcode = "30601"
+        regHolder.county = "Clarke"
+        regHolder.registrationStatus = RegistrationStatus.APPROVED
+        regHolder.subDomain = adminCustomerAccountSubdomain
+        customerAccountService.onboardCustomerAccount(regHolder)
+        CustomerAccount customerAccount = CustomerAccount.findBySubDomain(adminCustomerAccountSubdomain)
+        log.debug "Successfully saved new CustomerAccount with subDomain: ${adminCustomerAccountSubdomain}"
+        convertCustomerAccountToInternalSystemAccount(customerAccount)
+    }
+
+    def convertCustomerAccountToInternalSystemAccount(CustomerAccount customerAccount){
+        log.warn("Converting CustomerAccount with subDomain ${customerAccount.subDomain} to an internalSystemAccount")
+        customerAccount.internalSystemAccount = true
+        if(customerAccount.save()){
+            log.warn("Successfully converted CustomerAccount with subDomain ${customerAccount.subDomain} to an internalSystemAccount")
+        }else{
+            log.error("Was unable to convert CustomerAccount with subDomain ${customerAccount.subDomain} to an internalSystemAccount due to errors in saving -> ${customerAccount.errors.allErrors}")
+        }
+        return customerAccount
+    }
+
+    def createAdminCustomerAccountUsers(adminCustomerAccountSubdomain){
+        def customerAccount = CustomerAccount.findBySubDomain(adminCustomerAccountSubdomain)
+        if(!customerAccount){
+            log.error "Unable to create admin customer account users - customerAccount with subDomain: $adminCustomerAccountSubdomain was not found"
+        }else{
+            def userList = ['lfleming', 'tpatterson', 'lpilgrim', 'srich', 'selias', 'cjaynes', 'gricker', 'delias', 'julia', 'clacasa', 'msabau', 'jclark']
+            customerAccount.withThisTenant {
+                List cogdaRoles = ["ROLE_ADMINISTRATOR", "ROLE_USER"]
+                String password = "cogda1" // cogda one
+                userList.each { String username ->
+                    if(!User.findByUsername(username)){
+                        User user = new User()
+                        user.username = username
+                        user.password = password
+                        user.enabled  = true
+                        user.accountExpired = false
+                        userService.createWithStringRoles(user, cogdaRoles)
+                        if(user.hasErrors()){
+                            log.error "Errors thrown adding User with username $username for customerAccount ${customerAccount.subDomain} -> ${user.errors.allErrors}"
+                        }
+                    }
+                }
+            }
+        }
     }
 
     def createRennaissanceUserDummyData(Registration registration){
@@ -251,78 +350,28 @@ class BootStrap {
 
     def createRennaissanceAccountDummyData(Registration registration){
         CustomerAccount customerAccount = CustomerAccount.findBySubDomain(registration.subDomain)
-        InputStream is = amazonWebService.s3.getObject(new GetObjectRequest(grailsApplication.config.grails.plugin.awssdk.default.bucket, "testingfiles/AccountData.csv")).getObjectContent()
+        InputStream is = amazonWebService.s3.getObject(new GetObjectRequest(grailsApplication.config.grails.plugin.awssdk.default.bucket, "testingfiles/realAccountData.csv")).getObjectContent()
         CSVReader reader = new CSVReader(new InputStreamReader(is))
         String[] nextLine;
-        Integer count = 0;
         Company company = Company.first()
         while ((nextLine = reader.readNext()) != null) {
-            if(nextLine[0]?.trim() != "accountName"){
-                customerAccount.withThisTenant {
+            customerAccount.withThisTenant {
 
-                    Account.withTransaction {
-                        Account testAccount = new Account()
+                Account.withTransaction {
+                    Account testAccount = Account.findByAccountName(nextLine[0]?.trim())
+                    if(!testAccount)
+                    {
+                        testAccount = new Account()
                         testAccount.accountName= nextLine[0]?.trim()
-                        testAccount.accountCode= nextLine[1]?.trim()
-                        testAccount.accountType= AccountType.findByCode(nextLine[2]?.trim())
+                        testAccount.accountType= AccountType.findByCode(nextLine[1]?.trim())
                         testAccount.isMarket = Boolean.TRUE;
                         testAccount.active = Boolean.TRUE;
-                        testAccount.accountCode= nextLine[1]?.trim()
                         if (testAccount.hasErrors() || !testAccount.validate() ) {
                             log.error("Could not import testAccount with AccountCode: ${testAccount.accountCode}  ${testAccount.errors}")
                         }
-                        else{
+                        else
+                        {
                             testAccount.save()
-
-                            def testAccountContact = new AccountContact(
-                                    firstName: nextLine[3]?.trim(),
-                                    middleName: nextLine[4]?.trim(),
-                                    lastName: nextLine[5]?.trim()
-                            )
-                            if (testAccountContact.hasErrors() || !testAccountContact.validate() ) {
-                                log.error("Could not import testAccountContact ${testAccountContact.firstName} ${testAccountContact.lastName}  ${testAccountContact.errors}")
-                            }
-                            else
-                            {
-                                testAccountContact.save()
-
-                                def testAccountPhoneNumber = new AccountContactPhoneNumber(accountContact: testAccountContact,phoneNumber:nextLine[7]?.trim() ,primaryPhoneNumber: true)
-                                if (testAccountPhoneNumber.hasErrors() || !testAccountPhoneNumber.validate() ) {
-                                    log.error("Could not import testAccountPhoneNumber ${testAccountPhoneNumber.phoneNumber} ${testAccountPhoneNumber.errors}")
-                                }
-                                else
-                                    testAccountPhoneNumber.save()
-
-                                def testAccountEmail = new AccountContactEmailAddress(accountContact: testAccountContact,emailAddress:nextLine[6]?.trim()?.toString()?.replace(';',''),primaryEmailAddress: true).save()
-                                if (testAccountEmail.hasErrors() || !testAccountEmail.validate() ) {
-                                    log.error("Could not import testAccountEmail ${testAccountEmail.emailAddress} ${testAccountEmail.errors}")
-                                }
-                                else
-                                    testAccountEmail.save()
-
-                                AccountContactAddress accountContactAddress = new AccountContactAddress()
-                                accountContactAddress.address = new Address()
-                                accountContactAddress.address.addressOne = "address line 1"
-                                accountContactAddress.address.addressTwo = "address line 2"
-                                accountContactAddress.address.addressThree = "address line 3"
-                                accountContactAddress.address.city = "Athens"
-                                accountContactAddress.address.state = "Georgia"
-                                accountContactAddress.address.zipcode = "30602"
-                                accountContactAddress.primaryAddress = Boolean.TRUE
-                                testAccountContact.addToAccountContactAddresses(accountContactAddress)
-                                accountContactAddress.save()
-                                if(accountContactAddress.hasErrors()){
-                                    println "accountContactAddress ${accountContactAddress} failed to save ${accountContactAddress.errors}"
-                                }
-
-                                testAccountContact.addToAccountContactEmailAddresses(testAccountEmail)
-                                testAccountContact.addToAccountContactPhoneNumbers(testAccountPhoneNumber)
-                                testAccountContact.save()
-
-                                AccountContactLink.create testAccount, testAccountContact, true, true
-                                testAccount.save()
-                            }
-
 
                             AccountAddress accountAddress = new AccountAddress()
                             accountAddress.address = new Address()
@@ -330,9 +379,9 @@ class BootStrap {
                             accountAddress.address.addressTwo = "address line 2"
                             accountAddress.address.addressThree = "address line 3"
                             accountAddress.accountAddressType = AccountAddressType.findByCode("Mailing")
-                            accountAddress.address.city = "Athens"
-                            accountAddress.address.state = "Georgia"
-                            accountAddress.address.zipcode = "30602"
+                            accountAddress.address.city = "Boston"
+                            accountAddress.address.state = "Massachusetts"
+                            accountAddress.address.zipcode = "02222"
                             accountAddress.primaryAddress = Boolean.TRUE
                             testAccount.addToAccountAddresses(accountAddress)
                             accountAddress.save()
@@ -343,29 +392,83 @@ class BootStrap {
                             accountAddress.address.addressTwo = "address line 2"
                             accountAddress.address.addressThree = "address line 3"
                             accountAddress.accountAddressType = AccountAddressType.findByCode("Billing")
-                            accountAddress.address.city = "Athens"
-                            accountAddress.address.state = "Georgia"
-                            accountAddress.address.zipcode = "30602"
+                            accountAddress.address.city = "Boston"
+                            accountAddress.address.state = "Massachusetts"
+                            accountAddress.address.zipcode = "02222"
                             accountAddress.primaryAddress = Boolean.FALSE
                             testAccount.addToAccountAddresses(accountAddress)
                             accountAddress.save()
 
                             if(accountAddress.hasErrors()){
-                                println "accountAddress ${accountAddress} failed to save ${accountAddress.errors}"
+                                log.error "accountAddress ${accountAddress} failed to save ${accountAddress.errors}"
                             }
                             def noteText = """Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer volutpat pretium dictum. Praesent consequat sollicitudin est at fringilla. Morbi lacinia, mauris a gravida imperdiet, mi nulla scelerisque diam, eu rutrum massa neque non mauris. Nulla est felis, mattis non hendrerit vitae, accumsan id metus. Fusce ac leo nec velit venenatis tincidunt. In in ante id sapien ultrices mollis. Vivamus consequat sit amet odio vel ullamcorper. Maecenas sit amet mollis justo. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi quis bibendum nisl. Nunc aliquet accumsan nulla vel porttitor. Donec vestibulum mattis odio, a auctor nunc pulvinar dignissim. Aenean molestie dignissim tempus. Aenean nec tellus urna. Mauris blandit auctor eros, sit amet luctus diam blandit sit amet. Suspendisse consequat consectetur consequat.
-                                                Nullam vitae neque commodo, mattis purus non, varius diam. Nam ac sodales diam. Curabitur augue ligula, auctor eu vestibulum ut, lacinia non lacus. Etiam sodales tincidunt malesuada. Nunc ultricies consectetur congue. Sed ornare elit tellus, sed vulputate velit tincidunt nec. Suspendisse pretium nisi convallis risus convallis, quis faucibus nulla ornare. Etiam eget mauris nec odio posuere pellentesque. Curabitur nisl neque, elementum quis ipsum ac, scelerisque lobortis orci. Sed porta orci arcu, id mollis tellus ullamcorper ut. In egestas elit sit amet consequat mollis."""
+                                        Nullam vitae neque commodo, mattis purus non, varius diam. Nam ac sodales diam. Curabitur augue ligula, auctor eu vestibulum ut, lacinia non lacus. Etiam sodales tincidunt malesuada. Nunc ultricies consectetur congue. Sed ornare elit tellus, sed vulputate velit tincidunt nec. Suspendisse pretium nisi convallis risus convallis, quis faucibus nulla ornare. Etiam eget mauris nec odio posuere pellentesque. Curabitur nisl neque, elementum quis ipsum ac, scelerisque lobortis orci. Sed porta orci arcu, id mollis tellus ullamcorper ut. In egestas elit sit amet consequat mollis."""
 
                             def tempNote = new Note(notes:noteText).save()
-                            def tempAccountNote = new AccountNote(note: tempNote,account: testAccount,noteType: NoteType.get(1)).save()
+                            new AccountNote(note: tempNote,account: testAccount,noteType: NoteType.get(1)).save()
 
                             log.debug("Importing testAccount  ${testAccount}")
-                            AccountCompanyOwner.create testAccount, company, true
+                            if(!AccountCompanyOwner.findByAccountAndCompany(testAccount,company))
+                                AccountCompanyOwner.create testAccount, company, true
                         }
+                    }
+
+                    AccountContact testAccountContact = AccountContact.findByFirstNameAndLastName(nextLine[2]?.trim(),nextLine[3]?.trim())
+                    if(!testAccountContact)
+                    {
+                        testAccountContact = new AccountContact(firstName: nextLine[2]?.trim(),lastName: nextLine[3]?.trim())
+                        if (testAccountContact.hasErrors() || !testAccountContact.validate() ) {
+                            log.error("Could not import testAccountContact ${testAccountContact.firstName} ${testAccountContact.lastName}  ${testAccountContact.errors}")
+                        }
+                        else
+                        {
+                            testAccountContact.save()
+
+                            def testAccountPhoneNumber = new AccountContactPhoneNumber(accountContact: testAccountContact,phoneNumber:nextLine[5]?.trim() ,primaryPhoneNumber: true)
+                            if (testAccountPhoneNumber.hasErrors() || !testAccountPhoneNumber.validate() ) {
+                                log.error("Could not import testAccountPhoneNumber ${testAccountPhoneNumber.phoneNumber} ${testAccountPhoneNumber.errors}")
+                            }
+                            else
+                                testAccountPhoneNumber.save()
+
+                            def testAccountEmail = new AccountContactEmailAddress(accountContact: testAccountContact,emailAddress:nextLine[4]?.trim()?.toString()?.replace(';',''),primaryEmailAddress: true).save()
+                            if (testAccountEmail.hasErrors() || !testAccountEmail.validate() ) {
+                                log.error("Could not import testAccountEmail ${testAccountEmail.emailAddress} ${testAccountEmail.errors}")
+                            }
+                            else
+                                testAccountEmail.save()
+
+                            AccountContactAddress accountContactAddress = new AccountContactAddress()
+                            accountContactAddress.address = new Address()
+                            accountContactAddress.address.addressOne = "address line 1"
+                            accountContactAddress.address.addressTwo = "address line 2"
+                            accountContactAddress.address.addressThree = "address line 3"
+                            accountContactAddress.address.city = "Boston"
+                            accountContactAddress.address.state = "Massachusetts"
+                            accountContactAddress.address.zipcode = "02222"
+                            accountContactAddress.primaryAddress = Boolean.TRUE
+                            testAccountContact.addToAccountContactAddresses(accountContactAddress)
+                            accountContactAddress.save()
+                            if(accountContactAddress.hasErrors()){
+                                log.error "accountContactAddress ${accountContactAddress} failed to save ${accountContactAddress.errors}"
+                            }
+
+                            testAccountContact.addToAccountContactEmailAddresses(testAccountEmail)
+                            testAccountContact.addToAccountContactPhoneNumbers(testAccountPhoneNumber)
+                            testAccountContact.save()
+
+
+                        }
+                    }
+                    if(!AccountContactLink.findByAccountAndAccountContact(testAccount,testAccountContact)){
+                        if(AccountContactLink.findAllByAccountAndPrimaryContact(testAccount,true))
+                            AccountContactLink.create testAccount, testAccountContact, false, true
+                        else
+                            AccountContactLink.create testAccount, testAccountContact, true, true
                     }
                 }
             }
-            count ++
         }
     }
 
@@ -459,6 +562,71 @@ class BootStrap {
                 }
             }
             count++
+        }
+    }
+
+    def createRennaisanceLeadDummyData(Registration registration) {
+        CustomerAccount customerAccount = CustomerAccount.findBySubDomain(registration.subDomain)
+        InputStream is = amazonWebService.s3.getObject(new GetObjectRequest(grailsApplication.config.grails.plugin.awssdk.default.bucket, "testingfiles/LeadImportFile.csv")).getObjectContent()
+//        InputStream is = new FileInputStream("/home/chewy/LeadsImportFile.csv")
+        CSVReader reader = new CSVReader(new InputStreamReader(is))
+        String[] nextLine
+        Integer count = 0
+        reader.readNext() // skip column names
+        Random random = new Random()
+        Boolean makeProspect = true;
+        while ((nextLine = reader.readNext()) != null) {
+            customerAccount.withThisTenant {
+                Lead.withTransaction {
+                    def csvDunsNumber = nextLine[0]?.trim()
+                    def csvCompany = nextLine[1]?.trim()
+                    def csvPhone = nextLine[2]?.trim()
+                    def csvWebAddress = nextLine[3]?.trim()
+                    def csvLineOfBusiness = nextLine[4]?.trim()
+                    def csvFirstName = nextLine[5]?.trim()
+                    def csvLastName = nextLine[6]?.trim()
+                    def csvEmailAddress = nextLine[7]?.trim()
+                    def csvBusinessType = nextLine[8]?.trim()
+                    def csvExpirationDate = nextLine[9]?.trim()
+                    def csvStage = nextLine[10]?.trim()
+                    def csvCity = nextLine[11]?.trim()
+                    def csvState = nextLine[12]?.trim()
+                    def csvZip = nextLine[13]?.trim()
+                    def csvCounty = nextLine[14]?.trim()
+
+                    Lead testLead = new Lead()
+                    def businessTypeId = random.nextInt(BusinessType.count()) + 1
+                    BusinessType businessType = BusinessType.get(businessTypeId)
+                    if (makeProspect){
+                        LineOfBusiness lineOfBusiness = LineOfBusiness.get(random.nextInt(LineOfBusiness.count()))
+                        LeadLineOfBusiness leadLineOfBusiness = new LeadLineOfBusiness()
+                        leadLineOfBusiness.lineOfBusiness = lineOfBusiness
+                        testLead.addToLinesOfBusiness(leadLineOfBusiness)
+                        testLead.leadType = LeadType.PROSPECT
+                    } else {
+                        testLead.leadType = LeadType.SUSPECT
+                    }
+                    makeProspect = !makeProspect;
+                    testLead.clientName = csvCompany
+                    testLead.clientId = csvDunsNumber
+                    testLead.subType = random.nextInt(2) == 0 ? LeadSubType.BUSINESS : LeadSubType.INDIVIDUAL
+                    LeadContact leadContact = new LeadContact(primaryContact: true)
+                    leadContact.firstName = csvFirstName
+                    leadContact.lastName = csvLastName
+                    leadContact.addToLeadContactEmailAddresses(new LeadContactEmailAddress(emailAddress: csvEmailAddress, primaryEmailAddress: true))
+                    leadContact.addToLeadContactPhoneNumbers(new LeadContactPhoneNumber(phoneNumber: csvPhone, primaryPhoneNumber: true))
+                    testLead.addToLeadContacts(leadContact)
+                    testLead.businessType = businessType
+                    LeadAddress leadAddress = new LeadAddress()
+                    leadAddress.address = new Address(city: csvCity, state: csvState, zipcode: csvZip, county: csvCounty, addressOne: "123 Fake Street")
+                    testLead.addToLeadAddresses(leadAddress)
+
+                    if (!testLead.save()) {
+                        println "Lead $testLead was NOT saved successfully ${testLead.errors}"
+                        println "BusinessTypeId: $businessTypeId"
+                    }
+                }
+            }
         }
     }
 
@@ -585,6 +753,91 @@ class BootStrap {
                 registration.county = "CLARKE"
                 registration.registrationStatus = RegistrationStatus.APPROVED
                 registration.subDomain = "libertymutual"
+
+                registration.validate()
+
+                if(!registration.hasErrors() && registration.save()){
+                    println "Registration ${registration.subDomain} save succeeded!"
+                }else{
+                    println "Registration save failed: ${registration.errors}"
+                    registration.errors.each {
+                        println it
+                    }
+                }
+            }
+        }
+    }
+
+    def createCochranePorterRegistration(){
+
+        if (!Registration.findBySubDomain("cochraneandporter")) {
+
+            Registration.withTransaction {
+
+                Registration registration = new Registration()
+
+                registration.firstName = "Christian"
+                registration.lastName = "Jaynes"
+                registration.username = "cochrane"
+                registration.emailAddress = "cjaynes@cogda.com"
+                registration.password = springSecurityService.encodePassword("password")
+                registration.companyName = "Cochrane & Porter Insurance Agency. Inc."
+                registration.companyType = CompanyType.findByCode("Agency/Retailer")
+                registration.existingCompany = null
+                registration.companyTypeOther = null
+                registration.phoneNumber = "800-514-2667"
+                registration.streetAddressOne = "981 Worcester Street"
+                registration.streetAddressTwo = "Suite 200"
+                registration.streetAddressThree = ""
+                registration.city = "Wellesley"
+                registration.state = "MA"
+                registration.zipcode = "02842"
+                registration.county = "NORFOLK USA"
+                registration.registrationStatus = RegistrationStatus.APPROVED
+                registration.subDomain = "cochraneandporter"
+
+                registration.validate()
+
+                if(!registration.hasErrors() && registration.save()){
+                    println "Registration ${registration.subDomain} save succeeded!"
+                }else{
+                    println "Registration save failed: ${registration.errors}"
+                    registration.errors.each {
+                        println it
+                    }
+                }
+            }
+        }
+    }
+
+    // createGaudreauGroupRegistration
+    def createGaudreauGroupRegistration(){
+
+        if (!Registration.findBySubDomain("gaudreaugroup")) {
+
+            Registration.withTransaction {
+
+                Registration registration = new Registration()
+
+                registration.firstName = "Christian"
+                registration.lastName = "Jaynes"
+                registration.username = "gaudreau"
+                registration.emailAddress = "cjaynes@cogda.com"
+                registration.password = springSecurityService.encodePassword("password")
+                registration.companyName = "The Gaudreau Group"
+                registration.companyType = CompanyType.findByCode("Agency/Retailer")
+                registration.existingCompany = null
+                registration.companyTypeOther = null
+                registration.phoneNumber = "413.543.3534"
+                registration.streetAddressOne = "1984 Boston Road"
+                registration.streetAddressTwo = ""
+                registration.streetAddressThree = ""
+                registration.city = "Willbraham"
+                registration.state = "MA"
+                registration.zipcode = "01095"
+                registration.county = ""
+                registration.registrationStatus = RegistrationStatus.APPROVED
+                registration.subDomain = "gaudreaugroup"
 
                 registration.validate()
 
@@ -791,7 +1044,7 @@ Thank you!
 
 
     def importNaicsCodes() {
-        InputStream is = amazonWebService.s3.getObject(new GetObjectRequest(grailsApplication.config.grails.plugin.awssdk.default.bucket, "testingfiles/NaicsCode.csv")).getObjectContent()
+        InputStream is = amazonWebService.s3.getObject(new GetObjectRequest(grailsApplication.config.grails.plugin.awssdk.default.bucket, "testingfiles/updatedCodes/NaicsCode.csv")).getObjectContent()
         CSVReader reader = new CSVReader(new InputStreamReader(is))
         String[] nextLine;
         while ((nextLine = reader.readNext()) != null) {
@@ -799,11 +1052,11 @@ Thank you!
             def desc = nextLine[1]?.trim()
             if(code && code != ""){
 
-                if(code.length() == 2) //root level
+                if(code.length() == 2 || code.contains("-")) //root level
                     new NaicsCode(code: code,description: desc).save()
 
                 else{
-                    def parentCode = code[0..code.length()-2]
+                    def parentCode = nextLine.length == 3 ? nextLine[2].trim() : code[0..code.length()-2]
                     new NaicsCode(
                         code: code,
                         description: desc,
@@ -835,7 +1088,7 @@ Thank you!
     }
 
     def buildSicNaicsCrosswalk(){
-        InputStream is = amazonWebService.s3.getObject(new GetObjectRequest(grailsApplication.config.grails.plugin.awssdk.default.bucket, "testingfiles/SIC_to_NAICS_Crosswalk.csv")).getObjectContent()
+        InputStream is = amazonWebService.s3.getObject(new GetObjectRequest(grailsApplication.config.grails.plugin.awssdk.default.bucket, "testingfiles/updatedCodes/SIC_to_NAICS_Crosswalk.csv")).getObjectContent()
         CSVReader reader = new CSVReader(new InputStreamReader(is))
         String[] nextLine;
         SicCode sicCode

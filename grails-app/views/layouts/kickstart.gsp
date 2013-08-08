@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <%-- <html lang="${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).toString().replace('_', '-')}"> --%>
 <html lang="${session.'org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE'}">
@@ -27,8 +28,8 @@
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
     <!--[if lt IE 9]>
-		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-	<![endif]-->
+<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
 
     <%-- For Javascript see end of body --%>
 </head>
@@ -65,19 +66,19 @@
 <mt:hasTenant>
     <script type="text/javascript" src="//assets.zendesk.com/external/zenbox/v2.6/zenbox.js"></script>
     <style type="text/css" media="screen, projection">
-            @import url(//assets.zendesk.com/external/zenbox/v2.6/zenbox.css);
-            </style>
-                <script type="text/javascript">
-                if (typeof(Zenbox) !== "undefined") {
-                        Zenbox.init({
-                            dropboxID:   "20194568",
-                            url:         "https://cogda.zendesk.com",
-                            tabTooltip:  "Support",
-                            tabImageURL: "https://assets.zendesk.com/external/zenbox/images/tab_support.png",
-                            tabColor:    "black",
-                            tabPosition: "Left"
-                        });
-                }
+    @import url(//assets.zendesk.com/external/zenbox/v2.6/zenbox.css);
+    </style>
+    <script type="text/javascript">
+        if (typeof(Zenbox) !== "undefined") {
+            Zenbox.init({
+                dropboxID:   "20194568",
+                url:         "https://cogda.zendesk.com",
+                tabTooltip:  "Support",
+                tabImageURL: "https://assets.zendesk.com/external/zenbox/images/tab_support.png",
+                tabColor:    "#215b87",
+                tabPosition: "Left"
+            });
+        }
     </script>
 </mt:hasTenant>
 </body>

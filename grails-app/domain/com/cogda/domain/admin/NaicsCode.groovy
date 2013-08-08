@@ -1,5 +1,7 @@
 package com.cogda.domain.admin
 
+import java.util.regex.Pattern
+
 /**
  * NaicsCode
  * A domain class describes the data object and it's mapping to the database
@@ -25,6 +27,7 @@ class NaicsCode {
     Date dateCreated
     Date lastUpdated
 
+    static transients = ["allChildNaicsCodes"]
 
     static constraints = {
         code(nullable: false, unique: ['parentNaicsCode'])
@@ -64,7 +67,6 @@ class NaicsCode {
         while (naicsToFind.parentNaicsCode != null) {
             parents.add(naicsToFind.parentNaicsCode)
             naicsToFind = naicsToFind.parentNaicsCode
-            println naicsToFind
         }
         return parents
     }
@@ -74,6 +76,19 @@ class NaicsCode {
         children.addAll(childNaicsCodes)
         childNaicsCodes.each {
             children.addAll(it.getAllChildNaicsCodes())
+        }
+        return children
+    }
+
+    def getAllChildNaicsCodes(String filter) {
+        def children = []
+
+        children.addAll(childNaicsCodes.findAll { NaicsCode child ->
+            def regex = Pattern.compile(Pattern.quote(filter), Pattern.CASE_INSENSITIVE)
+            return regex.matcher(child.description).find() || regex.matcher(child.code).find()
+        })
+        childNaicsCodes.each {
+            children.addAll(it.getAllChildNaicsCodes(filter))
         }
         return children
     }

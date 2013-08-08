@@ -85,7 +85,7 @@
                                     </a>
                                 </li>
                                 <li class="">
-                                    <a href="/suspect/create">
+                                    <a href="/suspect#/create">
                                         <i class="icon-plus-sign"></i>
                                         <g:message code = "suspect.menu.create.label"/>
                                     </a>
@@ -112,7 +112,7 @@
                                 </a>
                             </li>
                             <li class="">
-                                <a href="/prospect/create">
+                                <a href="/prospect#/create">
                                     <i class="icon-plus-sign"></i>
                                     <g:message code = "prospect.menu.create.label"/>
                                 </a>
@@ -125,6 +125,33 @@
                             </li>
                         </ul>
                     </li>
+
+
+
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" data-target="#">
+                            <i class="icon-briefcase"></i>
+                            Submissions
+                            <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li class="">
+                                <a href="/submissionBuilder/">
+                                    <i class="icon-folder-open"></i>
+                                    List Submissions
+                                </a>
+                            </li>
+                            <li class="">
+                                <a href="/submissionBuilder#/lead/">
+                                    <i class="icon-sitemap"></i>
+                                    <g:message code = "submissionBuilder.build.menu.label"/>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+
+
                     </ul>
 
                 </div>
