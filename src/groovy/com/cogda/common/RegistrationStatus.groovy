@@ -10,7 +10,10 @@ package com.cogda.common
 enum RegistrationStatus {
     AWAITING_USER_EMAIL_CONFIRMATION(0),
     AWAITING_ADMIN_APPROVAL(1),
-    APPROVED(2)
+    APPROVED(2),
+    AWAITING_COMPANY_APPROVAL(3), // used for registrations that get directed to existing companies
+    REJECTED(4)
+
 
     RegistrationStatus(int value) {
         this.value = value

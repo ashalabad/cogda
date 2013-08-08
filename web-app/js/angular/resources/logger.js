@@ -1,6 +1,6 @@
 'use strict';
 angular.module('resources.logger', []).factory('Logger', function () {
-    toastr.options.timeOut = 3000; // 2 second toast timeout
+    toastr.options.timeOut = 4000; // 2 second toast timeout
     toastr.options.positionClass = 'toast-top-right';
 
     var logger = {
@@ -11,7 +11,8 @@ angular.module('resources.logger', []).factory('Logger', function () {
         log: log, // straight to console; bypass toast
         messageBuilder:messageBuilder,
         formValidationMessageBuilder: formValidationMessageBuilder,
-        formsValidationMessageBuilder: formsValidationMessageBuilder
+        formsValidationMessageBuilder: formsValidationMessageBuilder,
+        errorValidationMessageBuilder: errorValidationMessageBuilder
     };
 
     /**
@@ -129,6 +130,7 @@ angular.module('resources.logger', []).factory('Logger', function () {
                     j[i].$setValidity(i, false);
                 }
             }
+
         }
     }
 
@@ -140,6 +142,25 @@ angular.module('resources.logger', []).factory('Logger', function () {
         }
     }
 
+    /**
+     * Displays validation error messages in toastr
+     * @param response
+     * @param $scope
+     */
+    function errorValidationMessageBuilder(response, $scope){
+        switch (response.status) {
+            case 422: // validation error - display errors alongside form fields
+                $scope.errors = response.data.errors;
+                for(var i in $scope.errors){
+                    for(var j = 0; j < $scope.errors[i].length; j++){
+                        error($scope.errors[i][j], "Field Error");
+                    }
+                }
+                break;
+            default:
+                error("Unhandled Error Thrown", "Error " + response.status);
+        }
+    }
 
     // IE and google chrome workaround
     // http://code.google.com/p/chromium/issues/detail?id=48662
