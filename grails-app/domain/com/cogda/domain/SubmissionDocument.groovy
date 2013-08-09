@@ -33,7 +33,7 @@ class SubmissionDocument {
     /**
      * The amazon key for this document
      */
-    String key
+    String awsKey
 
     /* Automatic timestamping of GORM */
 	Date	dateCreated
@@ -46,6 +46,6 @@ class SubmissionDocument {
         fileSize(nullable:false, blank:false)
         lastModified(nullable:true)
         contentType(nullable:false, blank:false)
-        key(nullable:true)
+        awsKey(nullable:true)
     }
 }

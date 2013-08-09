@@ -28,7 +28,7 @@ class DocumentVersion {
     User createdBy
 
 	static belongsTo	= [document:Document]	// tells GORM to cascade commands: e.g., delete this object if the "parent" is deleted.
-	static hasOne		= [storageReference:StorageReference,createdBy:User]	// tells GORM to associate another domain object as an owner in a 1-1 mapping
+	//static hasOne		= []	// tells GORM to associate another domain object as an owner in a 1-1 mapping
 
     static mapping = {
     }
