@@ -762,6 +762,53 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
             };
 
         }])
+    .controller('CreateLobCtrl', ['$scope', 'Logger', 'LeadService', function ($scope, Logger, LeadService) {
+        $scope.$on('validateAllForms', function () {
+            console.log("CreateLobCtrl handling. Index: " + $scope.$index);
+            console.log($scope.leadLineOfBusinessForm);
+            var response = angular.copy(LeadService.response);
+            console.log(LeadService.response);
+            console.log(response);
+            response.data.errors = {};
+            var errorBaseName = 'linesOfBusiness[' + $scope.$index + '].';
+            for (var i in LeadService.response.data.errors) {
+                if (i.indexOf(errorBaseName) == 0) {
+                    var newName = i.replace(errorBaseName, '');
+                    response.data.errors[newName] = LeadService.response.data.errors[i];
+                    console.log(i);
+                }
+            }
+            Logger.formValidationMessageBuilder(response, $scope, $scope.leadLineOfBusinessForm);
+        });
+
+        var targetPremiumLastChanged = false;
+        var commissionRateLastChanged = false;
+
+        $scope.targetPremiumChangeHandler = function () {
+            updateCommissions();
+        };
+
+        $scope.commissionRateChangeHandler = function () {
+            targetPremiumLastChanged = false;
+            commissionRateLastChanged = true;
+            updateCommissions();
+        };
+
+        $scope.targetCommissionChangeHandler = function () {
+            targetPremiumLastChanged = true;
+            commissionRateLastChanged = false;
+            updateCommissions();
+        };
+
+        var updateCommissions = function () {
+            var commissions = LeadService.updateCommissions($scope.leadLineOfBusiness.targetPremium, $scope.leadLineOfBusiness.targetCommission, $scope.leadLineOfBusiness.commissionRate, targetPremiumLastChanged, commissionRateLastChanged);
+            if (commissions !== undefined) {
+                $scope.leadLineOfBusiness.targetCommission = commissions[0];
+                $scope.leadLineOfBusiness.commissionRate = commissions[1];
+            }
+        }
+
+    }])
     .factory('LeadService', ['$rootScope', 'LeadNote', function ($rootScope, LeadNote) {
         var leadService = {};
 

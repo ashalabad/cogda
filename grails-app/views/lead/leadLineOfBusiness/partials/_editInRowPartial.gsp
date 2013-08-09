@@ -65,7 +65,7 @@
 <td data-title="${message(code: 'leadLineOfBusiness.targetCommission.label')}">
     <div class="input-prepend">
         <span class="add-on">$</span>
-        <input type="number" id="targetCommission" min="0" class="input-block-level"
+        <input type="number" id="targetCommission" min="0" max="{{leadLineOfBusiness.targetPremium}}" class="input-block-level"
                data-ng-pattern="/^\d+\.?\d{0,2}$/" data-ng-change="targetCommissionChangeHandler()"
                placeholder="<g:message code="leadLineOfBusiness.targetCommission.label"
                                        default="Target Commission"/>"
@@ -78,7 +78,7 @@
 <td data-title="${message(code: 'leadLineOfBusiness.commissionRate.label')}">
     <div class="input-prepend">
         <span class="add-on">%</span>
-        <input type="number" min="0" id="commissionRate" class="input-block-level"
+        <input type="number" min="0" max="100" id="commissionRate" class="input-block-level"
                data-ng-pattern="/^\d+\.?\d{0,2}$/" data-ng-change="commissionRateChangeHandler()"
                placeholder="<g:message code="leadLineOfBusiness.commissionRate.label"
                                        default="Commission Rate"/>"

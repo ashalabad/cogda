@@ -74,8 +74,8 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
         }])
     .controller('EditSuspectCtrl', ['$scope', '$routeParams', '$location', 'Suspect', 'Logger', 'UnitedStates',
         'SupportedCountryCodes', 'LeadSubTypes', 'NoteType', 'BusinessTypes', 'LineOfBusiness', 'LeadLineOfBusiness',
-        '$dialog', 'DateHelper', '$window', 'LeadUtils',
-        function ($scope, $routeParams, $location, Suspect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes, LineOfBusiness, LeadLineOfBusiness, $dialog, DateHelper, $window, LeadUtils) {
+        '$dialog', 'DateHelper', '$window', 'LeadUtils', 'LeadService',
+        function ($scope, $routeParams, $location, Suspect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes, LineOfBusiness, LeadLineOfBusiness, $dialog, DateHelper, $window, LeadUtils, LeadService) {
             $scope.title = 'Suspect';
             $scope.editingLead = false;
             $scope.message = '';
@@ -179,7 +179,7 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
             };
 
             var convertToProspectErrorCallback = function (response) {
-                Logger.messageBuilder(response, $scope);
+                LeadService.validateAllForms(response, $scope);
             };
 
             $scope.convertToProspect = function (lead) {
@@ -210,42 +210,18 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
             $scope.addingLeadLineOfBusiness = false;
 
             $scope.addLeadLineOfBusiness = function () {
-                $scope.leadLineOfBusiness = {};
+                var leadLineOfBusiness = {};
                 if ($scope.lead.linesOfBusiness.length > 0) {
                     var modelLob = $scope.lead.linesOfBusiness[0];
-                    $scope.leadLineOfBusiness.lineOfBusiness = { lineOfBusinessCategory: modelLob.lineOfBusiness.lineOfBusinessCategory };
-                    $scope.leadLineOfBusiness.targetDate = modelLob.targetDate;
-                    $scope.leadLineOfBusiness.expirationDate = modelLob.expirationDate;
-                    $scope.leadLineOfBusiness.currentCarrier = modelLob.currentCarrier;
-                    $scope.leadLineOfBusiness.remarket = modelLob.remarket;
+                    if (modelLob.lineOfBusiness !== undefined) {
+                        leadLineOfBusiness.lineOfBusiness = { lineOfBusinessCategory: modelLob.lineOfBusiness.lineOfBusinessCategory };
+                    }
+                    leadLineOfBusiness.targetDate = modelLob.targetDate;
+                    leadLineOfBusiness.expirationDate = modelLob.expirationDate;
+                    leadLineOfBusiness.currentCarrier = modelLob.currentCarrier;
+                    leadLineOfBusiness.remarket = modelLob.remarket;
                 }
-                $scope.addingLeadLineOfBusiness = true;
-            };
-
-            $scope.cancelAddLeadLineOfBusiness = function () {
-                $scope.addingLeadLineOfBusiness = false;
-            };
-
-            $scope.saveLeadLineOfBusiness = function (leadLineOfBusiness) {
-                leadLineOfBusiness.lineOfBusiness = LeadUtils.getLobFromSelect(leadLineOfBusiness, $scope.linesOfBusiness);
                 $scope.lead.linesOfBusiness.push(leadLineOfBusiness);
-                $scope.cancelAddLeadLineOfBusiness();
-            };
-
-            $scope.updateLineOfBusiness = function (lineOfBusiness) {
-                lineOfBusiness.lineOfBusiness = LeadUtils.getLobFromSelect(lineOfBusiness, $scope.linesOfBusiness);
-                $scope.lead.linesOfBusiness[$scope.index] = lineOfBusiness;
-                $scope.editingLineOfBusiness = false;
-            };
-
-            $scope.editLineOfBusiness = function (index) {
-                $scope.index = index;
-                $scope.leadLineOfBusiness = angular.copy($scope.lead.linesOfBusiness[index]);
-                $scope.editingLineOfBusiness = true;
-            };
-
-            $scope.cancelEditLineOfBusiness = function () {
-                $scope.editingLineOfBusiness = false;
             };
 
             $scope.deleteLineOfBusiness = function (index) {
@@ -309,11 +285,11 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
                     leadAddress.address.state != undefined ||
                     leadAddress.address.country != undefined ||
                     leadAddress.address.zipcode !== undefined;
-            }
+            };
 
             var getLobFromSelect = function (leadLineOfBusiness) {
                 return leadLineOfBusiness.lineOfBusiness === undefined ? undefined : $filter('findById')($scope.linesOfBusiness, leadLineOfBusiness.lineOfBusiness.id);
-            }
+            };
 
         }])
     .controller('ShowSuspectCtrl', ['$scope', '$routeParams', '$location', 'Suspect', 'Logger',
