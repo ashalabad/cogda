@@ -16,9 +16,9 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
     .controller('ListProspectCtrl', ['$scope', '$routeParams', '$location', 'RestApi', 'Logger',
         function ($scope, $routeParams, $location, RestApi, Logger) {
             $scope.prospects = [];
-            $scope.showDetails = '<div class="ngCellText"><button id="showBtn" type="button" class="btn-mini" ng-click="show(row.entity)" ><i class="icon-eye-open"></i>Details</button></div>';
-            $scope.editDetails = '<div class="ngCellText"><button id="editBtn" type="button" class="btn-mini" ng-click="edit(row.entity)" ><i class="icon-edit"></i>Edit</button></div>';
-            $scope.rowTemplate = '<div ng-style="{\'cursor\': row.cursor, \'z-index\': col.zIndex() }" ng-repeat="col in renderedColumns" ng-class="col.colIndex()" data-ng-dblclick="edit(row)" class="ngCell {{col.cellClass}}" ng-cell></div>';
+            $scope.showDetails = '<div class="ngCellText"><button id="showBtn" type="button" class="btn-mini" data-ng-click="show(row.entity)" ><i class="icon-eye-open"></i>Details</button></div>';
+            $scope.editDetails = '<div class="ngCellText"><button id="editBtn" type="button" class="btn-mini" data-ng-click="edit(row.entity)" ><i class="icon-edit"></i>Edit</button></div>';
+            $scope.rowTemplate = '<div data-ng-style="{\'cursor\': row.cursor, \'z-index\': col.zIndex() }" data-ng-repeat="col in renderedColumns" data-ng-class="col.colIndex()" data-ng-dblclick="edit(row)" class="ngCell {{col.cellClass}}" data-ng-cell></div>';
             $scope.selectedProspects = [];
             $scope.pagingOptions = {
                 pageSizes: [10, 25, 50, 100],
@@ -75,8 +75,8 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
         }])
     .controller('EditProspectCtrl', ['$scope', '$routeParams', '$location', 'Prospect', 'Logger', 'UnitedStates',
         'SupportedCountryCodes', 'LeadSubTypes', 'NoteType', 'BusinessTypes', 'LineOfBusiness', 'LeadLineOfBusiness',
-        '$dialog', 'DateHelper', '$filter',
-        function ($scope, $routeParams, $location, Prospect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes, LineOfBusiness, LeadLineOfBusiness, $dialog, DateHelper, $filter) {
+        '$dialog', 'DateHelper', '$filter', 'LeadUtils',
+        function ($scope, $routeParams, $location, Prospect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes, LineOfBusiness, LeadLineOfBusiness, $dialog, DateHelper, $filter, LeadUtils) {
             $scope.title = 'Prospect';
             $scope.editingLead = false;
             $scope.message = '';
@@ -139,6 +139,7 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
             };
 
             $scope.updateLead = function (lead) {
+                lead.businessType = LeadUtils.getBusinessTypeFromSelect(lead.businessType, $scope.businessTypes);
                 var formattedLead = angular.copy(lead);
                 for (var i = 0; i < formattedLead.linesOfBusiness.length; i++) {
                     formattedLead.linesOfBusiness[i].targetDate = DateHelper.getFormattedDate(formattedLead.linesOfBusiness[i].targetDate);
@@ -168,6 +169,7 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
             };
 
             var updateSuccessCallback = function (response) {
+                $scope.lead = response.data;
                 Logger.success("Prospect Updated Successfully", "Success");
                 closeEditLead();
             };
@@ -204,8 +206,8 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
         }])
     .controller('CreateProspectCtrl', ['$scope', '$routeParams', '$location', 'Prospect', 'Logger', 'UnitedStates',
         'SupportedCountryCodes', 'LeadSubTypes', 'NoteType', 'BusinessTypes', 'DateHelper', 'LineOfBusiness', '$filter',
-        'LeadUtils',
-        function ($scope, $routeParams, $location, Prospect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes, DateHelper, LineOfBusiness, $filter, LeadUtils) {
+        'LeadUtils', 'LeadService',
+        function ($scope, $routeParams, $location, Prospect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes, DateHelper, LineOfBusiness, $filter, LeadUtils, LeadService) {
             $scope.lead = {};
             $scope.lead.leadAddresses = [];
             $scope.leadAddress = {primaryAddress: true, address: {}};
@@ -229,47 +231,23 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
             $scope.leadSubTypes = LeadSubTypes.list();
             $scope.noteTypes = NoteType.list();
             $scope.businessTypes = BusinessTypes.list();
-            $scope.lead.linesOfBusiness = [];
-
-            $scope.addingLeadLineOfBusiness = false;
+            $scope.lead.linesOfBusiness = [
+                {}
+            ];
 
             $scope.addLeadLineOfBusiness = function () {
-                $scope.leadLineOfBusiness = {};
+                var leadLineOfBusiness = {};
                 if ($scope.lead.linesOfBusiness.length > 0) {
                     var modelLob = $scope.lead.linesOfBusiness[0];
-                    $scope.leadLineOfBusiness.lineOfBusiness = { lineOfBusinessCategory: modelLob.lineOfBusiness.lineOfBusinessCategory };
-                    $scope.leadLineOfBusiness.targetDate = modelLob.targetDate;
-                    $scope.leadLineOfBusiness.expirationDate = modelLob.expirationDate;
-                    $scope.leadLineOfBusiness.currentCarrier = modelLob.currentCarrier;
-                    $scope.leadLineOfBusiness.remarket = modelLob.remarket;
+                    if (modelLob.lineOfBusiness !== undefined) {
+                        leadLineOfBusiness.lineOfBusiness = { lineOfBusinessCategory: modelLob.lineOfBusiness.lineOfBusinessCategory };
+                    }
+                    leadLineOfBusiness.targetDate = modelLob.targetDate;
+                    leadLineOfBusiness.expirationDate = modelLob.expirationDate;
+                    leadLineOfBusiness.currentCarrier = modelLob.currentCarrier;
+                    leadLineOfBusiness.remarket = modelLob.remarket;
                 }
-                $scope.addingLeadLineOfBusiness = true;
-            };
-
-            $scope.cancelAddLeadLineOfBusiness = function () {
-                $scope.addingLeadLineOfBusiness = false;
-            };
-
-            $scope.saveLeadLineOfBusiness = function (leadLineOfBusiness) {
-                leadLineOfBusiness.lineOfBusiness = LeadUtils.getLobFromSelect(leadLineOfBusiness, $scope.linesOfBusiness);
                 $scope.lead.linesOfBusiness.push(leadLineOfBusiness);
-                $scope.cancelAddLeadLineOfBusiness();
-            };
-
-            $scope.updateLineOfBusiness = function (lineOfBusiness) {
-                lineOfBusiness.lineOfBusiness = LeadUtils.getLobFromSelect(lineOfBusiness, $scope.linesOfBusiness);
-                $scope.lead.linesOfBusiness[$scope.index] = lineOfBusiness;
-                $scope.editingLineOfBusiness = false;
-            };
-
-            $scope.editLineOfBusiness = function (index) {
-                $scope.index = index;
-                $scope.leadLineOfBusiness = angular.copy($scope.lead.linesOfBusiness[index]);
-                $scope.editingLineOfBusiness = true;
-            };
-
-            $scope.cancelEditLineOfBusiness = function () {
-                $scope.editingLineOfBusiness = false;
             };
 
             $scope.deleteLineOfBusiness = function (index) {
@@ -282,8 +260,15 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
             };
 
             var saveErrorCallback = function (response) {
-                Logger.formValidationMessageBuilder(response, $scope, $scope.leadForm);
+                console.log("broadcasting");
+                LeadService.validateAllForms(response, $scope);
             };
+
+            $scope.$on('validateAllForms', function () {
+                Logger.formValidationMessageBuilder(LeadService.response, LeadService.scope, $scope.leadForm);
+                console.log("CreateProspectCtrl handling");
+                console.log($scope.leadForm);
+            });
 
             $scope.canSave = function () {
                 return $scope.leadForm.$valid;

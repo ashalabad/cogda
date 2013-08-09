@@ -52,12 +52,10 @@ import com.cogda.util.DataPopulatorService
 import grails.plugin.awssdk.AmazonWebService
 import grails.plugins.springsecurity.SpringSecurityService
 import grails.util.Environment
-import grails.util.GrailsUtil
 import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.springframework.transaction.interceptor.TransactionAspectSupport
 import org.springframework.transaction.support.TransactionSynchronizationManager
-import org.springframework.web.context.WebApplicationContext
 import org.springframework.web.context.support.WebApplicationContextUtils
 
 import java.util.regex.Matcher
@@ -571,7 +569,6 @@ class BootStrap {
 //        InputStream is = new FileInputStream("/home/chewy/LeadsImportFile.csv")
         CSVReader reader = new CSVReader(new InputStreamReader(is))
         String[] nextLine
-        Integer count = 0
         reader.readNext() // skip column names
         Random random = new Random()
         Boolean makeProspect = true;
@@ -601,6 +598,8 @@ class BootStrap {
                         LineOfBusiness lineOfBusiness = LineOfBusiness.get(random.nextInt(LineOfBusiness.count()))
                         LeadLineOfBusiness leadLineOfBusiness = new LeadLineOfBusiness()
                         leadLineOfBusiness.lineOfBusiness = lineOfBusiness
+                        leadLineOfBusiness.targetDate = new Date() + random.nextInt(1000) + 1
+                        leadLineOfBusiness.expirationDate = leadLineOfBusiness.targetDate + random.nextInt(1000) + 1
                         testLead.addToLinesOfBusiness(leadLineOfBusiness)
                         testLead.leadType = LeadType.PROSPECT
                     } else {

@@ -4,7 +4,6 @@ import com.cogda.common.LeadSubType
 import com.cogda.common.LeadType
 import com.cogda.domain.FileReference
 import com.cogda.domain.admin.BusinessType
-import com.cogda.domain.admin.LineOfBusiness
 import com.cogda.domain.admin.NaicsCode
 import com.cogda.domain.admin.SicCode
 import grails.plugin.multitenant.core.annotation.MultiTenant
@@ -42,6 +41,10 @@ class Lead {
         businessType(nullable: false)
         subType(nullable: false)
         customerServiceRepresentative(nullable: true)
+        linesOfBusiness(validator: {linesOfBusiness, Lead lead  ->
+            if (lead.leadType == LeadType.PROSPECT)
+                return linesOfBusiness?.size() > 0
+        })
     }
 
     /**

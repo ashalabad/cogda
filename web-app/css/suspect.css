@@ -1,7 +1,7 @@
 @media (min-width: 1200px) {
     .modal {
-        width: 960px;
-        margin-left: -480px;
+        width: 1140px;
+        margin-left: -560px;
     }
 }
 
@@ -42,4 +42,110 @@
     white-space: nowrap;
     overflow: auto;
     text-overflow: ellipsis;
+}
+
+.table-nonfluid {
+    table-layout: fixed;
+    max-width: none;
+    /*font-size: 90%;*/
+}
+
+@media only screen and (max-width: 1200px) {
+
+    /* Force table to not be like tables anymore */
+    #no-more-tables table,
+    #no-more-tables thead,
+    #no-more-tables tbody,
+    #no-more-tables th,
+    #no-more-tables td,
+    #no-more-tables tr {
+        display: block;
+    }
+
+    /* Hide table headers (but not display: none;, for accessibility) */
+    #no-more-tables thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+
+    #no-more-tables tr { border: 1px solid #ccc; }
+
+    #no-more-tables td {
+        /* Behave  like a "row" */
+        border: none;
+        border-bottom: 1px solid #eee;
+        position: relative;
+        padding-left: 50%;
+        white-space: normal;
+        text-align:left;
+    }
+
+    #no-more-tables td:before {
+        /* Now like a table header */
+        position: absolute;
+        /* Top/left values mimic padding */
+        top: 6px;
+        left: 6px;
+        width: 45%;
+        padding-right: 10px;
+        white-space: nowrap;
+        text-align:left;
+        font-weight: bold;
+    }
+
+    /*
+    Label the data
+    */
+    #no-more-tables td:before { content: attr(data-title); }
+}
+
+/*input::-webkit-outer-spin-button,*/
+/*input::-webkit-inner-spin-button {*/
+/* display: none; <- Crashes Chrome on hover */
+/*-webkit-appearance: none;*/
+/*margin: 0; *//* <-- Apparently some margin are still there even though it's hidden */
+/*}*/
+td select,
+td input {
+    box-sizing: border-box;
+    -webkit-box-sizing:border-box;
+    -moz-box-sizing: border-box;
+    /*font-size: 90%;*/
+}
+
+td div {
+    width: 100%;
+}
+
+.input-prepend input
+{
+    width: 80%;
+}
+
+.input-append input
+{
+    width: 75%;
+}
+/*td input.font-table,*/
+/*td input[type="number"] {*/
+/*font-size: 90%;*/
+/*}*/
+
+.css-form input.ng-invalid.ng-dirty {
+    border-color: #FA787E;
+}
+
+.css-form input.ng-valid.ng-dirty {
+    border-color: #468847;
+}
+
+.css-form input.ng-invalid-expiration-date{
+    border-color: #b94a48;
+}
+.css-form select.ng-invalid-line-of-business {
+    border-color: #b94a48;
+}
+.css-form span.label {
+    white-space: normal;
 }
