@@ -167,7 +167,7 @@ class AwsStorageServiceIntegrationTests {
         service.upload('',testFileName,false,new ByteArrayInputStream(text.getBytes("UTF-8")), pair)
         service.upload('',testFileName,false,new ByteArrayInputStream(replace.getBytes("UTF-8")), pair)
         def stream = service.download('',testFileName,pair)
-        assertEquals replace,streamToString(stream)
+        assert replace==streamToString(stream)
 
     }
 
@@ -178,7 +178,7 @@ class AwsStorageServiceIntegrationTests {
         def message = shouldFail(AmazonS3Exception) {
             service.upload('',testFileName,ba, pair)
         }
-        assertEquals "The specified bucket does not exist",message
+        assert "The specified bucket does not exist"==message
     }
 
     void testDeleteBasketDoesNotExist()
@@ -189,7 +189,7 @@ class AwsStorageServiceIntegrationTests {
         def message = shouldFail(AmazonS3Exception) {
             service.delete(testFileName)
         }
-        assertEquals"The specified bucket does not exist",message
+        assert "The specified bucket does not exist"==message
 
     }
 
@@ -201,7 +201,7 @@ class AwsStorageServiceIntegrationTests {
         def message=shouldFail(AmazonS3Exception) {
             service.download('',testFileName,pair)
         }
-        assertEquals "The specified bucket does not exist",message
+        assert "The specified bucket does not exist"==message
     }
 
     void testDownloadFileDoesNotExist()
@@ -209,7 +209,7 @@ class AwsStorageServiceIntegrationTests {
         def message=shouldFail(AmazonS3Exception) {
             service.download('',UUID.randomUUID().toString().replace('-',''),pair)
         }
-        assertEquals "The specified key does not exist.",message
+        assert "The specified key does not exist."==message
     }
 
     void testGetInformationBasketDoesNotExist()
@@ -218,7 +218,7 @@ class AwsStorageServiceIntegrationTests {
         def message=shouldFail(AmazonS3Exception) {
             service.getInfo(testFileName)
         }
-        assertEquals "Not Found",message
+        assert "Not Found"==message
     }
 
     void testGetInformationFileDoesNotExist()
@@ -226,7 +226,7 @@ class AwsStorageServiceIntegrationTests {
         def message=shouldFail(AmazonS3Exception) {
             service.getInfo(UUID.randomUUID().toString().replace('-',''))
         }
-        assertEquals "Not Found",message
+        assert "Not Found"==message
     }
 
     /**

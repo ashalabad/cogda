@@ -4,7 +4,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile
  * Document
  * A domain class describes the data object and it's mapping to the database
  */
-class Document {
+class Document_ {
 
     /* Default (injected) attributes of GORM */
 //	Long	id
