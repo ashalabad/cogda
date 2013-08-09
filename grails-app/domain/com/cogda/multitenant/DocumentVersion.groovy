@@ -23,12 +23,12 @@ class DocumentVersion {
 
     Integer documentVersion
     DocumentDataStreamType streamType
-    Document document
+    StorageDocument document
     StorageReference storageReference
     User createdBy
 
-	static belongsTo	= [document:Document]	// tells GORM to cascade commands: e.g., delete this object if the "parent" is deleted.
-	static hasOne		= [storageReference:StorageReference,createdBy:User]	// tells GORM to associate another domain object as an owner in a 1-1 mapping
+	static belongsTo	= [document:StorageDocument]	// tells GORM to cascade commands: e.g., delete this object if the "parent" is deleted.
+	//static hasOne		= []	// tells GORM to associate another domain object as an owner in a 1-1 mapping
 
     static mapping = {
     }

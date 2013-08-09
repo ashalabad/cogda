@@ -3,7 +3,7 @@ package com.cogda.domain
 import com.amazonaws.services.cloudfront.model.InvalidArgumentException
 import com.cogda.domain.security.User
 import com.cogda.domain.storage.StorageReference
-import com.cogda.multitenant.Document
+import com.cogda.multitenant.StorageDocument
 import com.cogda.multitenant.DocumentVersion
 import grails.plugins.springsecurity.SpringSecurityService
 
@@ -71,7 +71,7 @@ class DocumentService {
             throw new IllegalArgumentException("Streams don't contain a File stream.")
         }
         def user=springSecurityService.currentUser as User
-        Document document=new Document(
+        StorageDocument document=new StorageDocument(
                 currentVersion: 0,
                 name: name,
                 description: description,
@@ -99,7 +99,7 @@ class DocumentService {
      * @return Map of Document Streams
      */
     Map<DocumentDataStreamType,StorageReference> getDocumentStreams(Long documentId) {
-        Document document=Document.findById(documentId)
+        StorageDocument document=StorageDocument.findById(documentId)
         if(document==null)
             throw new IllegalArgumentException("a document with id=${documentId} does not exist.")
         def versions = DocumentVersion.findAllByDocumentAndDocumentVersion(document,document.currentVersion)
@@ -115,7 +115,7 @@ class DocumentService {
      */
     List<StreamsVersion> getDocumentStreamsAllVersions(Long documentId){
         List<StreamsVersion> sv=[]
-        Document document=Document.findById(documentId)
+        StorageDocument document=StorageDocument.findById(documentId)
         if(document==null)
             throw new IllegalArgumentException("a document with id=${documentId} does not exist.")
         def versions = DocumentVersion.findAllByDocument(document)
@@ -134,7 +134,7 @@ class DocumentService {
      * @return
      */
     def updateDocumentStreams(Long documentId,Map<DocumentDataStreamType,StorageReference> streams) {
-        Document document=Document.findById(documentId)
+        StorageDocument document=StorageDocument.findById(documentId)
         if(document==null)
             throw new IllegalArgumentException("a document with id=${documentId} does not exist.")
         def user=springSecurityService.currentUser as User
@@ -169,7 +169,7 @@ class DocumentService {
      * @return
      */
     def deleteDocumentStreams(Long documentId,List<DocumentDataStreamType> streams) {
-        Document document=Document.findById(documentId)
+        StorageDocument document=StorageDocument.findById(documentId)
         if(document==null)
             throw new IllegalArgumentException("A document with id=${documentId} does not exist.")
         if(streams.contains(DocumentDataStreamType.File))
@@ -202,7 +202,7 @@ class DocumentService {
      * @return
      */
     def getDocumentVersions(Long documentId){
-        Document document=Document.findById(documentId)
+        StorageDocument document=StorageDocument.findById(documentId)
         if(document==null)
             throw new IllegalArgumentException("A document with id=${documentId} does not exist.")
         DocumentVersion.findAllByDocument(document)
@@ -214,10 +214,10 @@ class DocumentService {
      * @param docUpdate
      */
     def updateDocument(Long documentId,Closure docUpdate) {
-        Document document=Document.findById(documentId)
+        StorageDocument document=StorageDocument.findById(documentId)
         if(document==null)
             throw new IllegalArgumentException("A document with id=${documentId} does not exist.")
-        Document clone=new Document(
+        StorageDocument clone=new StorageDocument(
                 name: document.name,
                 description: document.description,
                 category: document.category,
@@ -235,7 +235,7 @@ class DocumentService {
      */
     def deleteDocument(Long documentId)
     {
-        Document document=Document.findById(documentId)
+        StorageDocument document=StorageDocument.findById(documentId)
         if(document==null)
             throw new IllegalArgumentException("A document with id=${documentId} does not exist.")
         def versions=DocumentVersion.findAllByDocument(document)
