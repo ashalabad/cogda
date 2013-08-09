@@ -18,7 +18,7 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
             $scope.prospects = [];
             $scope.showDetails = '<div class="ngCellText"><button id="showBtn" type="button" class="btn-mini" data-ng-click="show(row.entity)" ><i class="icon-eye-open"></i>Details</button></div>';
             $scope.editDetails = '<div class="ngCellText"><button id="editBtn" type="button" class="btn-mini" data-ng-click="edit(row.entity)" ><i class="icon-edit"></i>Edit</button></div>';
-            $scope.rowTemplate = '<div data-ng-style="{\'cursor\': row.cursor, \'z-index\': col.zIndex() }" data-ng-repeat="col in renderedColumns" data-ng-class="col.colIndex()" data-ng-dblclick="edit(row)" class="ngCell {{col.cellClass}}" ng-cell></div>';
+            $scope.rowTemplate = '<div data-ng-style="{\'cursor\': row.cursor, \'z-index\': col.zIndex() }" data-ng-repeat="col in renderedColumns" data-ng-class="col.colIndex()" data-ng-dblclick="edit(row)" class="ngCell {{col.cellClass}}" data-ng-cell></div>';
             $scope.selectedProspects = [];
             $scope.pagingOptions = {
                 pageSizes: [10, 25, 50, 100],
@@ -300,11 +300,11 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
         function ($scope, $routeParams, $location, Prospect, Logger) {
 
         }])
-    .controller('CreateLobCtrl', ['$scope', 'Logger', 'LeadService', '$filter', function ($scope, Logger, LeadService, $filter) {
+    .controller('CreateLobCtrl', ['$scope', 'Logger', 'LeadService', function ($scope, Logger, LeadService) {
         $scope.$on('validateAllForms', function () {
             console.log("CreateLobCtrl handling. Index: " + $scope.$index);
             console.log($scope.leadLineOfBusinessForm);
-            var response = angular.copy(LeadService.response)
+            var response = angular.copy(LeadService.response);
             console.log(LeadService.response);
             console.log(response);
             response.data.errors = {};
@@ -338,18 +338,12 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
             updateCommissions();
         };
 
-        var updateCommissions = function() {
-            if ($scope.leadLineOfBusiness.targetPremium === undefined || isNaN($scope.leadLineOfBusiness.targetPremium)) {
-                return;
+        var updateCommissions = function () {
+            var commissions = LeadService.updateCommissions($scope.leadLineOfBusiness.targetPremium, $scope.leadLineOfBusiness.targetCommission, $scope.leadLineOfBusiness.commissionRate, targetPremiumLastChanged, commissionRateLastChanged);
+            if (commissions !== undefined) {
+                $scope.leadLineOfBusiness.targetCommission = commissions[0];
+                $scope.leadLineOfBusiness.commissionRate = commissions[1];
             }
-            if ($scope.leadLineOfBusiness.targetCommission !== undefined && targetPremiumLastChanged && !isNaN($scope.leadLineOfBusiness.targetCommission)) {
-                var newCommissionRate = $scope.leadLineOfBusiness.targetCommission / $scope.leadLineOfBusiness.targetPremium * 100;
-                $scope.leadLineOfBusiness.commissionRate = Math.round(newCommissionRate * 100) / 100;
-            }
-            if ($scope.leadLineOfBusiness.commissionRate !== undefined && commissionRateLastChanged && !isNaN($scope.leadLineOfBusiness.commissionRate)) {
-                var newTargetCommission = $scope.leadLineOfBusiness.commissionRate / 100 * $scope.leadLineOfBusiness.targetPremium;
-                $scope.leadLineOfBusiness.targetCommission = Math.round(newTargetCommission * 100) / 100;
-            }
-        };
+        }
 
     }]);

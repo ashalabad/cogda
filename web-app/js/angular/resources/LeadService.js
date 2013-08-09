@@ -265,7 +265,7 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
 
             var deleteContactErrorCallback = function (response) {
                 Logger.messageBuilder(response, $scope);
-            }
+            };
 
             var updateSuccessCallback = function (response) {
                 Logger.success("Contact Updated Successfully", "Success");
@@ -360,7 +360,7 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
 
             var deleteContactEmailAddressErrorCallback = function (response) {
                 Logger.messageBuilder(response, $scope);
-            }
+            };
 
             var updateSuccessCallback = function (response) {
                 Logger.success("Contact Email Address Updated Successfully", "Success");
@@ -480,7 +480,7 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
 
             var closeEditLeadNote = function () {
                 $scope.editingLeadNote = false;
-            }
+            };
 
             $scope.updateLeadNote = function (leadNote) {
                 LeadNote.update(leadNote).$then(updateSuccessCallback, updateErrorCallBack);
@@ -764,34 +764,28 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
         }])
     .factory('LeadService', ['$rootScope', 'LeadNote', function ($rootScope, LeadNote) {
         var leadService = {};
-        leadService.currentLead = {};
-        leadService.entityToBroadCast = {};
-        leadService.entityPath = '';
-        leadService.entityIdx = -1;
-        leadService.parentIdx = -1;
-
-        leadService.save = function (handler) {
-            $rootScope.$broadcast(handler);
-        };
-
-        leadService.addEntityBroadcast = function (entity, handler, parentIdx) {
-            this.parentIdx = parentIdx;
-            this.entityToBroadCast = entity;
-            $rootScope.$broadcast(handler);
-        };
-
-        leadService.deleteEntity = function (handler, idx, parentIdx) {
-            this.entityIdx = idx;
-            this.parentIdx = parentIdx;
-            $rootScope.$broadcast(handler);
-        };
 
         leadService.leadNote = LeadNote;
 
-        leadService.validateAllForms = function(response, scope) {
+        leadService.validateAllForms = function (response, scope) {
             this.response = response;
             this.scope = scope;
             $rootScope.$broadcast('validateAllForms');
+        };
+
+        leadService.updateCommissions = function (targetPremium, targetCommission, commissionRate, targetPremiumLastChanged, commissionRateLastChanged) {
+            if (targetPremium === undefined || isNaN(targetPremium)) {
+                return;
+            }
+            if (targetCommission !== undefined && targetPremiumLastChanged && !isNaN(targetCommission)) {
+                var newCommissionRate = targetCommission / targetPremium * 100;
+                commissionRate = Math.round(newCommissionRate * 100) / 100;
+            }
+            if (commissionRate !== undefined && commissionRateLastChanged && !isNaN(commissionRate)) {
+                var newTargetCommission = commissionRate / 100 * targetPremium;
+                targetCommission = Math.round(newTargetCommission * 100) / 100;
+            }
+            return [targetCommission, commissionRate];
         };
 
         return leadService;
