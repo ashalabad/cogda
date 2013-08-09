@@ -229,7 +229,9 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
             $scope.leadSubTypes = LeadSubTypes.list();
             $scope.noteTypes = NoteType.list();
             $scope.businessTypes = BusinessTypes.list();
-            $scope.lead.linesOfBusiness = [{}];
+            $scope.lead.linesOfBusiness = [
+                {}
+            ];
 
             $scope.addLeadLineOfBusiness = function () {
                 var leadLineOfBusiness = {};
@@ -260,7 +262,7 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
                 LeadService.validateAllForms(response, $scope);
             };
 
-            $scope.$on('validateAllForms', function() {
+            $scope.$on('validateAllForms', function () {
                 Logger.formValidationMessageBuilder(LeadService.response, LeadService.scope, $scope.leadForm);
                 console.log("CreateProspectCtrl handling");
                 console.log($scope.leadForm);
@@ -298,8 +300,8 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
         function ($scope, $routeParams, $location, Prospect, Logger) {
 
         }])
-    .controller('CreateLobCtrl', ['$scope', 'Logger', 'LeadService', function($scope, Logger, LeadService) {
-        $scope.$on('validateAllForms', function() {
+    .controller('CreateLobCtrl', ['$scope', 'Logger', 'LeadService', '$filter', function ($scope, Logger, LeadService, $filter) {
+        $scope.$on('validateAllForms', function () {
             console.log("CreateLobCtrl handling. Index: " + $scope.$index);
             console.log($scope.leadLineOfBusinessForm);
             var response = angular.copy(LeadService.response)
@@ -316,4 +318,38 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
             }
             Logger.formValidationMessageBuilder(response, $scope, $scope.leadLineOfBusinessForm);
         });
+
+        var targetPremiumLastChanged = false;
+        var commissionRateLastChanged = false;
+
+        $scope.targetPremiumChangeHandler = function () {
+            updateCommissions();
+        };
+
+        $scope.commissionRateChangeHandler = function () {
+            targetPremiumLastChanged = false;
+            commissionRateLastChanged = true;
+            updateCommissions();
+        };
+
+        $scope.targetCommissionChangeHandler = function () {
+            targetPremiumLastChanged = true;
+            commissionRateLastChanged = false;
+            updateCommissions();
+        };
+
+        var updateCommissions = function() {
+            if ($scope.leadLineOfBusiness.targetPremium === undefined || isNaN($scope.leadLineOfBusiness.targetPremium)) {
+                return;
+            }
+            if ($scope.leadLineOfBusiness.targetCommission !== undefined && targetPremiumLastChanged && !isNaN($scope.leadLineOfBusiness.targetCommission)) {
+                var newCommissionRate = $scope.leadLineOfBusiness.targetCommission / $scope.leadLineOfBusiness.targetPremium * 100;
+                $scope.leadLineOfBusiness.commissionRate = Math.round(newCommissionRate * 100) / 100;
+            }
+            if ($scope.leadLineOfBusiness.commissionRate !== undefined && commissionRateLastChanged && !isNaN($scope.leadLineOfBusiness.commissionRate)) {
+                var newTargetCommission = $scope.leadLineOfBusiness.commissionRate / 100 * $scope.leadLineOfBusiness.targetPremium;
+                $scope.leadLineOfBusiness.targetCommission = Math.round(newTargetCommission * 100) / 100;
+            }
+        };
+
     }]);

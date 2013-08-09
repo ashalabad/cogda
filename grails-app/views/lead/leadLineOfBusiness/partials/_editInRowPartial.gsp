@@ -53,7 +53,7 @@
     <div class="input-prepend">
         <span class="add-on">$</span>
         <input type="number" id="targetPremium" min="0" class="input-block-level"
-               data-ng-pattern="/^\d+\.?\d{0,2}$/"
+               data-ng-pattern="/^\d+\.?\d{0,2}$/" data-ng-change="targetPremiumChangeHandler()"
                placeholder="<g:message code="leadLineOfBusiness.targetPremium.label"
                                        default="Target Premium"/>"
                data-ng-model="leadLineOfBusiness.targetPremium">
@@ -66,6 +66,7 @@
     <div class="input-prepend">
         <span class="add-on">$</span>
         <input type="number" id="targetCommission" min="0" class="input-block-level"
+               data-ng-pattern="/^\d+\.?\d{0,2}$/" data-ng-change="targetCommissionChangeHandler()"
                placeholder="<g:message code="leadLineOfBusiness.targetCommission.label"
                                        default="Target Commission"/>"
                data-ng-model="leadLineOfBusiness.targetCommission">
@@ -78,6 +79,7 @@
     <div class="input-prepend">
         <span class="add-on">%</span>
         <input type="number" min="0" id="commissionRate" class="input-block-level"
+               data-ng-pattern="/^\d+\.?\d{0,2}$/" data-ng-change="commissionRateChangeHandler()"
                placeholder="<g:message code="leadLineOfBusiness.commissionRate.label"
                                        default="Commission Rate"/>"
                data-ng-model="leadLineOfBusiness.commissionRate">
