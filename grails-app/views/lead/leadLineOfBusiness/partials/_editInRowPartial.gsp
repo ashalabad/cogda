@@ -14,9 +14,9 @@
             required>
         <option value="">-- choose Line Of Business --</option>
     </select>
-    <span class="label label-important" data-ng-show="errors.expirationDate ">{{ errors.expirationDate }}</span>
-    <span class="error" ng-show="leadLineOfBusinessForm['expirationDate'].$invalid"></span>
-    <span class="success" ng-show="leadLineOfBusinessForm['expirationDate'].$valid"></span>
+    <span class="label label-important" data-ng-show="errors.lineOfBusiness ">{{ errors.lineOfBusiness }}</span>
+    <span class="error" ng-show="leadLineOfBusinessForm['lineOfBusiness'].$invalid"></span>
+    <span class="success" ng-show="leadLineOfBusinessForm['lineOfBusiness'].$valid"></span>
 </td>
 <td data-title="${message(code: 'leadLineOfBusiness.expirationDate.label')}">
     <div class="input-append">
@@ -25,12 +25,11 @@
                placeholder="<g:message code="leadLineOfBusiness.expirationDate.label"
                                        default="Expiration Date"/>"
                data-date-format="mm/dd/yyyy" data-start-date="new Date()"
-               data-bs-datepicker style="width: 45%; height: 100%"
+               data-bs-datepicker class="input-block-level"
                required>
         <button type="button" class="btn" data-toggle="mydatepicker"><i class="icon-calendar"></i>
         </button>
     </div>
-
     <span class="label label-important" data-ng-show="errors.expirationDate ">{{ errors.expirationDate }}</span>
     <span class="error" data-ng-show="leadLineOfBusinessForm['expirationDate'].$invalid"></span>
     <span class="success" data-ng-show="leadLineOfBusinessForm['expirationDate'].$valid"></span>
@@ -41,38 +40,71 @@
                data-ng-model="leadLineOfBusiness.targetDate"
                data-date-format="mm/dd/yyyy"
                placeholder="<g:message code="leadLineOfBusiness.targetDate.label"/>"
-               data-bs-datepicker style="width: 45%; height: 100%" data-start-date="new Date()"
+               data-bs-datepicker data-start-date="new Date()" class="input-block-level"
                data-end-date="{{leadLineOfBusiness.expirationDate | bsDateFilter | date:shortDate }}">
         <button type="button" class="btn" data-toggle="mydatepicker"><i class="icon-calendar"></i>
         </button>
     </div>
+    <span class="label label-important" data-ng-show="errors.targetDate ">{{ errors.targetDate }}</span>
+    <span class="error" data-ng-show="leadLineOfBusinessForm['targetDate'].$invalid"></span>
+    <span class="success" data-ng-show="leadLineOfBusinessForm['targetDate'].$valid"></span>
 </td>
 <td data-title="${message(code: 'leadLineOfBusiness.targetPremium.label')}">
-    <input type="number" id="targetPremium" class="input-block-level" min="0"
-           placeholder="<g:message code="leadLineOfBusiness.targetPremium.label" default="Target Premium"/>"
-           data-ng-model="leadLineOfBusiness.targetPremium">
+    <div class="input-prepend">
+        <span class="add-on">$</span>
+        <input type="number" id="targetPremium" min="0" class="input-block-level"
+               data-ng-pattern="/^\d+\.?\d{0,2}$/"
+               placeholder="<g:message code="leadLineOfBusiness.targetPremium.label"
+                                       default="Target Premium"/>"
+               data-ng-model="leadLineOfBusiness.targetPremium">
+    </div>
+    <span class="label label-important" data-ng-show="errors.targetPremium ">{{ errors.targetPremium }}</span>
+    <span class="error" data-ng-show="leadLineOfBusinessForm['targetPremium'].$invalid"></span>
+    <span class="success" data-ng-show="leadLineOfBusinessForm['targetPremium'].$valid"></span>
 </td>
 <td data-title="${message(code: 'leadLineOfBusiness.targetCommission.label')}">
-    <input type="number" id="targetCommission" min="0" class="input-block-level"
-           placeholder="<g:message code="leadLineOfBusiness.targetCommission.label"
-                                   default="Target Commission"/>"
-           data-ng-model="leadLineOfBusiness.targetCommission">
+    <div class="input-prepend">
+        <span class="add-on">$</span>
+        <input type="number" id="targetCommission" min="0" class="input-block-level"
+               placeholder="<g:message code="leadLineOfBusiness.targetCommission.label"
+                                       default="Target Commission"/>"
+               data-ng-model="leadLineOfBusiness.targetCommission">
+    </div>
+    <span class="label label-important" data-ng-show="errors.targetCommission ">{{ errors.targetCommission }}</span>
+    <span class="error" data-ng-show="leadLineOfBusinessForm['targetCommission'].$invalid"></span>
+    <span class="success" data-ng-show="leadLineOfBusinessForm['targetCommission'].$valid"></span>
 </td>
 <td data-title="${message(code: 'leadLineOfBusiness.commissionRate.label')}">
-    <input type="number" id="commissionRate" class="input-block-level"
-           placeholder="<g:message code="leadLineOfBusiness.commissionRate.label"
-                                   default="Commission Rate"/>"
-           data-ng-model="leadLineOfBusiness.commissionRate">
+    <div class="input-prepend">
+        <span class="add-on">%</span>
+        <input type="number" min="0" id="commissionRate" class="input-block-level"
+               placeholder="<g:message code="leadLineOfBusiness.commissionRate.label"
+                                       default="Commission Rate"/>"
+               data-ng-model="leadLineOfBusiness.commissionRate">
+    </div>
+    <span class="label label-important" data-ng-show="errors.commissionRate ">{{ errors.commissionRate }}</span>
+    <span class="error" data-ng-show="leadLineOfBusinessForm['commissionRate'].$invalid"></span>
+    <span class="success" data-ng-show="leadLineOfBusinessForm['commissionRate'].$valid"></span>
 </td>
 <td data-title="${message(code: 'leadLineOfBusiness.currentCarrier.label')}">
-    <input type="text" id="currentCarrier" class="input-block-level"
-           placeholder="<g:message code="leadLineOfBusiness.currentCarrier.label"
-                                   default="Current Carrier"/>"
-           data-ng-model="leadLineOfBusiness.currentCarrier">
+    <div>
+        <input type="text" id="currentCarrier" class="input-block-level"
+               placeholder="<g:message code="leadLineOfBusiness.currentCarrier.label"
+                                       default="Current Carrier"/>"
+               data-ng-model="leadLineOfBusiness.currentCarrier">
+    </div>
+    <span class="label label-important" data-ng-show="errors.currentCarrier ">{{ errors.currentCarrier }}</span>
+    <span class="error" data-ng-show="leadLineOfBusinessForm['currentCarrier'].$invalid"></span>
+    <span class="success" data-ng-show="leadLineOfBusinessForm['currentCarrier'].$valid"></span>
 </td>
 <td data-title="${message(code: 'leadLineOfBusiness.remarket.label')}">
-    <input type="checkbox" id="remarket" class="input-medium"
-           data-ng-model="leadLineOfBusiness.remarket">
+    <div>
+        <input type="checkbox" id="remarket"
+               data-ng-model="leadLineOfBusiness.remarket">
+    </div>
+    <span class="label label-important" data-ng-show="errors.remarket ">{{ errors.remarket }}</span>
+    <span class="error" data-ng-show="leadLineOfBusinessForm['remarket'].$invalid"></span>
+    <span class="success" data-ng-show="leadLineOfBusinessForm['remarket'].$valid"></span>
 </td>
 <td>
     <button class="btn btn-danger btn-mini" data-ng-click="deleteLineOfBusiness($index)"><i class="icon-remove"></i>

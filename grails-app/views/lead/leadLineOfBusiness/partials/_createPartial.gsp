@@ -11,7 +11,7 @@
 
 <div>
 
-    <table id="no-more-tables" class="table table-striped table-bordered table-nonfluid"
+    <table id="no-more-tables" class="table table-striped table-bordered table-nonfluid table-input"
            data-ng-show="lead.linesOfBusiness.length > 0">
         <thead>
         <tr>
