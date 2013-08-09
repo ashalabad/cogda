@@ -144,12 +144,12 @@ td div {
     width: 100%;
 }
 
-.input-prepend input
+td > .input-prepend input
 {
     width: 80%;
 }
 
-.input-append input
+td > .input-append input
 {
     width: 75%;
 }

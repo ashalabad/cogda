@@ -80,13 +80,13 @@ class LeadLineOfBusinessController extends GsonBaseController {
     def delete() {
         def leadLineOfBusinsessInstance = LeadLineOfBusiness.get(params.id)
         if (!leadLineOfBusinsessInstance) {
-            respondNotFound LEAD_LINE_OF_BUSINESS_LABEL, params.id
+            respondNotFound LEAD_LINE_OF_BUSINESS_LABEL
             return
         }
 
         try {
             leadLineOfBusinsessInstance.delete(flush: true)
-            respondDeleted LEAD_LINE_OF_BUSINESS_LABEL, params.id
+            respondDeleted LEAD_LINE_OF_BUSINESS_LABEL
         } catch (DataIntegrityViolationException e) {
             respondNotDeleted LEAD_LINE_OF_BUSINESS_LABEL
         }

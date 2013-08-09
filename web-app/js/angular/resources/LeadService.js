@@ -644,8 +644,8 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
             Logger.messageBuilder(response);
         }
     }])
-    .controller('EditLeadLineOfBusinessCtrl', ['$scope', 'Logger', 'LineOfBusiness', 'LeadLineOfBusiness', '$dialog', 'DateHelper', 'LeadUtils',
-        function ($scope, Logger, LineOfBusiness, LeadLineOfBusiness, $dialog, DateHelper, LeadUtils) {
+    .controller('EditLeadLineOfBusinessCtrl', ['$scope', 'Logger', 'LineOfBusiness', 'LeadLineOfBusiness', '$dialog', 'DateHelper', 'LeadUtils', 'LeadService',
+        function ($scope, Logger, LineOfBusiness, LeadLineOfBusiness, $dialog, DateHelper, LeadUtils, LeadService) {
             LineOfBusiness.list().$then(function (response) {
                 $scope.linesOfBusiness = response.data;
             });
@@ -713,9 +713,36 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
                 Logger.formValidationMessageBuilder(response, $scope, $scope.leadLineOfBusinessForm);
             };
 
+            var targetPremiumLastChanged = false;
+            var commissionRateLastChanged = false;
+
+            $scope.targetPremiumChangeHandler = function () {
+                updateCommissions();
+            };
+
+            $scope.commissionRateChangeHandler = function () {
+                targetPremiumLastChanged = false;
+                commissionRateLastChanged = true;
+                updateCommissions();
+            };
+
+            $scope.targetCommissionChangeHandler = function () {
+                targetPremiumLastChanged = true;
+                commissionRateLastChanged = false;
+                updateCommissions();
+            };
+
+            var updateCommissions = function () {
+                var commissions = LeadService.updateCommissions($scope.leadLineOfBusiness.targetPremium, $scope.leadLineOfBusiness.targetCommission, $scope.leadLineOfBusiness.commissionRate, targetPremiumLastChanged, commissionRateLastChanged);
+                if (commissions !== undefined) {
+                    $scope.leadLineOfBusiness.targetCommission = commissions[0];
+                    $scope.leadLineOfBusiness.commissionRate = commissions[1];
+                }
+            };
+
         }])
-    .controller('AddLeadLineOfBusinessCtrl', ['$scope', 'Logger', 'LeadLineOfBusiness', 'LineOfBusiness', 'DateHelper', 'LeadUtils',
-        function ($scope, Logger, LeadLineOfBusiness, LineOfBusiness, DateHelper, LeadUtils) {
+    .controller('AddLeadLineOfBusinessCtrl', ['$scope', 'Logger', 'LeadLineOfBusiness', 'LineOfBusiness', 'DateHelper', 'LeadUtils', 'LeadService',
+        function ($scope, Logger, LeadLineOfBusiness, LineOfBusiness, DateHelper, LeadUtils, LeadService) {
             $scope.leadLineOfBusiness = {};
             $scope.addingLeadLineOfBusiness = false;
 
@@ -761,6 +788,32 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
                 Logger.formValidationMessageBuilder(response, $scope, $scope.leadLineOfBusinessForm);
             };
 
+            var targetPremiumLastChanged = false;
+            var commissionRateLastChanged = false;
+
+            $scope.targetPremiumChangeHandler = function () {
+                updateCommissions();
+            };
+
+            $scope.commissionRateChangeHandler = function () {
+                targetPremiumLastChanged = false;
+                commissionRateLastChanged = true;
+                updateCommissions();
+            };
+
+            $scope.targetCommissionChangeHandler = function () {
+                targetPremiumLastChanged = true;
+                commissionRateLastChanged = false;
+                updateCommissions();
+            };
+
+            var updateCommissions = function () {
+                var commissions = LeadService.updateCommissions($scope.leadLineOfBusiness.targetPremium, $scope.leadLineOfBusiness.targetCommission, $scope.leadLineOfBusiness.commissionRate, targetPremiumLastChanged, commissionRateLastChanged);
+                if (commissions !== undefined) {
+                    $scope.leadLineOfBusiness.targetCommission = commissions[0];
+                    $scope.leadLineOfBusiness.commissionRate = commissions[1];
+                }
+            };
         }])
     .controller('CreateLobCtrl', ['$scope', 'Logger', 'LeadService', function ($scope, Logger, LeadService) {
         $scope.$on('validateAllForms', function () {
