@@ -540,7 +540,7 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
                 id: $scope.lead.id
             };
             LeadNote.save(leadNote,function (data) {
-                leadNote.id = data.id;
+                leadNote = data;
                 $scope.lead.leadNotes.push(leadNote);
                 $scope.cancelAddLeadNote();
             }).$then(updateSuccessCallback, updateErrorCallBack);
@@ -862,10 +862,8 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
         }
 
     }])
-    .factory('LeadService', ['$rootScope', 'LeadNote', function ($rootScope, LeadNote) {
+    .factory('LeadService', ['$rootScope', function ($rootScope) {
         var leadService = {};
-
-        leadService.leadNote = LeadNote;
 
         leadService.validateAllForms = function (response, scope) {
             this.response = response;

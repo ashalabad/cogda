@@ -1,22 +1,13 @@
 <fieldset class="embedded">
     <legend data-ng-hide="addingLeadNote"><g:message code="note.label" default="Note"/></legend>
 
-    <div class="control-group fieldcontain"
-         data-ng-class="{error: leadNoteForm['leadNote.noteType'].$invalid && leadNoteForm['leadNote.noteType'].$dirty, success: leadNoteForm['leadNote.noteType'].$valid && leadNoteForm['leadNote.noteType'].$dirty}">
+    <div class="control-group fieldcontain" data-ng-class="{error: leadNoteForm['noteType'].$invalid}">
         <label class="control-label">
-            <g:message code="lead.subType.label" default="Type"/>
-            <span class="required-indicator">*</span>
+            ${message(code:'leadNote.label')}
         </label>
-
         <div class="controls">
-            <div data-ng-repeat="noteType in noteTypes">
-                <label><input type="radio"
-                              data-ng-model="leadNote.noteType"
-                              data-ng-value="noteType"
-                              name='leadNote.noteType'>
-                    &nbsp;<span data-ng-bind="noteType.description"></span>
-                </label>
-            </div>
+            <g:select class="input-small" name="noteType" data-ng-model="leadNote.noteType.id" from="${com.cogda.domain.admin.NoteType.listOrderByCode()}" optionKey="id"  />
+            <span class="help-inline" data-ng-show="errors.noteType ">{{ errors.noteType }}</span>
         </div>
     </div>
 
