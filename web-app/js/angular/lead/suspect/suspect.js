@@ -74,8 +74,8 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
         }])
     .controller('EditSuspectCtrl', ['$scope', '$routeParams', '$location', 'Suspect', 'Logger', 'UnitedStates',
         'SupportedCountryCodes', 'LeadSubTypes', 'NoteType', 'BusinessTypes', 'LineOfBusiness', 'LeadLineOfBusiness',
-        '$dialog', 'DateHelper', '$window', 'LeadUtils', 'LeadService',
-        function ($scope, $routeParams, $location, Suspect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes, LineOfBusiness, LeadLineOfBusiness, $dialog, DateHelper, $window, LeadUtils, LeadService) {
+        '$dialog', 'DateHelper', '$window', 'LeadUtils', 'LeadService', '$filter',
+        function ($scope, $routeParams, $location, Suspect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes, LineOfBusiness, LeadLineOfBusiness, $dialog, DateHelper, $window, LeadUtils, LeadService, $filter) {
             $scope.title = 'Suspect';
             $scope.editingLead = false;
             $scope.message = '';
@@ -97,17 +97,41 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
 
             Suspect.get($routeParams, function (data) {
                 $scope.lead = data;
-                for (var i = 0; i < $scope.lead.linesOfBusiness.length; i++) {
-                    if ($scope.lead.linesOfBusiness[i].targetDate !== undefined)
-                        $scope.lead.linesOfBusiness[i].targetDate = new Date($scope.lead.linesOfBusiness[i].targetDate);
-                    if ($scope.lead.linesOfBusiness[i].expirationDate != undefined)
-                        $scope.lead.linesOfBusiness[i].expirationDate = new Date($scope.lead.linesOfBusiness[i].expirationDate);
-                }
+                $scope.undeterminedSicNodes = getUndeterminedNodeIds($scope.lead.sicCodes, 'parentSicCode');
+                $scope.undeterminedNaicsNodes = getUndeterminedNodeIds($scope.lead.naicsCodes, 'parentNaicsCode');
             }, function () {
                 Logger.error("Resource Not Found", "Error");
             });
 
+            var getUndeterminedNodeIds = function (nodes, propertyName) {
+                var undeterminedNodes = [];
+                for (var i = 0; i < nodes.length; i++) {
+                    var node = nodes[i];
+                    var allParents = getAllParentIds(node, propertyName);
+                    for (var j = 0; j < allParents.length; j++) {
+                        var undeterminedParentId = allParents[j];
+                        if (undeterminedNodes.indexOf(undeterminedParentId) === -1 && $filter('findById')(nodes, undeterminedParentId) === undefined) {
+                            undeterminedNodes.push({id: undeterminedParentId});
+                        }
+                    }
+                }
+                return undeterminedNodes;
+            };
+
+            var getAllParentIds = function (node, propertyName) {
+                var parents = [];
+                if (node[propertyName] !== undefined) {
+                    parents.push(node[propertyName].id);
+                    var grandparentIds = getAllParentIds(node[propertyName], propertyName);
+                    for (var i = 0; i < grandparentIds.length; i++) {
+                        parents.push(grandparentIds[i]);
+                    }
+                }
+                return parents
+            };
+
             $scope.updateLead = function (lead) {
+                lead.businessType = LeadUtils.getBusinessTypeFromSelect(lead.businessType, $scope.businessTypes);
                 var formattedLead = angular.copy(lead);
                 for (var i = 0; i < formattedLead.linesOfBusiness.length; i++) {
                     formattedLead.linesOfBusiness[i].targetDate = DateHelper.getFormattedDate(formattedLead.linesOfBusiness[i].targetDate);

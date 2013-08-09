@@ -26,8 +26,8 @@
             default="Business Type"/></label>
 
     <div class="controls">
-        <select id="businessType" name='businessType' data-ng-model='lead.businessType'
-                data-ng-options="bt.description for bt in businessTypes" required>
+        <select id="businessType" name='businessType' data-ng-model='lead.businessType.id'
+                data-ng-options="bt.id as bt.description for bt in businessTypes" required>
             <option value="">-- choose --</option>
         </select>
         <span class="label label-important"

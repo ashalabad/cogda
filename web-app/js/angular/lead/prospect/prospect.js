@@ -75,8 +75,8 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
         }])
     .controller('EditProspectCtrl', ['$scope', '$routeParams', '$location', 'Prospect', 'Logger', 'UnitedStates',
         'SupportedCountryCodes', 'LeadSubTypes', 'NoteType', 'BusinessTypes', 'LineOfBusiness', 'LeadLineOfBusiness',
-        '$dialog', 'DateHelper', '$filter',
-        function ($scope, $routeParams, $location, Prospect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes, LineOfBusiness, LeadLineOfBusiness, $dialog, DateHelper, $filter) {
+        '$dialog', 'DateHelper', '$filter', 'LeadUtils',
+        function ($scope, $routeParams, $location, Prospect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes, LineOfBusiness, LeadLineOfBusiness, $dialog, DateHelper, $filter, LeadUtils) {
             $scope.title = 'Prospect';
             $scope.editingLead = false;
             $scope.message = '';
@@ -139,6 +139,7 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
             };
 
             $scope.updateLead = function (lead) {
+                lead.businessType = LeadUtils.getBusinessTypeFromSelect(lead.businessType, $scope.businessTypes);
                 var formattedLead = angular.copy(lead);
                 for (var i = 0; i < formattedLead.linesOfBusiness.length; i++) {
                     formattedLead.linesOfBusiness[i].targetDate = DateHelper.getFormattedDate(formattedLead.linesOfBusiness[i].targetDate);
@@ -168,6 +169,7 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
             };
 
             var updateSuccessCallback = function (response) {
+                $scope.lead = response.data;
                 Logger.success("Prospect Updated Successfully", "Success");
                 closeEditLead();
             };

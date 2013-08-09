@@ -4,8 +4,8 @@ angular.module('lead.Utils', ['common.helperFuncs']).factory('LeadUtils', ['$fil
         return leadLineOfBusiness.lineOfBusiness === undefined ? undefined : $filter('findById')(linesOfBusiness, leadLineOfBusiness.lineOfBusiness.id);
     };
 
-    var getLobFromSelect = function (leadLineOfBusiness, linesOfBusiness) {
-        return leadLineOfBusiness.lineOfBusiness === undefined ? undefined : $filter('findById')(linesOfBusiness, leadLineOfBusiness.lineOfBusiness.id);
+    var getBusinessTypeFromSelect = function (businessType, businessTypes) {
+        return businessType === undefined ? undefined : $filter('findById')(businessTypes, businessType.id);
     };
 
     var entityFromSelect = function (entity, propertyName, selectOptions) {
@@ -13,6 +13,7 @@ angular.module('lead.Utils', ['common.helperFuncs']).factory('LeadUtils', ['$fil
     };
 
     return {
-        getLobFromSelect: getLobFromSelect
+        getLobFromSelect: getLobFromSelect,
+        getBusinessTypeFromSelect: getBusinessTypeFromSelect
     }
 }]);

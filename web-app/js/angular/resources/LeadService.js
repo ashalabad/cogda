@@ -888,5 +888,3 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
 
         return leadService;
     }]);
-
-
