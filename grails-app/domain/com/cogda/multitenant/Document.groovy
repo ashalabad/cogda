@@ -8,7 +8,7 @@ import grails.plugin.multitenant.core.annotation.MultiTenant
  * A domain class describes the data object and it's mapping to the database
   */
 @MultiTenant
-class StorageDocument {
+class Document {
 
 	Long	id
 	Long	version

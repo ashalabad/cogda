@@ -3,7 +3,7 @@ package com.cogda.domain
 import com.amazonaws.services.cloudfront.model.InvalidArgumentException
 import com.cogda.domain.security.User
 import com.cogda.domain.storage.StorageReference
-import com.cogda.multitenant.StorageDocument
+import com.cogda.multitenant.Document
 import com.cogda.multitenant.DocumentVersion
 import grails.plugins.springsecurity.SpringSecurityService
 import grails.test.mixin.*
@@ -12,7 +12,7 @@ import grails.test.mixin.*
  * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
  */
 @TestFor(DocumentService)
-@Mock([StorageDocument,DocumentVersion,StorageReference,User])
+@Mock([Document,DocumentVersion,StorageReference,User])
 class DocumentServiceSpec {
 
     User user
@@ -63,7 +63,7 @@ class DocumentServiceSpec {
         def springMock = mockFor(SpringSecurityService,true)
         springMock.demand.getCurrentUser(1){->user}
         service.springSecurityService=springMock.createMock()
-        StorageDocument document = service.createDocument("test","test","test",map)
+        Document document = service.createDocument("test","test","test",map)
 
         assertNotNull   document
         assertNotNull   document.id
@@ -114,7 +114,7 @@ class DocumentServiceSpec {
         def springMock = mockFor(SpringSecurityService,true)
         springMock.demand.getCurrentUser(1..2){->user}
         service.springSecurityService=springMock.createMock()
-        StorageDocument document = service.createDocument("test","test","test",map)
+        Document document = service.createDocument("test","test","test",map)
         assertNotNull   document
         assertNotNull   document.id
 
@@ -156,7 +156,7 @@ class DocumentServiceSpec {
         springMock.demand.getCurrentUser(1..2){->user}
         service.springSecurityService=springMock.createMock()
 
-        StorageDocument document = service.createDocument("test","test","test",map)
+        Document document = service.createDocument("test","test","test",map)
         assertNotNull   document
         assertNotNull   document.id
 
@@ -231,7 +231,7 @@ class DocumentServiceSpec {
         springMock.demand.getCurrentUser(1..2){->user}
         service.springSecurityService=springMock.createMock()
 
-        StorageDocument document = service.createDocument("test","test","test",map)
+        Document document = service.createDocument("test","test","test",map)
         assertNotNull   document
         assertNotNull   document.id
         def version=service.deleteDocumentStreams(document.id,[DocumentDataStreamType.Annotations])
@@ -272,7 +272,7 @@ class DocumentServiceSpec {
         springMock.demand.getCurrentUser(1..10){->user}
         service.springSecurityService=springMock.createMock()
 
-        StorageDocument document = service.createDocument("test","test","test",map)
+        Document document = service.createDocument("test","test","test",map)
         assertNotNull   document
         assertNotNull   document.id
         shouldFail(InvalidArgumentException){
@@ -307,7 +307,7 @@ class DocumentServiceSpec {
         def springMock = mockFor(SpringSecurityService,true)
         springMock.demand.getCurrentUser(1..10){->user}
         service.springSecurityService=springMock.createMock()
-        StorageDocument document = service.createDocument("test","test","test",map)
+        Document document = service.createDocument("test","test","test",map)
         assertNotNull   document
         assertNotNull   document.id
         shouldFail(IllegalArgumentException){
@@ -331,7 +331,7 @@ class DocumentServiceSpec {
         springMock.demand.getCurrentUser(1..2){->user}
         service.springSecurityService=springMock.createMock()
 
-        StorageDocument document = service.createDocument("test","test","test",map)
+        Document document = service.createDocument("test","test","test",map)
         assertNotNull   document
         assertNotNull   document.id
 
@@ -373,7 +373,7 @@ class DocumentServiceSpec {
                 (DocumentDataStreamType.File):mainFile,
                 (DocumentDataStreamType.Annotations):annotationFile
         ]
-        StorageDocument document = service.createDocument("test","test","test",map)
+        Document document = service.createDocument("test","test","test",map)
         assertNotNull   document
         assertNotNull   document.id
 
@@ -414,17 +414,17 @@ class DocumentServiceSpec {
                 (DocumentDataStreamType.File):mainFile,
                 (DocumentDataStreamType.Annotations):annotationFile
         ]
-        StorageDocument document = service.createDocument("test","test","test",map)
+        Document document = service.createDocument("test","test","test",map)
         assertNotNull   document
         assertNotNull   document.id
         Date now=new Date()
-        service.updateDocument(document.id,{StorageDocument doc->
+        service.updateDocument(document.id,{Document doc->
             doc.name="new name"
             doc.category="new category"
             doc.description="new description"
             doc.originationDate=now
         })
-        def updated=StorageDocument.findById(document.id)
+        def updated=Document.findById(document.id)
         assertEquals document.id,updated.id
         assertEquals "new name",updated.name
         assertEquals "new category",updated.category
@@ -448,11 +448,11 @@ class DocumentServiceSpec {
                 (DocumentDataStreamType.File):mainFile,
                 (DocumentDataStreamType.Annotations):annotationFile
         ]
-        StorageDocument document = service.createDocument("test","test","test",map)
+        Document document = service.createDocument("test","test","test",map)
         assertNotNull   document
         assertNotNull   document.id
         service.deleteDocument(document.id)
-        assertEquals 0, StorageDocument.findAll().size()
+        assertEquals 0, Document.findAll().size()
         assertEquals 0, DocumentVersion.findAllByDocument(document).size()
     }
 

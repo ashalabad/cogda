@@ -20,8 +20,8 @@ class StorageReference {
     String  fileReference
     User    user
 
-    static hasOne = {}
-    static mapping = {}
+    //static hasOne = {}
+    //static mapping = {}
 
     static constraints = {
         dateCreated(blank:false, nullable: false)
