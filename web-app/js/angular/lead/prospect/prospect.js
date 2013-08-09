@@ -204,8 +204,8 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
         }])
     .controller('CreateProspectCtrl', ['$scope', '$routeParams', '$location', 'Prospect', 'Logger', 'UnitedStates',
         'SupportedCountryCodes', 'LeadSubTypes', 'NoteType', 'BusinessTypes', 'DateHelper', 'LineOfBusiness', '$filter',
-        'LeadUtils',
-        function ($scope, $routeParams, $location, Prospect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes, DateHelper, LineOfBusiness, $filter, LeadUtils) {
+        'LeadUtils', 'LeadService',
+        function ($scope, $routeParams, $location, Prospect, Logger, UnitedStates, SupportedCountryCodes, LeadSubTypes, NoteType, BusinessTypes, DateHelper, LineOfBusiness, $filter, LeadUtils, LeadService) {
             $scope.lead = {};
             $scope.lead.leadAddresses = [];
             $scope.leadAddress = {primaryAddress: true, address: {}};
@@ -230,8 +230,6 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
             $scope.noteTypes = NoteType.list();
             $scope.businessTypes = BusinessTypes.list();
             $scope.lead.linesOfBusiness = [{}];
-            $scope.editingLineOfBusiness = false;
-            $scope.addingLeadLineOfBusiness = false;
 
             $scope.addLeadLineOfBusiness = function () {
                 var leadLineOfBusiness = {};
@@ -246,33 +244,6 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
                     leadLineOfBusiness.remarket = modelLob.remarket;
                 }
                 $scope.lead.linesOfBusiness.push(leadLineOfBusiness);
-//                $scope.addingLeadLineOfBusiness = true;
-            };
-
-            $scope.cancelAddLeadLineOfBusiness = function () {
-                $scope.addingLeadLineOfBusiness = false;
-            };
-
-            $scope.saveLeadLineOfBusiness = function (leadLineOfBusiness) {
-                leadLineOfBusiness.lineOfBusiness = LeadUtils.getLobFromSelect(leadLineOfBusiness, $scope.linesOfBusiness);
-                $scope.lead.linesOfBusiness.push(leadLineOfBusiness);
-                $scope.cancelAddLeadLineOfBusiness();
-            };
-
-            $scope.updateLineOfBusiness = function (lineOfBusiness) {
-                lineOfBusiness.lineOfBusiness = LeadUtils.getLobFromSelect(lineOfBusiness, $scope.linesOfBusiness);
-                $scope.lead.linesOfBusiness[$scope.index] = lineOfBusiness;
-                $scope.editingLineOfBusiness = false;
-            };
-
-            $scope.editLineOfBusiness = function (index) {
-                $scope.index = index;
-                $scope.leadLineOfBusiness = angular.copy($scope.lead.linesOfBusiness[index]);
-                $scope.editingLineOfBusiness = true;
-            };
-
-            $scope.cancelEditLineOfBusiness = function () {
-                $scope.editingLineOfBusiness = false;
             };
 
             $scope.deleteLineOfBusiness = function (index) {
@@ -285,8 +256,15 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
             };
 
             var saveErrorCallback = function (response) {
-                Logger.formValidationMessageBuilder(response, $scope, $scope.leadForm);
+                console.log("broadcasting");
+                LeadService.validateAllForms(response, $scope);
             };
+
+            $scope.$on('validateAllForms', function() {
+                Logger.formValidationMessageBuilder(LeadService.response, LeadService.scope, $scope.leadForm);
+                console.log("CreateProspectCtrl handling");
+                console.log($scope.leadForm);
+            });
 
             $scope.canSave = function () {
                 return $scope.leadForm.$valid;
@@ -319,4 +297,23 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
     .controller('ShowProspectCtrl', ['$scope', '$routeParams', '$location', 'Prospect', 'Logger',
         function ($scope, $routeParams, $location, Prospect, Logger) {
 
-        }]);
+        }])
+    .controller('CreateLobCtrl', ['$scope', 'Logger', 'LeadService', function($scope, Logger, LeadService) {
+        $scope.$on('validateAllForms', function() {
+            console.log("CreateLobCtrl handling. Index: " + $scope.$index);
+            console.log($scope.leadLineOfBusinessForm);
+            var response = angular.copy(LeadService.response)
+            console.log(LeadService.response);
+            console.log(response);
+            response.data.errors = {};
+            var errorBaseName = 'linesOfBusiness[' + $scope.$index + '].';
+            for (var i in LeadService.response.data.errors) {
+                if (i.indexOf(errorBaseName) == 0) {
+                    var newName = i.replace(errorBaseName, '');
+                    response.data.errors[newName] = LeadService.response.data.errors[i];
+                    console.log(i);
+                }
+            }
+            Logger.formValidationMessageBuilder(response, $scope, $scope.leadLineOfBusinessForm);
+        });
+    }]);

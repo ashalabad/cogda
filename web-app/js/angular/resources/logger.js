@@ -9,7 +9,7 @@ angular.module('resources.logger', []).factory('Logger', function () {
         success: success,
         warning: warning,
         log: log, // straight to console; bypass toast
-        messageBuilder:messageBuilder,
+        messageBuilder: messageBuilder,
         formValidationMessageBuilder: formValidationMessageBuilder,
         formsValidationMessageBuilder: formsValidationMessageBuilder,
         errorValidationMessageBuilder: errorValidationMessageBuilder
@@ -52,12 +52,12 @@ angular.module('resources.logger', []).factory('Logger', function () {
         log("Warning: " + message);
     };
 
-    function messageBuilder(response){
+    function messageBuilder(response) {
         switch (response.status) {
             case 200:
-                if(response.data.message){
+                if (response.data.message) {
                     success(response.data.message, "Success");
-                }else{
+                } else {
                     success("Success", "Successful Operation");
                     log("Successful Read Update or Delete", "Success");
                 }
@@ -66,16 +66,16 @@ angular.module('resources.logger', []).factory('Logger', function () {
                 success("Successful Create", "Success");
                 break;
             case 404: // resource not found - return to the list and display message returned by the controller
-                if(response.data.message){
+                if (response.data.message) {
                     warning(response.data.message, "Warning");
-                }else{
+                } else {
                     warning("The item you were looking for was not found", "Warning");
                 }
                 break;
             case 409: // optimistic locking failure - display error message on the page
-                if(response.data.message){
+                if (response.data.message) {
                     error(response.data.message, "Error");
-                }else{
+                } else {
                     error("Another user has updated this item while you were editing", "Error");
                 }
                 break;
@@ -89,14 +89,14 @@ angular.module('resources.logger', []).factory('Logger', function () {
         }
     }
 
-    function formValidationMessageBuilder(response, $scope, form){
+    function formValidationMessageBuilder(response, $scope, form) {
         switch (response.status) {
             case 422: // validation error - display errors alongside form fields
                 $scope.errors = response.data.errors;
                 applyFormErrorValidity($scope, response.data.errors, form);
-                if(response.data.message){
+                if (response.data.message) {
                     error(response.data.message, "Error");
-                }else{
+                } else {
                     error("Data Validation Failed", "Error");
                 }
                 break;
@@ -105,14 +105,14 @@ angular.module('resources.logger', []).factory('Logger', function () {
         }
     }
 
-    function formsValidationMessageBuilder(response, $scope, forms){
+    function formsValidationMessageBuilder(response, $scope, forms) {
         switch (response.status) {
             case 422: // validation error - display errors alongside form fields
                 $scope.errors = response.data.errors;
                 applyFormsErrorValidity($scope, response.data.errors, forms);
-                if(response.data.message){
+                if (response.data.message) {
                     error(response.data.message, "Error");
-                }else{
+                } else {
                     error("Errors", "Error");
                 }
                 break;
@@ -121,24 +121,28 @@ angular.module('resources.logger', []).factory('Logger', function () {
         }
     }
 
-    function applyFormsErrorValidity($scope, errors, forms){
+    function applyFormsErrorValidity($scope, errors, forms) {
         form.$setValidity("", false);
-        for(var i in errors){
-            console.log(i);
-            for (var j in forms){
+        for (var i in errors) {
+            for (var j in forms) {
                 if (j[i] !== undefined) {
                     j[i].$setValidity(i, false);
+                } else {
+                    log("Failed to find: " + i + " in form: " + j.$name);
                 }
             }
 
         }
     }
 
-    function applyFormErrorValidity($scope, errors, form){
+    function applyFormErrorValidity($scope, errors, form) {
         form.$setValidity("", false);
-        for(var i in errors){
-            console.log(i)
-            form[i].$setValidity(i, false);
+        for (var i in errors) {
+            if (form[i] !== undefined) {
+                form[i].$setValidity(i, false);
+            } else {
+                log("Failed to find: " + i + " in form: " + form.$name);
+            }
         }
     }
 
@@ -147,12 +151,12 @@ angular.module('resources.logger', []).factory('Logger', function () {
      * @param response
      * @param $scope
      */
-    function errorValidationMessageBuilder(response, $scope){
+    function errorValidationMessageBuilder(response, $scope) {
         switch (response.status) {
             case 422: // validation error - display errors alongside form fields
                 $scope.errors = response.data.errors;
-                for(var i in $scope.errors){
-                    for(var j = 0; j < $scope.errors[i].length; j++){
+                for (var i in $scope.errors) {
+                    for (var j = 0; j < $scope.errors[i].length; j++) {
                         error($scope.errors[i][j], "Field Error");
                     }
                 }

@@ -105,7 +105,6 @@
         padding-left: 50%;
         white-space: normal;
         text-align:left;
-        height: 25px;
     }
 
     #no-more-tables td:before {
@@ -119,7 +118,6 @@
         white-space: nowrap;
         text-align:left;
         font-weight: bold;
-        height: 25px;
     }
 
     /*
@@ -146,3 +144,21 @@ td input {
 /*td input[type="number"] {*/
     /*font-size: 90%;*/
 /*}*/
+
+.css-form input.ng-invalid.ng-dirty {
+    background-color: #FA787E;
+}
+
+.css-form input.ng-valid.ng-dirty {
+    background-color: #78FA89;
+}
+
+.css-form input.ng-invalid-expiration-date{
+    border-color: #b94a48;
+}
+.css-form select.ng-invalid-line-of-business {
+    border-color: #b94a48;
+}
+.css-form span.label {
+    white-space: normal;
+}
