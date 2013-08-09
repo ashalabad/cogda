@@ -29,7 +29,8 @@
         <td><button class="btn btn-danger btn-mini"
                     type="button"
                     data-ng-click="deleteLineOfBusiness(leadLineOfBusiness)"
-                    data-ng-hide="editingLineOfBusiness">
+                    data-ng-hide="editingLineOfBusiness"
+                    data-ng-disabled="cannotDeleteLineOfBusiness()">
             <i class="icon-remove icon-white"></i>
             <g:message code="default.button.delete.label"/>
         </button></td>
@@ -47,7 +48,8 @@
         </button>
         <button class="btn btn-danger"
                 type="button"
-                data-ng-click="deleteLineOfBusiness(lineOfBusiness)">
+                data-ng-click="deleteLineOfBusiness(leadLineOfBusiness)"
+                data-ng-disabled="cannotDeleteLineOfBusiness()">
             <i class="icon-remove icon-white"></i>
             <g:message code="default.button.delete.label"/> <g:message code="lineOfBusiness.label" default="Line of Business"/>
         </button>

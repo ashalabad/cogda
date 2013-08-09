@@ -249,7 +249,7 @@ angular.module('suspectApp', ['ui.bootstrap', '$strap.directives', 'resources.na
             };
 
             $scope.deleteLineOfBusiness = function (index) {
-                $scope.lead.linesOfBusiness.splice(index);
+                $scope.lead.linesOfBusiness.splice(index, 1);
             };
         }])
     .controller('CreateSuspectCtrl', ['$scope', '$routeParams', '$location', 'Suspect', 'Logger', 'UnitedStates',

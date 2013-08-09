@@ -109,6 +109,6 @@
     <span class="success" data-ng-show="leadLineOfBusinessForm['remarket'].$valid"></span>
 </td>
 <td>
-    <button class="btn btn-danger btn-mini" data-ng-click="deleteLineOfBusiness($index)"><i class="icon-remove"></i>
+    <button class="btn btn-danger btn-mini" data-ng-click="deleteLineOfBusiness($index)" data-ng-disabled="cannotDeleteLineOfBusiness()"><i class="icon-remove"></i>
     </button>
 </td>

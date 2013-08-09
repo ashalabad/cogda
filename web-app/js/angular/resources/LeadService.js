@@ -689,9 +689,10 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
             };
 
             var deleteLineOfBusinessSuccessCallback = function (response) {
-                var index = $scope.lead.linesOfBusiness.indexOf($scope.linesOfBusiness);
+                var index = $scope.lead.linesOfBusiness.indexOf($scope.leadLineOfBusiness);
                 $scope.lead.linesOfBusiness.splice(index, 1);
                 Logger.messageBuilder(response, $scope);
+                $scope.cancelEditLineOfBusiness();
             };
 
             var deleteLineOfBusinessErrorCallback = function (response) {
@@ -738,6 +739,10 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
                     $scope.leadLineOfBusiness.targetCommission = commissions[0];
                     $scope.leadLineOfBusiness.commissionRate = commissions[1];
                 }
+            };
+
+            $scope.cannotDeleteLineOfBusiness = function() {
+                return LeadService.cannotDeleteLineOfBusiness($scope.lead.linesOfBusiness);
             };
 
         }])
@@ -817,18 +822,13 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
         }])
     .controller('CreateLobCtrl', ['$scope', 'Logger', 'LeadService', function ($scope, Logger, LeadService) {
         $scope.$on('validateAllForms', function () {
-            console.log("CreateLobCtrl handling. Index: " + $scope.$index);
-            console.log($scope.leadLineOfBusinessForm);
             var response = angular.copy(LeadService.response);
-            console.log(LeadService.response);
-            console.log(response);
             response.data.errors = {};
             var errorBaseName = 'linesOfBusiness[' + $scope.$index + '].';
             for (var i in LeadService.response.data.errors) {
                 if (i.indexOf(errorBaseName) == 0) {
                     var newName = i.replace(errorBaseName, '');
                     response.data.errors[newName] = LeadService.response.data.errors[i];
-                    console.log(i);
                 }
             }
             Logger.formValidationMessageBuilder(response, $scope, $scope.leadLineOfBusinessForm);
@@ -861,6 +861,10 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
             }
         }
 
+        $scope.cannotDeleteLineOfBusiness = function() {
+            return LeadService.cannotDeleteLineOfBusiness($scope.$parent.lead.linesOfBusiness);
+        };
+
     }])
     .factory('LeadService', ['$rootScope', function ($rootScope) {
         var leadService = {};
@@ -884,6 +888,10 @@ angular.module('resources.leadService', ['resources.logger', 'ngGrid', 'common.h
                 targetCommission = Math.round(newTargetCommission * 100) / 100;
             }
             return [targetCommission, commissionRate];
+        };
+
+        leadService.cannotDeleteLineOfBusiness = function(linesOfBusiness) {
+            return linesOfBusiness === undefined ? true : linesOfBusiness.length <= 1;
         };
 
         return leadService;
