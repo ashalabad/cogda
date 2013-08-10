@@ -41,7 +41,7 @@
                data-date-format="mm/dd/yyyy"
                placeholder="<g:message code="leadLineOfBusiness.targetDate.label"/>"
                data-bs-datepicker data-start-date="new Date()" class="input-block-level"
-               data-end-date="{{leadLineOfBusiness.expirationDate | bsDateFilter | date:shortDate }}">
+               data-end-date="{{ leadLineOfBusiness.expirationDate }}">
         <button type="button" class="btn" data-toggle="mydatepicker"><i class="icon-calendar"></i>
         </button>
     </div>
@@ -109,6 +109,6 @@
     <span class="success" data-ng-show="leadLineOfBusinessForm['remarket'].$valid"></span>
 </td>
 <td>
-    <button class="btn btn-danger btn-mini" data-ng-click="deleteLineOfBusiness($index)"><i class="icon-remove"></i>
+    <button class="btn btn-danger btn-mini" data-ng-click="deleteLineOfBusiness($index)" data-ng-disabled="cannotDeleteLineOfBusiness()"><i class="icon-remove"></i>
     </button>
 </td>

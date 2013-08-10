@@ -6,12 +6,12 @@
     {{ leadLineOfBusiness.lineOfBusiness.description }}
 </td>
 
-<td data-title="${message(code: 'leadLineOfBusiness.targetDate.label')}">
-    {{ leadLineOfBusiness.targetDate | bsDateFilter | date: shortDate }}
-</td>
-
 <td data-title="${message(code: 'leadLineOfBusiness.expirationDate.label')}">
     {{ leadLineOfBusiness.expirationDate | bsDateFilter | date: shortDate }}
+</td>
+
+<td data-title="${message(code: 'leadLineOfBusiness.targetDate.label')}">
+    {{ leadLineOfBusiness.targetDate | bsDateFilter | date: shortDate }}
 </td>
 
 <td data-title="${message(code: 'leadLineOfBusiness.targetPremium.label')}">

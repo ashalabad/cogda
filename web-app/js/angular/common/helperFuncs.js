@@ -28,16 +28,23 @@ angular.module('common.helperFuncs', []).factory('SelectHelper',function () {
         };
     }])
     .filter('bsDateFilter', function () {
+
+        Date.prototype.stdTimezoneOffset = function() {
+            var jan = new Date(this.getFullYear(), 0, 1);
+            var jul = new Date(this.getFullYear(), 6, 1);
+            return Math.max(jan.getTimezoneOffset(), jul.getTimezoneOffset());
+        };
+
         return function (d) {
             if (d instanceof Date) {
                 if (isNaN(d.getTime()))
                     return "";
-                return new Date(d.getTime() + (new Date()).getTimezoneOffset() * 60000);
+                return new Date(d.getTime() + (new Date()).stdTimezoneOffset() * 60000);
             } else {
                 var date = new Date(d);
                 if (isNaN(date.getTime()))
                     return "";
-                return new Date(date.getTime() + (new Date()).getTimezoneOffset() * 60000);
+                return new Date(date.getTime() + (new Date()).stdTimezoneOffset() * 60000);
             }
         }
     })

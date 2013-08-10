@@ -251,7 +251,7 @@ angular.module('prospectApp', ['ui.bootstrap', '$strap.directives', 'resources.n
             };
 
             $scope.deleteLineOfBusiness = function (index) {
-                $scope.lead.linesOfBusiness.splice(index);
+                $scope.lead.linesOfBusiness.splice(index, 1);
             };
 
             var saveSuccessCallback = function () {
