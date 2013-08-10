@@ -6,8 +6,8 @@
     <tr>
         <th><g:message code="lineOfBusiness.category.label"/></th>
         <th><g:message code="lineOfBusiness.label"/></th>
-        <th><g:message code="leadLineOfBusiness.targetDate.label"/></th>
         <th><g:message code="leadLineOfBusiness.expirationDate.label"/></th>
+        <th><g:message code="leadLineOfBusiness.targetDate.label"/></th>
         <th><g:message code="leadLineOfBusiness.targetPremium.label"/></th>
         <th><g:message code="leadLineOfBusiness.targetCommission.label"/></th>
         <th><g:message code="leadLineOfBusiness.commissionRate.label"/></th>

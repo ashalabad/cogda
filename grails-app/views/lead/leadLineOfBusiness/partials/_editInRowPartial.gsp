@@ -41,7 +41,7 @@
                data-date-format="mm/dd/yyyy"
                placeholder="<g:message code="leadLineOfBusiness.targetDate.label"/>"
                data-bs-datepicker data-start-date="new Date()" class="input-block-level"
-               data-end-date="{{leadLineOfBusiness.expirationDate | bsDateFilter | date:shortDate }}">
+               data-end-date="{{ leadLineOfBusiness.expirationDate }}">
         <button type="button" class="btn" data-toggle="mydatepicker"><i class="icon-calendar"></i>
         </button>
     </div>

@@ -60,7 +60,8 @@
         <div class="control-group fieldcontain" data-ng-class="{error: leadLineOfBusinessForm['targetDate'].$invalid}">
             <label for="targetDate" class="control-label">
                 <g:message code="leadLineOfBusiness.targetDate.label" default="Target Date"/><span
-                    class="required-indicator">*</span>
+                    class="required-indicator"
+            >*</span>
             </label>
 
             <div class="controls">
@@ -68,7 +69,7 @@
                     <input type="text" id="targetDate" class="input-small"
                            data-ng-model="leadLineOfBusiness.targetDate"
                            data-date-format="mm/dd/yyyy" data-start-date="new Date()"
-                           data-end-date="{{leadLineOfBusiness.expirationDate | bsDateFilter | date:shortDate }}"
+                           data-end-date="{{ leadLineOfBusiness.expirationDate }}"
                            placeholder="<g:message code="leadLineOfBusiness.targetDate.label"/>"
                            data-bs-datepicker>
                     <button type="button" class="btn" data-toggle="mydatepicker"><i class="icon-calendar"></i>
